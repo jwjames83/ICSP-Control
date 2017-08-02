@@ -1,0 +1,14 @@
+C:\VS.NET\Visual Studio 2015\Projects\ICSPControl\ICSP\bin\Debug\ICSP.dll
+C:\VS.NET\Visual Studio 2015\Projects\ICSPControl\ICSP\bin\Debug\ICSP.pdb
+C:\VS.NET\Visual Studio 2015\Projects\ICSPControl\ICSP\bin\Debug\Log4Net.dll
+C:\VS.NET\Visual Studio 2015\Projects\ICSPControl\ICSP\bin\Debug\Log4Net.pdb
+C:\VS.NET\Visual Studio 2015\Projects\ICSPControl\ICSP\obj\Debug\ICSP.csprojResolveAssemblyReference.cache
+C:\VS.NET\Visual Studio 2015\Projects\ICSPControl\ICSP\obj\Debug\ICSP.dll
+C:\VS.NET\Visual Studio 2015\Projects\ICSPControl\ICSP\obj\Debug\ICSP.pdb
+C:\Users\donald.peter\Source\Repos\ICSP-Control\ICSP\bin\Debug\ICSP.dll
+C:\Users\donald.peter\Source\Repos\ICSP-Control\ICSP\bin\Debug\ICSP.pdb
+C:\Users\donald.peter\Source\Repos\ICSP-Control\ICSP\bin\Debug\Log4Net.dll
+C:\Users\donald.peter\Source\Repos\ICSP-Control\ICSP\bin\Debug\Log4Net.pdb
+C:\Users\donald.peter\Source\Repos\ICSP-Control\ICSP\obj\Debug\ICSP.csprojResolveAssemblyReference.cache
+C:\Users\donald.peter\Source\Repos\ICSP-Control\ICSP\obj\Debug\ICSP.dll
+C:\Users\donald.peter\Source\Repos\ICSP-Control\ICSP\obj\Debug\ICSP.pdb

@@ -1,0 +1,34 @@
+O:\EDV\Visual Studio 2010\Projects\Log4Net 1.2.11\build\bin\net\2.0\debug\Log4Net.dll
+O:\EDV\Visual Studio 2010\Projects\Log4Net 1.2.11\build\bin\net\2.0\debug\Log4Net.pdb
+O:\EDV\Visual Studio 2010\Projects\Log4Net 1.2.11\Src\obj\Debug\Log4Net.dll
+O:\EDV\Visual Studio 2010\Projects\Log4Net 1.2.11\Src\obj\Debug\Log4Net.pdb
+O:\EDV\Visual Studio\Projects\Log4Net 1.2.11\build\bin\net\2.0\debug\Log4Net.dll
+O:\EDV\Visual Studio\Projects\Log4Net 1.2.11\build\bin\net\2.0\debug\Log4Net.pdb
+O:\EDV\Visual Studio\Projects\Log4Net 1.2.11\Src\obj\Debug\Log4Net.dll
+O:\EDV\Visual Studio\Projects\Log4Net 1.2.11\Src\obj\Debug\Log4Net.pdb
+O:\EDV\Visual Studio\Projects\Log4Net 1.2.11\Src\obj\Debug\Log4Net.csprojResolveAssemblyReference.cache
+C:\Users\PED\Documents\Visual Studio 2013\Projects\Log4Net 1.2.11\build\bin\net\2.0\debug\Log4Net.dll
+C:\Users\PED\Documents\Visual Studio 2013\Projects\Log4Net 1.2.11\build\bin\net\2.0\debug\Log4Net.pdb
+C:\Users\PED\Documents\Visual Studio 2013\Projects\Log4Net 1.2.11\Src\obj\Debug\Log4Net.csprojResolveAssemblyReference.cache
+C:\Users\PED\Documents\Visual Studio 2013\Projects\Log4Net 1.2.11\Src\obj\Debug\Log4Net.dll
+C:\Users\PED\Documents\Visual Studio 2013\Projects\Log4Net 1.2.11\Src\obj\Debug\Log4Net.pdb
+C:\Users\donald.peter\Documents\Visual Studio 2013\Projects\Log4Net 1.2.11\build\bin\net\2.0\debug\Log4Net.dll
+C:\Users\donald.peter\Documents\Visual Studio 2013\Projects\Log4Net 1.2.11\build\bin\net\2.0\debug\Log4Net.pdb
+C:\Users\donald.peter\Documents\Visual Studio 2013\Projects\Log4Net 1.2.11\src\obj\Debug\Log4Net.csprojResolveAssemblyReference.cache
+C:\Users\donald.peter\Documents\Visual Studio 2013\Projects\Log4Net 1.2.11\src\obj\Debug\Log4Net.dll
+C:\Users\donald.peter\Documents\Visual Studio 2013\Projects\Log4Net 1.2.11\src\obj\Debug\Log4Net.pdb
+C:\Users\donald.peter\Documents\Visual Studio 2013\Projects\AvsShellCommander\Log4Net 1.2.11\build\bin\net\2.0\debug\Log4Net.dll
+C:\Users\donald.peter\Documents\Visual Studio 2013\Projects\AvsShellCommander\Log4Net 1.2.11\build\bin\net\2.0\debug\Log4Net.pdb
+C:\Users\donald.peter\Documents\Visual Studio 2013\Projects\AvsShellCommander\Log4Net 1.2.11\src\obj\Debug\Log4Net.csprojResolveAssemblyReference.cache
+C:\Users\donald.peter\Documents\Visual Studio 2013\Projects\AvsShellCommander\Log4Net 1.2.11\src\obj\Debug\Log4Net.dll
+C:\Users\donald.peter\Documents\Visual Studio 2013\Projects\AvsShellCommander\Log4Net 1.2.11\src\obj\Debug\Log4Net.pdb
+C:\Users\donald.peter\Documents\Visual Studio 2013\Projects\AvsWallManager\Log4Net 1.2.11\build\bin\net\2.0\debug\Log4Net.dll
+C:\Users\donald.peter\Documents\Visual Studio 2013\Projects\AvsWallManager\Log4Net 1.2.11\build\bin\net\2.0\debug\Log4Net.pdb
+C:\Users\donald.peter\Documents\Visual Studio 2013\Projects\AvsWallManager\Log4Net 1.2.11\src\obj\Debug\Log4Net.dll
+C:\Users\donald.peter\Documents\Visual Studio 2013\Projects\AvsWallManager\Log4Net 1.2.11\src\obj\Debug\Log4Net.pdb
+C:\Users\donald.peter\Documents\Visual Studio 2013\Projects\AvsWallManager\Log4Net 1.2.11\src\obj\Debug\Log4Net.csprojResolveAssemblyReference.cache
+C:\VS.NET\Visual Studio 2015\Projects\AvsIcspControl\Log4Net 1.2.11\build\bin\net\2.0\debug\Log4Net.dll
+C:\VS.NET\Visual Studio 2015\Projects\AvsIcspControl\Log4Net 1.2.11\build\bin\net\2.0\debug\Log4Net.pdb
+C:\VS.NET\Visual Studio 2015\Projects\AvsIcspControl\Log4Net 1.2.11\src\obj\Debug\Log4Net.csprojResolveAssemblyReference.cache
+C:\VS.NET\Visual Studio 2015\Projects\AvsIcspControl\Log4Net 1.2.11\src\obj\Debug\Log4Net.dll
+C:\VS.NET\Visual Studio 2015\Projects\AvsIcspControl\Log4Net 1.2.11\src\obj\Debug\Log4Net.pdb
