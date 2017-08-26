@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Windows.Forms;
 using ICSP;
 using ICSP.Constants;
+using ICSP.Manager.ConnectionManager;
 
 namespace ICSPControl.Dialogs
 {
@@ -50,8 +51,13 @@ namespace ICSPControl.Dialogs
       mLogQueue.Clear();
       txt_Text.Clear();
     }
+    
+    public void AppendText(string format)
+    {
+      AppendText(format, null);
+    }
 
-    public void AppendText(string text)
+    public void AppendText(string format, params object[] args)
     {
       // This should only ever run for 1 loop as you should never go over logMax
       // but if you accidentally manually added to the logQueue - then this would
@@ -72,9 +78,12 @@ namespace ICSPControl.Dialogs
       2017-07-25 (20:23:33):: String To[5001:1:1] -[$A9$000$01$00$001$9A]
       */
 
-      var lTxt = string.Format("{0:yyy-MM-dd (HH:mm.ss)}:: {1}", DateTime.Now, text);
+      var lMessage = format;
 
-      mLogQueue.Enqueue(lTxt);
+      if(args != null && args.Length > 0)
+        lMessage = string.Format(format, args);
+      
+      mLogQueue.Enqueue(string.Format("{0:yyy-MM-dd (HH:mm.ss)}:: {1}", DateTime.Now, lMessage));
 
       txt_Text.Text = string.Join(System.Environment.NewLine, mLogQueue.ToArray());
 
@@ -85,9 +94,9 @@ namespace ICSPControl.Dialogs
     private void OnChannelEvent(object sender, ChannelEventArgs e)
     {
       if(e.Enabled)
-        AppendText(string.Format("Output Channel: On  - Channel {0}", e.ChannelCode));
+        AppendText("Output Channel: On  - Channel {0}", e.ChannelCode);
       else
-        AppendText(string.Format("Output Channel: Off - Channel {0}", e.ChannelCode));
+        AppendText("Output Channel: Off - Channel {0}", e.ChannelCode);
     }
 
     private void OnDataReceived(object sender, MessageReceivedEventArgs e)
@@ -101,12 +110,29 @@ namespace ICSPControl.Dialogs
       }
 
       if(lAppend)
-        AppendText(string.Format("DataReceived - ID=0x{0:X4}, Command=0x{1:X4}, {2}", e.Message.ID, e.Message.Command, ICSPMsg.GetFrindlyName(e.Message.Command)));
+      {
+        if(e.Message.Command == ConnectionManagerCmd.BlinkMessage)
+        {
+          var lMsg = e.Message as MsgCmdBlinkMessage;
+
+          if(lMsg != null)
+          {
+            if((lMsg.LED & 0x01) == 1)
+              AppendText("BlinkMessage - ID=0x{0:X4}, DateTime={1:dd.MM.yyyy HH:mm:ss}, LED=On", e.Message.ID, lMsg.DateTime);
+            else
+              AppendText("BlinkMessage - ID=0x{0:X4}, DateTime={1:dd.MM.yyyy HH:mm:ss}, LED=Off", e.Message.ID, lMsg.DateTime);
+          }
+          else
+            AppendText("BlinkMessage - ID=0x{0:X4}, Command=0x{1:X4}, {2}", e.Message.ID, e.Message.Command, ICSPMsg.GetFrindlyName(e.Message.Command));
+        }
+        else
+          AppendText("DataReceived - ID=0x{0:X4}, Command=0x{1:X4}, {2}", e.Message.ID, e.Message.Command, ICSPMsg.GetFrindlyName(e.Message.Command));
+      }
     }
 
     private void OnDeviceInfo(object sender, DeviceInfoEventArgs e)
     {
-      AppendText(string.Format("OnDeviceInfo - Device={0:00000}, Firmware={1}, Description={2}", e.Device, e.Version, e.Name));
+      AppendText("OnDeviceInfo - Device={0:00000}, Firmware={1}, Description={2}", e.Device, e.Version, e.Name);
     }
   }
 }

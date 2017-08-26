@@ -1,4 +1,8 @@
-﻿using ICSP.Constants;
+﻿using System;
+using System.Linq;
+
+using ICSP.Constants;
+using ICSP.Extensions;
 using ICSP.Logging;
 
 namespace ICSP.Manager.ConnectionManager
@@ -12,24 +16,213 @@ namespace ICSP.Manager.ConnectionManager
   {
     public const int MsgCmd = ConnectionManagerCmd.BlinkMessage;
 
+    public const ushort OutsideTemperatureInvalid = 0x8000;
+
     protected MsgCmdBlinkMessage()
     {
     }
 
     public MsgCmdBlinkMessage(ICSPMsgData msg) : base(msg)
     {
+      var lOffset = 0;
+
+      if(msg.Data.Length > 0)
+      {
+        // HeartbeatTiming
+        HeartbeatTiming = msg.Data[0];
+
+        // LED
+        LED = msg.Data[1];
+
+        // Month
+        Month = msg.Data[2];
+
+        // Day
+        Day = msg.Data[3];
+
+        // Year
+        Year = msg.Data.GetBigEndianInt16(4);
+
+        // Hour
+        Hour = msg.Data[6];
+
+        // Minute
+        Minute = msg.Data[7];
+
+        // Second
+        Second = msg.Data[8];
+        
+        // DayOfWeek
+        DayOfWeek = (DayOfWeek)msg.Data[9];
+
+        // OutsideTemperature
+        OutsideTemperature = msg.Data.GetBigEndianInt16(10);
+
+        lOffset = 12;
+
+        // Date
+        DateText = AmxUtils.GetNullStr(msg.Data, ref lOffset);
+      }
+
+      try
+      {
+        DateTime = new DateTime(Year, Month, Day, Hour, Minute, Second);
+      }
+      catch { }
     }
 
     public static ICSPMsg CreateRequest(AmxDevice dest, AmxDevice source)
     {
-      var lRequest = new MsgCmdBlinkMessage();
-
-      return lRequest.Serialize(dest, source, MsgCmd, null);
+      return CreateRequest(dest, source, 50, 33, DateTime.Now, OutsideTemperatureInvalid);
     }
 
-    public override void WriteLog(bool last)
+    public static ICSPMsg CreateRequest(AmxDevice dest, AmxDevice source, byte heartbeatTiming, byte led, byte outsideTemperature)
     {
-      Logger.LogDebug(false, "{0}: Source={1}", GetType().Name, Source);
+      return CreateRequest(dest, source, heartbeatTiming, led, DateTime.Now, outsideTemperature);
+    }
+
+    public static ICSPMsg CreateRequest(AmxDevice dest, AmxDevice source, byte heartbeatTiming, byte led, DateTime dateTime, ushort outsideTemperature)
+    {
+      var lRequest = new MsgCmdBlinkMessage();
+
+      lRequest.HeartbeatTiming = heartbeatTiming;
+      lRequest.LED = led;
+      lRequest.DateTime = dateTime;
+
+      lRequest.Month = (byte)lRequest.DateTime.Month;
+      lRequest.Day = (byte)lRequest.DateTime.Day;
+      lRequest.Year = (byte)lRequest.DateTime.Year;
+      lRequest.Hour = (byte)lRequest.DateTime.Hour;
+      lRequest.Minute = (byte)lRequest.DateTime.Minute;
+      lRequest.Second = (byte)lRequest.DateTime.Second;
+      lRequest.DayOfWeek = lRequest.DateTime.DayOfWeek;
+
+      lRequest.OutsideTemperature = outsideTemperature;
+
+      lRequest.DateText = lRequest.DateTime.ToString();
+
+      var lBytes = System.Text.Encoding.Default.GetBytes(lRequest.DateText + '\0');
+
+      var lData = new byte[] {
+        lRequest.HeartbeatTiming,
+        lRequest.LED,
+        lRequest.Month,
+        lRequest.Day }
+        .Concat(ArrayExtensions.Int16ToBigEndian(lRequest.Year))
+        .Concat(new byte[] {
+        lRequest.Hour,
+        lRequest.Minute,
+        lRequest.Second,
+        (byte)lRequest.DayOfWeek })
+        .Concat(ArrayExtensions.Int16ToBigEndian(lRequest.OutsideTemperature))
+        .Concat(lBytes).ToArray();
+      
+      return lRequest.Serialize(dest, source, MsgCmd, lData);
+    }
+
+
+    /// <summary>
+    /// Tenths of seconds between heartbeats
+    /// </summary>
+    public byte HeartbeatTiming { get; private set; }
+
+    /// <summary>
+    /// State of Bus LED and other Status
+    /// Bit 0 —Bus LED 0 = OFF, 1 = ON.
+    /// Bits 1-6 Reserved.
+    /// Bit 7 —Forced Device Unconfigure/Reset
+    /// 
+    /// The LED byte is a bit field. The LSB (bit 0) indicates the current status of the bus LED.
+    /// The MSB(Bit 7) is set when the master initially powers-up/on-line. In response to bit 7 being set, 
+    /// the receiving device should place itself in the off-line state, turn all channels off, 
+    /// and set all levels to zero(or prepare itself to send status updates as necessary to the master).
+    /// The master shall send 3 consecutive blink messages with bit 7 set.
+    /// </summary>
+    public byte LED { get; private set; }
+
+    /// <summary>
+    /// Current Date: Month 1-12 
+    /// </summary>
+    public byte Month { get; private set; }
+
+    /// <summary>
+    /// Current Date: Day 1-31
+    /// </summary>
+    public byte Day { get; private set; }
+
+    /// <summary>
+    /// Current Date: Year 1999-65535
+    /// </summary>
+    public ushort Year { get; private set; }
+
+    /// <summary>
+    /// Current Time: Hour 0-23 
+    /// </summary>
+    public byte Hour { get; private set; }
+
+    /// <summary>
+    /// Current Time: Minute 0-59
+    /// </summary>
+    public byte Minute { get; private set; }
+
+    /// <summary>
+    /// Current Time: Seconds 0-59
+    /// </summary>
+    public byte Second { get; private set; }
+
+    /// <summary>
+    /// Day of Week 0 = Mon, 1 = Tues, ...
+    /// </summary>
+    public DayOfWeek DayOfWeek { get; private set; }
+
+    /// <summary>
+    /// Outside Temperature (if available).
+    /// Type: Temp signed 16-bit.
+    /// If 0x8000, then temperature is not valid.
+    /// </summary>
+    public ushort OutsideTemperature { get; private set; }
+
+    /// <summary>
+    /// String Formatted as: “Thursday, Jun. 10, 1999”
+    /// </summary>
+    public string DateText { get; private set; }
+
+    public DateTime DateTime { get; private set; }
+
+    protected override void WriteLogExtended()
+    {
+      Logger.LogDebug(false, "{0} HeartbeatTiming   : {1}", GetType().Name, HeartbeatTiming);
+
+      // The LSB (bit 0) indicates the current status of the bus LED.
+      if((LED & 0x01) == 1)
+        Logger.LogDebug(false, "{0} LED               : {1} (LED On)", GetType().Name, LED);
+      else
+        Logger.LogDebug(false, "{0} LED               : {1} (LED Off)", GetType().Name, LED);
+
+      if(DateTime > DateTime.MinValue)
+      {
+        Logger.LogDebug(false, "{0} DateTime          : {1:dd.MM.yyyy HH:mm:ss}", GetType().Name, DateTime);
+        Logger.LogDebug(false, "{0} DayOfWeek         : {1} ({2})", GetType().Name, (byte)DateTime.DayOfWeek, DateTime.DayOfWeek);
+      }
+      else
+      {
+        Logger.LogDebug(false, "{0} HeartbeatTiming   : {1}", GetType().Name, HeartbeatTiming);
+        Logger.LogDebug(false, "{0} LED               : {1}", GetType().Name, LED);
+        Logger.LogDebug(false, "{0} Month             : {1}", GetType().Name, Month);
+        Logger.LogDebug(false, "{0} Day               : {1}", GetType().Name, Day);
+        Logger.LogDebug(false, "{0} Year              : {1}", GetType().Name, Year);
+        Logger.LogDebug(false, "{0} Hour              : {1}", GetType().Name, Hour);
+        Logger.LogDebug(false, "{0} Minute            : {1}", GetType().Name, Minute);
+        Logger.LogDebug(false, "{0} Second            : {1}", GetType().Name, Second);
+        Logger.LogDebug(false, "{0} DayOfWeek         : {1} ({2})", GetType().Name, (byte)DayOfWeek, DayOfWeek);
+      }
+
+      if(OutsideTemperature == OutsideTemperatureInvalid)
+        Logger.LogDebug(false, "{0} OutsideTemperature: 0x{1:X4} (Invalid)", GetType().Name, OutsideTemperature);
+      else
+        Logger.LogDebug(false, "{0} OutsideTemperature: {1}", GetType().Name, OutsideTemperature);
+
+      Logger.LogDebug(false, "{0} DateText          : {1}", GetType().Name, DateText);
     }
   }
 }

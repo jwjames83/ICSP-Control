@@ -143,7 +143,7 @@ namespace ICSP
 
           if(mMessages.ContainsKey(lData.Command))
             lMsgType = mMessages[lData.Command];
-
+          
           if(lMsgType == null)
           {
             Logger.LogDebug(false, "-----------------------------------------------------------");
