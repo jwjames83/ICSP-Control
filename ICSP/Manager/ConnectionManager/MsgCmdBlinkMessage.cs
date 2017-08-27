@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.Linq;
 
 using ICSP.Constants;
@@ -89,17 +90,18 @@ namespace ICSP.Manager.ConnectionManager
       lRequest.LED = led;
       lRequest.DateTime = dateTime;
 
-      lRequest.Month = (byte)lRequest.DateTime.Month;
-      lRequest.Day = (byte)lRequest.DateTime.Day;
-      lRequest.Year = (byte)lRequest.DateTime.Year;
-      lRequest.Hour = (byte)lRequest.DateTime.Hour;
-      lRequest.Minute = (byte)lRequest.DateTime.Minute;
-      lRequest.Second = (byte)lRequest.DateTime.Second;
-      lRequest.DayOfWeek = lRequest.DateTime.DayOfWeek;
+      lRequest.Month = (byte)dateTime.Month;
+      lRequest.Day = (byte)dateTime.Day;
+      lRequest.Year = (byte)dateTime.Year;
+      lRequest.Hour = (byte)dateTime.Hour;
+      lRequest.Minute = (byte)dateTime.Minute;
+      lRequest.Second = (byte)dateTime.Second;
+      lRequest.DayOfWeek = dateTime.DayOfWeek;
 
       lRequest.OutsideTemperature = outsideTemperature;
 
-      lRequest.DateText = lRequest.DateTime.ToString();
+      // "Sunday, Aug 27, 2017"
+      lRequest.DateText = dateTime.ToString("dddd, MMM dd, yyyy", new CultureInfo("en-US"));
 
       var lBytes = System.Text.Encoding.Default.GetBytes(lRequest.DateText + '\0');
 
@@ -119,8 +121,7 @@ namespace ICSP.Manager.ConnectionManager
       
       return lRequest.Serialize(dest, source, MsgCmd, lData);
     }
-
-
+    
     /// <summary>
     /// Tenths of seconds between heartbeats
     /// </summary>
@@ -139,6 +140,8 @@ namespace ICSP.Manager.ConnectionManager
     /// The master shall send 3 consecutive blink messages with bit 7 set.
     /// </summary>
     public byte LED { get; private set; }
+
+    public DateTime DateTime { get; private set; }
 
     /// <summary>
     /// Current Date: Month 1-12 
@@ -186,9 +189,7 @@ namespace ICSP.Manager.ConnectionManager
     /// String Formatted as: “Thursday, Jun. 10, 1999”
     /// </summary>
     public string DateText { get; private set; }
-
-    public DateTime DateTime { get; private set; }
-
+    
     protected override void WriteLogExtended()
     {
       Logger.LogDebug(false, "{0} HeartbeatTiming   : {1}", GetType().Name, HeartbeatTiming);

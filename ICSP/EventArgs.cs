@@ -1,6 +1,10 @@
 ﻿using System;
+using System.Globalization;
 using System.Net;
 using System.Net.NetworkInformation;
+
+using ICSP.Manager.ConnectionManager;
+using ICSP.Manager.DeviceManager;
 
 namespace ICSP
 {
@@ -12,37 +16,192 @@ namespace ICSP
     }
 
     public ICSPMsg Message { get; private set; }
-    
+
     public bool Handled { get; set; }
   }
 
-  public sealed class ChannelEventArgs : EventArgs
+  public abstract class ICSPEventArgs : EventArgs
   {
-    public ChannelEventArgs(int channelPort, int channelCode, bool enabled)
+    public ICSPEventArgs(ICSPMsg message)
     {
-      ChannelPort = channelPort;
+      if(message == null)
+        throw new ArgumentNullException(nameof(message));
 
-      ChannelCode = channelCode;
-
-      Enabled = enabled;
+      Message = message;
     }
 
-    public int ChannelPort { get; private set; }
+    public ICSPMsg Message { get; private set; }
+  }
 
-    public int ChannelCode { get; private set; }
+  public sealed class BlinkEventArgs : ICSPEventArgs
+  {
+    public BlinkEventArgs(MsgCmdBlinkMessage message) : base(message)
+    {
+      HeartbeatTiming = message.HeartbeatTiming;
+
+      LED = message.LED;
+
+      DateTime = message.DateTime;
+
+      Month = (byte)DateTime.Month;
+      Day = (byte)DateTime.Day;
+      Year = (byte)DateTime.Year;
+      Hour = (byte)DateTime.Hour;
+      Minute = (byte)DateTime.Minute;
+      Second = (byte)DateTime.Second;
+      DayOfWeek = DateTime.DayOfWeek;
+
+      OutsideTemperature = message.OutsideTemperature;
+
+      // "Sunday, Aug 27, 2017"
+      DateText = DateTime.ToString("dddd, MMM dd, yyyy", new CultureInfo("en-US"));
+    }
+
+    /// <summary>
+    /// Tenths of seconds between heartbeats
+    /// </summary>
+    public byte HeartbeatTiming { get; private set; }
+
+    /// <summary>
+    /// State of Bus LED and other Status
+    /// Bit 0 —Bus LED 0 = OFF, 1 = ON.
+    /// Bits 1-6 Reserved.
+    /// Bit 7 —Forced Device Unconfigure/Reset
+    /// 
+    /// The LED byte is a bit field. The LSB (bit 0) indicates the current status of the bus LED.
+    /// The MSB(Bit 7) is set when the master initially powers-up/on-line. In response to bit 7 being set, 
+    /// the receiving device should place itself in the off-line state, turn all channels off, 
+    /// and set all levels to zero(or prepare itself to send status updates as necessary to the master).
+    /// The master shall send 3 consecutive blink messages with bit 7 set.
+    /// </summary>
+    public byte LED { get; private set; }
+
+    public DateTime DateTime { get; private set; }
+
+    /// <summary>
+    /// Current Date: Month 1-12 
+    /// </summary>
+    public byte Month { get; private set; }
+
+    /// <summary>
+    /// Current Date: Day 1-31
+    /// </summary>
+    public byte Day { get; private set; }
+
+    /// <summary>
+    /// Current Date: Year 1999-65535
+    /// </summary>
+    public ushort Year { get; private set; }
+
+    /// <summary>
+    /// Current Time: Hour 0-23 
+    /// </summary>
+    public byte Hour { get; private set; }
+
+    /// <summary>
+    /// Current Time: Minute 0-59
+    /// </summary>
+    public byte Minute { get; private set; }
+
+    /// <summary>
+    /// Current Time: Seconds 0-59
+    /// </summary>
+    public byte Second { get; private set; }
+
+    /// <summary>
+    /// Day of Week 0 = Mon, 1 = Tues, ...
+    /// </summary>
+    public DayOfWeek DayOfWeek { get; private set; }
+
+    /// <summary>
+    /// Outside Temperature (if available).
+    /// Type: Temp signed 16-bit.
+    /// If 0x8000, then temperature is not valid.
+    /// </summary>
+    public ushort OutsideTemperature { get; private set; }
+
+    /// <summary>
+    /// String Formatted as: “Thursday, Jun. 10, 1999”
+    /// </summary>
+    public string DateText { get; private set; }
+  }
+
+  public sealed class ChannelEventArgs : ICSPEventArgs
+  {
+    public ChannelEventArgs(MsgCmdOutputChannelOn message) : base(message)
+    {
+      Device = message.Device;
+
+      Channel = message.Channel;
+
+      Enabled = true;
+    }
+
+    public ChannelEventArgs(MsgCmdOutputChannelOff message) : base(message)
+    {
+      Device = message.Device;
+
+      Channel = message.Channel;
+
+      Enabled = false;
+    }
+
+    public AmxDevice Device { get; set; }
+
+    public ushort Channel { get; set; }
 
     public bool Enabled { get; private set; }
   }
 
-  public sealed class DeviceInfoEventArgs : EventArgs
+  public sealed class PingEventArgs : ICSPEventArgs
   {
-    public DeviceInfoEventArgs(ushort device, ushort system)
+    public PingEventArgs(MsgCmdPingRequest message) : base(message)
     {
-      Device = device;
+      Device = message.Device;
 
-      System = system;
+      System = message.System;
     }
+    
+    /// <summary>
+    /// Unsigned 16-bit value.
+    /// </summary>
+    public ushort Device { get; private set; }
 
+    /// <summary>
+    /// Unsigned 16-bit value.
+    /// </summary>
+    public ushort System { get; private set; }
+  }
+  
+  public sealed class DeviceInfoEventArgs : ICSPEventArgs
+  {
+    public DeviceInfoEventArgs(MsgCmdDeviceInfo message) : base(message)
+    {
+      Device = message.Device;
+
+      System = message.System;
+
+      DataFlag = message.DataFlag;
+      ObjectId = message.ObjectId;
+      ParentId = message.ParentId;
+      ManufactureId = message.ManufactureId;
+      DeviceId = message.DeviceId;
+      SerialNumber = message.SerialNumber;
+      FirmwareId = message.FirmwareId;
+      Version = message.Version;
+      Name = message.Name;
+      Manufacture = message.Manufacture;
+
+      ExtAddressType = message.ExtAddressType;
+      ExtAddressLength = message.ExtAddressLength;
+      ExtAddress = message.ExtAddress;
+
+      IPv4Address = message.IPv4Address;
+      IpPort = message.IpPort;
+      MacAddress = message.MacAddress;
+      IPv6Address = message.IPv6Address;
+    }
+    
     /// <summary>
     /// Unsigned 16-bit value.
     /// </summary>
@@ -134,24 +293,24 @@ namespace ICSP
     public IPAddress IPv6Address { get; set; }
   }
 
-  public sealed class PortCountEventArgs : EventArgs
+  public sealed class PortCountEventArgs : ICSPEventArgs
   {
-    public PortCountEventArgs(ushort device, ushort system, ushort portCount)
+    public PortCountEventArgs(MsgCmdPortCountBy message) : base(message)
     {
-      Device = device;
+      Device = message.Device;
 
-      System = system;
+      System = message.System;
 
-      PortCount = portCount;
+      PortCount = message.PortCount;
     }
 
     public ushort Device { get; private set; }
 
     public ushort System { get; private set; }
-    
+
     public ushort PortCount { get; private set; }
   }
-  
+
   public sealed class DynamicDeviceCreatedArgs : EventArgs
   {
     public DynamicDeviceCreatedArgs(ushort system, ushort dynamicDevice)

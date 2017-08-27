@@ -2,6 +2,10 @@
 {
   public delegate void MessageReceivedEventHandler(object sender, MessageReceivedEventArgs e);
 
+  public delegate void BlinkEventHandler(object sender, BlinkEventArgs e);
+
+  public delegate void PingEventHandler(object sender, PingEventArgs e);
+
   public delegate void ChannelEventHandler(object sender, ChannelEventArgs e);
 
   public delegate void DeviceInfoEventHandler(object sender, DeviceInfoEventArgs e);

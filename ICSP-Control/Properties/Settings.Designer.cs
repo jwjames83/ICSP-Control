@@ -49,6 +49,18 @@ namespace ICSPControl.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool AutoConnect {
+            get {
+                return ((bool)(this["AutoConnect"]));
+            }
+            set {
+                this["AutoConnect"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("15000")]
         public ushort PhysicalDeviceNumber {
             get {
@@ -56,6 +68,30 @@ namespace ICSPControl.Properties {
             }
             set {
                 this["PhysicalDeviceNumber"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("5")]
+        public ushort PhysicalDevicePortCount {
+            get {
+                return ((ushort)(this["PhysicalDevicePortCount"]));
+            }
+            set {
+                this["PhysicalDevicePortCount"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool PhysicalDeviceAutoCreate {
+            get {
+                return ((bool)(this["PhysicalDeviceAutoCreate"]));
+            }
+            set {
+                this["PhysicalDeviceAutoCreate"] = value;
             }
         }
         

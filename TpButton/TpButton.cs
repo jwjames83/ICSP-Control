@@ -25,7 +25,7 @@ namespace TpControls
       StateAll = new State();
       StateOff = new State();
       StateOn = new State();
-      
+
       StateOff.Font = Font;
       StateOn.Font = Font;
 
@@ -171,7 +171,7 @@ namespace TpControls
                 StateAll.SetBitmapJustification(StateOff.BitmapJustification);
               else
                 StateAll.SetBitmapJustification(null);
-              
+
               base.ImageAlign = CurrentState.BitmapJustification ?? ContentAlignment.MiddleCenter;
               break;
             }
@@ -224,7 +224,7 @@ namespace TpControls
     [Category("Data")]
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public State StateAll { get; private set; }
-    
+
     [Category("Data")]
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Content)]
     public State StateOff { get; private set; }
@@ -279,7 +279,7 @@ namespace TpControls
       private set
       {
         mCurrentState = value;
-        
+
         base.Image = CurrentState.Bitmap;
         base.ImageAlign = CurrentState.BitmapJustification ?? ContentAlignment.MiddleCenter;
 
@@ -296,7 +296,7 @@ namespace TpControls
         return CurrentState?.FillColor ?? Control.DefaultBackColor;
       }
     }
-    
+
     [Browsable(false)]
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public override Color ForeColor
@@ -356,13 +356,13 @@ namespace TpControls
         return CurrentState?.TextJustification ?? ContentAlignment.MiddleCenter;
       }
     }
-        
+
     #endregion
 
     protected override void OnPaint(PaintEventArgs e)
     {
       base.OnPaint(e);
-      
+
       var lColor = CurrentState?.BorderColor ?? Color.Empty;
       var lSize = CurrentState?.BorderSize ?? 0;
 
@@ -426,12 +426,12 @@ namespace TpControls
 
     private void OnManagerDisconnected(object sender, ClientConnectedEventArgs e)
     {
-      OnChannelEvent(this, new ChannelEventArgs(Channel?.ChannelPort ?? 0, Channel?.ChannelCode ?? 0, false));
+      CurrentState = StateOff;
     }
 
     private void OnChannelEvent(object sender, ChannelEventArgs e)
     {
-      if(e.ChannelCode == Channel?.ChannelCode && e.ChannelPort == Channel?.ChannelPort)
+      if(e.Device.Port == Channel?.ChannelPort && e.Channel == Channel?.ChannelCode)
       {
         switch(Channel.Feedback)
         {

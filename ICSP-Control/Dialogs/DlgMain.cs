@@ -71,7 +71,8 @@ namespace ICSPControl.Dialogs
       mICSPManager.Disconnected += OnManagerDisconnected;
 
       mICSPManager.DynamicDeviceCreated += OnDynamicDeviceCreated;
-      mICSPManager.MessageReceived += OnDataReceived;
+      mICSPManager.MessageReceived += OnMessageReceived;
+      mICSPManager.BlinkMessage += OnBlinkMessage;
       mICSPManager.DeviceInfo += OnDeviceInfo;
       mICSPManager.PortCount += OnPortCount;
 
@@ -86,20 +87,26 @@ namespace ICSPControl.Dialogs
 
       OnlineTree.MouseUp += OnlineTreeOnMouseUp;
 
-      try
+      if(Settings.Default.AutoConnect)
       {
-        // mICSPManager.Connect(Settings.Default.AmxHost, Settings.Default.AmxPort);
-      }
-      catch(Exception ex)
-      {
-        ErrorMessageBox.Show(this, ex.Message);
+        try
+        {
+          mICSPManager.Connect(Settings.Default.AmxHost, Settings.Default.AmxPort);
+        }
+        catch(Exception ex)
+        {
+          ErrorMessageBox.Show(this, ex.Message);
+        }
       }
     }
-    
+
     private void OnDynamicDeviceCreated(object sender, DynamicDeviceCreatedArgs e)
     {
       tssl_CurrentSystem.Text = string.Format("Current System: {0}", e.System);
       tssl_DynamicDevice.Text = string.Format("Dynamic Device: {0:00000}", e.DynamicDevice);
+
+      if(Settings.Default.PhysicalDeviceAutoCreate)
+        CreatePhysicalDevice();
     }
 
     private void OnShowNotificationsClick(object sender, EventArgs e)
@@ -119,7 +126,7 @@ namespace ICSPControl.Dialogs
       mDlgTest.Show();
       mDlgTest.BringToFront();
     }
-    
+
     private void OnCommunicationSetttingsClick(object sender, EventArgs e)
     {
       new DlgSettings().ShowDialog(this);
@@ -201,16 +208,16 @@ namespace ICSPControl.Dialogs
 
       mICSPManager?.RequestDevicesOnline(0, 1);
     }
-    
+
     private void OnShowDevicePropertiesClick(object sender, EventArgs e)
     {
       var lNode = OnlineTree.SelectedNode;
 
       if(lNode == null)
         return;
-      
+
       var lLocation = lNode.Bounds.Location;
-      
+
       lLocation = OnlineTree.PointToScreen(lLocation);
 
       lLocation.Offset(10, 12);
@@ -222,7 +229,7 @@ namespace ICSPControl.Dialogs
       if(lInfo != null)
       {
         var lSb = new StringBuilder();
-        
+
         // System
         if(lNode == OnlineTree.Nodes[0])
         {
@@ -261,7 +268,7 @@ namespace ICSPControl.Dialogs
           if(lInfo.IPv6Address != null)
             lSb.AppendFormat("IPv6 Address: {0}\n", lInfo.IPv6Address);
         }
-        
+
         new BalloonTip(OnlineTree, lTitle, lSb.ToString(), BalloonTip.Icon.Info, 10000, false, (short)lLocation.X, (short)lLocation.Y);
       }
     }
@@ -284,7 +291,7 @@ namespace ICSPControl.Dialogs
       tssl_MainFile.Text = "Main File: ";
     }
 
-    private void OnDataReceived(object sender, MessageReceivedEventArgs e)
+    private void OnMessageReceived(object sender, MessageReceivedEventArgs e)
     {
       if(e.Message.Command == DiagnosticManagerCmd.RequestDevicesOnlineEOT)
       {
@@ -318,15 +325,15 @@ namespace ICSPControl.Dialogs
         tssl_ProgramName.Text = string.Format("Program Name: {0}", lMsg.ProgramName);
         tssl_MainFile.Text = string.Format("Main File: {0}", lMsg.MainFile);
       }
+    }
 
-      if(e.Message.Command == ConnectionManagerCmd.BlinkMessage)
-      {
-        mBlinkTimer.Stop();
+    private void OnBlinkMessage(object sender, BlinkEventArgs e)
+    {
+      mBlinkTimer.Stop();
 
-        tssl_Blink.BackColor = Color.Green;
+      tssl_Blink.BackColor = Color.Green;
 
-        mBlinkTimer.Start();
-      }
+      mBlinkTimer.Start();
     }
 
     private void OnDeviceInfo(object sender, DeviceInfoEventArgs e)
@@ -378,8 +385,7 @@ namespace ICSPControl.Dialogs
 
       lNode.Tag = e;
     }
-
-
+    
     private void OnPortCount(object sender, PortCountEventArgs e)
     {
       var lImageKey = "IODeviceDefault";
@@ -401,7 +407,6 @@ namespace ICSPControl.Dialogs
           lNode.Tag = e;
         }
       }
-
     }
 
     private void OnThreadException(object sender, ThreadExceptionEventArgs e)
@@ -442,6 +447,25 @@ namespace ICSPControl.Dialogs
 
     private void OnCreateDeviceInfo(object sender, EventArgs e)
     {
+      if(!mICSPManager.IsConnected)
+      {
+        InfoMessageBox.Show(this, "Not connected");
+        return;
+      }
+
+      CreatePhysicalDevice();
+    }
+
+    private void OnCmdRequestDeviceStatus(object sender, EventArgs e)
+    {
+      mICSPManager?.RequestDeviceStatus(GetDevice());
+    }
+
+    private void CreatePhysicalDevice()
+    {
+      if(!mICSPManager.IsConnected)
+        return;
+
       var lDeviceInfo = new DeviceInfoData(
         Settings.Default.PhysicalDeviceNumber,
         mICSPManager.CurrentSystem,
@@ -454,15 +478,10 @@ namespace ICSPControl.Dialogs
       lDeviceInfo.ManufactureId = Settings.Default.PhysicalDeviceManufactureId;
       lDeviceInfo.DeviceId = Settings.Default.PhysicalDeviceDeviceId;
       lDeviceInfo.FirmwareId = Settings.Default.PhysicalDeviceFirmwareId;
-      
-      mICSPManager?.CreateDeviceInfo(lDeviceInfo);
+
+      mICSPManager?.CreateDeviceInfo(lDeviceInfo, Settings.Default.PhysicalDevicePortCount);
     }
 
-    private void OnCmdRequestDeviceStatus(object sender, EventArgs e)
-    {
-      mICSPManager?.RequestDeviceStatus(GetDevice());
-    }
-    
     private AmxDevice GetDevice()
     {
       return new AmxDevice((ushort)num_Device.Value, (ushort)num_DevPort.Value, (ushort)num_System.Value);

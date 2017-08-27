@@ -62,19 +62,19 @@
     /// <summary>
     /// Unknown: (Probably Request ProgramInfo)
     /// </summary>
-    #warning Not Confirmed
+    #warning Not confirmed
     public const int ProbablyRequestProgramInfo = 0x010B;
 
     /// <summary>
     /// Unknown: (Probably ProgramInfo -> Info)
     /// </summary>
-    #warning Not Confirmed
+    #warning Not confirmed
     public const int ProbablyProgramInfo = 0x010C;
 
     /// <summary>
     /// Unknown: (Probably ProgramInfo -> EOT)
     /// </summary>
-    #warning Not Confirmed
+    #warning Not confirmed
     public const int ProbablyProgramInfoEOT = 0x010D;
   }
 }

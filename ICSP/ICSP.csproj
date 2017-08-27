@@ -122,6 +122,7 @@
     <Compile Include="Reflection\AttributeHelper.cs" />
     <Compile Include="Reflection\TypeHelper.cs" />
     <Compile Include="Reflection\TypeInfo.cs" />
+    <Compile Include="StateManager.cs" />
     <Compile Include="StatusType.cs" />
     <Compile Include="LevelValueType.cs" />
     <Compile Include="Logging\Log4NetTraceListener.cs" />

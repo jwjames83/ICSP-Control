@@ -36,6 +36,8 @@
       this.cmd_Abort = new System.Windows.Forms.Button();
       this.cmd_OK = new System.Windows.Forms.Button();
       this.groupBox4 = new System.Windows.Forms.GroupBox();
+      this.label10 = new System.Windows.Forms.Label();
+      this.num_PhysicalDevicePortCount = new System.Windows.Forms.NumericUpDown();
       this.label8 = new System.Windows.Forms.Label();
       this.num_PhysicalDeviceFirmwareId = new System.Windows.Forms.NumericUpDown();
       this.label7 = new System.Windows.Forms.Label();
@@ -53,9 +55,12 @@
       this.label5 = new System.Windows.Forms.Label();
       this.ckb_AutoConnect = new System.Windows.Forms.CheckBox();
       this.groupBox1 = new System.Windows.Forms.GroupBox();
+      this.label9 = new System.Windows.Forms.Label();
+      this.ckb_PhysicalDeviceAutoCreate = new System.Windows.Forms.CheckBox();
       ((System.ComponentModel.ISupportInitialize)(this.num_Port)).BeginInit();
       ((System.ComponentModel.ISupportInitialize)(this.num_PhysicalDeviceNumber)).BeginInit();
       this.groupBox4.SuspendLayout();
+      ((System.ComponentModel.ISupportInitialize)(this.num_PhysicalDevicePortCount)).BeginInit();
       ((System.ComponentModel.ISupportInitialize)(this.num_PhysicalDeviceFirmwareId)).BeginInit();
       ((System.ComponentModel.ISupportInitialize)(this.num_PhysicalDeviceDeviceId)).BeginInit();
       ((System.ComponentModel.ISupportInitialize)(this.num_PhysicalDeviceManufactureId)).BeginInit();
@@ -111,7 +116,7 @@
       // 
       // num_PhysicalDeviceNumber
       // 
-      this.num_PhysicalDeviceNumber.Location = new System.Drawing.Point(54, 19);
+      this.num_PhysicalDeviceNumber.Location = new System.Drawing.Point(57, 19);
       this.num_PhysicalDeviceNumber.Maximum = new decimal(new int[] {
             65534,
             0,
@@ -134,7 +139,7 @@
       // cmd_Abort
       // 
       this.cmd_Abort.DialogResult = System.Windows.Forms.DialogResult.Abort;
-      this.cmd_Abort.Location = new System.Drawing.Point(362, 308);
+      this.cmd_Abort.Location = new System.Drawing.Point(362, 345);
       this.cmd_Abort.Name = "cmd_Abort";
       this.cmd_Abort.Size = new System.Drawing.Size(102, 23);
       this.cmd_Abort.TabIndex = 3;
@@ -143,7 +148,7 @@
       // cmd_OK
       // 
       this.cmd_OK.DialogResult = System.Windows.Forms.DialogResult.OK;
-      this.cmd_OK.Location = new System.Drawing.Point(243, 308);
+      this.cmd_OK.Location = new System.Drawing.Point(243, 345);
       this.cmd_OK.Name = "cmd_OK";
       this.cmd_OK.Size = new System.Drawing.Size(113, 23);
       this.cmd_OK.TabIndex = 2;
@@ -151,6 +156,9 @@
       // 
       // groupBox4
       // 
+      this.groupBox4.Controls.Add(this.ckb_PhysicalDeviceAutoCreate);
+      this.groupBox4.Controls.Add(this.label10);
+      this.groupBox4.Controls.Add(this.num_PhysicalDevicePortCount);
       this.groupBox4.Controls.Add(this.label8);
       this.groupBox4.Controls.Add(this.num_PhysicalDeviceFirmwareId);
       this.groupBox4.Controls.Add(this.label7);
@@ -169,23 +177,49 @@
       this.groupBox4.Controls.Add(this.label5);
       this.groupBox4.Location = new System.Drawing.Point(17, 95);
       this.groupBox4.Name = "groupBox4";
-      this.groupBox4.Size = new System.Drawing.Size(447, 207);
+      this.groupBox4.Size = new System.Drawing.Size(447, 231);
       this.groupBox4.TabIndex = 1;
       this.groupBox4.TabStop = false;
       this.groupBox4.Text = "Physical Device";
       // 
+      // label10
+      // 
+      this.label10.AutoSize = true;
+      this.label10.Location = new System.Drawing.Point(7, 47);
+      this.label10.Name = "label10";
+      this.label10.Size = new System.Drawing.Size(57, 13);
+      this.label10.TabIndex = 2;
+      this.label10.Text = "Port Count";
+      // 
+      // num_PhysicalDevicePortCount
+      // 
+      this.num_PhysicalDevicePortCount.Location = new System.Drawing.Point(70, 45);
+      this.num_PhysicalDevicePortCount.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+      this.num_PhysicalDevicePortCount.Name = "num_PhysicalDevicePortCount";
+      this.num_PhysicalDevicePortCount.Size = new System.Drawing.Size(39, 20);
+      this.num_PhysicalDevicePortCount.TabIndex = 3;
+      this.num_PhysicalDevicePortCount.Value = new decimal(new int[] {
+            5,
+            0,
+            0,
+            0});
+      // 
       // label8
       // 
       this.label8.AutoSize = true;
-      this.label8.Location = new System.Drawing.Point(106, 176);
+      this.label8.Location = new System.Drawing.Point(106, 202);
       this.label8.Name = "label8";
       this.label8.Size = new System.Drawing.Size(63, 13);
-      this.label8.TabIndex = 20;
+      this.label8.TabIndex = 16;
       this.label8.Text = "Firmware ID";
       // 
       // num_PhysicalDeviceFirmwareId
       // 
-      this.num_PhysicalDeviceFirmwareId.Location = new System.Drawing.Point(175, 174);
+      this.num_PhysicalDeviceFirmwareId.Location = new System.Drawing.Point(175, 200);
       this.num_PhysicalDeviceFirmwareId.Maximum = new decimal(new int[] {
             65535,
             0,
@@ -193,7 +227,7 @@
             0});
       this.num_PhysicalDeviceFirmwareId.Name = "num_PhysicalDeviceFirmwareId";
       this.num_PhysicalDeviceFirmwareId.Size = new System.Drawing.Size(52, 20);
-      this.num_PhysicalDeviceFirmwareId.TabIndex = 21;
+      this.num_PhysicalDeviceFirmwareId.TabIndex = 17;
       this.num_PhysicalDeviceFirmwareId.Value = new decimal(new int[] {
             1,
             0,
@@ -203,15 +237,15 @@
       // label7
       // 
       this.label7.AutoSize = true;
-      this.label7.Location = new System.Drawing.Point(114, 150);
+      this.label7.Location = new System.Drawing.Point(114, 176);
       this.label7.Name = "label7";
       this.label7.Size = new System.Drawing.Size(55, 13);
-      this.label7.TabIndex = 18;
+      this.label7.TabIndex = 14;
       this.label7.Text = "Device ID";
       // 
       // num_PhysicalDeviceDeviceId
       // 
-      this.num_PhysicalDeviceDeviceId.Location = new System.Drawing.Point(175, 148);
+      this.num_PhysicalDeviceDeviceId.Location = new System.Drawing.Point(175, 174);
       this.num_PhysicalDeviceDeviceId.Maximum = new decimal(new int[] {
             65535,
             0,
@@ -219,7 +253,7 @@
             0});
       this.num_PhysicalDeviceDeviceId.Name = "num_PhysicalDeviceDeviceId";
       this.num_PhysicalDeviceDeviceId.Size = new System.Drawing.Size(52, 20);
-      this.num_PhysicalDeviceDeviceId.TabIndex = 19;
+      this.num_PhysicalDeviceDeviceId.TabIndex = 15;
       this.num_PhysicalDeviceDeviceId.Value = new decimal(new int[] {
             1,
             0,
@@ -229,15 +263,15 @@
       // label6
       // 
       this.label6.AutoSize = true;
-      this.label6.Location = new System.Drawing.Point(88, 124);
+      this.label6.Location = new System.Drawing.Point(88, 150);
       this.label6.Name = "label6";
       this.label6.Size = new System.Drawing.Size(81, 13);
-      this.label6.TabIndex = 16;
+      this.label6.TabIndex = 12;
       this.label6.Text = "Manufacture ID";
       // 
       // num_PhysicalDeviceManufactureId
       // 
-      this.num_PhysicalDeviceManufactureId.Location = new System.Drawing.Point(175, 122);
+      this.num_PhysicalDeviceManufactureId.Location = new System.Drawing.Point(175, 148);
       this.num_PhysicalDeviceManufactureId.Maximum = new decimal(new int[] {
             65535,
             0,
@@ -245,7 +279,7 @@
             0});
       this.num_PhysicalDeviceManufactureId.Name = "num_PhysicalDeviceManufactureId";
       this.num_PhysicalDeviceManufactureId.Size = new System.Drawing.Size(52, 20);
-      this.num_PhysicalDeviceManufactureId.TabIndex = 17;
+      this.num_PhysicalDeviceManufactureId.TabIndex = 13;
       this.num_PhysicalDeviceManufactureId.Value = new decimal(new int[] {
             1,
             0,
@@ -255,20 +289,20 @@
       // label4
       // 
       this.label4.AutoSize = true;
-      this.label4.Location = new System.Drawing.Point(20, 99);
+      this.label4.Location = new System.Drawing.Point(20, 125);
       this.label4.Name = "label4";
       this.label4.Size = new System.Drawing.Size(149, 13);
-      this.label4.TabIndex = 8;
+      this.label4.TabIndex = 10;
       this.label4.Text = "Serial Number (Max: 16 chars)";
       this.label4.TextAlign = System.Drawing.ContentAlignment.TopRight;
       // 
       // txt_PhysicalDeviceSerialNumber
       // 
-      this.txt_PhysicalDeviceSerialNumber.Location = new System.Drawing.Point(175, 96);
+      this.txt_PhysicalDeviceSerialNumber.Location = new System.Drawing.Point(175, 122);
       this.txt_PhysicalDeviceSerialNumber.MaxLength = 16;
       this.txt_PhysicalDeviceSerialNumber.Name = "txt_PhysicalDeviceSerialNumber";
       this.txt_PhysicalDeviceSerialNumber.Size = new System.Drawing.Size(263, 20);
-      this.txt_PhysicalDeviceSerialNumber.TabIndex = 9;
+      this.txt_PhysicalDeviceSerialNumber.TabIndex = 11;
       this.txt_PhysicalDeviceSerialNumber.Text = "0000000000000000";
       // 
       // label1
@@ -283,54 +317,54 @@
       // label3
       // 
       this.label3.AutoSize = true;
-      this.label3.Location = new System.Drawing.Point(99, 73);
+      this.label3.Location = new System.Drawing.Point(99, 99);
       this.label3.Name = "label3";
       this.label3.Size = new System.Drawing.Size(70, 13);
-      this.label3.TabIndex = 6;
+      this.label3.TabIndex = 8;
       this.label3.Text = "Manufacturer";
       this.label3.TextAlign = System.Drawing.ContentAlignment.TopRight;
       // 
       // label2
       // 
       this.label2.AutoSize = true;
-      this.label2.Location = new System.Drawing.Point(134, 47);
+      this.label2.Location = new System.Drawing.Point(134, 73);
       this.label2.Name = "label2";
       this.label2.Size = new System.Drawing.Size(35, 13);
-      this.label2.TabIndex = 4;
+      this.label2.TabIndex = 6;
       this.label2.Text = "Name";
       this.label2.TextAlign = System.Drawing.ContentAlignment.TopRight;
       // 
       // txt_PhysicalDeviceManufacturer
       // 
-      this.txt_PhysicalDeviceManufacturer.Location = new System.Drawing.Point(175, 70);
+      this.txt_PhysicalDeviceManufacturer.Location = new System.Drawing.Point(175, 96);
       this.txt_PhysicalDeviceManufacturer.Name = "txt_PhysicalDeviceManufacturer";
       this.txt_PhysicalDeviceManufacturer.Size = new System.Drawing.Size(263, 20);
-      this.txt_PhysicalDeviceManufacturer.TabIndex = 7;
+      this.txt_PhysicalDeviceManufacturer.TabIndex = 9;
       this.txt_PhysicalDeviceManufacturer.Text = "ICSP Manufacturer";
       // 
       // txt_PhysicalDeviceName
       // 
-      this.txt_PhysicalDeviceName.Location = new System.Drawing.Point(175, 44);
+      this.txt_PhysicalDeviceName.Location = new System.Drawing.Point(175, 70);
       this.txt_PhysicalDeviceName.Name = "txt_PhysicalDeviceName";
       this.txt_PhysicalDeviceName.Size = new System.Drawing.Size(263, 20);
-      this.txt_PhysicalDeviceName.TabIndex = 5;
+      this.txt_PhysicalDeviceName.TabIndex = 7;
       this.txt_PhysicalDeviceName.Text = "ICSP Windows";
       // 
       // txt_PhysicalDeviceVersion
       // 
-      this.txt_PhysicalDeviceVersion.Location = new System.Drawing.Point(175, 18);
+      this.txt_PhysicalDeviceVersion.Location = new System.Drawing.Point(175, 44);
       this.txt_PhysicalDeviceVersion.Name = "txt_PhysicalDeviceVersion";
       this.txt_PhysicalDeviceVersion.Size = new System.Drawing.Size(263, 20);
-      this.txt_PhysicalDeviceVersion.TabIndex = 3;
+      this.txt_PhysicalDeviceVersion.TabIndex = 5;
       this.txt_PhysicalDeviceVersion.Text = "v1.00.00";
       // 
       // label5
       // 
       this.label5.AutoSize = true;
-      this.label5.Location = new System.Drawing.Point(127, 21);
+      this.label5.Location = new System.Drawing.Point(127, 47);
       this.label5.Name = "label5";
       this.label5.Size = new System.Drawing.Size(42, 13);
-      this.label5.TabIndex = 2;
+      this.label5.TabIndex = 4;
       this.label5.Text = "Version";
       this.label5.TextAlign = System.Drawing.ContentAlignment.TopRight;
       // 
@@ -346,6 +380,7 @@
       // 
       // groupBox1
       // 
+      this.groupBox1.Controls.Add(this.label9);
       this.groupBox1.Controls.Add(this.lab_Host);
       this.groupBox1.Controls.Add(this.ckb_AutoConnect);
       this.groupBox1.Controls.Add(this.num_Port);
@@ -358,13 +393,34 @@
       this.groupBox1.TabStop = false;
       this.groupBox1.Text = "Connection";
       // 
+      // label9
+      // 
+      this.label9.AutoSize = true;
+      this.label9.ForeColor = System.Drawing.Color.Red;
+      this.label9.Location = new System.Drawing.Point(238, 49);
+      this.label9.Name = "label9";
+      this.label9.Size = new System.Drawing.Size(200, 13);
+      this.label9.TabIndex = 5;
+      this.label9.Text = "Info: SSL/TLS connection not supported";
+      this.label9.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+      // 
+      // ckb_PhysicalDeviceAutoCreate
+      // 
+      this.ckb_PhysicalDeviceAutoCreate.AutoSize = true;
+      this.ckb_PhysicalDeviceAutoCreate.Location = new System.Drawing.Point(175, 20);
+      this.ckb_PhysicalDeviceAutoCreate.Name = "ckb_PhysicalDeviceAutoCreate";
+      this.ckb_PhysicalDeviceAutoCreate.Size = new System.Drawing.Size(204, 17);
+      this.ckb_PhysicalDeviceAutoCreate.TabIndex = 18;
+      this.ckb_PhysicalDeviceAutoCreate.Text = "Automatically create when connected";
+      this.ckb_PhysicalDeviceAutoCreate.UseVisualStyleBackColor = true;
+      // 
       // DlgSettings
       // 
       this.AcceptButton = this.cmd_OK;
       this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
       this.CancelButton = this.cmd_Abort;
-      this.ClientSize = new System.Drawing.Size(473, 340);
+      this.ClientSize = new System.Drawing.Size(473, 380);
       this.Controls.Add(this.groupBox1);
       this.Controls.Add(this.groupBox4);
       this.Controls.Add(this.cmd_Abort);
@@ -378,6 +434,7 @@
       ((System.ComponentModel.ISupportInitialize)(this.num_PhysicalDeviceNumber)).EndInit();
       this.groupBox4.ResumeLayout(false);
       this.groupBox4.PerformLayout();
+      ((System.ComponentModel.ISupportInitialize)(this.num_PhysicalDevicePortCount)).EndInit();
       ((System.ComponentModel.ISupportInitialize)(this.num_PhysicalDeviceFirmwareId)).EndInit();
       ((System.ComponentModel.ISupportInitialize)(this.num_PhysicalDeviceDeviceId)).EndInit();
       ((System.ComponentModel.ISupportInitialize)(this.num_PhysicalDeviceManufactureId)).EndInit();
@@ -414,5 +471,9 @@
     private System.Windows.Forms.NumericUpDown num_PhysicalDeviceDeviceId;
     private System.Windows.Forms.Label label6;
     private System.Windows.Forms.NumericUpDown num_PhysicalDeviceManufactureId;
+    private System.Windows.Forms.Label label9;
+    private System.Windows.Forms.Label label10;
+    private System.Windows.Forms.NumericUpDown num_PhysicalDevicePortCount;
+    private System.Windows.Forms.CheckBox ckb_PhysicalDeviceAutoCreate;
   }
 }

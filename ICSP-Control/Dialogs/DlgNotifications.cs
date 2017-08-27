@@ -30,10 +30,13 @@ namespace ICSPControl.Dialogs
 
       cmd_StartStopLog.Click += Cmd_StartStopLog_Click;
       cmd_ClearLog.Click += OnClearLogClick;
-
-      mICSPManager.ChannelEvent += OnChannelEvent; ;
-      mICSPManager.MessageReceived += OnDataReceived;
-      mICSPManager.DeviceInfo += OnDeviceInfo; ;
+      
+      mICSPManager.MessageReceived += OnMessageReceived;
+      mICSPManager.BlinkMessage += OnBlinkMessage;
+      mICSPManager.PingEvent += OnPingEvent; ;
+      mICSPManager.ChannelEvent += OnChannelEvent;
+      mICSPManager.DeviceInfo += OnDeviceInfo;
+      mICSPManager.PortCount += OnPortCount;
     }
 
     private void Cmd_StartStopLog_Click(object sender, EventArgs e)
@@ -52,12 +55,12 @@ namespace ICSPControl.Dialogs
       txt_Text.Clear();
     }
     
-    public void AppendText(string format)
+    public void AppendText(ushort id, string format)
     {
-      AppendText(format, null);
+      AppendText(id, format, null);
     }
 
-    public void AppendText(string format, params object[] args)
+    public void AppendText(ushort id, string format, params object[] args)
     {
       // This should only ever run for 1 loop as you should never go over logMax
       // but if you accidentally manually added to the logQueue - then this would
@@ -83,56 +86,67 @@ namespace ICSPControl.Dialogs
       if(args != null && args.Length > 0)
         lMessage = string.Format(format, args);
       
-      mLogQueue.Enqueue(string.Format("{0:yyy-MM-dd (HH:mm.ss)}:: {1}", DateTime.Now, lMessage));
+      mLogQueue.Enqueue(string.Format("{0:yyy-MM-dd (HH:mm.ss)}: ID=0x{1:X4}, {2}", DateTime.Now, id, lMessage));
 
       txt_Text.Text = string.Join(System.Environment.NewLine, mLogQueue.ToArray());
 
       txt_Text.SelectionStart = txt_Text.Text.Length;
       txt_Text.ScrollToCaret();
     }
-
-    private void OnChannelEvent(object sender, ChannelEventArgs e)
-    {
-      if(e.Enabled)
-        AppendText("Output Channel: On  - Channel {0}", e.ChannelCode);
-      else
-        AppendText("Output Channel: Off - Channel {0}", e.ChannelCode);
-    }
-
-    private void OnDataReceived(object sender, MessageReceivedEventArgs e)
+    
+    private void OnMessageReceived(object sender, MessageReceivedEventArgs e)
     {
       var lAppend = true;
 
       switch(e.Message.Command)
       {
-        case ConnectionManagerCmd.BlinkMessage: lAppend = ckb_ShowBlink.Checked; break;
-        case ConnectionManagerCmd.PingRequest: lAppend = ckb_ShowPing.Checked; break;
+        case ConnectionManagerCmd.BlinkMessage: lAppend = false; break;
+        case ConnectionManagerCmd.PingRequest: lAppend = false; break;
+
+        case DeviceManagerCmd.OutputChannelOn: lAppend = false; break;
+        case DeviceManagerCmd.OutputChannelOff: lAppend = false; break;
+
+        case DeviceManagerCmd.DeviceInfo: lAppend = false; break;
+        case DeviceManagerCmd.PortCountBy: lAppend = false; break;
       }
 
       if(lAppend)
-      {
-        if(e.Message.Command == ConnectionManagerCmd.BlinkMessage)
-        {
-          var lMsg = e.Message as MsgCmdBlinkMessage;
+        AppendText(e.Message.ID, "DataReceived - Command=0x{0:X4}, {1}", e.Message.Command, ICSPMsg.GetFrindlyName(e.Message.Command));
+    }
 
-          if(lMsg != null)
-          {
-            if((lMsg.LED & 0x01) == 1)
-              AppendText("BlinkMessage - ID=0x{0:X4}, DateTime={1:dd.MM.yyyy HH:mm:ss}, LED=On", e.Message.ID, lMsg.DateTime);
-            else
-              AppendText("BlinkMessage - ID=0x{0:X4}, DateTime={1:dd.MM.yyyy HH:mm:ss}, LED=Off", e.Message.ID, lMsg.DateTime);
-          }
-          else
-            AppendText("BlinkMessage - ID=0x{0:X4}, Command=0x{1:X4}, {2}", e.Message.ID, e.Message.Command, ICSPMsg.GetFrindlyName(e.Message.Command));
-        }
+    private void OnBlinkMessage(object sender, BlinkEventArgs e)
+    {
+      if(ckb_ShowBlink.Checked)
+      {
+        if((e.LED & 0x01) == 1)
+          AppendText(e.Message.ID, "BlinkMessage - DateTime={0:dd.MM.yyyy HH:mm:ss}, LED=On", e.DateTime);
         else
-          AppendText("DataReceived - ID=0x{0:X4}, Command=0x{1:X4}, {2}", e.Message.ID, e.Message.Command, ICSPMsg.GetFrindlyName(e.Message.Command));
+          AppendText(e.Message.ID, "BlinkMessage - DateTime={0:dd.MM.yyyy HH:mm:ss}, LED=Off", e.DateTime);
       }
     }
 
+    private void OnPingEvent(object sender, PingEventArgs e)
+    {
+      if(ckb_ShowPing.Checked)
+        AppendText(e.Message.ID, "PingEvent - Device={0}, System={1}", e.Device, e.System);
+    }
+
+    private void OnChannelEvent(object sender, ChannelEventArgs e)
+    {
+      if(e.Enabled)
+        AppendText(e.Message.ID, "[{0}] Output Channel: On  - Channel {1}", e.Device, e.Channel);
+      else
+        AppendText(e.Message.ID, "[{0}] Output Channel: Off - Channel {1}", e.Device, e.Channel);
+    }
+    
     private void OnDeviceInfo(object sender, DeviceInfoEventArgs e)
     {
-      AppendText("OnDeviceInfo - Device={0:00000}, Firmware={1}, Description={2}", e.Device, e.Version, e.Name);
+      AppendText(e.Message.ID, "DeviceInfo - Device={0:00000}, Firmware={1}, Description={2}", e.Device, e.Version, e.Name);
+    }
+
+    private void OnPortCount(object sender, PortCountEventArgs e)
+    {
+      AppendText(e.Message.ID, "PortCount  - Device={0:00000}, System={1}, PortCount={2}", e.Device, e.System, e.PortCount);
     }
   }
 }

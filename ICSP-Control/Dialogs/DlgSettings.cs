@@ -13,8 +13,12 @@ namespace ICSPControl.Dialogs
 
       txt_Host.Text = Settings.Default.AmxHost;
       num_Port.Value = Settings.Default.AmxPort;
+      ckb_AutoConnect.Checked = Settings.Default.AutoConnect;
 
       num_PhysicalDeviceNumber.Value = Settings.Default.PhysicalDeviceNumber;
+      num_PhysicalDevicePortCount.Value = Settings.Default.PhysicalDevicePortCount;
+
+      ckb_PhysicalDeviceAutoCreate.Checked = Settings.Default.PhysicalDeviceAutoCreate;
       txt_PhysicalDeviceVersion.Text = Settings.Default.PhysicalDeviceVersion;
       txt_PhysicalDeviceName.Text = Settings.Default.PhysicalDeviceName;
       txt_PhysicalDeviceManufacturer.Text = Settings.Default.PhysicalDeviceManufacturer;
@@ -31,8 +35,12 @@ namespace ICSPControl.Dialogs
       {
         Settings.Default.AmxHost = txt_Host.Text;
         Settings.Default.AmxPort = (int)num_Port.Value;
+        Settings.Default.AutoConnect = ckb_AutoConnect.Checked;
 
         Settings.Default.PhysicalDeviceNumber = (ushort)num_PhysicalDeviceNumber.Value;
+        Settings.Default.PhysicalDevicePortCount = (ushort)num_PhysicalDevicePortCount.Value;
+
+        Settings.Default.PhysicalDeviceAutoCreate = ckb_PhysicalDeviceAutoCreate.Checked;
         Settings.Default.PhysicalDeviceVersion = txt_PhysicalDeviceVersion.Text;
         Settings.Default.PhysicalDeviceName = txt_PhysicalDeviceName.Text;
         Settings.Default.PhysicalDeviceManufacturer = txt_PhysicalDeviceManufacturer.Text;
