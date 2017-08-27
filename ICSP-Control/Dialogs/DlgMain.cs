@@ -32,6 +32,7 @@ namespace ICSPControl.Dialogs
     {
       InitializeComponent();
 
+
       mBlinkTimer = new System.Windows.Forms.Timer();
       mBlinkTimer.Interval = 500;
       mBlinkTimer.Tick += (s, e) => { tssl_Blink.BackColor = SystemColors.Control; };
