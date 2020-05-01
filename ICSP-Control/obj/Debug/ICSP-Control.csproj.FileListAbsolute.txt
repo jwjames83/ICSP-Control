@@ -1,3 +1,10 @@
+C:\Users\donald.peter\Source\Repos\ICSP-Control\ICSP-Control\obj\Debug\ICSP-Control.csprojAssemblyReference.cache
+C:\Users\donald.peter\Source\Repos\ICSP-Control\ICSP-Control\obj\Debug\ICSPControl.Dialogs.DlgNotifications.resources
+C:\Users\donald.peter\Source\Repos\ICSP-Control\ICSP-Control\obj\Debug\ICSPControl.Dialogs.DlgTest.resources
+C:\Users\donald.peter\Source\Repos\ICSP-Control\ICSP-Control\obj\Debug\ICSPControl.Dialogs.DlgSettings.resources
+C:\Users\donald.peter\Source\Repos\ICSP-Control\ICSP-Control\obj\Debug\ICSPControl.Dialogs.ErrorDialog.resources
+C:\Users\donald.peter\Source\Repos\ICSP-Control\ICSP-Control\obj\Debug\ICSPControl.Dialogs.DlgMain.resources
+C:\Users\donald.peter\Source\Repos\ICSP-Control\ICSP-Control\obj\Debug\ICSP-Control.csproj.GenerateResource.cache
 C:\Users\donald.peter\Source\Repos\ICSP-Control\ICSP-Control\bin\Debug\ICSPControl.exe.config
 C:\Users\donald.peter\Source\Repos\ICSP-Control\ICSP-Control\bin\Debug\ICSPControl.exe
 C:\Users\donald.peter\Source\Repos\ICSP-Control\ICSP-Control\bin\Debug\ICSPControl.pdb
@@ -7,13 +14,6 @@ C:\Users\donald.peter\Source\Repos\ICSP-Control\ICSP-Control\bin\Debug\TpControl
 C:\Users\donald.peter\Source\Repos\ICSP-Control\ICSP-Control\bin\Debug\ICSP.pdb
 C:\Users\donald.peter\Source\Repos\ICSP-Control\ICSP-Control\bin\Debug\Log4Net.pdb
 C:\Users\donald.peter\Source\Repos\ICSP-Control\ICSP-Control\bin\Debug\TpControls.pdb
-C:\Users\donald.peter\Source\Repos\ICSP-Control\ICSP-Control\obj\Debug\ICSP-Control.csprojResolveAssemblyReference.cache
-C:\Users\donald.peter\Source\Repos\ICSP-Control\ICSP-Control\obj\Debug\ICSPControl.Dialogs.DlgNotifications.resources
-C:\Users\donald.peter\Source\Repos\ICSP-Control\ICSP-Control\obj\Debug\ICSPControl.Dialogs.DlgTest.resources
-C:\Users\donald.peter\Source\Repos\ICSP-Control\ICSP-Control\obj\Debug\ICSPControl.Dialogs.DlgSettings.resources
-C:\Users\donald.peter\Source\Repos\ICSP-Control\ICSP-Control\obj\Debug\ICSPControl.Dialogs.ErrorDialog.resources
-C:\Users\donald.peter\Source\Repos\ICSP-Control\ICSP-Control\obj\Debug\ICSPControl.Dialogs.DlgMain.resources
-C:\Users\donald.peter\Source\Repos\ICSP-Control\ICSP-Control\obj\Debug\ICSPControl.Properties.Resources.resources
-C:\Users\donald.peter\Source\Repos\ICSP-Control\ICSP-Control\obj\Debug\ICSP-Control.csproj.GenerateResource.Cache
+C:\Users\donald.peter\Source\Repos\ICSP-Control\ICSP-Control\obj\Debug\ICSP-Control.csproj.CopyComplete
 C:\Users\donald.peter\Source\Repos\ICSP-Control\ICSP-Control\obj\Debug\ICSPControl.exe
 C:\Users\donald.peter\Source\Repos\ICSP-Control\ICSP-Control\obj\Debug\ICSPControl.pdb

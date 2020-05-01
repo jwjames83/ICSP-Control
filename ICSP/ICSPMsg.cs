@@ -15,7 +15,7 @@ namespace ICSP
     private static ushort mMsgId;
 
     public const int DefaultFlag = 0x0200;
-    
+
     // public static readonly AmxDevice DefaultSource = new AmxDevice(32000, 0, 0);
 
     /// <summary>
@@ -222,7 +222,7 @@ namespace ICSP
     public bool LogStripline { get; private set; }
 
     #endregion
-    
+
     public virtual void WriteLog()
     {
       WriteLog(true);
@@ -263,7 +263,10 @@ namespace ICSP
     {
       switch(command)
       {
+        // ====================================================================
         // Device Manager Messages (Table A)
+        // ====================================================================
+
         case Ack: return "Ack";
         case Nak: return "Nak";
 
@@ -322,7 +325,10 @@ namespace ICSP
         case RequestMasterStatus: return "Request Master Status";
         case MasterStatus: return "Master Status";
 
+        // ====================================================================
         // Connection Manager Messages (Table B)
+        // ====================================================================
+
         case PingRequest: return "Ping Request";
         case PingResponse: return "Ping Response";
 
@@ -351,8 +357,40 @@ namespace ICSP
         case AddModifyAsynchronousNotificationList: return "Add Modify Asynchronous Notification List";
         case DeleteAsynchronousNotificationList: return "Delete Asynchronous Notification List";
 
+        // ====================================================================
         // Configuration Manager Messages
+        // ====================================================================
+
+        case SetDeviceNumber: return "SetDevice Number";
+        
+        case SetIdentifyModeAddress: return "Set Identify Mode/Address";
+        
+        case SetSerialNumber: return "Set SerialNumber";
+        
+        case FileTransfer: return "File Transfer";
+        
+        case RequestIpAddressList: return "Request IP Address List";
+        case IpAddressList: return "IP Address List";
+        case AddIpAddress: return "Add IP Address";
+        case DeleteIpAddress: return "Delete IP Address";
+        
+        case SetDnsIpAddresses: return "Set DNS IP Addresses";
+        case RequestDnsIpAddresses: return "Request DNS IP Addresses";
+        case GetDnsIpAddresses: return "Get DNS IP Addresses";
+        
+        case SetEthernetIPAddress: return "Set Ethernet IPAddress";
+        case RequestEthernetIpAddress: return "Request Ethernet IP Address";
+        case GetEthernetIpAddress: return "Get Ethernet IP Address";
+        
+        case SetDateTime: return "Set Time & Date";
+        case RequestDateTime: return "Request Time & Date";
+        case GetDateTime: return "Get Time & Date";
+        
+        case IdentifyModeAddressResponse: return "Identify Mode/Address Response";
+
         case Restart: return "Restart";
+
+        case CompletionCode: return "Completion Code";
       }
 
       return "Unknown";

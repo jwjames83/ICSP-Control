@@ -41,6 +41,8 @@ namespace ICSP.Manager.DeviceManager
       lRequest.System = system;
       lRequest.PortCount = portCount;
 
+      Logger.LogDebug(false, "MsgCmdPortCountBy.CreateRequest: Device={0}, System={1}, PortCount={2}", lRequest.Device, lRequest.System, lRequest.PortCount);
+
       var lData = ArrayExtensions.Int16ToBigEndian(device)
         .Concat(ArrayExtensions.Int16ToBigEndian(system))
         .Concat(ArrayExtensions.Int16ToBigEndian(portCount)).ToArray();

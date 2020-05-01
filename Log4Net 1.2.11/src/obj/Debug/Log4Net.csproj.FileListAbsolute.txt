@@ -32,3 +32,8 @@ C:\VS.NET\Visual Studio 2015\Projects\AvsIcspControl\Log4Net 1.2.11\build\bin\ne
 C:\VS.NET\Visual Studio 2015\Projects\AvsIcspControl\Log4Net 1.2.11\src\obj\Debug\Log4Net.csprojResolveAssemblyReference.cache
 C:\VS.NET\Visual Studio 2015\Projects\AvsIcspControl\Log4Net 1.2.11\src\obj\Debug\Log4Net.dll
 C:\VS.NET\Visual Studio 2015\Projects\AvsIcspControl\Log4Net 1.2.11\src\obj\Debug\Log4Net.pdb
+C:\Users\donald.peter\Source\Repos\ICSP-Control\Log4Net 1.2.11\build\bin\net\2.0\debug\Log4Net.dll
+C:\Users\donald.peter\Source\Repos\ICSP-Control\Log4Net 1.2.11\build\bin\net\2.0\debug\Log4Net.pdb
+C:\Users\donald.peter\Source\Repos\ICSP-Control\Log4Net 1.2.11\src\obj\Debug\Log4Net.csprojAssemblyReference.cache
+C:\Users\donald.peter\Source\Repos\ICSP-Control\Log4Net 1.2.11\src\obj\Debug\Log4Net.dll
+C:\Users\donald.peter\Source\Repos\ICSP-Control\Log4Net 1.2.11\src\obj\Debug\Log4Net.pdb

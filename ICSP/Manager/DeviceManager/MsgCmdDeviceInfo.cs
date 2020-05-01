@@ -150,6 +150,8 @@ namespace ICSP.Manager.DeviceManager
 
       lRequest.IPv4Address = deviceInfo.IPv4Address;
 
+      Logger.LogDebug(false, "MsgCmdDeviceInfo.CreateRequest: Dest={0}, Source={1}, IPv4Address={2}", lDest, lSource, lRequest.IPv4Address);
+
       lRequest.Device = deviceInfo.Device;
       lRequest.System = deviceInfo.System;
       lRequest.DataFlag = deviceInfo.DataFlag;

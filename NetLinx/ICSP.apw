@@ -125,7 +125,7 @@
 <SysID>0</SysID>
 <TransTCPIP>0.0.0.0</TransTCPIP>
 <TransSerial>COM1,115200,8,None,1,None</TransSerial>
-<TransTCPIPEx>172.16.16.101|1319|1|172.16.16.101||</TransTCPIPEx>
+<TransTCPIPEx>172.16.126.250|1319|1|172.16.126.250||</TransTCPIPEx>
 <TransSerialEx>COM1|38400|8|None|1|None||</TransSerialEx>
 <TransUSBEx>|||||</TransUSBEx>
 <TransVNMEx>10.0.0.1|1|&lt;Default&gt;</TransVNMEx>
@@ -164,10 +164,6 @@
 </File>
 <File CompileType="Netlinx" Type="MasterSrc"><Identifier>Main</Identifier>
 <FilePathName>Main.axs</FilePathName>
-<Comments></Comments>
-</File>
-<File CompileType="Netlinx" Type="Source"><Identifier>Main2</Identifier>
-<FilePathName>Main2.axs</FilePathName>
 <Comments></Comments>
 </File>
 </System>

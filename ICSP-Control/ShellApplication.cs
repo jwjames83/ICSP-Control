@@ -27,7 +27,6 @@ namespace ICSPControl
     [HandleProcessCorruptedStateExceptions]
     static void Main()
     {
-
       // Add the event handler for handling UI thread exceptions to the event.
       Application.ThreadException += OnThreadException;
 

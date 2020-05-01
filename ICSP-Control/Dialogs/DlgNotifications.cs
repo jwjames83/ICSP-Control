@@ -4,6 +4,7 @@ using System.Windows.Forms;
 using ICSP;
 using ICSP.Constants;
 using ICSP.Manager.ConnectionManager;
+using ICSP.Manager.DeviceManager;
 
 namespace ICSPControl.Dialogs
 {
@@ -30,7 +31,7 @@ namespace ICSPControl.Dialogs
 
       cmd_StartStopLog.Click += Cmd_StartStopLog_Click;
       cmd_ClearLog.Click += OnClearLogClick;
-      
+
       mICSPManager.MessageReceived += OnMessageReceived;
       mICSPManager.BlinkMessage += OnBlinkMessage;
       mICSPManager.PingEvent += OnPingEvent; ;
@@ -54,7 +55,7 @@ namespace ICSPControl.Dialogs
       mLogQueue.Clear();
       txt_Text.Clear();
     }
-    
+
     public void AppendText(ushort id, string format)
     {
       AppendText(id, format, null);
@@ -85,7 +86,7 @@ namespace ICSPControl.Dialogs
 
       if(args != null && args.Length > 0)
         lMessage = string.Format(format, args);
-      
+
       mLogQueue.Enqueue(string.Format("{0:yyy-MM-dd (HH:mm.ss)}: ID=0x{1:X4}, {2}", DateTime.Now, id, lMessage));
 
       txt_Text.Text = string.Join(System.Environment.NewLine, mLogQueue.ToArray());
@@ -93,7 +94,7 @@ namespace ICSPControl.Dialogs
       txt_Text.SelectionStart = txt_Text.Text.Length;
       txt_Text.ScrollToCaret();
     }
-    
+
     private void OnMessageReceived(object sender, MessageReceivedEventArgs e)
     {
       var lAppend = true;
@@ -111,7 +112,37 @@ namespace ICSPControl.Dialogs
       }
 
       if(lAppend)
-        AppendText(e.Message.ID, "DataReceived - Command=0x{0:X4}, {1}", e.Message.Command, ICSPMsg.GetFrindlyName(e.Message.Command));
+      {
+        switch(e.Message)
+        {
+          case MsgCmdDynamicDeviceAddressResponse m:
+          {
+            AppendText(e.Message.ID, "DataReceived - Command=0x{0:X4}, {1}, Device={2}, System={3}", e.Message.Command, ICSPMsg.GetFrindlyName(e.Message.Command), m.Device, m.System);
+            break;
+          }
+
+          case MsgCmdStringMasterDev m:
+          {
+            AppendText(e.Message.ID, "[{0}] String={1}", e.Message.Dest, m.Text);
+            break;
+          }
+          case MsgCmdCommandMasterDev m:
+          {
+            AppendText(e.Message.ID, "[{0}] Command={1}", e.Message.Dest, m.Text);
+            break;
+          }
+          case MsgCmdLevelValueMasterDev m:
+          {
+            AppendText(e.Message.ID, "[{0}] Level=Type={1}, Value={2}", e.Message.Dest, m.ValueType, m.Value);
+            break;
+          }
+          default:
+          {
+            AppendText(e.Message.ID, "DataReceived - Command=0x{0:X4}, {1}", e.Message.Command, ICSPMsg.GetFrindlyName(e.Message.Command));
+            break;
+          }
+        }
+      }
     }
 
     private void OnBlinkMessage(object sender, BlinkEventArgs e)
@@ -138,7 +169,7 @@ namespace ICSPControl.Dialogs
       else
         AppendText(e.Message.ID, "[{0}] Output Channel: Off - Channel {1}", e.Device, e.Channel);
     }
-    
+
     private void OnDeviceInfo(object sender, DeviceInfoEventArgs e)
     {
       AppendText(e.Message.ID, "DeviceInfo - Device={0:00000}, Firmware={1}, Description={2}", e.Device, e.Version, e.Name);

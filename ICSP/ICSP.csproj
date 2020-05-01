@@ -9,8 +9,9 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>ICSP</RootNamespace>
     <AssemblyName>ICSP</AssemblyName>
-    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -51,6 +52,8 @@
     <Compile Include="Environment\ProgramProperties.cs" />
     <Compile Include="Logging\ILogExtentions.cs" />
     <Compile Include="Logging\LogEventArgs.cs" />
+    <Compile Include="Manager\ConfigurationManager\MsgCmdGetEthernetIpAddress.cs" />
+    <Compile Include="Manager\ConfigurationManager\MsgCmdRequestEthernetIp.cs" />
     <Compile Include="Manager\DiagnosticManager\MsgCmdProbablyProgramInfoEOT.cs" />
     <Compile Include="Manager\DiagnosticManager\MsgCmdProbablyProgramInfo.cs" />
     <Compile Include="Manager\DiagnosticManager\MsgCmdRequestDevicesOnlineEOT.cs" />

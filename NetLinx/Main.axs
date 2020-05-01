@@ -12,11 +12,11 @@ dvIRPort			= 05001:003:000 // Heartbeat
 dvIOPort			= 05001:004:000 // -
 
 // Touchpanel
-dvPanel_01_01			= 10001:001:000	// Port 1
-dvPanel_01_02			= 10001:002:000	// Port 2
+dvPanel_01_01		= 10001:001:000	// Port 1
+dvPanel_01_02		= 10001:002:000	// Port 2
 
-dvIcsp_01_01			= 15000:001:000	// Port 1
-dvIcsp_01_02			= 15000:002:000	// Port 2
+dvIcsp_01_01		= 15000:001:000	// Port 1
+dvIcsp_01_02		= 15000:002:000	// Port 2
 
 vdMisc 				= 33000:001:000 // Misc
 
@@ -115,9 +115,9 @@ timeline_event[nTimeLineHeartbeat]
 data_event[dvTP_01]
     {
     online:
-	{
-	call 'TpUpdate'
-	}
+		{
+		call 'TpUpdate'
+		}
     }
 
 data_event[dvRS232_1]
@@ -133,25 +133,25 @@ data_event[vdTest_01]
 data_event[vdTest_02]
     {
     online:
-	{
-	send_string 0, "'Online-Event: Dev=', DevtoStr(Data.Device)"
-	}
+		{
+		send_string 0, "'Online-Event: Dev=', DevtoStr(Data.Device)"
+		}
     offline:
-	{
-	send_string 0, "'Offline-Event: Dev=', DevtoStr(Data.Device)"
-	}
+		{
+		send_string 0, "'Offline-Event: Dev=', DevtoStr(Data.Device)"
+		}
     onerror:
-	{
-	send_string 0, "'Error-Event: Dev=', DevtoStr(Data.Device), ', Error=', itoa(Data.Number)"
-	}
+		{
+		send_string 0, "'Error-Event: Dev=', DevtoStr(Data.Device), ', Error=', itoa(Data.Number)"
+		}
     string:
-	{
-	send_string 0, "'String-Event: Dev=', DevToStr(Data.Device), ', Data=', Data.Text"
-	}
+		{
+		send_string 0, "'String-Event: Dev=', DevToStr(Data.Device), ', Data=', Data.Text"
+		}
     command:
-	{
-	send_string 0, "'Command-Event: Dev=', DevToStr(Data.Device), ', Data=', Data.Text"
-	}
+		{
+		send_string 0, "'Command-Event: Dev=', DevToStr(Data.Device), ', Data=', Data.Text"
+		}
     }
 
 channel_event[dvRS232_1, 0]
@@ -168,41 +168,41 @@ channel_event[vdTest_02, 0]
 channel_event[dvIOPort, 0]
     {
     on:
-	{
-	send_string 0, "'Channel-Event  On: Dev=', DevToStr(Channel.Device), ', Channel=', itoa(Channel.Channel)"
-	}
+		{
+		send_string 0, "'Channel-Event  On: Dev=', DevToStr(Channel.Device), ', Channel=', itoa(Channel.Channel)"
+		}
     off:
-	{
-	send_string 0, "'Channel-Event Off: Dev=', DevToStr(Channel.Device), ', Channel=', itoa(Channel.Channel)"
-	}
+		{
+		send_string 0, "'Channel-Event Off: Dev=', DevToStr(Channel.Device), ', Channel=', itoa(Channel.Channel)"
+		}
     }
 
 channel_event[vdMisc, 0]
     {
     on:
-	{
-	send_string 0, "'Channel-Event  On: Dev=', DevToStr(Channel.Device), ', Channel=', itoa(Channel.Channel)"
-	
-	off[Channel.Device, Channel.Channel]
-	
-	switch(Channel.Channel)
-	    {
-	    case 1:
 		{
-		cStr = "'Testchar [€] -> Euro'"
-		send_string dvIcsp_01_01, cStr
+		send_string 0, "'Channel-Event  On: Dev=', DevToStr(Channel.Device), ', Channel=', itoa(Channel.Channel)"
+		
+		off[Channel.Device, Channel.Channel]
+		
+		switch(Channel.Channel)
+			{
+			case 1:
+			{
+			cStr = "'Testchar [€] -> Euro'"
+			send_string dvIcsp_01_01, cStr
+			}
+			case 2: 
+			{
+			cStr = "'Testchar [€] -> Euro'"
+			send_command dvIcsp_01_01, cStr
+			}
+			}
 		}
-	    case 2: 
-		{
-		cStr = "'Testchar [€] -> Euro'"
-		send_command dvIcsp_01_01, cStr
-		}
-	    }
-	}
     off:
-	{
-	send_string 0, "'Channel-Event Off: Dev=', DevToStr(Channel.Device), ', Channel=', itoa(Channel.Channel)"
-	}
+		{
+		send_string 0, "'Channel-Event Off: Dev=', DevToStr(Channel.Device), ', Channel=', itoa(Channel.Channel)"
+		}
     }
 
 level_event[dvRS232_1, 0]
@@ -225,10 +225,10 @@ level_event[vdMisc, 0]
 data_event[dvIRPort]
     {
     online:
-	{
-	// NX-1200
-	send_command dvIRPort, 'Set Mode Serial'
-	}
+		{
+		// NX-1200
+		send_command dvIRPort, 'Set Mode Serial'
+		}
     }
 
 (***********************************************************)

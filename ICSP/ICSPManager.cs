@@ -9,6 +9,7 @@ using ICSP.Constants;
 using ICSP.Extensions;
 using ICSP.Logging;
 using ICSP.Manager;
+using ICSP.Manager.ConfigurationManager;
 using ICSP.Manager.ConnectionManager;
 using ICSP.Manager.DeviceManager;
 using ICSP.Manager.DiagnosticManager;
@@ -30,7 +31,7 @@ namespace ICSP
 
     public event BlinkEventHandler BlinkMessage;
     public event PingEventHandler PingEvent;
-    
+
     public event DeviceInfoEventHandler DeviceInfo;
     public event PortCountEventHandler PortCount;
     public event ChannelEventHandler ChannelEvent;
@@ -180,123 +181,139 @@ namespace ICSP
           switch(lMsg.Command)
           {
             case ConnectionManagerCmd.BlinkMessage:
-              {
-                var lCmd = lMsg as MsgCmdBlinkMessage;
+            {
+              var lCmd = lMsg as MsgCmdBlinkMessage;
 
-                if(BlinkMessage != null)
-                  mSyncContext?.Send(d => BlinkMessage(this, new BlinkEventArgs(lCmd)), null);
+              if(BlinkMessage != null)
+                mSyncContext?.Send(d => BlinkMessage(this, new BlinkEventArgs(lCmd)), null);
 
-                break;
-              }
+              break;
+            }
             case ConnectionManagerCmd.PingRequest:
+            {
+              var lCmd = lMsg as MsgCmdPingRequest;
+
+              if(lCmd != null && mDevices.ContainsKey(lCmd.Device))
               {
-                var lCmd = lMsg as MsgCmdPingRequest;
+                var lDeviceInfo = mDevices[lCmd.Device];
 
-                if(lCmd != null && mDevices.ContainsKey(lCmd.Device))
+                if(lDeviceInfo != null)
                 {
-                  var lDeviceInfo = mDevices[lCmd.Device];
+                  var lResponse = MsgCmdPingResponse.CreateRequest(
+                    lDeviceInfo.Device, lDeviceInfo.System, lDeviceInfo.ManufactureId, lDeviceInfo.DeviceId, mClient.LocalIpAddress);
 
-                  if(lDeviceInfo != null)
-                  {
-                    var lResponse = MsgCmdPingResponse.CreateRequest(
-                      lDeviceInfo.Device, lDeviceInfo.System, lDeviceInfo.ManufactureId, lDeviceInfo.DeviceId, mClient.LocalIpAddress);
-
-                    Send(lResponse);
-                  }
-
-                  if(PingEvent != null)
-                    mSyncContext?.Send(d => PingEvent(this, new PingEventArgs(lCmd)), null);
+                  Send(lResponse);
                 }
 
-                break;
+                if(PingEvent != null)
+                  mSyncContext?.Send(d => PingEvent(this, new PingEventArgs(lCmd)), null);
               }
+
+              break;
+            }
             case ConnectionManagerCmd.DynamicDeviceAddressResponse:
+            {
+              var lCmd = lMsg as MsgCmdDynamicDeviceAddressResponse;
+
+              if(lCmd != null)
               {
-                var lCmd = lMsg as MsgCmdDynamicDeviceAddressResponse;
+                CurrentSystem = lCmd.System;
 
-                if(lCmd != null)
+                DynamicDevice = new AmxDevice(lCmd.Device, 1, lCmd.System);
+
+                var lDeviceInfo = new DeviceInfoData(lCmd.Device, lCmd.System, mClient.LocalIpAddress);
+
+                if(!mDevices.ContainsKey(lDeviceInfo.Device))
+                  mDevices.Add(lDeviceInfo.Device, lDeviceInfo);
+
+                var lRequest = MsgCmdDeviceInfo.CreateRequest(lDeviceInfo);
+
+                Send(lRequest);
+
+                if(DynamicDeviceCreated != null)
+                  mSyncContext?.Send(d => DynamicDeviceCreated(this, new DynamicDeviceCreatedArgs(lCmd.System, lCmd.Device)), null);
+              }
+
+              break;
+            }
+            case ConfigurationManagerCmd.RequestEthernetIpAddress:
+            {
+              var lCmd = lMsg as MsgCmdRequestEthernetIp;
+
+              if(lCmd != null && mDevices.ContainsKey(lCmd.Dest.Device))
+              {
+                // 2020 - 05 - 01 11:49:34,493 DEBUG - ICSPClient.Send[1]: MessageId = 0x0006, Type = MsgCmdGetEthernetIpAddress
+                // 2020 - 05 - 01 11:49:34,494 DEBUG - ICSPClient.Send[2]: Source = 10002:001:006, Dest = 10002:000:006
+
+                var lRequest = MsgCmdGetEthernetIpAddress.CreateRequest(lCmd.Source, lCmd.Dest, mClient.LocalIpAddress);
+
+                Send(lRequest);
+              }
+
+              break;
+            }
+            case DeviceManagerCmd.RequestDeviceInfo:
+            {
+              var lCmd = lMsg as MsgCmdRequestDeviceInfo;
+
+              if(lCmd != null)
+              {
+                if(lCmd.Device == DynamicDevice.Device && lCmd.System == DynamicDevice.System)
                 {
-                  CurrentSystem = lCmd.System;
-
-                  DynamicDevice = new AmxDevice(lCmd.Device, 1, lCmd.System);
-
                   var lDeviceInfo = new DeviceInfoData(lCmd.Device, lCmd.System, mClient.LocalIpAddress);
 
-                  if(!mDevices.ContainsKey(lDeviceInfo.Device))
-                    mDevices.Add(lDeviceInfo.Device, lDeviceInfo);
+                  var lResponse = MsgCmdDeviceInfo.CreateRequest(lDeviceInfo);
 
-                  var lRequest = MsgCmdDeviceInfo.CreateRequest(lDeviceInfo);
-
-                  Send(lRequest);
-
-                  if(DynamicDeviceCreated != null)
-                    mSyncContext?.Send(d => DynamicDeviceCreated(this, new DynamicDeviceCreatedArgs(lCmd.System, lCmd.Device)), null);
+                  Send(lResponse);
                 }
-
-                break;
               }
-            case DeviceManagerCmd.RequestDeviceInfo:
-              {
-                var lCmd = lMsg as MsgCmdRequestDeviceInfo;
 
-                if(lCmd != null)
-                {
-                  if(lCmd.Device == DynamicDevice.Device && lCmd.System == DynamicDevice.System)
-                  {
-                    var lDeviceInfo = new DeviceInfoData(lCmd.Device, lCmd.System, mClient.LocalIpAddress);
-
-                    var lResponse = MsgCmdDeviceInfo.CreateRequest(lDeviceInfo);
-
-                    Send(lResponse);
-                  }
-                }
-
-                break;
-              }
+              break;
+            }
             case DeviceManagerCmd.RequestStatus:
-              {
-                var lResponse = MsgCmdStatus.CreateRequest(lMsg.Source, lMsg.Dest, lMsg.Dest, StatusType.Normal, 1, "Normal");
+            {
+              var lResponse = MsgCmdStatus.CreateRequest(lMsg.Source, lMsg.Dest, lMsg.Dest, StatusType.Normal, 1, "Normal");
 
-                Send(lResponse);
+              Send(lResponse);
 
-                break;
-              }
+              break;
+            }
             case DeviceManagerCmd.OutputChannelOn:
-              {
-                var lCmd = lMsg as MsgCmdOutputChannelOn;
+            {
+              var lCmd = lMsg as MsgCmdOutputChannelOn;
 
-                if(ChannelEvent != null)
-                  mSyncContext?.Send(d => ChannelEvent(this, new ChannelEventArgs(lCmd)), null);
+              if(ChannelEvent != null)
+                mSyncContext?.Send(d => ChannelEvent(this, new ChannelEventArgs(lCmd)), null);
 
-                break;
-              }
+              break;
+            }
             case DeviceManagerCmd.OutputChannelOff:
-              {
-                var lCmd = lMsg as MsgCmdOutputChannelOff;
+            {
+              var lCmd = lMsg as MsgCmdOutputChannelOff;
 
-                if(ChannelEvent != null)
-                  mSyncContext?.Send(d => ChannelEvent(this, new ChannelEventArgs(lCmd)), null);
+              if(ChannelEvent != null)
+                mSyncContext?.Send(d => ChannelEvent(this, new ChannelEventArgs(lCmd)), null);
 
-                break;
-              }
+              break;
+            }
             case DeviceManagerCmd.DeviceInfo:
-              {
-                var lCmd = lMsg as MsgCmdDeviceInfo;
+            {
+              var lCmd = lMsg as MsgCmdDeviceInfo;
 
-                if(CurrentSystem > 0 && DeviceInfo != null)
-                  mSyncContext?.Send(d => DeviceInfo(this, new DeviceInfoEventArgs(lCmd)), null);
+              if(CurrentSystem > 0 && DeviceInfo != null)
+                mSyncContext?.Send(d => DeviceInfo(this, new DeviceInfoEventArgs(lCmd)), null);
 
-                break;
-              }
+              break;
+            }
             case DeviceManagerCmd.PortCountBy:
-              {
-                var lCmd = lMsg as MsgCmdPortCountBy;
+            {
+              var lCmd = lMsg as MsgCmdPortCountBy;
 
-                if(PortCount != null)
-                  mSyncContext?.Send(d => PortCount(this, new PortCountEventArgs(lCmd)), null);
+              if(PortCount != null)
+                mSyncContext?.Send(d => PortCount(this, new PortCountEventArgs(lCmd)), null);
 
-                break;
-              }
+              break;
+            }
           }
         }
       }
@@ -354,12 +371,16 @@ namespace ICSP
         mDevices.Add(deviceInfo.Device, deviceInfo);
 
       var lDeviceRequest = MsgCmdDeviceInfo.CreateRequest(deviceInfo);
-      
+
       Send(lDeviceRequest);
 
       if(portCount > 1)
       {
-        var lPortCountRequest = MsgCmdPortCountBy.CreateRequest(DynamicDevice, deviceInfo.Device, deviceInfo.System, portCount);
+        var lSource = DynamicDevice;
+
+        //lSource = new AmxDevice(deviceInfo.Device, 0, deviceInfo.System);
+
+        var lPortCountRequest = MsgCmdPortCountBy.CreateRequest(lSource, deviceInfo.Device, deviceInfo.System, portCount);
 
         Send(lPortCountRequest);
       }
