@@ -72,7 +72,12 @@ namespace ICSPControl.Dialogs
       mICSPManager.Disconnected += OnManagerDisconnected;
 
       mICSPManager.DynamicDeviceCreated += OnDynamicDeviceCreated;
-      mICSPManager.MessageReceived += OnMessageReceived;
+
+      // mICSPManager.MessageReceived += OnMessageReceived;
+
+      mICSPManager.RequestDevicesOnlineEOT += OnManagerRequestDevicesOnlineEOT;
+      mICSPManager.ProgramInfo += OnManagerProgramInfo;
+
       mICSPManager.BlinkMessage += OnBlinkMessage;
       mICSPManager.DeviceInfo += OnDeviceInfo;
       mICSPManager.PortCount += OnPortCount;
@@ -101,7 +106,7 @@ namespace ICSPControl.Dialogs
       }
     }
 
-    private void OnDynamicDeviceCreated(object sender, DynamicDeviceCreatedArgs e)
+    private void OnDynamicDeviceCreated(object sender, DynamicDeviceCreatedEventArgs e)
     {
       tssl_CurrentSystem.Text = string.Format("Current System: {0}", e.System);
       tssl_DynamicDevice.Text = string.Format("Dynamic Device: {0:00000}", e.DynamicDevice);
@@ -292,40 +297,34 @@ namespace ICSPControl.Dialogs
       tssl_MainFile.Text = "Main File: ";
     }
 
-    private void OnMessageReceived(object sender, MessageReceivedEventArgs e)
+    private void OnManagerRequestDevicesOnlineEOT(object sender, EventArgs e)
     {
-      if(e.Message.Command == DiagnosticManagerCmd.RequestDevicesOnlineEOT)
+      if(OnlineTree.Nodes.Count > 0)
       {
-        if(OnlineTree.Nodes.Count > 0)
+        OnlineTree.Nodes[0].Expand();
+
+        var lNode = OnlineTree.Nodes[0].Nodes["Virtual"];
+
+        if(lNode != null)
         {
-          OnlineTree.Nodes[0].Expand();
+          OnlineTree.Nodes[0].Nodes.RemoveByKey("Virtual");
 
-          var lNode = OnlineTree.Nodes[0].Nodes["Virtual"];
+          OnlineTree.Nodes[0].Nodes.Add(lNode);
 
-          if(lNode != null)
-          {
-            OnlineTree.Nodes[0].Nodes.RemoveByKey("Virtual");
-
-            OnlineTree.Nodes[0].Nodes.Add(lNode);
-
-            lNode.Expand();
-          }
+          lNode.Expand();
         }
-
-        // Request ProgramInfo ...
-
-        var lRequest = MsgCmdProbablyRequestProgramInfo.CreateRequest(mICSPManager.DynamicDevice, 0x1F);
-
-        mICSPManager.Send(lRequest);
       }
 
-      if(e.Message.Command == DiagnosticManagerCmd.ProbablyProgramInfo)
-      {
-        var lMsg = e.Message as MsgCmdProbablyProgramInfo;
+      // Request ProgramInfo ...
+      var lRequest = MsgCmdProbablyRequestProgramInfo.CreateRequest(mICSPManager.DynamicDevice, 0x1F);
 
-        tssl_ProgramName.Text = string.Format("Program Name: {0}", lMsg.ProgramName);
-        tssl_MainFile.Text = string.Format("Main File: {0}", lMsg.MainFile);
-      }
+      mICSPManager.Send(lRequest);
+    }
+
+    private void OnManagerProgramInfo(object sender, ProgramInfoEventArgs e)
+    {
+      tssl_ProgramName.Text = string.Format("Program Name: {0}", e.ProgramName);
+      tssl_MainFile.Text = string.Format("Main File: {0}", e.MainFile);
     }
 
     private void OnBlinkMessage(object sender, BlinkEventArgs e)
@@ -386,7 +385,7 @@ namespace ICSPControl.Dialogs
 
       lNode.Tag = e;
     }
-    
+
     private void OnPortCount(object sender, PortCountEventArgs e)
     {
       var lImageKey = "IODeviceDefault";

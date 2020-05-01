@@ -190,5 +190,17 @@ namespace ICSPControl.Properties {
                 this["LastSendText"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("Debug")]
+        public global::Serilog.Events.LogEventLevel LogLevel {
+            get {
+                return ((global::Serilog.Events.LogEventLevel)(this["LogLevel"]));
+            }
+            set {
+                this["LogLevel"] = value;
+            }
+        }
     }
 }

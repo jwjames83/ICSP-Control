@@ -4,10 +4,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
-using System.Timers;
 
-using ICSP.Extensions;
 using ICSP.Logging;
 
 namespace ICSP.Client
@@ -18,10 +15,10 @@ namespace ICSP.Client
 
     private int mConnectionTimeout = 1;
 
-    public event ClientConnectedEventHandler ClientConnected;
-    public event ClientConnectedEventHandler ClientDisconnected;
+    public event EventHandler<ClientConnectedEventArgs> ClientConnected;
+    public event EventHandler<ClientConnectedEventArgs> ClientDisconnected;
 
-    public event DataReceivedEventHandler DataReceived;
+    public event EventHandler<DataReceivedEventArgs> DataReceived;
 
     private SynchronizationContext mSyncContext;
 
@@ -230,7 +227,7 @@ namespace ICSP.Client
 
           var lMessage = Encoding.Default.GetString(lBytes, 0, lResult);
 
-          Logger.LogTrace("AsyncClient Data: {0} Bytes", lMessage.Length);
+          Logger.LogVerbose("AsyncClient Data: {0} Bytes", lMessage.Length);
 
           Array.Resize(ref lBytes, lResult);
 

@@ -44,5 +44,8 @@
     <Setting Name="LastSendText" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
+    <Setting Name="LogLevel" Type="Serilog.Events.LogEventLevel" Scope="User">
+      <Value Profile="(Default)">Debug</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

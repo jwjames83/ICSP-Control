@@ -23,18 +23,21 @@ namespace ICSP
 
     private Dictionary<ushort, DeviceInfoData> mDevices;
 
-    public event ClientConnectedEventHandler Connected;
-    public event ClientConnectedEventHandler Disconnected;
+    public event EventHandler<ClientConnectedEventArgs> Connected;
+    public event EventHandler<ClientConnectedEventArgs> Disconnected;
 
-    public event DynamicDeviceCreatedEventHandler DynamicDeviceCreated;
-    public event MessageReceivedEventHandler MessageReceived;
+    public event EventHandler<DynamicDeviceCreatedEventArgs> DynamicDeviceCreated;
+    public event EventHandler<MessageReceivedEventArgs> MessageReceived;
 
-    public event BlinkEventHandler BlinkMessage;
-    public event PingEventHandler PingEvent;
+    public event EventHandler<BlinkEventArgs> BlinkMessage;
+    public event EventHandler<PingEventArgs> PingEvent;
 
-    public event DeviceInfoEventHandler DeviceInfo;
-    public event PortCountEventHandler PortCount;
-    public event ChannelEventHandler ChannelEvent;
+    public event EventHandler<DeviceInfoEventArgs> DeviceInfo;
+    public event EventHandler<PortCountEventArgs> PortCount;
+    public event EventHandler<ChannelEventArgs> ChannelEvent;
+
+    public event EventHandler<EventArgs> RequestDevicesOnlineEOT;
+    public event EventHandler<ProgramInfoEventArgs> ProgramInfo;
 
     private SynchronizationContext mSyncContext;
 
@@ -167,14 +170,18 @@ namespace ICSP
           if(lMsg == null)
             return;
 
-          lMsg.WriteLog(lData.ID == lLastId);
+          // Speed up
+          if(Logger.LogLevel <= Serilog.Events.LogEventLevel.Debug)
+            lMsg.WriteLog(lData.ID == lLastId);
 
           var lMessageArgs = new MessageReceivedEventArgs(lMsg);
 
           if(MessageReceived != null)
-            mSyncContext?.Send(d => MessageReceived(this, lMessageArgs), null);
+            MessageReceived(this, lMessageArgs);
+            
+          // mSyncContext?.Send(d => MessageReceived(this, lMessageArgs), null);
 
-          // Keine weitere Aktionen erforderlich
+            // Keine weitere Aktionen erforderlich
           if(lMessageArgs.Handled)
             return;
 
@@ -231,7 +238,7 @@ namespace ICSP
                 Send(lRequest);
 
                 if(DynamicDeviceCreated != null)
-                  mSyncContext?.Send(d => DynamicDeviceCreated(this, new DynamicDeviceCreatedArgs(lCmd.System, lCmd.Device)), null);
+                  mSyncContext?.Send(d => DynamicDeviceCreated(this, new DynamicDeviceCreatedEventArgs(lCmd.System, lCmd.Device)), null);
               }
 
               break;
@@ -311,6 +318,20 @@ namespace ICSP
 
               if(PortCount != null)
                 mSyncContext?.Send(d => PortCount(this, new PortCountEventArgs(lCmd)), null);
+
+              break;
+            }
+            case DiagnosticManagerCmd.RequestDevicesOnlineEOT:
+            {
+              RequestDevicesOnlineEOT?.Invoke(this, EventArgs.Empty);
+
+              break;
+            }
+            case DiagnosticManagerCmd.ProbablyProgramInfo:
+            {
+              var lCmd = lMsg as MsgCmdProbablyProgramInfo;
+
+              ProgramInfo?.Invoke(this, new ProgramInfoEventArgs(lCmd));
 
               break;
             }

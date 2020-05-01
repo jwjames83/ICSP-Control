@@ -5,6 +5,7 @@ using System.Net.NetworkInformation;
 
 using ICSP.Manager.ConnectionManager;
 using ICSP.Manager.DeviceManager;
+using ICSP.Manager.DiagnosticManager;
 
 namespace ICSP
 {
@@ -15,7 +16,7 @@ namespace ICSP
       Message = message;
     }
 
-    public ICSPMsg Message { get; private set; }
+    public ICSPMsg Message { get; }
 
     public bool Handled { get; set; }
   }
@@ -30,7 +31,7 @@ namespace ICSP
       Message = message;
     }
 
-    public ICSPMsg Message { get; private set; }
+    public ICSPMsg Message { get; }
   }
 
   public sealed class BlinkEventArgs : ICSPEventArgs
@@ -60,7 +61,7 @@ namespace ICSP
     /// <summary>
     /// Tenths of seconds between heartbeats
     /// </summary>
-    public byte HeartbeatTiming { get; private set; }
+    public byte HeartbeatTiming { get; }
 
     /// <summary>
     /// State of Bus LED and other Status
@@ -74,56 +75,56 @@ namespace ICSP
     /// and set all levels to zero(or prepare itself to send status updates as necessary to the master).
     /// The master shall send 3 consecutive blink messages with bit 7 set.
     /// </summary>
-    public byte LED { get; private set; }
+    public byte LED { get; }
 
-    public DateTime DateTime { get; private set; }
+    public DateTime DateTime { get; }
 
     /// <summary>
     /// Current Date: Month 1-12 
     /// </summary>
-    public byte Month { get; private set; }
+    public byte Month { get; }
 
     /// <summary>
     /// Current Date: Day 1-31
     /// </summary>
-    public byte Day { get; private set; }
+    public byte Day { get; }
 
     /// <summary>
     /// Current Date: Year 1999-65535
     /// </summary>
-    public ushort Year { get; private set; }
+    public ushort Year { get; }
 
     /// <summary>
     /// Current Time: Hour 0-23 
     /// </summary>
-    public byte Hour { get; private set; }
+    public byte Hour { get; }
 
     /// <summary>
     /// Current Time: Minute 0-59
     /// </summary>
-    public byte Minute { get; private set; }
+    public byte Minute { get; }
 
     /// <summary>
     /// Current Time: Seconds 0-59
     /// </summary>
-    public byte Second { get; private set; }
+    public byte Second { get; }
 
     /// <summary>
     /// Day of Week 0 = Mon, 1 = Tues, ...
     /// </summary>
-    public DayOfWeek DayOfWeek { get; private set; }
+    public DayOfWeek DayOfWeek { get; }
 
     /// <summary>
     /// Outside Temperature (if available).
     /// Type: Temp signed 16-bit.
     /// If 0x8000, then temperature is not valid.
     /// </summary>
-    public ushort OutsideTemperature { get; private set; }
+    public ushort OutsideTemperature { get; }
 
     /// <summary>
     /// String Formatted as: “Thursday, Jun. 10, 1999”
     /// </summary>
-    public string DateText { get; private set; }
+    public string DateText { get; }
   }
 
   public sealed class ChannelEventArgs : ICSPEventArgs
@@ -150,7 +151,7 @@ namespace ICSP
 
     public ushort Channel { get; set; }
 
-    public bool Enabled { get; private set; }
+    public bool Enabled { get; }
   }
 
   public sealed class PingEventArgs : ICSPEventArgs
@@ -161,18 +162,18 @@ namespace ICSP
 
       System = message.System;
     }
-    
-    /// <summary>
-    /// Unsigned 16-bit value.
-    /// </summary>
-    public ushort Device { get; private set; }
 
     /// <summary>
     /// Unsigned 16-bit value.
     /// </summary>
-    public ushort System { get; private set; }
+    public ushort Device { get; }
+
+    /// <summary>
+    /// Unsigned 16-bit value.
+    /// </summary>
+    public ushort System { get; }
   }
-  
+
   public sealed class DeviceInfoEventArgs : ICSPEventArgs
   {
     public DeviceInfoEventArgs(MsgCmdDeviceInfo message) : base(message)
@@ -201,7 +202,7 @@ namespace ICSP
       MacAddress = message.MacAddress;
       IPv6Address = message.IPv6Address;
     }
-    
+
     /// <summary>
     /// Unsigned 16-bit value.
     /// </summary>
@@ -304,24 +305,42 @@ namespace ICSP
       PortCount = message.PortCount;
     }
 
-    public ushort Device { get; private set; }
+    public ushort Device { get; }
 
-    public ushort System { get; private set; }
+    public ushort System { get; }
 
-    public ushort PortCount { get; private set; }
+    public ushort PortCount { get; }
   }
 
-  public sealed class DynamicDeviceCreatedArgs : EventArgs
+  public sealed class DynamicDeviceCreatedEventArgs : EventArgs
   {
-    public DynamicDeviceCreatedArgs(ushort system, ushort dynamicDevice)
+    public DynamicDeviceCreatedEventArgs(ushort system, ushort dynamicDevice)
     {
       System = system;
 
       DynamicDevice = dynamicDevice;
     }
 
-    public ushort System { get; private set; }
+    public ushort System { get; }
 
-    public ushort DynamicDevice { get; private set; }
+    public ushort DynamicDevice { get; }
+  }
+
+  public sealed class ProgramInfoEventArgs : ICSPEventArgs
+  {
+    public ProgramInfoEventArgs(MsgCmdProbablyProgramInfo message) : base(message)
+    {
+      System = message.System;
+
+      ProgramName = message.ProgramName;
+
+      MainFile = message.MainFile;
+    }
+
+    public string System { get; }
+
+    public string ProgramName { get; }
+
+    public string MainFile { get; }
   }
 }

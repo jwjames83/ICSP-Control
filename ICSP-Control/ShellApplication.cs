@@ -2,19 +2,17 @@
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Net;
-using System.Net.Sockets;
 using System.Reflection;
 using System.Runtime.ExceptionServices;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
+using ICSP.Logging;
+
 using ICSPControl.Dialogs;
 using ICSPControl.Environment;
-using ICSPControl.Logging;
-
-using Log4Net;
+using ICSPControl.Properties;
 
 namespace ICSPControl
 {
@@ -38,20 +36,16 @@ namespace ICSPControl
 
       // Ensure unobserved task exceptions (unawaited async methods returning Task or Task<T>) are handled
       TaskScheduler.UnobservedTaskException += OnUnobservedTaskException;
-      
-      try
-      {
-        var lAddresses = Dns.GetHostAddresses(Dns.GetHostName());
-        var lAddress = lAddresses.FirstOrDefault(a => a.AddressFamily == AddressFamily.InterNetwork);
 
-        GlobalContext.Properties["IpAddress"] = lAddress.ToString();
-      }
-      catch { }
-      
+      // Initializes the Log system
+      LoggingConfigurator.Configure(new LoggingConfiguration() { LogLevel = Settings.Default.LogLevel }, false);
+
+      Logger.LogLevel = Settings.Default.LogLevel;
+
       Application.EnableVisualStyles();
       Application.SetCompatibleTextRenderingDefault(false);
       Application.ApplicationExit += OnApplicationExit;
-      
+
       var lExists = Process.GetProcessesByName(Path.GetFileNameWithoutExtension(Assembly.GetEntryAssembly().Location)).Count() > 1;
 
       // Check to see if Application is already running
@@ -60,9 +54,9 @@ namespace ICSPControl
         InfoMessageBox.Show("Applikation wurde bereits gestartet.");
         return;
       }
-      
-      Logger.LogTrace("ExecutablePath: " + ProgramProperties.ExecutablePath);
-      
+
+      Logger.LogVerbose("ExecutablePath: " + ProgramProperties.ExecutablePath);
+
       try
       {
         Application.Run(new DlgMain());
@@ -97,7 +91,7 @@ namespace ICSPControl
       Logger.LogError("UnhandledException: {0}", lEx.Message);
       MessageService.CreateMsg(null, string.Format("UnhandledException: {0}", lEx.Message));
     }
-    
+
     private static void OnApplicationExit(object sender, EventArgs e)
     {
       Logger.LogInfo("{0} wurde beendet", ProgramProperties.Title);

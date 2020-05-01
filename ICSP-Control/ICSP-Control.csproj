@@ -1,6 +1,12 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
+    <AllowedReferenceRelatedFileExtensions>
+      <!-- Prevent default XML and PDB files copied to output in RELEASE. Only *.allowedextension files will be included, which doesn't exist in my case. -->
+      *.pdb;
+      .exe.config;
+      .dll.config
+    </AllowedReferenceRelatedFileExtensions>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>9.0.21022</ProductVersion>
@@ -64,6 +70,9 @@
   <ItemGroup>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
+    <Reference Include="Serilog, Version=2.0.0.0, Culture=neutral, PublicKeyToken=24c2f752a8e58a10, processorArchitecture=MSIL">
+      <HintPath>..\packages\Serilog.2.5.0\lib\net46\Serilog.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Deployment" />
@@ -125,10 +134,6 @@
     <Compile Include="Extensions\EnumerableExtensions.cs" />
     <Compile Include="Extensions\IDateTimeInterval.cs" />
     <Compile Include="Extensions\IIntervalData.cs" />
-    <Compile Include="Logging\ILogExtentions.cs" />
-    <Compile Include="Logging\Log4NetTraceListener.cs" />
-    <Compile Include="Logging\LogEventArgs.cs" />
-    <Compile Include="Logging\Logger.cs" />
     <Compile Include="MessageService.cs" />
     <Compile Include="Reflection\AttributeHelper.cs" />
     <Compile Include="ShellApplication.cs" />
@@ -151,6 +156,7 @@
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <None Include="App.config" />
+    <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -168,10 +174,6 @@
     <ProjectReference Include="..\ICSP\ICSP.csproj">
       <Project>{7be1a4d4-d8d8-464f-9f03-3f5695a11b24}</Project>
       <Name>ICSP</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Log4Net 1.2.11\src\Log4Net.csproj">
-      <Project>{181fe707-e161-4722-9f38-6aaab6faa106}</Project>
-      <Name>Log4Net</Name>
     </ProjectReference>
     <ProjectReference Include="..\TpButton\TpControls.csproj">
       <Project>{D5011E59-2E24-4B7A-950A-195AEB456AC1}</Project>

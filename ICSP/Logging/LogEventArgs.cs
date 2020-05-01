@@ -1,7 +1,6 @@
 ﻿using System;
-using System.Reflection;
 
-using Log4Net.Core;
+using Serilog.Events;
 
 namespace ICSP.Logging
 {
@@ -11,22 +10,18 @@ namespace ICSP.Logging
     {
     }
 
-    public LogEventArgs(Level level, bool methodInfo, MethodBase method, string message)
+    public LogEventArgs(LogEventLevel level, string methodInfo, string message)
     {
       Level = level;
 
       MethodInfo = methodInfo;
 
-      Method = method;
-
       Message = message;
     }
 
-    public Level Level { get; }
+    public LogEventLevel Level { get; }
 
-    public bool MethodInfo { get; }
-
-    public MethodBase Method { get; }
+    public string MethodInfo { get; }
 
     public string Message { get; }
   }

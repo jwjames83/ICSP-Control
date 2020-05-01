@@ -7,7 +7,6 @@ using System.Reflection;
 using System.Text;
 
 using ICSPControl.Extensions;
-using ICSPControl.Logging;
 
 namespace ICSPControl.DevStuff
 {

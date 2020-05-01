@@ -2,7 +2,7 @@
 using System.Diagnostics;
 using System.Reflection;
 
-using ICSPControl.Logging;
+using ICSP.Logging;
 
 namespace ICSPControl.DevStuff
 {

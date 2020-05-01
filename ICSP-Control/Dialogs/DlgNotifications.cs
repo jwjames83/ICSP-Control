@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
+
 using ICSP;
 using ICSP.Constants;
 using ICSP.Manager.ConnectionManager;
@@ -120,7 +121,6 @@ namespace ICSPControl.Dialogs
             AppendText(e.Message.ID, "DataReceived - Command=0x{0:X4}, {1}, Device={2}, System={3}", e.Message.Command, ICSPMsg.GetFrindlyName(e.Message.Command), m.Device, m.System);
             break;
           }
-
           case MsgCmdStringMasterDev m:
           {
             AppendText(e.Message.ID, "[{0}] String={1}", e.Message.Dest, m.Text);

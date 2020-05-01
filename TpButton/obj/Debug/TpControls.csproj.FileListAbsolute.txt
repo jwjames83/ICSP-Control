@@ -9,15 +9,17 @@ C:\VS.NET\Visual Studio 2015\Projects\ICSPControl\TpButton\obj\Debug\TpControls.
 C:\VS.NET\Visual Studio 2015\Projects\ICSPControl\TpButton\obj\Debug\TpControls.csproj.GenerateResource.Cache
 C:\VS.NET\Visual Studio 2015\Projects\ICSPControl\TpButton\obj\Debug\TpControls.dll
 C:\VS.NET\Visual Studio 2015\Projects\ICSPControl\TpButton\obj\Debug\TpControls.pdb
-C:\Users\donald.peter\Source\Repos\ICSP-Control\TpButton\obj\Debug\TpControls.csprojAssemblyReference.cache
-C:\Users\donald.peter\Source\Repos\ICSP-Control\TpButton\obj\Debug\TpControls.TpButton.resources
-C:\Users\donald.peter\Source\Repos\ICSP-Control\TpButton\obj\Debug\TpControls.csproj.GenerateResource.cache
 C:\Users\donald.peter\Source\Repos\ICSP-Control\TpButton\bin\Debug\TpControls.dll
 C:\Users\donald.peter\Source\Repos\ICSP-Control\TpButton\bin\Debug\TpControls.pdb
 C:\Users\donald.peter\Source\Repos\ICSP-Control\TpButton\bin\Debug\ICSP.dll
-C:\Users\donald.peter\Source\Repos\ICSP-Control\TpButton\bin\Debug\Log4Net.dll
+C:\Users\donald.peter\Source\Repos\ICSP-Control\TpButton\bin\Debug\Serilog.dll
+C:\Users\donald.peter\Source\Repos\ICSP-Control\TpButton\bin\Debug\Serilog.Sinks.TextWriter.dll
+C:\Users\donald.peter\Source\Repos\ICSP-Control\TpButton\bin\Debug\Serilog.Sinks.File.dll
+C:\Users\donald.peter\Source\Repos\ICSP-Control\TpButton\bin\Debug\Serilog.Sinks.Console.dll
 C:\Users\donald.peter\Source\Repos\ICSP-Control\TpButton\bin\Debug\ICSP.pdb
-C:\Users\donald.peter\Source\Repos\ICSP-Control\TpButton\bin\Debug\Log4Net.pdb
+C:\Users\donald.peter\Source\Repos\ICSP-Control\TpButton\obj\Debug\TpControls.csprojAssemblyReference.cache
+C:\Users\donald.peter\Source\Repos\ICSP-Control\TpButton\obj\Debug\TpControls.TpButton.resources
+C:\Users\donald.peter\Source\Repos\ICSP-Control\TpButton\obj\Debug\TpControls.csproj.GenerateResource.cache
 C:\Users\donald.peter\Source\Repos\ICSP-Control\TpButton\obj\Debug\TpControls.csproj.CopyComplete
 C:\Users\donald.peter\Source\Repos\ICSP-Control\TpButton\obj\Debug\TpControls.dll
 C:\Users\donald.peter\Source\Repos\ICSP-Control\TpButton\obj\Debug\TpControls.pdb

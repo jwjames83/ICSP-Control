@@ -2,6 +2,12 @@
 <Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
+    <AllowedReferenceRelatedFileExtensions>
+      <!-- Prevent default XML and PDB files copied to output in RELEASE. Only *.allowedextension files will be included, which doesn't exist in my case. -->
+      *.pdb;
+      .exe.config;
+      .dll.config
+    </AllowedReferenceRelatedFileExtensions>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{7BE1A4D4-D8D8-464F-9F03-3F5695A11B24}</ProjectGuid>
@@ -31,6 +37,18 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Serilog, Version=2.0.0.0, Culture=neutral, PublicKeyToken=24c2f752a8e58a10, processorArchitecture=MSIL">
+      <HintPath>..\packages\Serilog.2.5.0\lib\net46\Serilog.dll</HintPath>
+    </Reference>
+    <Reference Include="Serilog.Sinks.Console, Version=3.1.1.0, Culture=neutral, PublicKeyToken=24c2f752a8e58a10, processorArchitecture=MSIL">
+      <HintPath>..\packages\Serilog.Sinks.Console.3.1.1\lib\net45\Serilog.Sinks.Console.dll</HintPath>
+    </Reference>
+    <Reference Include="Serilog.Sinks.File, Version=2.0.0.0, Culture=neutral, PublicKeyToken=24c2f752a8e58a10, processorArchitecture=MSIL">
+      <HintPath>..\packages\Serilog.Sinks.File.4.1.0\lib\net45\Serilog.Sinks.File.dll</HintPath>
+    </Reference>
+    <Reference Include="Serilog.Sinks.TextWriter, Version=2.0.0.0, Culture=neutral, PublicKeyToken=24c2f752a8e58a10, processorArchitecture=MSIL">
+      <HintPath>..\packages\Serilog.Sinks.TextWriter.2.1.0\lib\net45\Serilog.Sinks.TextWriter.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -45,13 +63,17 @@
     <Compile Include="AmxUtils.cs" />
     <Compile Include="Client\ICSPClient.cs" />
     <Compile Include="Client\ClientConnectedEventArgs.cs" />
-    <Compile Include="Client\ClientConnectedEventHandler.cs" />
     <Compile Include="Client\DataReceivedEventArgs.cs" />
-    <Compile Include="Client\DataReceivedEventHandler.cs" />
     <Compile Include="Device.cs" />
     <Compile Include="Environment\ProgramProperties.cs" />
-    <Compile Include="Logging\ILogExtentions.cs" />
+    <Compile Include="Logging\Enricher\CustomLevelEnricher.cs" />
+    <Compile Include="Logging\Enricher\StackTraceEnricher.cs" />
+    <Compile Include="Logging\LoggingConfiguration.cs" />
     <Compile Include="Logging\LogEventArgs.cs" />
+    <Compile Include="Logging\Logger.cs" />
+    <Compile Include="Logging\LoggingConfigurator.cs" />
+    <Compile Include="Logging\MethodInfo.cs" />
+    <Compile Include="Logging\TraceListener.cs" />
     <Compile Include="Manager\ConfigurationManager\MsgCmdGetEthernetIpAddress.cs" />
     <Compile Include="Manager\ConfigurationManager\MsgCmdRequestEthernetIp.cs" />
     <Compile Include="Manager\DiagnosticManager\MsgCmdProbablyProgramInfoEOT.cs" />
@@ -123,15 +145,13 @@
     <Compile Include="ICSPMsg.cs" />
     <Compile Include="ICSPMsgData.cs" />
     <Compile Include="Reflection\AttributeHelper.cs" />
+    <Compile Include="Reflection\MethodHelper.cs" />
     <Compile Include="Reflection\TypeHelper.cs" />
     <Compile Include="Reflection\TypeInfo.cs" />
     <Compile Include="StateManager.cs" />
     <Compile Include="StatusType.cs" />
     <Compile Include="LevelValueType.cs" />
-    <Compile Include="Logging\Log4NetTraceListener.cs" />
-    <Compile Include="Logging\Logger.cs" />
     <Compile Include="EventArgs.cs" />
-    <Compile Include="EventHandler.cs" />
     <Compile Include="RestartType.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -139,10 +159,7 @@
     <Folder Include="Manager\IpPortConnectionManager\" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Log4Net 1.2.11\src\Log4Net.csproj">
-      <Project>{181fe707-e161-4722-9f38-6aaab6faa106}</Project>
-      <Name>Log4Net</Name>
-    </ProjectReference>
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -7,8 +7,10 @@ C:\VS.NET\Visual Studio 2015\Projects\ICSPControl\ICSP\obj\Debug\ICSP.dll
 C:\VS.NET\Visual Studio 2015\Projects\ICSPControl\ICSP\obj\Debug\ICSP.pdb
 C:\Users\donald.peter\Source\Repos\ICSP-Control\ICSP\bin\Debug\ICSP.dll
 C:\Users\donald.peter\Source\Repos\ICSP-Control\ICSP\bin\Debug\ICSP.pdb
-C:\Users\donald.peter\Source\Repos\ICSP-Control\ICSP\bin\Debug\Log4Net.dll
-C:\Users\donald.peter\Source\Repos\ICSP-Control\ICSP\bin\Debug\Log4Net.pdb
+C:\Users\donald.peter\Source\Repos\ICSP-Control\ICSP\bin\Debug\Serilog.dll
+C:\Users\donald.peter\Source\Repos\ICSP-Control\ICSP\bin\Debug\Serilog.Sinks.Console.dll
+C:\Users\donald.peter\Source\Repos\ICSP-Control\ICSP\bin\Debug\Serilog.Sinks.File.dll
+C:\Users\donald.peter\Source\Repos\ICSP-Control\ICSP\bin\Debug\Serilog.Sinks.TextWriter.dll
 C:\Users\donald.peter\Source\Repos\ICSP-Control\ICSP\obj\Debug\ICSP.csprojAssemblyReference.cache
 C:\Users\donald.peter\Source\Repos\ICSP-Control\ICSP\obj\Debug\ICSP.csproj.CopyComplete
 C:\Users\donald.peter\Source\Repos\ICSP-Control\ICSP\obj\Debug\ICSP.dll

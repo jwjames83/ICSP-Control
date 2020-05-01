@@ -107,7 +107,6 @@
     /// </summary>
     public const int CompletionCode = 0x0213;
 
-
     // Reserved message range: OxO2EO - OxO2FF
   }
 }
