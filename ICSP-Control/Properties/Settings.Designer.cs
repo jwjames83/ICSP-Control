@@ -157,13 +157,49 @@ namespace ICSPControl.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("1")]
+        [global::System.Configuration.DefaultSettingValueAttribute("517")]
         public ushort PhysicalDeviceDeviceId {
             get {
                 return ((ushort)(this["PhysicalDeviceDeviceId"]));
             }
             set {
                 this["PhysicalDeviceDeviceId"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("G5 MT-1002")]
+        public string PhysicalDeviceDeviceType {
+            get {
+                return ((string)(this["PhysicalDeviceDeviceType"]));
+            }
+            set {
+                this["PhysicalDeviceDeviceType"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool PhysicalDeviceUseCustomDeviceId {
+            get {
+                return ((bool)(this["PhysicalDeviceUseCustomDeviceId"]));
+            }
+            set {
+                this["PhysicalDeviceUseCustomDeviceId"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("1")]
+        public ushort PhysicalDeviceCustomDeviceId {
+            get {
+                return ((ushort)(this["PhysicalDeviceCustomDeviceId"]));
+            }
+            set {
+                this["PhysicalDeviceCustomDeviceId"] = value;
             }
         }
         

@@ -36,6 +36,15 @@
       <Value Profile="(Default)">1</Value>
     </Setting>
     <Setting Name="PhysicalDeviceDeviceId" Type="System.UInt16" Scope="User">
+      <Value Profile="(Default)">517</Value>
+    </Setting>
+    <Setting Name="PhysicalDeviceDeviceType" Type="System.String" Scope="User">
+      <Value Profile="(Default)">G5 MT-1002</Value>
+    </Setting>
+    <Setting Name="PhysicalDeviceUseCustomDeviceId" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="PhysicalDeviceCustomDeviceId" Type="System.UInt16" Scope="User">
       <Value Profile="(Default)">1</Value>
     </Setting>
     <Setting Name="PhysicalDeviceFirmwareId" Type="System.UInt16" Scope="User">

@@ -409,7 +409,7 @@ namespace TpControls
     {
       if(mManager != null)
       {
-        mManager.Disconnected -= OnManagerDisconnected;
+        mManager.ClientOnlineStatusChanged -= OnClientOnlineStatusChanged;
         mManager.ChannelEvent -= OnChannelEvent;
       }
 
@@ -419,14 +419,15 @@ namespace TpControls
 
       if(mManager != null)
       {
-        mManager.Disconnected += OnManagerDisconnected;
+        mManager.ClientOnlineStatusChanged += OnClientOnlineStatusChanged;
         mManager.ChannelEvent += OnChannelEvent;
       }
     }
 
-    private void OnManagerDisconnected(object sender, ClientConnectedEventArgs e)
+    private void OnClientOnlineStatusChanged(object sender, ClientOnlineOfflineEventArgs e)
     {
-      CurrentState = StateOff;
+      if(!e.ClientOnline)
+        CurrentState = StateOff;
     }
 
     private void OnChannelEvent(object sender, ChannelEventArgs e)

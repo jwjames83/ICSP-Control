@@ -90,11 +90,11 @@
     <Compile Include="DevStuff\Singleton.cs" />
     <Compile Include="DevStuff\TimeConverter.cs" />
     <Compile Include="Controls\BalloonTip.cs" />
-    <Compile Include="Dialogs\DlgNotifications.cs">
+    <Compile Include="Dialogs\DlgTrace.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Dialogs\DlgNotifications.Designer.cs">
-      <DependentUpon>DlgNotifications.cs</DependentUpon>
+    <Compile Include="Dialogs\DlgTrace.Designer.cs">
+      <DependentUpon>DlgTrace.cs</DependentUpon>
     </Compile>
     <Compile Include="Dialogs\DlgTest.cs">
       <SubType>Form</SubType>
@@ -136,11 +136,12 @@
     <Compile Include="Extensions\IIntervalData.cs" />
     <Compile Include="MessageService.cs" />
     <Compile Include="Reflection\AttributeHelper.cs" />
+    <Compile Include="Settings.cs" />
     <Compile Include="ShellApplication.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="User32Wrappers.cs" />
-    <EmbeddedResource Include="Dialogs\DlgNotifications.resx">
-      <DependentUpon>DlgNotifications.cs</DependentUpon>
+    <EmbeddedResource Include="Dialogs\DlgTrace.resx">
+      <DependentUpon>DlgTrace.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Dialogs\DlgTest.resx">
       <DependentUpon>DlgTest.cs</DependentUpon>

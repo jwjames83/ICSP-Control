@@ -3,7 +3,6 @@ using System.IO;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
-using System.Threading;
 
 using ICSP.Logging;
 
@@ -15,12 +14,9 @@ namespace ICSP.Client
 
     private int mConnectionTimeout = 1;
 
-    public event EventHandler<ClientConnectedEventArgs> ClientConnected;
-    public event EventHandler<ClientConnectedEventArgs> ClientDisconnected;
+    public event EventHandler<ClientOnlineOfflineEventArgs> ClientOnlineStatusChanged;
 
     public event EventHandler<DataReceivedEventArgs> DataReceived;
-
-    private SynchronizationContext mSyncContext;
 
     private NetworkStream mStream;
 
@@ -32,7 +28,6 @@ namespace ICSP.Client
 
     public ICSPClient()
     {
-      mSyncContext = new SynchronizationContext();
     }
 
     ~ICSPClient()
@@ -54,7 +49,6 @@ namespace ICSP.Client
         if(disposing)
         {
           // Verwalteten Zustand (verwaltete Objekte) entsorgen
-
           if(mSocket != null)
           {
             mSocket.Close();
@@ -131,8 +125,7 @@ namespace ICSP.Client
 
         ReadAsync();
 
-        if(ClientConnected != null)
-          mSyncContext?.Send(x => ClientConnected(this, new ClientConnectedEventArgs(RemoteIpAddress)), null);
+        ClientOnlineStatusChanged?.Invoke(this, new ClientOnlineOfflineEventArgs(0, true, RemoteIpAddress?.ToString()));
       }
       else
       {
@@ -200,14 +193,6 @@ namespace ICSP.Client
       }
     }
 
-    public void SetSynchronizationContext(SynchronizationContext syncContext)
-    {
-      if(syncContext == null)
-        throw new ArgumentNullException(nameof(syncContext));
-
-      mSyncContext = syncContext;
-    }
-
     private async void ReadAsync()
     {
       try
@@ -259,9 +244,8 @@ namespace ICSP.Client
     private void OnClientDisconnected()
     {
       Logger.LogInfo("Client Disconnected: {0}", RemoteIpAddress);
-      
-      if(ClientDisconnected != null)
-        mSyncContext?.Send(x => ClientDisconnected(this, new ClientConnectedEventArgs(RemoteIpAddress)), null);
+
+      ClientOnlineStatusChanged?.Invoke(this, new ClientOnlineOfflineEventArgs(0, false, RemoteIpAddress?.ToString()));
 
       mSocket = null;
     }
@@ -311,25 +295,5 @@ namespace ICSP.Client
     public IPAddress RemoteIpAddress { get; private set; }
 
     public IPAddress LocalIpAddress { get; private set; }
-
-    /*
-    public static IPAddress GetLocalIPAddress()
-    {
-      IPEndPoint lEndPoint = null; // mSocket.LocalEndPoint as IPEndPoint;
-
-      if(lEndPoint != null)
-        return lEndPoint.Address;
-
-      var lHost = Dns.GetHostEntry(Dns.GetHostName());
-
-      foreach(var lIPAddress in lHost.AddressList)
-      {
-        if(lIPAddress.AddressFamily == AddressFamily.InterNetwork)
-          return lIPAddress;
-      }
-
-      throw new Exception("Local IP Address Not Found!");
-    }
-    */
   }
 }

@@ -2,13 +2,13 @@ C:\Users\donald.peter\Source\Repos\ICSP-Control\ICSP-Control\bin\Debug\ICSPContr
 C:\Users\donald.peter\Source\Repos\ICSP-Control\ICSP-Control\bin\Debug\ICSPControl.exe
 C:\Users\donald.peter\Source\Repos\ICSP-Control\ICSP-Control\bin\Debug\ICSPControl.pdb
 C:\Users\donald.peter\Source\Repos\ICSP-Control\ICSP-Control\bin\Debug\ICSP.dll
-C:\Users\donald.peter\Source\Repos\ICSP-Control\ICSP-Control\bin\Debug\TpControls.dll
 C:\Users\donald.peter\Source\Repos\ICSP-Control\ICSP-Control\bin\Debug\Serilog.dll
+C:\Users\donald.peter\Source\Repos\ICSP-Control\ICSP-Control\bin\Debug\TpControls.dll
 C:\Users\donald.peter\Source\Repos\ICSP-Control\ICSP-Control\bin\Debug\Serilog.Sinks.TextWriter.dll
 C:\Users\donald.peter\Source\Repos\ICSP-Control\ICSP-Control\bin\Debug\Serilog.Sinks.File.dll
 C:\Users\donald.peter\Source\Repos\ICSP-Control\ICSP-Control\bin\Debug\Serilog.Sinks.Console.dll
 C:\Users\donald.peter\Source\Repos\ICSP-Control\ICSP-Control\obj\Debug\ICSP-Control.csprojAssemblyReference.cache
-C:\Users\donald.peter\Source\Repos\ICSP-Control\ICSP-Control\obj\Debug\ICSPControl.Dialogs.DlgNotifications.resources
+C:\Users\donald.peter\Source\Repos\ICSP-Control\ICSP-Control\obj\Debug\ICSPControl.Dialogs.DlgTrace.resources
 C:\Users\donald.peter\Source\Repos\ICSP-Control\ICSP-Control\obj\Debug\ICSPControl.Dialogs.DlgTest.resources
 C:\Users\donald.peter\Source\Repos\ICSP-Control\ICSP-Control\obj\Debug\ICSPControl.Dialogs.DlgSettings.resources
 C:\Users\donald.peter\Source\Repos\ICSP-Control\ICSP-Control\obj\Debug\ICSPControl.Dialogs.ErrorDialog.resources

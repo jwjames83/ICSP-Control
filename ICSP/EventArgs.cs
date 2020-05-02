@@ -9,6 +9,18 @@ using ICSP.Manager.DiagnosticManager;
 
 namespace ICSP
 {
+  public sealed class ICSPMsgDataEventArgs : EventArgs
+  {
+    public ICSPMsgDataEventArgs(ICSPMsgData data)
+    {
+      Data = data;
+    }
+
+    public ICSPMsgData Data { get; }
+
+    public bool Handled { get; set; }
+  }
+
   public sealed class MessageReceivedEventArgs : EventArgs
   {
     public MessageReceivedEventArgs(ICSPMsg message)
@@ -17,18 +29,13 @@ namespace ICSP
     }
 
     public ICSPMsg Message { get; }
-
-    public bool Handled { get; set; }
   }
 
   public abstract class ICSPEventArgs : EventArgs
   {
     public ICSPEventArgs(ICSPMsg message)
     {
-      if(message == null)
-        throw new ArgumentNullException(nameof(message));
-
-      Message = message;
+      Message = message ?? throw new ArgumentNullException(nameof(message));
     }
 
     public ICSPMsg Message { get; }
@@ -147,12 +154,78 @@ namespace ICSP
       Enabled = false;
     }
 
-    public AmxDevice Device { get; set; }
+    public AmxDevice Device { get; }
 
-    public ushort Channel { get; set; }
+    public ushort Channel { get; }
 
     public bool Enabled { get; }
   }
+
+  public sealed class StringEventArgs : ICSPEventArgs
+  {
+    public StringEventArgs(MsgCmdStringMasterDev message) : base(message)
+    {
+      Device = message.Device;
+
+      ValueType = message.ValueType;
+
+      Length = message.Length;
+
+      Text = message.Text;
+    }
+
+    public AmxDevice Device { get;  }
+
+    public EncodingType ValueType { get;  }
+
+    public ushort Length { get;  }
+
+    public string Text { get; }
+  }
+
+  public sealed class CommandEventArgs : ICSPEventArgs
+  {
+    public CommandEventArgs(MsgCmdCommandMasterDev message) : base(message)
+    {
+      Device = message.Device;
+
+      ValueType = message.ValueType;
+
+      Length = message.Length;
+
+      Text = message.Text;
+    }
+
+    public AmxDevice Device { get; }
+
+    public EncodingType ValueType { get; }
+
+    public ushort Length { get; }
+
+    public string Text { get; }
+  }
+
+  public sealed class LevelEventArgs : ICSPEventArgs
+  {
+    public LevelEventArgs(MsgCmdLevelValueMasterDev message) : base(message)
+    {
+      Device = message.Device;
+
+      Level = message.Level;
+
+      ValueType = message.ValueType;
+
+      Value = message.Value;
+    }
+
+    public AmxDevice Device { get; }
+
+    public ushort Level { get; }
+
+    public LevelValueType ValueType { get; }
+
+    public int Value { get; }
+  }  
 
   public sealed class PingEventArgs : ICSPEventArgs
   {
@@ -312,18 +385,18 @@ namespace ICSP
     public ushort PortCount { get; }
   }
 
-  public sealed class DynamicDeviceCreatedEventArgs : EventArgs
+  public sealed class DynamicDeviceCreatedEventArgs : ICSPEventArgs
   {
-    public DynamicDeviceCreatedEventArgs(ushort system, ushort dynamicDevice)
+    public DynamicDeviceCreatedEventArgs(MsgCmdDynamicDeviceAddressResponse message) : base(message)
     {
-      System = system;
+      Device = message.Device;
 
-      DynamicDevice = dynamicDevice;
+      System = message.System;
     }
 
-    public ushort System { get; }
+    public ushort Device { get; }
 
-    public ushort DynamicDevice { get; }
+    public ushort System { get; }
   }
 
   public sealed class ProgramInfoEventArgs : ICSPEventArgs

@@ -21,20 +21,18 @@ namespace ICSPControl.Dialogs
 {
   public partial class DlgMain : Form
   {
-    private System.Windows.Forms.Timer mBlinkTimer;
+    private readonly System.Windows.Forms.Timer mBlinkTimer;
 
-    private DlgNotifications mDlgNotifications;
+    private DlgTrace mDlgNotifications;
     private DlgTest mDlgTest;
 
-    private ICSPManager mICSPManager;
+    private readonly ICSPManager mICSPManager;
 
     public DlgMain()
     {
       InitializeComponent();
 
-
-      mBlinkTimer = new System.Windows.Forms.Timer();
-      mBlinkTimer.Interval = 500;
+      mBlinkTimer = new System.Windows.Forms.Timer { Interval = 500 };
       mBlinkTimer.Tick += (s, e) => { tssl_Blink.BackColor = SystemColors.Control; };
 
       // Fix
@@ -68,8 +66,7 @@ namespace ICSPControl.Dialogs
 
       mICSPManager = new ICSPManager();
 
-      mICSPManager.Connected += OnManagerConnected;
-      mICSPManager.Disconnected += OnManagerDisconnected;
+      mICSPManager.ClientOnlineStatusChanged += OnClientOnlineStatusChanged;
 
       mICSPManager.DynamicDeviceCreated += OnDynamicDeviceCreated;
 
@@ -85,7 +82,7 @@ namespace ICSPControl.Dialogs
       cmd_Connect.Click += OnConnectClick;
       cmd_Disconnect.Click += OnDisconnectClick;
 
-      cmd_ShowNotifications.Click += OnShowNotificationsClick;
+      cmd_ShowTraceWindow.Click += OnShowNotificationsClick;
       cmd_ShowFeedbackTest.Click += OnShowFeedbackTestClick;
 
       foreach(var lButton in GetControlsOfType<TpButton>(this))
@@ -109,7 +106,7 @@ namespace ICSPControl.Dialogs
     private void OnDynamicDeviceCreated(object sender, DynamicDeviceCreatedEventArgs e)
     {
       tssl_CurrentSystem.Text = string.Format("Current System: {0}", e.System);
-      tssl_DynamicDevice.Text = string.Format("Dynamic Device: {0:00000}", e.DynamicDevice);
+      tssl_DynamicDevice.Text = string.Format("Dynamic Device: {0:00000}", e.Device);
 
       if(Settings.Default.PhysicalDeviceAutoCreate)
         CreatePhysicalDevice();
@@ -118,7 +115,7 @@ namespace ICSPControl.Dialogs
     private void OnShowNotificationsClick(object sender, EventArgs e)
     {
       if(mDlgNotifications == null || mDlgNotifications.IsDisposed)
-        mDlgNotifications = new DlgNotifications(mICSPManager);
+        mDlgNotifications = new DlgTrace(mICSPManager);
 
       mDlgNotifications.Show();
       mDlgNotifications.BringToFront();
@@ -155,9 +152,7 @@ namespace ICSPControl.Dialogs
 
     public static IEnumerable<T> GetControlsOfType<T>(Control root) where T : Control
     {
-      var t = root as T;
-
-      if(t != null)
+      if(root is T t)
         yield return t;
 
       foreach(Control c in root.Controls)
@@ -212,7 +207,7 @@ namespace ICSPControl.Dialogs
       OnlineTree.Nodes.Clear();
       OnlineTree.Nodes.Add("<Empty Device Tree>");
 
-      mICSPManager?.RequestDevicesOnline(0, 1);
+      mICSPManager?.RequestDevicesOnline();
     }
 
     private void OnShowDevicePropertiesClick(object sender, EventArgs e)
@@ -230,9 +225,7 @@ namespace ICSPControl.Dialogs
 
       var lTitle = "Device Properties";
 
-      var lInfo = lNode.Tag as DeviceInfoEventArgs;
-
-      if(lInfo != null)
+      if(lNode.Tag is DeviceInfoEventArgs lInfo)
       {
         var lSb = new StringBuilder();
 
@@ -279,22 +272,24 @@ namespace ICSPControl.Dialogs
       }
     }
 
-    private void OnManagerConnected(object sender, ClientConnectedEventArgs e)
+    private void OnClientOnlineStatusChanged(object sender, ClientOnlineOfflineEventArgs e)
     {
-      tssl_ClientState.Text = "Connected";
-      tssl_ClientState.BackColor = Color.Green;
-    }
+      if(e.ClientOnline)
+      {
+        tssl_ClientState.Text = "Connected";
+        tssl_ClientState.BackColor = Color.Green;
+      }
+      else
+      {
+        tssl_ClientState.Text = "Not Connected";
+        tssl_ClientState.BackColor = Color.Red;
 
-    private void OnManagerDisconnected(object sender, ClientConnectedEventArgs e)
-    {
-      tssl_ClientState.Text = "Not Connected";
-      tssl_ClientState.BackColor = Color.Red;
+        tssl_CurrentSystem.Text = "Current System: 0";
+        tssl_DynamicDevice.Text = "Dynamic Device: 00000";
 
-      tssl_CurrentSystem.Text = "Current System: 0";
-      tssl_DynamicDevice.Text = "Dynamic Device: 00000";
-
-      tssl_ProgramName.Text = "Program Name: ";
-      tssl_MainFile.Text = "Main File: ";
+        tssl_ProgramName.Text = "Program Name: ";
+        tssl_MainFile.Text = "Main File: ";
+      }
     }
 
     private void OnManagerRequestDevicesOnlineEOT(object sender, EventArgs e)
@@ -338,10 +333,10 @@ namespace ICSPControl.Dialogs
 
     private void OnDeviceInfo(object sender, DeviceInfoEventArgs e)
     {
-      TreeNode lNode = null;
-
       var lImageKey = "AMXDeviceDefault";
       var lSelectedImageKey = "AMXDeviceSelected";
+
+      TreeNode lNode;
 
       // System-Device
       if(e.Device == 0 && e.ObjectId == 0)
@@ -466,18 +461,24 @@ namespace ICSPControl.Dialogs
       if(!mICSPManager.IsConnected)
         return;
 
+      var lDeviceId = Settings.Default.PhysicalDeviceDeviceId;
+
+      if(Settings.Default.PhysicalDeviceUseCustomDeviceId)
+        lDeviceId = Settings.Default.PhysicalDeviceCustomDeviceId;
+
       var lDeviceInfo = new DeviceInfoData(
         Settings.Default.PhysicalDeviceNumber,
         mICSPManager.CurrentSystem,
-        mICSPManager.CurrentLocalIpAddress);
-
-      lDeviceInfo.Version = Settings.Default.PhysicalDeviceVersion;
-      lDeviceInfo.Name = Settings.Default.PhysicalDeviceName;
-      lDeviceInfo.Manufacture = Settings.Default.PhysicalDeviceManufacturer;
-      lDeviceInfo.SerialNumber = Settings.Default.PhysicalDeviceSerialNumber;
-      lDeviceInfo.ManufactureId = Settings.Default.PhysicalDeviceManufactureId;
-      lDeviceInfo.DeviceId = Settings.Default.PhysicalDeviceDeviceId;
-      lDeviceInfo.FirmwareId = Settings.Default.PhysicalDeviceFirmwareId;
+        mICSPManager.CurrentLocalIpAddress)
+      {
+        Version = Settings.Default.PhysicalDeviceVersion,
+        Name = Settings.Default.PhysicalDeviceName,
+        Manufacture = Settings.Default.PhysicalDeviceManufacturer,
+        SerialNumber = Settings.Default.PhysicalDeviceSerialNumber,
+        ManufactureId = Settings.Default.PhysicalDeviceManufactureId,
+        DeviceId = lDeviceId,
+        FirmwareId = Settings.Default.PhysicalDeviceFirmwareId
+      };
 
       mICSPManager?.CreateDeviceInfo(lDeviceInfo, Settings.Default.PhysicalDevicePortCount);
     }

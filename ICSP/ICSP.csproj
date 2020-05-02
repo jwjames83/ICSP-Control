@@ -61,8 +61,8 @@
   <ItemGroup>
     <Compile Include="AmxDevice.cs" />
     <Compile Include="AmxUtils.cs" />
+    <Compile Include="Client\ClientOnlineOfflineEventArgs.cs" />
     <Compile Include="Client\ICSPClient.cs" />
-    <Compile Include="Client\ClientConnectedEventArgs.cs" />
     <Compile Include="Client\DataReceivedEventArgs.cs" />
     <Compile Include="Device.cs" />
     <Compile Include="Environment\ProgramProperties.cs" />
