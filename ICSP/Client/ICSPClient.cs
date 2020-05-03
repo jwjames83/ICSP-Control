@@ -182,6 +182,7 @@ namespace ICSP.Client
         {
           Logger.LogDebug(false, "ICSPClient.Send[1]: MessageId=0x{0:X4}, Type={1}", request.ID, request.GetType().Name);
           Logger.LogDebug(false, "ICSPClient.Send[2]: Source={0}, Dest={1}", request.Source, request.Dest);
+          Logger.LogDebug(false, "ICSPClient.Send[3]: {0}", BitConverter.ToString(request.RawData).Replace("-", " "));
 
           mStream.WriteAsync(request.RawData, 0, request.RawData.Length);
         }

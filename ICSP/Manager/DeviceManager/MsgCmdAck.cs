@@ -27,6 +27,20 @@ namespace ICSP.Manager.DeviceManager
       return lRequest.Serialize(dest, source, id, MsgCmd, null);
     }
 
+    public static ICSPMsg CreateRequest(ushort flag, AmxDevice dest, AmxDevice source, ushort id)
+    {
+      var lRequest = new MsgCmdAck();
+
+      return lRequest.Serialize(flag, dest, source, id, MsgCmd, null);
+    }
+
+    public static ICSPMsg CreateRequest(ushort flag, AmxDevice dest, AmxDevice source, byte hop, ushort id)
+    {
+      var lRequest = new MsgCmdAck();
+
+      return lRequest.Serialize(flag, dest, source, hop, id, MsgCmd, null);
+    }
+
     protected override void WriteLogExtended()
     {
       Logger.LogDebug(false, "{0} ID: {1}", GetType().Name, ID);

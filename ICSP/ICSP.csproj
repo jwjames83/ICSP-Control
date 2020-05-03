@@ -66,6 +66,8 @@
     <Compile Include="Client\DataReceivedEventArgs.cs" />
     <Compile Include="Device.cs" />
     <Compile Include="Environment\ProgramProperties.cs" />
+    <Compile Include="FileTransferFunction.cs" />
+    <Compile Include="FileType.cs" />
     <Compile Include="Logging\Enricher\CustomLevelEnricher.cs" />
     <Compile Include="Logging\Enricher\StackTraceEnricher.cs" />
     <Compile Include="Logging\LoggingConfiguration.cs" />
@@ -74,6 +76,8 @@
     <Compile Include="Logging\LoggingConfigurator.cs" />
     <Compile Include="Logging\MethodInfo.cs" />
     <Compile Include="Logging\TraceListener.cs" />
+    <Compile Include="Manager\ConfigurationManager\MsgCmdCompletionCode.cs" />
+    <Compile Include="Manager\ConfigurationManager\MsgCmdFileTransfer.cs" />
     <Compile Include="Manager\ConfigurationManager\MsgCmdGetEthernetIpAddress.cs" />
     <Compile Include="Manager\ConfigurationManager\MsgCmdRequestEthernetIp.cs" />
     <Compile Include="Manager\DiagnosticManager\MsgCmdProbablyProgramInfoEOT.cs" />
@@ -160,6 +164,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="fonts.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
