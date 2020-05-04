@@ -17,3 +17,4 @@ C:\Users\donald.peter\Source\Repos\ICSP-Control\ICSP-Control\obj\Debug\ICSP-Cont
 C:\Users\donald.peter\Source\Repos\ICSP-Control\ICSP-Control\obj\Debug\ICSP-Control.csproj.CopyComplete
 C:\Users\donald.peter\Source\Repos\ICSP-Control\ICSP-Control\obj\Debug\ICSPControl.exe
 C:\Users\donald.peter\Source\Repos\ICSP-Control\ICSP-Control\obj\Debug\ICSPControl.pdb
+C:\Users\donald.peter\Source\Repos\ICSP-Control\ICSP-Control\bin\Debug\ICSharpCode.SharpZipLib.dll

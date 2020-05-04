@@ -37,25 +37,13 @@ namespace ICSP.Manager.ConfigurationManager
       }
     }
 
-    public static ICSPMsg CreateRequest(AmxDevice dest, AmxDevice source, FileType fileType, FileTransferFunction function, ushort resultCode)
+    public static ICSPMsg CreateRequest(AmxDevice dest, AmxDevice source, FileType fileType, ushort function, byte[] fileData)
     {
       var lRequest = new MsgCmdFileTransfer();
 
       var lData =
         ArrayExtensions.Int16ToBigEndian((ushort)fileType)
-        .Concat(ArrayExtensions.Int16ToBigEndian((ushort)function))
-        .Concat(ArrayExtensions.Int16ToBigEndian((ushort)resultCode)).ToArray();
-
-      return lRequest.Serialize(dest, source, MsgCmd, lData);
-    }
-
-    public static ICSPMsg CreateRequest(AmxDevice dest, AmxDevice source, FileType fileType, FileTransferFunction function, byte[] fileData)
-    {
-      var lRequest = new MsgCmdFileTransfer();
-
-      var lData =
-        ArrayExtensions.Int16ToBigEndian((ushort)fileType)
-        .Concat(ArrayExtensions.Int16ToBigEndian((ushort)function))
+        .Concat(ArrayExtensions.Int16ToBigEndian(function))
         .Concat(fileData ?? new byte[] { }).ToArray();
 
       return lRequest.Serialize(dest, source, MsgCmd, lData);

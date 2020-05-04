@@ -37,6 +37,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="ICSharpCode.SharpZipLib, Version=1.2.0.246, Culture=neutral, PublicKeyToken=1b03e6acf1164f73, processorArchitecture=MSIL">
+      <HintPath>..\packages\SharpZipLib.1.2.0\lib\net45\ICSharpCode.SharpZipLib.dll</HintPath>
+    </Reference>
     <Reference Include="Serilog, Version=2.0.0.0, Culture=neutral, PublicKeyToken=24c2f752a8e58a10, processorArchitecture=MSIL">
       <HintPath>..\packages\Serilog.2.5.0\lib\net46\Serilog.dll</HintPath>
     </Reference>
@@ -68,6 +71,7 @@
     <Compile Include="Environment\ProgramProperties.cs" />
     <Compile Include="FileTransferFunction.cs" />
     <Compile Include="FileType.cs" />
+    <Compile Include="FileManager.cs" />
     <Compile Include="Logging\Enricher\CustomLevelEnricher.cs" />
     <Compile Include="Logging\Enricher\StackTraceEnricher.cs" />
     <Compile Include="Logging\LoggingConfiguration.cs" />

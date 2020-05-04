@@ -180,9 +180,8 @@ namespace ICSP.Client
       {
         if(mSocket != null)
         {
-          Logger.LogDebug(false, "ICSPClient.Send[1]: MessageId=0x{0:X4}, Type={1}", request.ID, request.GetType().Name);
-          Logger.LogDebug(false, "ICSPClient.Send[2]: Source={0}, Dest={1}", request.Source, request.Dest);
-          Logger.LogDebug(false, "ICSPClient.Send[3]: {0}", BitConverter.ToString(request.RawData).Replace("-", " "));
+          Logger.LogDebug(false, "ICSPClient.Send[1]: MessageId=0x{0:X4}, Source={1}, Dest={2}, Type={3}", request.ID, request.Source, request.Dest, request.GetType().Name);
+          Logger.LogDebug(false, "ICSPClient.Send[2]: Data={0}", BitConverter.ToString(request.RawData).Replace("-", " "));
 
           mStream.WriteAsync(request.RawData, 0, request.RawData.Length);
         }
