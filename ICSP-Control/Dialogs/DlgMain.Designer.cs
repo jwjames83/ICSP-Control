@@ -92,6 +92,7 @@
       this.cmd_ShowTraceWindow = new System.Windows.Forms.Button();
       this.cmd_CreatePhysicalDevice = new System.Windows.Forms.Button();
       this.cmd_ShowFeedbackTest = new System.Windows.Forms.Button();
+      this.tsmi_InfoFileTransfer = new System.Windows.Forms.ToolStripMenuItem();
       this.MainStatusStrip.SuspendLayout();
       ((System.ComponentModel.ISupportInitialize)(this.num_System)).BeginInit();
       this.groupBox1.SuspendLayout();
@@ -539,10 +540,11 @@
       this.MainMenu.GripMargin = new System.Windows.Forms.Padding(2, 2, 0, 2);
       this.MainMenu.ImageScalingSize = new System.Drawing.Size(24, 24);
       this.MainMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.tsmi_Settings});
+            this.tsmi_Settings,
+            this.tsmi_InfoFileTransfer});
       this.MainMenu.Location = new System.Drawing.Point(0, 0);
       this.MainMenu.Name = "MainMenu";
-      this.MainMenu.Size = new System.Drawing.Size(1521, 33);
+      this.MainMenu.Size = new System.Drawing.Size(1521, 36);
       this.MainMenu.TabIndex = 25;
       // 
       // tsmi_Settings
@@ -700,6 +702,12 @@
       this.cmd_ShowFeedbackTest.Text = "Feedback Test";
       this.cmd_ShowFeedbackTest.UseVisualStyleBackColor = true;
       // 
+      // tsmi_InfoFileTransfer
+      // 
+      this.tsmi_InfoFileTransfer.Name = "tsmi_InfoFileTransfer";
+      this.tsmi_InfoFileTransfer.Size = new System.Drawing.Size(157, 30);
+      this.tsmi_InfoFileTransfer.Text = "&Info File Transfer";
+      // 
       // DlgMain
       // 
       this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
@@ -800,6 +808,7 @@
     private System.Windows.Forms.ToolStripStatusLabel tssl_ProgramName;
     private System.Windows.Forms.ToolStripStatusLabel tssl_MainFile;
     private System.Windows.Forms.Button cmd_ShowFeedbackTest;
-  }
+        private System.Windows.Forms.ToolStripMenuItem tsmi_InfoFileTransfer;
+    }
 }
 

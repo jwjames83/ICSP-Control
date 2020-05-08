@@ -68,10 +68,13 @@
     <Compile Include="Client\ICSPClient.cs" />
     <Compile Include="Client\DataReceivedEventArgs.cs" />
     <Compile Include="Device.cs" />
+    <Compile Include="IO\DirectoryItem.cs" />
     <Compile Include="Environment\ProgramProperties.cs" />
-    <Compile Include="FileTransferFunction.cs" />
+    <Compile Include="IO\DirectoryItemType.cs" />
+    <Compile Include="IO\FileTransferStatusCode.cs" />
+    <Compile Include="IO\FileTransferFunction.cs" />
     <Compile Include="FileType.cs" />
-    <Compile Include="FileManager.cs" />
+    <Compile Include="IO\FileManager.cs" />
     <Compile Include="Logging\Enricher\CustomLevelEnricher.cs" />
     <Compile Include="Logging\Enricher\StackTraceEnricher.cs" />
     <Compile Include="Logging\LoggingConfiguration.cs" />

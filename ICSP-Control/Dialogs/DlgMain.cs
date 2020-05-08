@@ -9,9 +9,9 @@ using System.Windows.Forms;
 
 using ICSP;
 using ICSP.Client;
-using ICSP.Constants;
 using ICSP.Manager.DeviceManager;
 using ICSP.Manager.DiagnosticManager;
+
 using ICSPControl.Controls;
 using ICSPControl.Properties;
 
@@ -46,6 +46,8 @@ namespace ICSPControl.Dialogs
 
       tsmi_CommunicationSetttings.Click += OnCommunicationSetttingsClick;
       tsmi_Exit.Click += OnExitClick;
+
+      tsmi_InfoFileTransfer.Click += (s, e) => { new DlgFileTransfer().ShowDialog(); };
 
       tssl_Host.Text = string.Format("Host: {0}", Settings.Default.AmxHost);
       tssl_Port.Text = string.Format("Port: {0}", Settings.Default.AmxPort);

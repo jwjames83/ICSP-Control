@@ -12,7 +12,7 @@ namespace ICSP
 {
   public class ICSPMsg
   {
-    private static ushort mMsgId;
+    private static ushort MsgId;
 
     public const int DefaultHop = 0xFF;
 
@@ -114,7 +114,7 @@ namespace ICSP
       if(id > 0)
         ID = id;
       else
-        ID = ++mMsgId;
+        ID = ++MsgId;
 
       Command = command;
 
@@ -161,7 +161,7 @@ namespace ICSP
       for(int i = 0; i < RawData.Length - 1; i++)
         lChecksum += RawData[i];
 
-      lChecksum = lChecksum % 256; // 4214 % 256 = 0x76 (118)
+      lChecksum %= 256; // 4214 % 256 = 0x76 (118)
 
       Checksum = (byte)lChecksum;
 

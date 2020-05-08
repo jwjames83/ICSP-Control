@@ -3,6 +3,7 @@ using System.Linq;
 
 using ICSP.Constants;
 using ICSP.Extensions;
+using ICSP.IO;
 using ICSP.Logging;
 
 namespace ICSP.Manager.ConfigurationManager
@@ -37,14 +38,31 @@ namespace ICSP.Manager.ConfigurationManager
       }
     }
 
-    public static ICSPMsg CreateRequest(AmxDevice dest, AmxDevice source, FileType fileType, ushort function, byte[] fileData)
+    internal static ICSPMsg CreateRequest(AmxDevice dest, AmxDevice source, FileType fileType, FileTransferFunction function, byte[] data = null)
+    {
+      var lRequest = new MsgCmdFileTransfer
+      {
+        FileType = fileType,
+        Function = function,
+        FileData = data
+      };
+
+      var lData =
+        ArrayExtensions.Int16ToBigEndian((ushort)fileType)
+        .Concat(ArrayExtensions.Int16ToBigEndian((short)function))
+        .Concat(data ?? Array.Empty<byte>()).ToArray();
+
+      return lRequest.Serialize(dest, source, MsgCmd, lData);
+    }
+
+    public static ICSPMsg CreateRequest(AmxDevice dest, AmxDevice source, FileType fileType, ushort function, byte[] data = null)
     {
       var lRequest = new MsgCmdFileTransfer();
 
       var lData =
         ArrayExtensions.Int16ToBigEndian((ushort)fileType)
         .Concat(ArrayExtensions.Int16ToBigEndian(function))
-        .Concat(fileData ?? new byte[] { }).ToArray();
+        .Concat(data ?? Array.Empty<byte>()).ToArray();
 
       return lRequest.Serialize(dest, source, MsgCmd, lData);
     }    

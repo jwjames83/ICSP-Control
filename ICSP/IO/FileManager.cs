@@ -12,7 +12,7 @@ using ICSP.Logging;
 using ICSP.Manager.ConfigurationManager;
 using ICSP.Manager.DeviceManager;
 
-namespace ICSP
+namespace ICSP.IO
 {
   public class FileManager
   {
@@ -52,8 +52,7 @@ namespace ICSP
       - Probably ...: 0x0106 Get | Access Token
                                         02 | 00 1b | 02 10 | 00 06 27 11 00 00 | 00 06 7d 03 00 00 | ff | 4b 60 | 02 04 | 00 04 01 06 | 00 00 c3 50 | c1
                                         02 | 00 13 | 02 08 | 00 06 7d 03 00 00 | 00 06 27 11 00 00 | 0f | 4b 60 | 00 01 | 9e
-                                        7563636573732e786d6c0d0a343632347c33303830393634367c3539383636323738347c50505f4578706f72744661696c65642e786d6c0d0a333936387c33303830393634367c3539383636323738347c50505f496e666f496e636f6d706c6574652e786d6c0d0a333834307c33303830393634387c313932383732383139327c50505f4d69634c6f636b65642e786d6c0d0a38393530347c33303830393634337c333035333536343637327c50505f4f766572766965772e786d6c0d0a33343136307c33303830393634347c313238383539373337367c50505f526f6f6d53656c6563742e786d6c0d0a3231383632347c33303830393635307c333630383739333630307c50505f53657475702e786d6c0d0a333734347c33303830393634317c333030333439393236347c50505f53797374656d53687574646f776e2e786d6c0d0a31363033327c33303830393634317c333030333439393236347c50505f557362496e666f2e786d6c0d0a34363235367c33303830393634317c333030333439393236347c5f6b6579626f6172642e786d6c0d0a353439367c33303239383237307c313530343632323038307c616d7869636f6e332e7474660d0a3632323339367c33303038373339377c3734333233313438387c617269616c2d626f6c646174632e7474660d0a313033363538347c33303732373639347c313638353835343731397c617269616c2e7474660d0a3938303735367c33303732373639347c313638363031303938317c617269616c62642e7474660d0a32333237353831327c32393532373833337c313338333235303433327c617269616c756e692e7474660d0a313631333636387c33303732373639347c313638363332333530367c63616c69627269622e7474660d0a36333938307c33303031323832377c333136343439343230387c6c746535303837342e7474660d0a3136333434387c33303238313935337c313831353939303931327c726f626f746f2d626f6c642e7474660d0a3836373938387c33303732373639347c313737353038303539347c74611f
-                                        (uccess.xml -> PP_CopySuccess)
+                                        Junk-Data...
 
       - Probably ...: List: [Size|PrevSegment|Nextegment|FileName]\0d\0a
       - Probably ...: List: [Size|Created|Modified|FileName]\0d\0a
@@ -65,99 +64,46 @@ namespace ICSP
       -- Modified: ‎Montag, ‎27. ‎April ‎2020, ‏‎10:43:29
       -- CRC-32: a9882561
 
-uccess.xml  
-4624|30809646|598662784|PP_ExportFailed.xml
-3968|30809646|598662784|PP_InfoIncomplete.xml
-3840|30809648|1928728192|PP_MicLocked.xml
-89504|30809643|3053564672|PP_Overview.xml
-34160|30809644|1288597376|PP_RoomSelect.xml
-218624|30809650|3608793600|PP_Setup.xml
-3744|30809641|3003499264|PP_SystemShutdown.xml
-16032|30809641|3003499264|PP_UsbInfo.xml
-46256|30809641|3003499264|_keyboard.xml
-5496|30298270|1504622080|amxicon3.ttf
-622396|30087397|743231488|arial-boldatc.ttf
-1036584|30727694|1685854719|arial.ttf
-980756|30727694|1686010981|arialbd.ttf
-23275812|29527833|1383250432|arialuni.ttf
-1613668|30727694|1686323506|calibrib.ttf
-63980|30012827|3164494208|lte50874.ttf
-163448|30281953|1815990912|roboto-bold.ttf
-867988|30727694|1775080594|ta.
--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-63|607293952|button-power-cm.png
-6468|30212591|2527576064|button-rectangle-bm.png
-2971|30212591|2607576064|button-rectangle-cm.png
-3440|30212591|2627576064|button-rectangle-fb-bm.png
-3012|30212591|2577576064|button-rectangle-fb-cm.png
-10976|30320060|247242240|button-rectlong-bm.png
-884|30320060|247242240|button-rectlong-cm.png
-2318|30320060|247242240|button-rectlong-fb-bm.png
-960|30320060|247242240|button-rectlong-fb-cm.png
-1680|30378311|637282944|Button_CB_70x800.png
-3918|30439475|1177590400|CamDom-46.png
-4209|30439474|3922557696|CamFix-46.png
-4818|30411094|2884418176|chat_check_44.png
-7822|30411094|1384418176|chat_check_64.png
-4864|30411094|3164418176|chat_delete_44.png
-7693|30411094|1224418176|chat_delete_64.png
-2089|30749463|3125437952|Co)
--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-4406272|graphic-panel-left-calendar.png
-2269|30402665|1233756160|Green-32x32.png
-1513|30191115|325224960|icon-grab.png
-1212|30181853|3502320512|icon-keyboard-caps.png
-1397|30179837|716389248|icon-keypad-delete.png
-1372|30200963|1077293952|icon-power-off.png
-2327|30200963|1217293952|icon-power-on.png
-2158|30211613|3765591552|icon-zoom-in.png
-2239|30211613|3765591552|icon-zoom-out.png
-947|30518713|1708989952|Line_White_H.png
-951|30518713|2358989952|Line_White_V.png
-689|30809200|1464076800|loading_1.png
-1071|30809200|1464076800|loading_2.png
-680|30809200|1464076800|loading_3.png
-1065|30809200|1464076800|loading_4.png
-684|30809200|1464076800|loading_5.png
-1060|30809200|1464076800|loading_6.png
-688|30809200|1464076800|loading_7.png
-1058|30809200O
--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-ral_check_mark_48.png
-1154|30412521|3446086784|realvista_general_lock_24.png
-4637|30056053|838157312|realvista_general_pause_48.png
-2757|30056053|858157312|realvista_general_play_32.png
-4698|30056053|858157312|realvista_general_play_48.png
-4694|30056044|3512862976|realvista_general_webcam_48.png
-3838|30056044|3912862976|realvista_videoproduction_film_camera_16mm_48.png
-5094|30056053|1198157312|realvista_webdesign_3d_design_48.png
-25293|30056045|577895680|supervista_networking_subnet_128.png
-74392|30056045|557895680|supervista_networking_subnet_256.png
-20160|30056045|597895680|supervista_networking_video_conference_128.png
-56783|30056045|577895680|supervista_networking_video_conference_256.png
-3648|30056053|1318157312|USB-48.png
-15250|30056044|40R
--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+      File: manifest.xma:
 
-      02 | 00 d3 | 02 00 | 00 06 7d 03 00 00 | 00 06 27 11 00 00 | 0f | 40 28 | 02 04 | 00 04 00 03 | 00 ba 31 32 38 36 32 39 37 36 7c 55 53 42 2e 70 6e 67 0d 0a 32 38
-0030   34 33 7c 33 30 33 30 35 31 31 37 7c 32 31 31 33
-0040   35 34 36 33 36 38 7c 57 61 70 70 65 6e 2d 4b 74
-0050   2d 53 74 2d 47 61 6c 6c 65 6e 2d 68 30 30 34 30
-0060   2d 62 30 30 33 33 2e 70 6e 67 0d 0a 32 31 36 38
-0070   7c 33 30 33 32 31 30 32 31 7c 34 37 33 36 37 30
-0080   37 38 34 7c 57 61 70 70 65 6e 2d 4b 74 2d 53 74
-0090   2d 47 61 6c 6c 65 6e 2d 68 30 30 34 30 2d 62 5f
-00a0   4c 48 2e 70 6e 67 0d 0a 31 30 38 33 34 7c 33 30
-00b0   32 30 34 31 32 36 7c 32 32 39 35 37 33 36 37 30
-00c0   34 7c 57 6f 72 6b 50 61 67 65 47 72 6f 75 6e 64
-00d0   2e 70 6e 67 0d 0a 60
-*/
+      121|30811502|2039361408|fonts.xma
+      2736|30455951|4026421504|G5Apps.xma
+      68|30811502|2048122314|logs.xma
+      1402|30811502|2039361408|pal_001.xma
+      1080|30811502|2039361408|prj.xma
+      417|30811502|2039361408|Page.xml
+      1036584|30727694|1685854719|arial.ttf
+      */
 
       switch(m.FileType)
       {
         case FileType.Unused:
         {
-          if(m.Function == FileTransferFunction.CreateRemotePanelDirectories)
+          if(m.Function == FileTransferFunction.UnusedDeleteFile) // 0x0104
+          {
+            lOffset = 0;
+
+            var lFileName = AmxUtils.GetNullStr(m.FileData, ref lOffset);
+
+            try
+            {
+              Logger.LogDebug(false, "FileManager[DeleteFile]: FileName={0}", lFileName);
+
+              File.Delete(lFileName);
+
+              lResponse = MsgCmdFileTransfer.CreateRequest(m.Source, m.Dest, FileType.Unused, FileTransferFunction.Ack);
+            }
+            catch(Exception ex)
+            {
+              Logger.LogError(false, "FileManager.ProcessDirectoryInfo: Message={0}", ex.Message);
+
+              lResponse = MsgCmdFileTransfer.CreateRequest(m.Source, m.Dest, FileType.Unused, FileTransferFunction.Nak, ArrayExtensions.Int16ToBigEndian((ushort)FileTransferStatusCode.ErrorRemovingFile));
+            }
+
+            mManager.Send(lResponse);
+          }
+
+          if(m.Function == FileTransferFunction.UnusedCreateDirectory) // 0x0105
           {
             /*
             - FileType: Unused
@@ -178,15 +124,17 @@ ral_check_mark_48.png
             lOffset = 0;
             var lDirectory = AmxUtils.GetNullStr(m.FileData, ref lOffset);
 
-            CreateResourceDirectory(lDirectory);
+            var lStatus = CreateResourceDirectory(lDirectory);
 
-            // OK
-            lResponse = MsgCmdFileTransfer.CreateRequest(m.Source, m.Dest, FileType.Unused, 0x0001, new byte[] { 0x00, 0x10 });
+            if(lStatus == FileTransferStatusCode.NoError)
+              lResponse = MsgCmdFileTransfer.CreateRequest(m.Source, m.Dest, FileType.Unused, FileTransferFunction.Ack);
+            else
+              lResponse = MsgCmdFileTransfer.CreateRequest(m.Source, m.Dest, FileType.Unused, FileTransferFunction.Nak, ArrayExtensions.Int16ToBigEndian((ushort)lStatus));
 
             mManager.Send(lResponse);
           }
 
-          if(m.Function == FileTransferFunction.GetPanelHierarchy) // 0x0100
+          if(m.Function == FileTransferFunction.UnusedGetDirectoryInfo) // 0x0100
           {
             lOffset = 2;
 
@@ -201,7 +149,7 @@ ral_check_mark_48.png
         }
         case FileType.Axcess2Tokens:
         {
-          if(m.Function == FileTransferFunction.GetPanelManifest) // 0x0104
+          if(m.Function == FileTransferFunction.TransferGetFileAccessToken) // 0x0104
           {
             /*
             - FileType: Axcess2 Tokens
@@ -214,17 +162,18 @@ ral_check_mark_48.png
             -------------------------------------------------------------------------------------------------------------------------------------------------------------------------
             - If Manifest not exists: (Emtpy)
             [D->M] FileTransfer : 02 | 00 19 | 02 00 | 00 06 7d 03 00 00 | 00 06 27 11 00 00 | 0f | ff bc | 02 04 | 00 04 00 01 | 00 05 | bb
-
             */
 
             lOffset = 2;
-            var lManifest = AmxUtils.GetNullStr(m.FileData, ref lOffset);
+            var lFileName = AmxUtils.GetNullStr(m.FileData, ref lOffset);
 
-            Logger.LogDebug(false, "FileManager[CreateAccessToken]: Manifest={0}, Token={1}", lManifest, BitConverter.ToString(AccessToken).Replace("-", " "));
+            Logger.LogDebug(false, "FileManager[CreateAccessToken]: Manifest={0}, Token={1}", lFileName, BitConverter.ToString(AccessToken).Replace("-", " "));
 
-            // Return empty (00 01 | 00 05)
+#warning TODO: Get File Access Token ...
+
+            // Return (Nak, ErrorOpeningFile)
             // -> GetPanelHierarchy 0x0100
-            lResponse = MsgCmdFileTransfer.CreateRequest(m.Source, m.Dest, FileType.Axcess2Tokens, 0x0001, new byte[] { 0x00, 0x05 });
+            lResponse = MsgCmdFileTransfer.CreateRequest(m.Source, m.Dest, FileType.Axcess2Tokens, FileTransferFunction.Nak, ArrayExtensions.Int16ToBigEndian(FileTransferStatusCode.ErrorOpeningFile));
 
             /*
             // Probably...: Request : 0x0104 -> Create Access Token
@@ -240,7 +189,7 @@ ral_check_mark_48.png
             mManager.Send(lResponse);
           }
 
-          if(m.Function == (FileTransferFunction)0x0106) // 0x0106
+          if(m.Function == FileTransferFunction.TransferGetFile) // 0x0106
           {
             /*
             - FileType: Axcess2 Tokens
@@ -260,14 +209,15 @@ ral_check_mark_48.png
 
             Logger.LogDebug(false, "FileManager[Token]: Token={0}", BitConverter.ToString(lToken).Replace("-", " "));
 
+# warning TODO: Send file ...
             // Return empty (00 01 | 00 05)
-            lResponse = MsgCmdFileTransfer.CreateRequest(m.Source, m.Dest, FileType.Axcess2Tokens, 0x0001, new byte[] { 0x00, 0x05 });
+            lResponse = MsgCmdFileTransfer.CreateRequest(m.Source, m.Dest, FileType.Axcess2Tokens, FileTransferFunction.Nak, ArrayExtensions.Int16ToBigEndian(FileTransferStatusCode.ErrorOpeningFile));
 
             mManager.Send(lResponse);
           }
 
-          // File Transfer Initialize ... (176)
-          if(m.Function == (FileTransferFunction)0x0006) // 0x0006
+          // Transfer Local Panel Files: Initialize ... (176)
+          if(m.Function == FileTransferFunction.TransferFilesInitialize) // 0x0006
           {
             // Received Files: 13 (00 0A)
             /*
@@ -280,8 +230,8 @@ ral_check_mark_48.png
             Logger.LogDebug(false, "FileManager[0x0006]: Count={0}", ArrayExtensions.GetBigEndianInt16(m.FileData, 0));
           }
 
-          // File Transfer Start Transfer  ...
-          if(m.Function == (FileTransferFunction)0x0100) // 0x0100
+          // Transfer Local Panel Files: Request File Initialize
+          if(m.Function == FileTransferFunction.TransferSingleFile) // 0x0100
           {
             /*
             -                   : P  | Len   | Flag  | Dest              | Source            | H  | ID    | CMD   | N-Data      | CS
@@ -294,11 +244,11 @@ ral_check_mark_48.png
 
             // Function: -> 0x0100 FileName Request ...
             // Function: <- 0x0101 FileName Response ...- (Ready)
-            mManager.Send(MsgCmdFileTransfer.CreateRequest(m.Source, m.Dest, FileType.Axcess2Tokens, 0x0101, new byte[] { 0x7f, 0xff, 0xff, 0xff, 0x00, 0x00, 0x00, 0x00, }));
+            mManager.Send(MsgCmdFileTransfer.CreateRequest(m.Source, m.Dest, FileType.Axcess2Tokens, FileTransferFunction.TransferSingleFileAck, new byte[] { 0x7f, 0xff, 0xff, 0xff, 0x00, 0x00, 0x00, 0x00, }));
           }
 
-          // File Transfer File Info ...
-          if(m.Function == (FileTransferFunction)0x0102) // 0x0102
+          // Transfer Local Panel Files: Request File Info
+          if(m.Function == FileTransferFunction.TransferSingleFileInfo) // 0x0102
           {
             /*
             -                   : P  | Len   | Flag  | Dest              | Source            | H  | ID    | CMD   | N-Data                                                                                        | CS
@@ -324,11 +274,11 @@ ral_check_mark_48.png
 
             // Function: -> 0x0102 FileName Info Request ...   (AMXPanel/fonts.xma)
             // Function: <- 0x0103 FileName Info Response ...- (Success/Token)
-            mManager.Send(MsgCmdFileTransfer.CreateRequest(m.Source, m.Dest, FileType.Axcess2Tokens, 0x0103, new byte[] { 0x07, 0xd0, 0x00, 0x00, 0xc3, 0x50, }));
+            mManager.Send(MsgCmdFileTransfer.CreateRequest(m.Source, m.Dest, FileType.Axcess2Tokens, FileTransferFunction.TransferSingleFileInfoAck, new byte[] { 0x07, 0xd0, 0x00, 0x00, 0xc3, 0x50, }));
           }
 
-          // File Data
-          if(m.Function == (FileTransferFunction)0x0003) // 0x0003
+          // Transfer Local Panel Files: Request File Data
+          if(m.Function == FileTransferFunction.TransferFileData) // 0x0003
           {
             /*
             -                   : P  | Len   | Flag  | Dest              | Source            | H  | ID    | CMD   | N-Data                           | CS
@@ -348,31 +298,43 @@ ral_check_mark_48.png
 
             // Function: -> 0x0003 RawData Request ...
             // Function: <- 0x0002 RawData Response ... (Next data)
-            mManager.Send(MsgCmdFileTransfer.CreateRequest(m.Source, m.Dest, FileType.Axcess2Tokens, 0x0002, new byte[] { }));
+            mManager.Send(MsgCmdFileTransfer.CreateRequest(m.Source, m.Dest, FileType.Axcess2Tokens, FileTransferFunction.Ack));
           }
 
-          // File Data Raw End
-          if(m.Function == (FileTransferFunction)0x0004) // 0x0004
+          // Transfer Local Panel Files: Request File Data End
+          if(m.Function == FileTransferFunction.TransferFileDataComplete) // 0x0004
           {
             /*
             -                   : P  | Len   | Flag  | Dest              | Source            | H  | ID    | CMD   | N-Data      | CS
             [M->D] File Transfer: 02 | 00 17 | 02 00 | 00 06 27 13 00 00 | 00 06 7D 03 00 00 | 0F | FF AF | 02 04 | 00 04 00 04 | AC
             [D->M] Ack          : 02 | 00 13 | 02 00 | 00 06 7D 03 00 00 | 00 06 27 13 00 00 | FF | FF AF | 00 01 | 8B
             [D->M] FileTransfer : 02 | 00 17 | 02 00 | 00 06 7D 03 00 00 | 00 06 27 13 00 00 | FF | 00 31 | 02 04 | 00 04 00 05 | 20
+
             */
-            
+
             WriteDataToFile();
 
             // Function: -> 0x0004 RawData End Request ...
             // Function: <- 0x0005 RawData End Response ... (Next file)
-            mManager.Send(MsgCmdFileTransfer.CreateRequest(m.Source, m.Dest, FileType.Axcess2Tokens, 0x0005, new byte[] { }));
+            mManager.Send(MsgCmdFileTransfer.CreateRequest(m.Source, m.Dest, FileType.Axcess2Tokens, FileTransferFunction.TransferFileDataCompleteAck));
+          }
+
+          // Transfer Local Panel Files: End
+          if(m.Function == FileTransferFunction.TransferFilesComplete) // 0x0007
+          {
+            // End File Transfer
+            /*
+            -                   : P  | Len   | Flag  | Dest              | Source            | H  | ID    | CMD   | N-Data      | CS
+            [M->D] File Transfer: 02 | 00 17 | 02 10 | 00 01 27 11 00 00 | 00 01 7d 02 00 00 | ff | 0c a6 | 02 04 | 00 04 00 07 a6
+            [M->D] Ack          : 02 | 00 13 | 02 08 | 00 01 7d 02 00 00 | 00 01 27 11 00 00 | 0f | 0c a6 | 00 01 | 9a
+            */
           }
 
           break;
         }
         default:
         {
-          lResponse = MsgCmdFileTransfer.CreateRequest(m.Source, m.Dest, FileType.Unused, 0x0001, new byte[] { });
+          lResponse = MsgCmdFileTransfer.CreateRequest(m.Source, m.Dest, FileType.Unused, FileTransferFunction.Ack);
 
           mManager.Send(lResponse);
 
@@ -381,7 +343,7 @@ ral_check_mark_48.png
       }
     }
 
-    private void CreateResourceDirectory(string directory)
+    private FileTransferStatusCode CreateResourceDirectory(string directory)
     {
       Logger.LogDebug(false, "FileManager.CreateResourceDirectory: Directory={0}", directory);
 
@@ -389,12 +351,18 @@ ral_check_mark_48.png
       {
         var lPath = Path.Combine(BaseDirectory, directory);
 
-        if(!Directory.Exists(lPath))
-          Directory.CreateDirectory(lPath);
+        if(Directory.Exists(lPath))
+          return FileTransferStatusCode.DirectoryAlreadyExists;
+
+        Directory.CreateDirectory(lPath);
+
+        return FileTransferStatusCode.NoError;
       }
       catch(Exception ex)
       {
         Logger.LogError(false, "FileManager.CreateResourceDirectory: Message={0}", ex.Message);
+
+        return FileTransferStatusCode.ErrorCreatingDirectory;
       }
     }
 
@@ -407,13 +375,14 @@ ral_check_mark_48.png
       ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
       [M->D] File Transfer: 02 | 01 1d | 02 10 | 00 06 27 11 00 00 | 00 06 7d 03 00 00 | ff | 4f 8e | 02 04 | 00 00 01 00 | 00 00 41 4d 58 50 61 6e 65 6c 2f ... de (AMXPanel/)
       [D->M] Ack          : 02 | 00 13 | 02 08 | 00 06 7d 03 00 00 | 00 06 27 11 00 00 | 0f | 02 32 | 00 01 | 27
-      [D->M] FileTransfer : 02 | 00 36 | 02 00 | 00 06 7d 03 00 00 | 00 06 27 11 00 00 | 0f | ff bd | 02 04 | 00 00 01 01 | 00 00 00 00 00 00 10 00 00 33 8d 83 00 30 7b 66 2f 2e 61 6d 78 2f 41 4d 58 50 61 6e 65 6c 00 | dd (FullPath)
+      [D->M] FileTransfer : 02 | 00 36 | 02 00 | 00 06 7d 03 00 00 | 00 06 27 11 00 00 | 0f | ff bd | 02 04 | 00 00 01 01 | 00 00 00 00 | 00 00 10 00 00 33 8d 83 00 30 7b 66 2f 2e 61 6d 78 2f 41 4d 58 50 61 6e 65 6c 00 | dd (FullPath)
       [D->M] FileTransfer : 02 | 00 3a | 02 00 | 00 06 7d 03 00 00 | 00 06 27 11 00 00 | 0f | ff be | 02 04 | 00 00 01 02 | 00 00 00 01 | 00 03 | 00 01 | 00 00 20 00 05 03 07 e4 12 09 16 | 41 4d 58 50 61 6e 65 6c 2f 69 6d 61 67 65 73 00 | 9b      (AMXPanel/images)
       [D->M] FileTransfer : 02 | 00 3a | 02 00 | 00 06 7d 03 00 00 | 00 06 27 11 00 00 | 0f | ff bf | 02 04 | 00 00 01 02 | 00 00 00 01 | 00 03 | 00 02 | 00 00 10 00 0a 07 07 e3 0d 20 17 | 41 4d 58 50 61 6e 65 6c 2f 73 6f 75 6e 64 73 00 | ce | dd (AMXPanel/sounds)
       [D->M] FileTransfer : 02 | 00 39 | 02 00 | 00 06 7d 03 00 00 | 00 06 27 11 00 00 | 0f | ff c0 | 02 04 | 00 00 01 02 | 00 00 00 01 | 00 03 | 00 03 | 00 00 10 00 05 03 07 e4 12 09 16 | 41 4d 58 50 61 6e 65 6c 2f 66 6f 6e 74 73 00 | 42         (AMXPanel/fonts)
       ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
       ...
-      [D->M] FileTransfer : 02 | 00 2c | 02 00 | 00 06 7d 03 00 00 | 00 06 27 11 00 00 | 0f | ff c2 | 02 04 | 00 00 01 02 | 00 00 00 00 | 00 00 | 00 00 | 00 00 00 00 00 00 00 00 00 00 00 | 3f 00 0c (? -> 0x3F- > no more entries)
+      [D->M] FileTransfer : 02 | 00 2c | 02 00 | 00 06 7d 03 00 00 | 00 06 27 11 00 00 | 0f | ff c2 | 02 04 | 00 00 01 02 | 00 00 00 00 | 00 00 | 00 00 | 00 00 00 00 00 00 00 00 00 00 00 | 3f 00 0c (? -> 0x3F- > empty)
+                            02 | 00 39 | 02 00 | 00 01 7D 01 00 00 | 00 01 27 13 00 00 | FF | 00 0F | 02 04 | 00 00 01 02 | 00 00 00 01 | 00 10 | 00 11 | 00 00 00 00 00 00 00 00 00 00 00 41 4D 58 50 61 6E 65 6C 2F 66 6F 6E 74 73 00 5F
       ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
       ...
       */
@@ -429,59 +398,60 @@ ral_check_mark_48.png
 
         lBytes = lBytes.Concat(Encoding.Default.GetBytes(lBaseDirectory.FullName + "\0")).ToArray();
 
-        mManager.Send(MsgCmdFileTransfer.CreateRequest(m.Source, m.Dest, FileType.Unused, 0x0101, lBytes));
+        mManager.Send(MsgCmdFileTransfer.CreateRequest(m.Source, m.Dest, FileType.Unused, FileTransferFunction.UnusedDirectoryInfo, lBytes));
 
-        var lDirectories = lBaseDirectory.GetDirectories();
+        var lItems = new List<DirectoryItem>();
 
-        if(lDirectories.Length > 0)
+        var lDir = lBaseDirectory.GetDirectories();
+
+        // Add directories
+        foreach(var lDirectory in lBaseDirectory.GetDirectories())
+          lItems.Add(new DirectoryItem() { Type = DirectoryItemType.Directory, Name = string.Format("{0}{1}", path, lDirectory.Name) });
+
+        // Add files
+        foreach(var lFile in lBaseDirectory.GetFiles())
+          lItems.Add(new DirectoryItem() { Type = DirectoryItemType.File, Name = string.Format("{0}{1}", path, lFile.Name) });
+
+        var lItemCount = lItems.Count;
+        var lItemNo = lItemCount > 0 ? 0 : -1;
+
+        // No Items
+        if(lItemCount == 0)
+          lItems.Add(new DirectoryItem() { Type = DirectoryItemType.File, Name = "?" });
+
+        foreach(var item in lItems)
         {
-          var lSequence = 0;
+          lItemNo++;
 
-          foreach(var lDirectory in lDirectories)
+          byte[] lData;
+
+          using(var lStream = new MemoryStream())
           {
-            byte[] lData;
+            // Unknown (2 Bytes)
+            lStream.Write(new byte[] { 0x00, 0x00, }, 0, 2);
 
-            lSequence++;
+            // Type
+            lStream.Write(AmxUtils.Int16ToBigEndian((ushort)item.Type), 0, 2);
 
-            var lDirectoryName = string.Format("{0}{1}", path, lDirectory.Name);
+            // Total Count
+            lStream.Write(AmxUtils.Int16ToBigEndian(lItemCount), 0, 2);
 
-            using(var lStream = new MemoryStream())
-            {
-              // Unknown (4 Bytes)
-              lStream.Write(new byte[] { 0x00, 0x00, 0x00, 0x01 }, 0, 4);
+            // Sequence
+            lStream.Write(AmxUtils.Int16ToBigEndian(lItemNo), 0, 2);
 
-              // Count
-              lStream.Write(AmxUtils.Int16ToBigEndian(lDirectories.Length), 0, 2);
-              // 00 00 00 01 | 00 03 | 00 01 | 00 00 20 00 05 03 07 e4 12 09 16
+            // Unknown (11 Bytes)
+            lStream.Write(new byte[] { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, }, 0, 11);
 
-              // Sequence
-              lStream.Write(AmxUtils.Int16ToBigEndian(lSequence), 0, 2);
+            // Directory Name (Null-Terminated)
+            lBytes = Encoding.Default.GetBytes(item.Name + "\0");
+            lStream.Write(lBytes, 0, lBytes.Length);
 
-              // Unknown (11 Bytes)
-              lStream.Write(new byte[] { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, }, 0, 11);
-
-              // Directory Name (Null-Terminated)
-              lBytes = Encoding.Default.GetBytes(lDirectoryName + "\0");
-              lStream.Write(lBytes, 0, lBytes.Length);
-
-              lData = lStream.ToArray();
-            }
-
-            Logger.LogDebug(false, "FileManager.ProcessDirectoryInfo[0x0102]: Directory={0}", lDirectoryName);
-
-            mManager.Send(MsgCmdFileTransfer.CreateRequest(m.Source, m.Dest, FileType.Unused, 0x0102, lData));
+            lData = lStream.ToArray();
           }
-        }
-        else
-        {
-          lBytes = new byte[] { 00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
 
-          // ? (0x3F)
-          lBytes = lBytes.Concat(Encoding.Default.GetBytes("?\0")).ToArray();
+          Logger.LogDebug(false, "FileManager.ProcessDirectoryInfo[0x0102]: {0}", item);
 
-          Logger.LogDebug(false, "FileManager.ProcessDirectoryInfo[0x0102]: ?");
-
-          mManager.Send(MsgCmdFileTransfer.CreateRequest(m.Source, m.Dest, FileType.Unused, 0x0102, lBytes)); // End
+          mManager.Send(MsgCmdFileTransfer.CreateRequest(m.Source, m.Dest, FileType.Unused, FileTransferFunction.UnusedDirectoryItem, lData));
         }
       }
       catch(Exception ex)
@@ -539,7 +509,7 @@ ral_check_mark_48.png
             // 00 D2
             Compressed (GZip):
             1F 8B 08 00 00 00 00 00 00 0B 2D 90 CB 0E 82 30 10 45 F7 24 FE 03 29 7B 0A 26 26 2E C6 71 A3 26 EE FD 01 81 0E 90 08 34 ED E0 E3 EF 9D B6 CC A2 3D F7 E6 CE F4 01 E7 EF F4 CA DF C6 F9 71 99 4F AA 2E 2B 75 C6 5D 06 6E 59 18 C1 3E 7B 93 F3 CF 9A 93 F2 6B 13 94 CA ED 62 57 FB 88 5E 44 95 62 F7 0B 1E AA 3D E8 8D 61 7E 4E 06 AF 93 E5 1F E8 C8 F0 19 3B 1E B0 3E 80 4E 04 83 19 FB 81 A3 B3 21 78 97 CF EB D4 18 27 57 91 C1 8D 47 D0 61 69 1B 2C 88 2A A9 DB 0D B4 28 68 09 8B A0 3B 22 12 87 C4 E1 90 49 25 8E 4C 33 6D CA A4 2E 51 40 84 F5 B1 35 33 FB 92 59 52 A2 81 3C D6 95 60 38 CB 3B 4C 4F 90 2D 7E C1 2E FB 03 05 03 B7 07 22 01 00 00
-  
+            
             Encrypted:
             bc 06 cb 95 a4 45 73 29 11 b8 4a 0a 80 b2 06 fc 82 da 4a 8d 8a 40 10 d8 55 25 ed ea 8b 26 c2 54 b4 ac 3c 62 ca af 73 4a 9a e5 0e 88 d2 eb 10 d1 c3 93 dc e7 32 36 22 a3 7e 0c 15 5e fb e1 98 1c 97 5a 1d 02 32 20 83 72 a3 de ab 3d 98 bd 8a 0b 8e 14 3b 9a de dc 66 16 70 4c 1d 2a c1 17 77 16 0f f4 d0 ae 7d a9 3e b2 12 97 20 16 94 f5 61 bf 61 50 a9 74 99 b0 19 9b 21 cc dc 13 85 16 55 09 de 3e cb 56 59 a9 58 77 66 50 46 1d e9 ca 9b 81 fe bf db 2f 8c 73 cc cc 76 46 a2 b3 bf ab 38 ab 0b 19 d9 5e 3c 93 7c b7 8b 89 ec e7 79 bd 94 49 7f c3 f9 f4 5d b7 e2 e8 4c c3 f9 b1 3e 5f 9b a4 37 91 f2 3b 49 5f 2e ff 98 d6 da 3d 14 ac 85 b5 97 4e 6b 32 a3 d1 8c 04 e1 fa cd 6a 4d aa a6 90 d4 c8 19 5c 2d f6 ab 53 4c 10 72 4c d5 73 a4 3b 10 10 b5 ba 8c 0c 27 4c c2 69 54 24 d3 74 80 5e 91 d4 29 d6 61 42 06 00 fd 2e c3 17 87 4e 27 3e 9e a6 b9 ae 37 c4 a7 44 20 db ef ca 79 9d 71 37 48 df b2 d6 06 28 3a ea c4 5d d1 88 5e dc a1 ca
             ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------

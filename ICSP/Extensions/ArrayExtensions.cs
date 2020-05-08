@@ -39,14 +39,9 @@ namespace ICSP.Extensions
           | data[startIndex + 7];
     }
 
-    public static byte[] Int16ToBigEndian(int value)
+    public static byte[] Int16ToBigEndian(dynamic value)
     {
-      var lBytes = new byte[2];
-
-      lBytes[0] = (byte)(value >> 8);
-      lBytes[1] = (byte)value;
-
-      return lBytes;
+      return new byte[] { (byte)((ushort)value >> 8), (byte)value };
     }
 
     public static byte[] Int16To8Bit(int value)

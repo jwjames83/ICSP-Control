@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net;
 
 using ICSP.Client;
+using ICSP.IO;
 using ICSP.Logging;
 using ICSP.Manager;
 using ICSP.Manager.ConfigurationManager;
