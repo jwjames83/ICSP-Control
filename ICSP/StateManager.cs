@@ -73,7 +73,7 @@ namespace ICSP
 
   public class ChannelStates : IEnumerable<ChannelValue>
   {
-    private Dictionary<ushort, ChannelValue> mChannels;
+    private readonly Dictionary<ushort, ChannelValue> mChannels;
 
     public ChannelStates()
     {
@@ -117,7 +117,7 @@ namespace ICSP
 
   public class LevelStates : IEnumerable<LevelValue>
   {
-    private Dictionary<ushort, LevelValue> mLevels;
+    private readonly Dictionary<ushort, LevelValue> mLevels;
 
     public LevelStates()
     {
@@ -161,23 +161,24 @@ namespace ICSP
   
   public class StateManager
   {
-    private ICSPManager mManager;
+    private readonly ICSPManager mManager;
 
-    private Dictionary<ushort, DeviceInfoData> mDevices;
+    private readonly Dictionary<ushort, DeviceInfoData> mDevices;
 
-    private SynchronizationContext mSyncContext;
-
-    private Dictionary<AmxDevice, DeviceState> mDevicePorts;
+    private readonly Dictionary<AmxDevice, DeviceState> mDevicePorts;
 
     public StateManager(ICSPManager manager)
     {
       mManager = manager;
 
-      mSyncContext = new SynchronizationContext();
-
       mDevices = new Dictionary<ushort, DeviceInfoData>();
 
       mDevicePorts = new Dictionary<AmxDevice, DeviceState>();
+
+      // Suppress Warnings IDE0052, under development ...
+      Console.WriteLine(mManager);
+      Console.WriteLine(mDevices);
+      Console.WriteLine(mDevicePorts);
 
       // Test ...
       if(!mDevicePorts.ContainsKey(AmxDevice.Empty))
@@ -198,14 +199,6 @@ namespace ICSP
           Console.WriteLine(item);
         }
       }
-    }
-
-    public void SetSynchronizationContext(SynchronizationContext syncContext)
-    {
-      if(syncContext == null)
-        throw new ArgumentNullException(nameof(syncContext));
-
-      mSyncContext = syncContext;
     }
   }
 }

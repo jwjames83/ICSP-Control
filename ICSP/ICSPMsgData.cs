@@ -6,42 +6,42 @@ namespace ICSP
   public struct ICSPMsgData
   {
     public static readonly ICSPMsgData Empty;
-    
-    public static ICSPMsgData FromMessage(byte[] msg)
+
+    public static ICSPMsgData Create(byte[] bytes)
     {
       var lMsg = new ICSPMsgData();
 
-      lMsg.RawData = msg;
+      lMsg.RawData = bytes;
 
-      if(msg.Length >= 3)
+      if(bytes?.Length >= 3)
       {
-        lMsg.Protocol = msg[0];
+        lMsg.Protocol = bytes[0];
 
-        lMsg.Length = msg.GetBigEndianInt16(1);
+        lMsg.Length = bytes.GetBigEndianInt16(1);
 
         // Protocol (1), Length (2), Checksum (1)
-        if(msg.Length < lMsg.Length + 4)
+        if(bytes.Length < lMsg.Length + 4)
         {
-          Logger.LogWarn("{0} => Data to Short: {1} Bytes", nameof(ICSPMsgData),  msg.Length);
+          Logger.LogWarn("{0} => Data to Short: Get {1} Bytes, Expected: {2} Bytes", nameof(ICSPMsgData), bytes.Length, lMsg.Length + 4);
 
           return ICSPMsgData.Empty;
         }
 
-        lMsg.Flag = msg.GetBigEndianInt16(3);
+        lMsg.Flag = bytes.GetBigEndianInt16(3);
 
-        lMsg.Dest = AmxDevice.FromSDP(msg.Range(5, 6));
-        lMsg.Source = AmxDevice.FromSDP(msg.Range(11, 6));
+        lMsg.Dest = AmxDevice.FromSDP(bytes.Range(5, 6));
+        lMsg.Source = AmxDevice.FromSDP(bytes.Range(11, 6));
 
-        lMsg.Hop = msg[17];
+        lMsg.Hop = bytes[17];
 
-        lMsg.ID = msg.GetBigEndianInt16(18);
+        lMsg.ID = bytes.GetBigEndianInt16(18);
 
-        lMsg.Command = msg.GetBigEndianInt16(20);
+        lMsg.Command = bytes.GetBigEndianInt16(20);
 
         // Data
-        lMsg.Data = msg.Range(22, msg.Length - 22 - 1);
+        lMsg.Data = bytes.Range(22, bytes.Length - 22 - 1);
 
-        lMsg.Checksum = msg[lMsg.Length + 3];
+        lMsg.Checksum = bytes[lMsg.Length + 3];
       }
 
       return lMsg;
@@ -128,7 +128,7 @@ namespace ICSP
     /// other ones are intended for communication with the connection manager located in the master.
     /// </summary>
     public ushort Command { get; set; }
-    
+
     /// <summary>
     /// Message Data
     /// </summary>

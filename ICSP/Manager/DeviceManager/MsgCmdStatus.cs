@@ -81,11 +81,11 @@ namespace ICSP.Manager.DeviceManager
 
     protected override void WriteLogExtended()
     {
-      Logger.LogDebug(false, "{0} Device      : {1:00000}", GetType().Name, Device);
-      Logger.LogDebug(false, "{0} StatusCode  : {1} ({2})", GetType().Name, (ushort)StatusCode, StatusCode);
-      Logger.LogDebug(false, "{0} ValueType   : {1}", GetType().Name, ValueType);
-      Logger.LogDebug(false, "{0} Length      : {1}", GetType().Name, Length);
-      Logger.LogDebug(false, "{0} StatusString: {1}", GetType().Name, StatusString);
+      Logger.LogDebug(false, "{0:l} Device      : {1:00000}", GetType().Name, Device);
+      Logger.LogDebug(false, "{0:l} StatusCode  : {1} ({2})", GetType().Name, (ushort)StatusCode, StatusCode);
+      Logger.LogDebug(false, "{0:l} ValueType   : {1}", GetType().Name, ValueType);
+      Logger.LogDebug(false, "{0:l} Length      : {1}", GetType().Name, Length);
+      Logger.LogDebug(false, "{0:l} StatusString: {1:l}", GetType().Name, StatusString);
     }
 
     #region Properties

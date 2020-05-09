@@ -55,8 +55,8 @@ namespace ICSP.Manager.ConfigurationManager
     
     protected override void WriteLogExtended()
     {
-      Logger.LogDebug(false, "{0} Message: 0x{1:X2} ({2})", GetType().Name, Message, ICSPMsg.GetFrindlyName(Message));
-      Logger.LogDebug(false, "{0} Status : 0x{1:X2}", GetType().Name, Status);
+      Logger.LogDebug(false, "{0:l} Message: 0x{1:X2} ({2:l})", GetType().Name, Message, ICSPMsg.GetFrindlyName(Message));
+      Logger.LogDebug(false, "{0:l} Status : 0x{1:X2}", GetType().Name, Status);
     }
 
     #region Properties

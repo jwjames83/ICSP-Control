@@ -42,8 +42,8 @@ namespace ICSP.Manager.ConnectionManager
 
     protected override void WriteLogExtended()
     {
-      Logger.LogDebug(false, "{0} Device: {1:00000}", GetType().Name, Device);
-      Logger.LogDebug(false, "{0} System: {1}", GetType().Name, System);
+      Logger.LogDebug(false, "{0:l} Device: {1:00000}", GetType().Name, Device);
+      Logger.LogDebug(false, "{0:l} System: {1}", GetType().Name, System);
     }
   }
 }

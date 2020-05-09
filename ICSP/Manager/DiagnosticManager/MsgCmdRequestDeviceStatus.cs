@@ -42,7 +42,7 @@ namespace ICSP.Manager.DiagnosticManager
     
     protected override void WriteLogExtended()
     {
-      Logger.LogDebug(false, "{0} Device: {0}", GetType().Name, Device);
+      Logger.LogDebug(false, "{0:l} Device: {0:l}", GetType().Name, Device);
     }
   }
 }

@@ -41,7 +41,7 @@ namespace ICSP.Manager.DeviceManager
       lRequest.System = system;
       lRequest.PortCount = portCount;
 
-      Logger.LogDebug(false, "MsgCmdPortCountBy.CreateRequest: Device={0}, System={1}, PortCount={2}", lRequest.Device, lRequest.System, lRequest.PortCount);
+      Logger.LogDebug(false, "MsgCmdPortCountBy.CreateRequest: Device={0:l}, System={1}, PortCount={2}", lRequest.Device, lRequest.System, lRequest.PortCount);
 
       var lData = ArrayExtensions.Int16ToBigEndian(device)
         .Concat(ArrayExtensions.Int16ToBigEndian(system))
@@ -67,9 +67,9 @@ namespace ICSP.Manager.DeviceManager
 
     protected override void WriteLogExtended()
     {
-      Logger.LogDebug(false, "{0} Device   : {1:00000}", GetType().Name, Device);
-      Logger.LogDebug(false, "{0} System   : {1}", GetType().Name, System);
-      Logger.LogDebug(false, "{0} PortCount: {1}", GetType().Name, PortCount);
+      Logger.LogDebug(false, "{0:l} Device   : {1:00000}", GetType().Name, Device);
+      Logger.LogDebug(false, "{0:l} System   : {1}", GetType().Name, System);
+      Logger.LogDebug(false, "{0:l} PortCount: {1}", GetType().Name, PortCount);
     }
   }
 }

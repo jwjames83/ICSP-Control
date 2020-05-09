@@ -41,7 +41,7 @@ namespace ICSP.Manager.DiagnosticManager
     
     protected override void WriteLogExtended()
     {
-      Logger.LogDebug(false, "{0} Unknown: {0}", GetType().Name, Unknown);
+      Logger.LogDebug(false, "{0:l} Unknown: {0}", GetType().Name, Unknown);
     }
   }
 }

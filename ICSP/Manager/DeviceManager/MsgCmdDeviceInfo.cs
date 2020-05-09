@@ -150,7 +150,7 @@ namespace ICSP.Manager.DeviceManager
 
       lRequest.IPv4Address = deviceInfo.IPv4Address;
 
-      Logger.LogDebug(false, "MsgCmdDeviceInfo.CreateRequest: Dest={0}, Source={1}, IPv4Address={2}", lDest, lSource, lRequest.IPv4Address);
+      Logger.LogDebug(false, "MsgCmdDeviceInfo.CreateRequest: Dest={0:l}, Source={1:l}, IPv4Address={2:l}", lDest, lSource, lRequest.IPv4Address);
 
       lRequest.Device = deviceInfo.Device;
       lRequest.System = deviceInfo.System;
@@ -294,49 +294,49 @@ namespace ICSP.Manager.DeviceManager
     {
       var lAddressType = "Unknown";
 
-      Logger.LogDebug(false, "{0} Device          : {1:00000}", GetType().Name, Device);
-      Logger.LogDebug(false, "{0} System          : {1}", GetType().Name, System);
-      Logger.LogDebug(false, "{0} Flag            : {1}", GetType().Name, DataFlag);
-      Logger.LogDebug(false, "{0} ObjectID        : {1}", GetType().Name, ObjectId);
-      Logger.LogDebug(false, "{0} ParentID        : {1}", GetType().Name, ParentId);
-      Logger.LogDebug(false, "{0} MfgID           : {1}", GetType().Name, ManufactureId);
-      Logger.LogDebug(false, "{0} DeviceID        : 0x{1:X4}", GetType().Name, DeviceId);
-      Logger.LogDebug(false, "{0} SerialNumber    : {1}", GetType().Name, SerialNumber);
-      Logger.LogDebug(false, "{0} FWID            : 0x{1:X4}", GetType().Name, FirmwareId);
-      Logger.LogDebug(false, "{0} Version         : {1}", GetType().Name, Version);
-      Logger.LogDebug(false, "{0} Name            : {1}", GetType().Name, Name);
-      Logger.LogDebug(false, "{0} Manufacture     : {1}", GetType().Name, Manufacture);
+      Logger.LogDebug(false, "{0:l} Device          : {1:00000}", GetType().Name, Device);
+      Logger.LogDebug(false, "{0:l} System          : {1}", GetType().Name, System);
+      Logger.LogDebug(false, "{0:l} Flag            : {1}", GetType().Name, DataFlag);
+      Logger.LogDebug(false, "{0:l} ObjectID        : {1}", GetType().Name, ObjectId);
+      Logger.LogDebug(false, "{0:l} ParentID        : {1}", GetType().Name, ParentId);
+      Logger.LogDebug(false, "{0:l} MfgID           : {1}", GetType().Name, ManufactureId);
+      Logger.LogDebug(false, "{0:l} DeviceID        : 0x{1:X4}", GetType().Name, DeviceId);
+      Logger.LogDebug(false, "{0:l} SerialNumber    : {1:l}", GetType().Name, SerialNumber);
+      Logger.LogDebug(false, "{0:l} FWID            : 0x{1:X4}", GetType().Name, FirmwareId);
+      Logger.LogDebug(false, "{0:l} Version         : {1:l}", GetType().Name, Version);
+      Logger.LogDebug(false, "{0:l} Name            : {1:l}", GetType().Name, Name);
+      Logger.LogDebug(false, "{0:l} Manufacture     : {1:l}", GetType().Name, Manufacture);
 
       switch(ExtAddressType)
       {
-        case ExtAddressType.NeuronId: lAddressType = "Neuron-ID"; break;
-        case ExtAddressType.IPv4Address: lAddressType = "IP4-Address"; break;
-        case ExtAddressType.AxLink: lAddressType = "AXLink"; break;
-        case ExtAddressType.RS232: lAddressType = "RS232"; break;
-        case ExtAddressType.IPv4PortMac: lAddressType = "IPv4, Port, MAC"; break;
-        case ExtAddressType.IPv4PortMacIPv6: lAddressType = "IPv4, Port, MAC, IPv6"; break;
+        case ExtAddressType.NeuronId        /**/: lAddressType = "Neuron-ID"; break;
+        case ExtAddressType.IPv4Address     /**/: lAddressType = "IP4-Address"; break;
+        case ExtAddressType.AxLink          /**/: lAddressType = "AXLink"; break;
+        case ExtAddressType.RS232           /**/: lAddressType = "RS232"; break;
+        case ExtAddressType.IPv4PortMac     /**/: lAddressType = "IPv4, Port, MAC"; break;
+        case ExtAddressType.IPv4PortMacIPv6 /**/: lAddressType = "IPv4, Port, MAC, IPv6"; break;
       }
 
       if(ExtAddressType > 0)
-        Logger.LogDebug(false, "{0} ExtAddressType  : 0x{1:X2} ({2})", GetType().Name, (byte)ExtAddressType, lAddressType);
+        Logger.LogDebug(false, "{0:l} ExtAddressType  : 0x{1:X2} ({2:l})", GetType().Name, (byte)ExtAddressType, lAddressType);
       else
-        Logger.LogDebug(false, "{0} ExtAddressType  : 0x{1:X2}", GetType().Name, ExtAddressType);
+        Logger.LogDebug(false, "{0:l} ExtAddressType  : 0x{1:X2}", GetType().Name, ExtAddressType);
 
-      Logger.LogDebug(false, "{0} ExtAddressLength: {1}", GetType().Name, ExtAddressLength);
+      Logger.LogDebug(false, "{0:l} ExtAddressLength: {1}", GetType().Name, ExtAddressLength);
 
       // NI-700: IP, Port, MAC
       if(ExtAddressType == ExtAddressType.IPv4PortMac || ExtAddressType == ExtAddressType.IPv4PortMacIPv6)
       {
-        Logger.LogDebug(false, "{0} IPv4Address     : {1}", GetType().Name, IPv4Address);
-        Logger.LogDebug(false, "{0} IpPort          : {1}", GetType().Name, IpPort);
-        Logger.LogDebug(false, "{0} MacAddress      : {1}", GetType().Name, string.Join(":", MacAddress.GetAddressBytes().Select(b => b.ToString("X2"))));
+        Logger.LogDebug(false, "{0:l} IPv4Address     : {1:l}", GetType().Name, IPv4Address);
+        Logger.LogDebug(false, "{0:l} IpPort          : {1}", GetType().Name, IpPort);
+        Logger.LogDebug(false, "{0:l} MacAddress      : {1:l}", GetType().Name, string.Join(":", MacAddress.GetAddressBytes().Select(b => b.ToString("X2"))));
       }
 
       // NX-1200: IPV4, Port, MAC, IPV6
       if(ExtAddressType == ExtAddressType.IPv4PortMacIPv6)
       {
         // :FFFF:AC10:108D
-        Logger.LogDebug(false, "{0} IPv6Address     : {1}", GetType().Name, IPv6Address);
+        Logger.LogDebug(false, "{0:l} IPv6Address     : {1:l}", GetType().Name, IPv6Address);
       }
     }
 

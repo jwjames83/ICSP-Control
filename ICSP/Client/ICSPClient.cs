@@ -1,9 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
-using System.Text;
 
+using ICSP.Extensions;
 using ICSP.Logging;
 
 namespace ICSP.Client
@@ -16,7 +17,7 @@ namespace ICSP.Client
 
     public event EventHandler<ClientOnlineOfflineEventArgs> ClientOnlineStatusChanged;
 
-    public event EventHandler<DataReceivedEventArgs> DataReceived;
+    public event EventHandler<ICSPMsgDataEventArgs> DataReceived;
 
     private NetworkStream mStream;
 
@@ -64,7 +65,7 @@ namespace ICSP.Client
     {
       if(Connected)
       {
-        Logger.LogInfo("StartClient: Host={0}, Port={1} => Client already connected", host, port);
+        Logger.LogInfo("StartClient: Host={0:l}, Port={1} => Client already connected", host, port);
         return;
       }
 
@@ -76,7 +77,7 @@ namespace ICSP.Client
       // Establish the remote endpoint for the socket
       var lIpAddress = Dns.GetHostAddresses(host)[0];
 
-      Logger.LogInfo("StartClient: Host={0}, Port={1}", lIpAddress, port);
+      Logger.LogInfo("StartClient: Host={0:l}, Port={1}", lIpAddress, port);
 
       mSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
 
@@ -116,7 +117,7 @@ namespace ICSP.Client
 
       if(mSocket.Connected)
       {
-        Logger.LogInfo("Client connected: {0}:{1}", lIpAddress, port);
+        Logger.LogInfo("Client connected: {0:l}:{1}", lIpAddress, port);
 
         RemoteIpAddress = ((IPEndPoint)mSocket.RemoteEndPoint).Address;
         LocalIpAddress = ((IPEndPoint)mSocket.LocalEndPoint).Address;
@@ -129,7 +130,7 @@ namespace ICSP.Client
       }
       else
       {
-        Logger.LogError("Client connect failed: {0}:{1}", lIpAddress, port);
+        Logger.LogError("Client connect failed: {0:l}:{1}", lIpAddress, port);
       }
     }
 
@@ -143,7 +144,7 @@ namespace ICSP.Client
 
           // Shutdown generate a IOException in ReadAsync
           mHasShutdown = true;
-          
+
           mSocket.Shutdown(SocketShutdown.Both);
         }
         catch(Exception ex)
@@ -180,8 +181,8 @@ namespace ICSP.Client
       {
         if(mSocket != null)
         {
-          Logger.LogDebug(false, "ICSPClient.Send[1]: MessageId=0x{0:X4}, Source={1}, Dest={2}, Type={3}", request.ID, request.Source, request.Dest, request.GetType().Name);
-          Logger.LogDebug(false, "ICSPClient.Send[2]: Data={0}", BitConverter.ToString(request.RawData).Replace("-", " "));
+          Logger.LogDebug(false, "ICSPClient.Send[1]: MessageId=0x{0:X4}, Source={1:l}, Dest={2:l}, Type={3:l}", request.ID, request.Source, request.Dest, request.GetType().Name);
+          Logger.LogDebug(false, "ICSPClient.Send[2]: Data={0:l}", BitConverter.ToString(request.RawData).Replace("-", " "));
 
           mStream.WriteAsync(request.RawData, 0, request.RawData.Length);
         }
@@ -197,26 +198,47 @@ namespace ICSP.Client
     {
       try
       {
+        var lBytes = new List<byte>();
+        
         while(true)
         {
-          var lBytes = new byte[mSocket.ReceiveBufferSize];
+          var lBuffer = new byte[mSocket.ReceiveBufferSize];
 
-          var lResult = await mStream.ReadAsync(lBytes, 0, lBytes.Length);
+          var lCount = await mStream.ReadAsync(lBuffer, 0, lBuffer.Length);
 
-          if(lResult == 0)
+          if(lCount == 0)
           {
             OnClientDisconnected();
 
             return;
           }
 
-          var lMessage = Encoding.Default.GetString(lBytes, 0, lResult);
+          Logger.LogVerbose("Data: {0} Bytes", lCount);
 
-          Logger.LogVerbose("AsyncClient Data: {0} Bytes", lMessage.Length);
+          lBytes.AddRange(lBuffer.Range(0, lCount));
 
-          Array.Resize(ref lBytes, lResult);
+          // Incoming packages are not always complete
+          // Preprocess Packet
+          while(lBytes.Count >= 3)
+          {
+            // +4 => Protocol (1), Length (2), Checksum (1)
+            var lSize = ((lBytes[1] << 8) | lBytes[2]) + 4;
 
-          OnDataReceived(lBytes);
+            if(lBytes.Count >= lSize)
+            {
+              var lMsgBytes = new byte[lSize];
+
+              var lRange = lBytes.GetRange(0, lSize).ToArray();
+
+              lBytes.RemoveRange(0, lSize);
+
+              OnDataReceived(new ICSPMsgDataEventArgs(ICSPMsgData.Create(lRange)));
+            }
+            else
+            {
+              Logger.LogVerbose("Buffer: {0} Bytes, Needed {1} Bytes", lCount, lSize);
+            }
+          }
         }
       }
       catch(IOException ex)
@@ -240,21 +262,21 @@ namespace ICSP.Client
 
       mHasShutdown = false;
     }
-    
+
     private void OnClientDisconnected()
     {
-      Logger.LogInfo("Client Disconnected: {0}", RemoteIpAddress);
+      Logger.LogInfo("Client Disconnected: {0:l}", RemoteIpAddress);
 
       ClientOnlineStatusChanged?.Invoke(this, new ClientOnlineOfflineEventArgs(0, false, RemoteIpAddress?.ToString()));
 
       mSocket = null;
     }
 
-    private void OnDataReceived(byte[] bytes)
+    private void OnDataReceived(ICSPMsgDataEventArgs e)
     {
       try
       {
-        DataReceived?.Invoke(this, new DataReceivedEventArgs(bytes));
+        DataReceived?.Invoke(this, e);
       }
       catch(Exception ex)
       {

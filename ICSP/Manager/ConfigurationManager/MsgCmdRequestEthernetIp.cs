@@ -29,7 +29,7 @@ namespace ICSP.Manager.ConfigurationManager
 
     protected override void WriteLogExtended()
     {
-      Logger.LogDebug(false, "{0}", GetType().Name);
+      Logger.LogDebug(false, "{0:l}", GetType().Name);
     }
   }
 }

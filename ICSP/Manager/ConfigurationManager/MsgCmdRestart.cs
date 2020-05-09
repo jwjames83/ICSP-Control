@@ -51,7 +51,7 @@ namespace ICSP.Manager.ConfigurationManager
 
     protected override void WriteLogExtended()
     {
-      Logger.LogDebug(false, "{0} RestartType: {1} ({2})", GetType().Name, (ushort)DataFlag, DataFlag);
+      Logger.LogDebug(false, "{0:l} RestartType: {1} ({2})", GetType().Name, (ushort)DataFlag, DataFlag);
     }
   }
 }

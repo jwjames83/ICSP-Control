@@ -37,6 +37,16 @@ namespace ICSPControl
       // Ensure unobserved task exceptions (unawaited async methods returning Task or Task<T>) are handled
       TaskScheduler.UnobservedTaskException += OnUnobservedTaskException;
 
+      // Remove old LogFiles ...
+      try
+      {
+        var lDirectory = new DirectoryInfo(AppDomain.CurrentDomain.BaseDirectory);
+
+        foreach(var file in lDirectory.EnumerateFiles("*.log"))
+          file.Delete();
+      }
+      catch { }
+
       // Initializes the Log system
       LoggingConfigurator.Configure(new LoggingConfiguration() { LogLevel = Settings.Default.LogLevel }, false);
 
@@ -94,7 +104,7 @@ namespace ICSPControl
 
     private static void OnApplicationExit(object sender, EventArgs e)
     {
-      Logger.LogInfo("{0} wurde beendet", ProgramProperties.Title);
+      Logger.LogInfo("{0:l} wurde beendet", ProgramProperties.Title);
     }
   }
 }

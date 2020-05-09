@@ -41,6 +41,11 @@ namespace ICSP
       return Encoding.Unicode.GetString(bytes, startIndex, length).TrimEnd(new char[] { '\0', ' ' });
     }
 
+    public static string GetNullStr(byte[] bytes, int offset)
+    {
+      return GetNullStr(bytes, ref offset);
+    }
+   
     public static string GetNullStr(byte[] bytes, ref int offset)
     {
       if(bytes == null)

@@ -8,6 +8,7 @@
       .exe.config;
       .dll.config
     </AllowedReferenceRelatedFileExtensions>
+    <LangVersion>latestMajor</LangVersion>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{7BE1A4D4-D8D8-464F-9F03-3F5695A11B24}</ProjectGuid>
@@ -66,13 +67,14 @@
     <Compile Include="AmxUtils.cs" />
     <Compile Include="Client\ClientOnlineOfflineEventArgs.cs" />
     <Compile Include="Client\ICSPClient.cs" />
-    <Compile Include="Client\DataReceivedEventArgs.cs" />
     <Compile Include="Device.cs" />
+    <Compile Include="IO\FileTransferFunction.cs" />
+    <Compile Include="IO\FunctionsAxcess2Tokens.cs" />
+    <Compile Include="IO\FunctionsUnused.cs" />
     <Compile Include="IO\DirectoryItem.cs" />
     <Compile Include="Environment\ProgramProperties.cs" />
     <Compile Include="IO\DirectoryItemType.cs" />
     <Compile Include="IO\FileTransferStatusCode.cs" />
-    <Compile Include="IO\FileTransferFunction.cs" />
     <Compile Include="FileType.cs" />
     <Compile Include="IO\FileManager.cs" />
     <Compile Include="Logging\Enricher\CustomLevelEnricher.cs" />

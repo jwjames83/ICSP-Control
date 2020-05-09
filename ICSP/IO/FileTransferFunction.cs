@@ -1,54 +1,21 @@
 ﻿namespace ICSP.IO
 {
+  /// <summary>
+  /// The function to execute, such as receive, send, etc.
+  /// Values 0 - 255 are predefined.
+  /// All other values are based upon the FileType.
+  /// </summary>
   public enum FileTransferFunction
   {
     /// <summary>
-    /// Negative acknowledgment 
+    /// Negative Acknowledgement 
     /// </summary>
     Nak = 0x0001,
 
     /// <summary>
-    /// Acknowledgment
+    /// Acknowledgement
     /// </summary>
     Ack = 0x0002,
-
-    // ================================================================
-    // FileType: Unused
-    // ================================================================
-
-    /// <summary>
-    /// Get Directory Information
-    /// </summary>
-    UnusedGetDirectoryInfo = 0x0100,
-
-    /// <summary>
-    /// Directory Information
-    /// </summary>
-    UnusedDirectoryInfo = 0x0101,
-
-    /// <summary>
-    /// Directory Item
-    /// </summary>
-    UnusedDirectoryItem = 0x0102,
-
-    /// <summary>
-    /// Delete File
-    /// </summary>
-    UnusedDeleteFile = 0x0104,
-
-    /// <summary>
-    /// Create Directory
-    /// </summary>
-    UnusedCreateDirectory = 0x0105,
-
-    // ================================================================
-    // FileType: Axcess 2 Tokens
-    // ================================================================
-
-    /// <summary>
-    /// Request for further data
-    /// </summary>
-    TransferFileDataGetNext = 0x0002,
 
     /// <summary>
     /// Data transmission
@@ -61,7 +28,7 @@
     TransferFileDataComplete = 0x0004,
 
     /// <summary>
-    /// Data transmission complete -> Acknowledgment
+    /// Data transmission complete -> Ack
     /// </summary>
     TransferFileDataCompleteAck = 0x0005,
 
@@ -74,35 +41,5 @@
     /// End of transfer multiple files
     /// </summary>
     TransferFilesComplete = 0x0007,
-
-    /// <summary>
-    /// Starting the transfer of a file
-    /// </summary>
-    TransferSingleFile = 0x0100,
-
-    /// <summary>
-    /// Starting the transfer of a file -> Acknowledgment
-    /// </summary>
-    TransferSingleFileAck = 0x0101,
-
-    /// <summary>
-    /// File Information 
-    /// </summary>
-    TransferSingleFileInfo = 0x0102,
-
-    /// <summary>
-    /// File Information -> Acknowledgment
-    /// </summary>
-    TransferSingleFileInfoAck = 0x0103,
-
-    /// <summary>
-    /// Get Access Token for Get File
-    /// </summary>
-    TransferGetFileAccessToken = 0x0104,
-
-    /// <summary>
-    /// Get File Data
-    /// </summary>
-    TransferGetFile = 0x0106,
   }
 }

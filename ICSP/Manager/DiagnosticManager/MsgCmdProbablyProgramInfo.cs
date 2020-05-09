@@ -97,9 +97,9 @@ namespace ICSP.Manager.DiagnosticManager
 
     protected override void WriteLogExtended()
     {
-      Logger.LogDebug(false, "{0} System     : {1}", GetType().Name, System);
-      Logger.LogDebug(false, "{0} ProgramName: {1}", GetType().Name, ProgramName);
-      Logger.LogDebug(false, "{0} MainFile   : {1}", GetType().Name, MainFile);
+      Logger.LogDebug(false, "{0:l} System     : {1:l}", GetType().Name, System);
+      Logger.LogDebug(false, "{0:l} ProgramName: {1:l}", GetType().Name, ProgramName);
+      Logger.LogDebug(false, "{0:l} MainFile   : {1:l}", GetType().Name, MainFile);
     }
   }
 }

@@ -51,9 +51,9 @@ namespace ICSP.Manager.ConnectionManager
     /// </summary>
     public ushort System { get; private set; }
 
-    public override void WriteLog(bool last)
+    public override void WriteLog()
     {
-      Logger.LogDebug(false, "{0}: Dest={1:00000}:{2}", GetType().Name, Dest.Device, Dest.System);
+      Logger.LogDebug(false, "{0:l}: Dest={1:00000}:{2}", GetType().Name, Dest.Device, Dest.System);
     }
   }
 }

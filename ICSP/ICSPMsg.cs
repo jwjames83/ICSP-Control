@@ -278,34 +278,28 @@ namespace ICSP
 
     public virtual void WriteLog()
     {
-      WriteLog(true);
-    }
-
-    public virtual void WriteLog(bool last)
-    {
-      Logger.LogDebug(false, "-----------------------------------------------------------");
+      Logger.LogDebug(false, "----------------------------------------------------------------");
 
       var lName = nameof(ICSPMsg);
 
-      Logger.LogDebug(false, "{0} Type     : {1}", lName, GetType().Name);
-      Logger.LogDebug(false, "{0} Protocol : {1}", lName, Protocol);
-      Logger.LogDebug(false, "{0} Length   : {1}", lName, Length);
-      Logger.LogDebug(false, "{0} Flag     : {1}", lName, Flag);
-      Logger.LogDebug(false, "{0} Dest     : {1}", lName, Dest);
-      Logger.LogDebug(false, "{0} Source   : {1}", lName, Source);
-      Logger.LogDebug(false, "{0} Hop      : {1}", lName, Hop);
-      Logger.LogDebug(false, "{0} MessageId: 0x{1:X4}", lName, ID);
-      Logger.LogDebug(false, "{0} Command  : 0x{1:X4} ({2})", lName, Command, GetFrindlyName(Command));
+      Logger.LogDebug(false, "{0:l} Type     : {1:l}", lName, GetType().Name);
+      Logger.LogDebug(false, "{0:l} Protocol : {1}", lName, Protocol);
+      Logger.LogDebug(false, "{0:l} Length   : {1}", lName, Length);
+      Logger.LogDebug(false, "{0:l} Flag     : {1}", lName, Flag);
+      Logger.LogDebug(false, "{0:l} Dest     : {1:l}", lName, Dest);
+      Logger.LogDebug(false, "{0:l} Source   : {1:l}", lName, Source);
+      Logger.LogDebug(false, "{0:l} Hop      : {1}", lName, Hop);
+      Logger.LogDebug(false, "{0:l} MessageId: 0x{1:X4}", lName, ID);
+      Logger.LogDebug(false, "{0:l} Command  : 0x{1:X4} ({2:l})", lName, Command, GetFrindlyName(Command));
 
       if(Checksum != ChecksumCalculated)
-        Logger.LogDebug(false, "{0} Checksum : 0x{1:X4} (Invalid => Calculated: 0x{2:X2})", lName, Checksum, ChecksumCalculated);
+        Logger.LogDebug(false, "{0:l} Checksum : 0x{1:X4} (Invalid => Calculated: 0x{2:X2})", lName, Checksum, ChecksumCalculated);
       else
-        Logger.LogDebug(false, "{0} Checksum : 0x{1:X4} (Valid)", lName, Checksum);
+        Logger.LogDebug(false, "{0:l} Checksum : 0x{1:X4} (Valid)", lName, Checksum);
 
       WriteLogExtended();
 
-      if(last)
-        Logger.LogDebug(false, "-----------------------------------------------------------");
+      Logger.LogDebug(false, "----------------------------------------------------------------");
     }
 
     protected virtual void WriteLogExtended()

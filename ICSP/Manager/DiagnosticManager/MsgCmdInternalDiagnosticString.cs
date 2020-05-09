@@ -68,9 +68,9 @@ namespace ICSP.Manager.DiagnosticManager
 
     protected override void WriteLogExtended()
     {
-      Logger.LogDebug(false, "{0} ObjectId: {1}", GetType().Name, ObjectId);
-      Logger.LogDebug(false, "{0} Severity: {1}", GetType().Name, Severity);
-      Logger.LogDebug(false, "{0} Text    : {1}", GetType().Name, Text);
+      Logger.LogDebug(false, "{0:l} ObjectId: {1}", GetType().Name, ObjectId);
+      Logger.LogDebug(false, "{0:l} Severity: {1}", GetType().Name, Severity);
+      Logger.LogDebug(false, "{0:l} Text    : {1:l}", GetType().Name, Text);
     }
   }
 }

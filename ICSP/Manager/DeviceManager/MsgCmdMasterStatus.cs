@@ -68,9 +68,9 @@ namespace ICSP.Manager.DeviceManager
 
     protected override void WriteLogExtended()
     {
-      Logger.LogDebug(false, "{0} System      : {1:00000}", GetType().Name, System);
-      Logger.LogDebug(false, "{0} Status      : {1} ({2})", GetType().Name, (ushort)Status, Status);
-      Logger.LogDebug(false, "{0} StatusString: {1}", GetType().Name, StatusString);
+      Logger.LogDebug(false, "{0:l} System      : {1:00000}", GetType().Name, System);
+      Logger.LogDebug(false, "{0:l} Status      : {1} ({2})", GetType().Name, (ushort)Status, Status);
+      Logger.LogDebug(false, "{0:l} StatusString: {1:l}", GetType().Name, StatusString);
     }
   }
 }

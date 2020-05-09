@@ -192,38 +192,38 @@ namespace ICSP.Manager.ConnectionManager
     
     protected override void WriteLogExtended()
     {
-      Logger.LogDebug(false, "{0} HeartbeatTiming   : {1}", GetType().Name, HeartbeatTiming);
+      Logger.LogDebug(false, "{0:l} HeartbeatTiming   : {1}", GetType().Name, HeartbeatTiming);
 
       // The LSB (bit 0) indicates the current status of the bus LED.
       if((LED & 0x01) == 1)
-        Logger.LogDebug(false, "{0} LED               : {1} (LED On)", GetType().Name, LED);
+        Logger.LogDebug(false, "{0:l} LED               : {1} (LED On)", GetType().Name, LED);
       else
-        Logger.LogDebug(false, "{0} LED               : {1} (LED Off)", GetType().Name, LED);
+        Logger.LogDebug(false, "{0:l} LED               : {1} (LED Off)", GetType().Name, LED);
 
       if(DateTime > DateTime.MinValue)
       {
-        Logger.LogDebug(false, "{0} DateTime          : {1:dd.MM.yyyy HH:mm:ss}", GetType().Name, DateTime);
-        Logger.LogDebug(false, "{0} DayOfWeek         : {1} ({2})", GetType().Name, (byte)DateTime.DayOfWeek, DateTime.DayOfWeek);
+        Logger.LogDebug(false, "{0:l} DateTime          : {1:dd.MM.yyyy HH:mm:ss}", GetType().Name, DateTime);
+        Logger.LogDebug(false, "{0:l} DayOfWeek         : {1} ({2})", GetType().Name, (byte)DateTime.DayOfWeek, DateTime.DayOfWeek);
       }
       else
       {
-        Logger.LogDebug(false, "{0} HeartbeatTiming   : {1}", GetType().Name, HeartbeatTiming);
-        Logger.LogDebug(false, "{0} LED               : {1}", GetType().Name, LED);
-        Logger.LogDebug(false, "{0} Month             : {1}", GetType().Name, Month);
-        Logger.LogDebug(false, "{0} Day               : {1}", GetType().Name, Day);
-        Logger.LogDebug(false, "{0} Year              : {1}", GetType().Name, Year);
-        Logger.LogDebug(false, "{0} Hour              : {1}", GetType().Name, Hour);
-        Logger.LogDebug(false, "{0} Minute            : {1}", GetType().Name, Minute);
-        Logger.LogDebug(false, "{0} Second            : {1}", GetType().Name, Second);
-        Logger.LogDebug(false, "{0} DayOfWeek         : {1} ({2})", GetType().Name, (byte)DayOfWeek, DayOfWeek);
+        Logger.LogDebug(false, "{0:l} HeartbeatTiming   : {1}", GetType().Name, HeartbeatTiming);
+        Logger.LogDebug(false, "{0:l} LED               : {1}", GetType().Name, LED);
+        Logger.LogDebug(false, "{0:l} Month             : {1}", GetType().Name, Month);
+        Logger.LogDebug(false, "{0:l} Day               : {1}", GetType().Name, Day);
+        Logger.LogDebug(false, "{0:l} Year              : {1}", GetType().Name, Year);
+        Logger.LogDebug(false, "{0:l} Hour              : {1}", GetType().Name, Hour);
+        Logger.LogDebug(false, "{0:l} Minute            : {1}", GetType().Name, Minute);
+        Logger.LogDebug(false, "{0:l} Second            : {1}", GetType().Name, Second);
+        Logger.LogDebug(false, "{0:l} DayOfWeek         : {1} ({2})", GetType().Name, (byte)DayOfWeek, DayOfWeek);
       }
 
       if(OutsideTemperature == OutsideTemperatureInvalid)
-        Logger.LogDebug(false, "{0} OutsideTemperature: 0x{1:X4} (Invalid)", GetType().Name, OutsideTemperature);
+        Logger.LogDebug(false, "{0:l} OutsideTemperature: 0x{1:X4} (Invalid)", GetType().Name, OutsideTemperature);
       else
-        Logger.LogDebug(false, "{0} OutsideTemperature: {1}", GetType().Name, OutsideTemperature);
+        Logger.LogDebug(false, "{0:l} OutsideTemperature: {1}", GetType().Name, OutsideTemperature);
 
-      Logger.LogDebug(false, "{0} DateText          : {1}", GetType().Name, DateText);
+      Logger.LogDebug(false, "{0:l} DateText          : {1:l}", GetType().Name, DateText);
     }
   }
 }

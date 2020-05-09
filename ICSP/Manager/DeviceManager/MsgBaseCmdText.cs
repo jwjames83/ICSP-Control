@@ -87,8 +87,8 @@ namespace ICSP.Manager.DeviceManager
     
     protected override void WriteLogExtended()
     {
-      Logger.LogDebug(false, "{0} Device: {1}", GetType().Name, Device);
-      Logger.LogDebug(false, "{0} Text  : {1}", GetType().Name, Text);
+      Logger.LogDebug(false, "{0:l} Device: {1:l}", GetType().Name, Device);
+      Logger.LogDebug(false, "{0:l} Text  : {1:l}", GetType().Name, Text);
     }
   }
 }

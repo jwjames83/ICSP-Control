@@ -32,13 +32,13 @@ namespace ICSP.Manager.ConfigurationManager
         FileType = (FileType)msg.Data.GetBigEndianInt16(0);
 
         // Function
-        Function = (FileTransferFunction)msg.Data.GetBigEndianInt16(2);
+        Function = msg.Data.GetBigEndianInt16(2);
 
         FileData = msg.Data.Range(4, msg.Data.Length - 4);
       }
     }
 
-    internal static ICSPMsg CreateRequest(AmxDevice dest, AmxDevice source, FileType fileType, FileTransferFunction function, byte[] data = null)
+    public static ICSPMsg CreateRequest(AmxDevice dest, AmxDevice source, FileType fileType, ushort function, byte[] data = null)
     {
       var lRequest = new MsgCmdFileTransfer
       {
@@ -49,35 +49,51 @@ namespace ICSP.Manager.ConfigurationManager
 
       var lData =
         ArrayExtensions.Int16ToBigEndian((ushort)fileType)
-        .Concat(ArrayExtensions.Int16ToBigEndian((short)function))
+        .Concat(ArrayExtensions.Int16ToBigEndian(function))
         .Concat(data ?? Array.Empty<byte>()).ToArray();
 
       return lRequest.Serialize(dest, source, MsgCmd, lData);
     }
 
-    public static ICSPMsg CreateRequest(AmxDevice dest, AmxDevice source, FileType fileType, ushort function, byte[] data = null)
+    public static ICSPMsg CreateRequest(AmxDevice dest, AmxDevice source, FileType fileType, FileTransferFunction function, byte[] data = null)
     {
-      var lRequest = new MsgCmdFileTransfer();
+      return CreateRequest(dest, source, fileType, (ushort)function, data);
+    }
 
-      var lData =
-        ArrayExtensions.Int16ToBigEndian((ushort)fileType)
-        .Concat(ArrayExtensions.Int16ToBigEndian(function))
-        .Concat(data ?? Array.Empty<byte>()).ToArray();
+    public static ICSPMsg CreateRequest(AmxDevice dest, AmxDevice source, FileType fileType, FunctionsUnused function, byte[] data = null)
+    {
+      return CreateRequest(dest, source, fileType, (ushort)function, data);
+    }
 
-      return lRequest.Serialize(dest, source, MsgCmd, lData);
-    }    
+    public static ICSPMsg CreateRequest(AmxDevice dest, AmxDevice source, FileType fileType, FunctionsAxcess2Tokens function, byte[] data = null)
+    {
+      return CreateRequest(dest, source, fileType, (ushort)function, data);
+    }
 
     protected override void WriteLogExtended()
     {
-      var lOffset = 0;
+      Logger.LogDebug(false, "{0:l} FileType     : 0x{1:X4} ({2})", GetType().Name, (byte)FileType, FileType);
 
-      Logger.LogDebug(false, "{0} FileType     : 0x{1:X4} ({2})", GetType().Name, (byte)FileType, FileType);
-      Logger.LogDebug(false, "{0} Function     : 0x{1:X4} ({2})", GetType().Name, (ushort)Function, Function);
+      var lFunction = "Unknown";
 
-      if(FileType == FileType.Unused)
-        Logger.LogDebug(false, "{0} FileData     : {1}", GetType().Name, AmxUtils.GetNullStr(FileData, ref lOffset));
+      if(Function <= 255)
+      {
+        lFunction = ((FileTransferFunction)Function).ToString();
+      }
+      else
+      {
+        switch(FileType)
+        {
+          case FileType.Unused: lFunction = ((FunctionsUnused)Function).ToString(); break;
+          case FileType.IRData: break;
+          case FileType.Firmware: break;
+          case FileType.TouchPanelFile: break;
+          case FileType.Axcess2Tokens: lFunction = ((FunctionsAxcess2Tokens)Function).ToString(); break;
+        }
+      }
 
-      Logger.LogDebug(false, "{0} FileData (0x): {1}", GetType().Name, BitConverter.ToString(FileData).Replace("-", " "));
+      Logger.LogDebug(false, "{0:l} Function     : 0x{1:X4} ({2:l})", GetType().Name, Function, lFunction);
+      Logger.LogDebug(false, "{0:l} FileData (0x): {1:l}", GetType().Name, BitConverter.ToString(FileData).Replace("-", " "));
     }
 
     #region Properties
@@ -97,7 +113,7 @@ namespace ICSP.Manager.ConfigurationManager
     /// Values 0 - 255 are predefined.
     /// All other values are based upon the FileType.
     /// </summary>
-    public FileTransferFunction Function { get; private set; }
+    public ushort Function { get; private set; }
 
     /// <summary>
     /// It any, contains Function specific data.

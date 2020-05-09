@@ -77,10 +77,10 @@ namespace ICSP.Manager.DeviceManager
 
     protected override void WriteLogExtended()
     {
-      Logger.LogDebug(false, "{0} Device   : {1}", GetType().Name, Device);
-      Logger.LogDebug(false, "{0} Level    : {1}", GetType().Name, Level);
-      Logger.LogDebug(false, "{0} ValueType: {1}", GetType().Name, ValueType);
-      Logger.LogDebug(false, "{0} Value    : {1}", GetType().Name, Value);
+      Logger.LogDebug(false, "{0:l} Device   : {1:l}", GetType().Name, Device);
+      Logger.LogDebug(false, "{0:l} Level    : {1}", GetType().Name, Level);
+      Logger.LogDebug(false, "{0:l} ValueType: {1:l}", GetType().Name, ValueType);
+      Logger.LogDebug(false, "{0:l} Value    : {1}", GetType().Name, Value);
     }
   }
 }

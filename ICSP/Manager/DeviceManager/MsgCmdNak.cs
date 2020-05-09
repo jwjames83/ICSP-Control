@@ -30,7 +30,7 @@ namespace ICSP.Manager.DeviceManager
 
     protected override void WriteLogExtended()
     {
-      Logger.LogDebug(false, "{0} ID: {1}", GetType().Name, ID);
+      Logger.LogDebug(false, "{0:l} ID: 0x{1:X4}", GetType().Name, ID);
     }
   }
 }
