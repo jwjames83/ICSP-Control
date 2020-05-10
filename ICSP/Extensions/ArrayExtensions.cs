@@ -39,7 +39,12 @@ namespace ICSP.Extensions
           | data[startIndex + 7];
     }
 
-    public static byte[] Int16ToBigEndian(dynamic value)
+    public static byte[] Int32ToBigEndian(int value)
+    {
+      return new byte[] { (byte)(value >> 24), (byte)(value >> 16), (byte)(value >> 8), (byte)value };
+    }
+
+    public static byte[] Int16ToBigEndian(ushort value)
     {
       return new byte[] { (byte)((ushort)value >> 8), (byte)value };
     }

@@ -43,6 +43,9 @@ namespace ICSP.Logging
 
     private static void LogInternal(LogEventLevel level, bool methodInfo, string format, params object[] args)
     {
+      if(Logger.LogLevel > level)
+        return;
+
       try
       {
         var lMessage = format;

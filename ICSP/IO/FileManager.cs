@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Xml;
 
@@ -21,6 +22,8 @@ namespace ICSP.IO
     private const ushort MagicByteGZip          /**/ = 0x1F8B; // GZip
     private const ushort MagicByteGZipEncrypted /**/ = 0xBC06; // GZip Encrypted
 
+    private const ushort JunkSizeMax = 2000;
+
     private readonly ICSPManager mManager;
 
     public readonly byte[] AccessToken = new byte[] { 0xFF, 0xFF, 0xFF, 0xFF }; // 0x00, 0x00, 0xC3, 0x50
@@ -29,9 +32,17 @@ namespace ICSP.IO
 
     private FileSystemWatcher mFileWatcherFile;
 
-    private string mCurrentFileName;
+    private string mCurrentFileNameData;
+    private string mCurrentFileNameSend;
 
-    private List<byte> mRawData;
+    private List<byte> mBufferData;
+    private List<byte> mBufferSend;
+
+    [DllImport("kernel32.dll")]
+    static extern uint GetCompressedFileSizeW([In, MarshalAs(UnmanagedType.LPWStr)] string lpFileName, [Out, MarshalAs(UnmanagedType.U4)] out uint lpFileSizeHigh);
+
+    [DllImport("kernel32.dll", SetLastError = true, PreserveSig = true)]
+    static extern int GetDiskFreeSpaceW([In, MarshalAs(UnmanagedType.LPWStr)] string lpRootPathName, out uint lpSectorsPerCluster, out uint lpBytesPerSector, out uint lpNumberOfFreeClusters, out uint lpTotalNumberOfClusters);
 
     public FileManager(ICSPManager manager)
     {
@@ -53,454 +64,417 @@ namespace ICSP.IO
       }
     }
 
+    public string BaseDirectory { get; set; }
+
     public void ProcessMessage(MsgCmdFileTransfer m)
     {
       var lResponse = GetResponse(m);
 
       if(lResponse != null)
-        SendAck(m, lResponse);
+      {
+        mManager.Send(MsgCmdAck.CreateRequest(m.Source, m.Dest, m.ID));
+
+        mManager.Send(lResponse);
+      }
     }
 
     public ICSPMsg GetResponse(MsgCmdFileTransfer m)
     {
-      ICSPMsg lResponse;
-
-      /*
-      -                       : P  | Len   | Flag  | Dest              | Source            | H  | ID    | CMD   | N-Data | CS
-      ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-      [M->D] File Transfer    : 02 | 00 19 | 02 00 | 00 06 7d 03 00 00 | 00 06 27 11 00 00 | 0f | ff b5 | 02 04 | 00 00 00 01 | 00 10 | bb
-      ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-      - Probably ...: 0x0106 Get | Access Token
-                                        02 | 00 1b | 02 10 | 00 06 27 11 00 00 | 00 06 7d 03 00 00 | ff | 4b 60 | 02 04 | 00 04 01 06 | 00 00 c3 50 | c1
-                                        02 | 00 13 | 02 08 | 00 06 7d 03 00 00 | 00 06 27 11 00 00 | 0f | 4b 60 | 00 01 | 9e
-                                        Junk-Data...
-
-      - Probably ...: List: [Size|PrevSegment|Nextegment|FileName]\0d\0a
-      - Probably ...: List: [Size|Created|Modified|FileName]\0d\0a
-      -- 689|30809200|1464076800|loading_1.png
-      -- 
-      -- 689|30 80 92 00|14 64 07 68 00|loading_1.png
-      --     689 Bytes (689 Bytes)
-      -- Created : Montag, ‎27. ‎April ‎2020, ‏‎10:42:20    
-      -- Modified: ‎Montag, ‎27. ‎April ‎2020, ‏‎10:43:29
-      -- CRC-32: a9882561
-
-      File: manifest.xma:
-
-      121|30811502|2039361408|fonts.xma
-      2736|30455951|4026421504|G5Apps.xma
-      68|30811502|2048122314|logs.xma
-      1402|30811502|2039361408|pal_001.xma
-      1080|30811502|2039361408|prj.xma
-      417|30811502|2039361408|Page.xml
-      1036584|30727694|1685854719|arial.ttf
-      */
-
-      var lFileTransferFunction = (FileTransferFunction)m.Function;
-
       switch(m.FileType)
       {
         case FileType.Unused:
         {
-          var lFunction = (FunctionsUnused)m.Function;
-
-
-          if(lFunction == FunctionsUnused.DirectoryInfo) // 0x0101
+          switch((FunctionsUnused)m.Function)
           {
-            var lDirectory = AmxUtils.GetNullStr(m.FileData, 16);
-
-            Logger.LogDebug(false, "FileManager[DirectoryInfo]: FullPath={0:l}", lDirectory);
-
-            return MsgCmdFileTransfer.CreateRequest(m.Source, m.Dest, FileType.Unused, FileTransferFunction.Ack);
-          }
-
-          if(lFunction == FunctionsUnused.DirectoryItem) // 0x0102
-          {
-            var lFileName = AmxUtils.GetNullStr(m.FileData, 19);
-
-            Logger.LogDebug(false, "FileManager[DirectoryInfo]: FileName={0:l}", lFileName);
-
-            return MsgCmdFileTransfer.CreateRequest(m.Source, m.Dest, FileType.Unused, FileTransferFunction.Ack);
-          }
-
-          if(lFunction == FunctionsUnused.DeleteFile) // 0x0104
-          {
-            var lFileName = AmxUtils.GetNullStr(m.FileData, 0);
-
-            try
+            case FunctionsUnused.GetDirectoryInfo: // 0x0100
             {
-              Logger.LogDebug(false, "FileManager[DeleteFile]: FileName={0:l}", lFileName);
-
-              File.Delete(lFileName);
-
-              lResponse = MsgCmdFileTransfer.CreateRequest(m.Source, m.Dest, FileType.Unused, FileTransferFunction.Ack);
+              return GetDirectoryInfo(m);
             }
-            catch(Exception ex)
+            case FunctionsUnused.DirectoryInfo: // 0x0101
             {
-              Logger.LogError(false, "FileManager[DeleteFile]: Message={0:l}", ex.Message);
+              var lDirectory = AmxUtils.GetNullStr(m.FileData, 16);
 
-              lResponse = MsgCmdFileTransfer.CreateRequest(m.Source, m.Dest, FileType.Unused, FileTransferFunction.Nak, ArrayExtensions.Int16ToBigEndian((ushort)FileTransferStatusCode.ErrorRemovingFile));
+              Logger.LogDebug(false, "FileManager[DirectoryInfo]: FullPath={0:l}", lDirectory);
+
+              return MsgCmdFileTransfer.CreateRequest(m.Source, m.Dest, FileType.Unused, FileTransferFunction.Ack);
             }
+            case FunctionsUnused.DirectoryItem: // 0x0102
+            {
+              var lFileName = AmxUtils.GetNullStr(m.FileData, 19);
 
-            return lResponse;
+              Logger.LogDebug(false, "FileManager[DirectoryInfo]: FileName={0:l}", lFileName);
+
+              return MsgCmdFileTransfer.CreateRequest(m.Source, m.Dest, FileType.Unused, FileTransferFunction.Ack);
+            }
+            case FunctionsUnused.DeleteFile: // 0x0104
+            {
+              return DeleteFile(m);
+            }
+            case FunctionsUnused.CreateDirectory: // 0x0105
+            {
+              return CreateDirectory(m);
+            }
+            default:
+            {
+              Logger.LogWarn(false, "FileManager[ProcessMessage]: Unknown function: FileType=Unused, Function=0x{1:X4}", m.Function);
+
+              mManager.Send(MsgCmdAck.CreateRequest(m.Source, m.Dest, m.ID));
+
+              return null;
+            }
           }
-
-          if(lFunction == FunctionsUnused.CreateDirectory) // 0x0105
-          {
-            /*
-            - FileType: Unused
-            - Function: Create Remote Panel Directories
-            -                   : P  | Len   | Flag  | Dest              | Source            | H  | ID    | CMD   | N-Data | CS
-            --------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-            [M->D] File Transfer: 02 | 01 1b | 02 10 | 00 06 27 11 00 00 | 00 06 7d 03 00 00 | ff | 02 32 | 02 04 | 00 00 01 05 | 41 4d 58 50 61 6e 65 6c ... 09 (AMXPanel)
-            [D->M] Ack          : 02 | 00 13 | 02 08 | 00 06 7d 03 00 00 | 00 06 27 11 00 00 | 0f | 02 32 | 00 01 | 27
-            [D->M] FileTransfer : 02 | 00 19 | 02 00 | 00 06 7d 03 00 00 | 00 06 27 11 00 00 | 0f | 00 ab | 02 04 | 00 00 00 01 | 00 10 | b2
-            -------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-            [M->D] File Transfer: 02 | 01 1b | 02 10 | 00 06 27 11 00 00 | 00 06 7d 03 00 00 | ff | 02 33 | 02 04 | 00 00 01 05 | 41 4d 58 50 61 6e 65 6c 2f 69 6d 61 67 65 73  ... af (AMXPanel/images)
-            [D->M] Ack          : 02 | 00 13 | 02 08 | 00 06 7d 03 00 00 | 00 06 27 11 00 00 | 0f | 02 33 | 00 01 | 28
-            [D->M] FileTransfer : 02 | 00 19 | 02 00 | 00 06 7d 03 00 00 | 00 06 27 11 00 00 | 0f | 00 ac | 02 04 | 00 00 00 01 | 00 10 | b3
-            -------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-            ...
-            */
-
-            var lDirectory = AmxUtils.GetNullStr(m.FileData, 0);
-
-            Logger.LogDebug(false, "FileManager[CreateDirectory]: Directory={0:l}", lDirectory);
-
-            var lStatus = CreateResourceDirectory(lDirectory);
-
-            if(lStatus == FileTransferStatusCode.NoError)
-              lResponse = MsgCmdFileTransfer.CreateRequest(m.Source, m.Dest, FileType.Unused, FileTransferFunction.Ack);
-            else
-              lResponse = MsgCmdFileTransfer.CreateRequest(m.Source, m.Dest, FileType.Unused, FileTransferFunction.Nak, ArrayExtensions.Int16ToBigEndian((ushort)lStatus));
-
-            return lResponse;
-          }
-
-          if(lFunction == FunctionsUnused.GetDirectoryInfo) // 0x0100
-          {
-            var lDirectory = AmxUtils.GetNullStr(m.FileData, 2);
-
-            Logger.LogDebug(false, "FileManager[GetDirectoryInfo]: Directory={0:l}", lDirectory);
-
-            SendAck(m, null);
-
-            ProcessDirectoryInfo(m, lDirectory);
-
-            return null;
-          }
-
-          break;
         }
         case FileType.Axcess2Tokens:
         {
-          var lFunction = (FunctionsAxcess2Tokens)m.Function;
-
-          if(lFunction == FunctionsAxcess2Tokens.TransferGetFileAccessToken) // 0x0104
+          switch((FunctionsAxcess2Tokens)m.Function)
           {
-            /*
-            - FileType: Axcess2 Tokens
-            - Function: Get Panel Manifest
-            -                   : P  | Len   | Flag  | Dest              | Source            | H  | ID    | CMD   | N-Data | CS
-            --------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-            [M->D] File Transfer: 02 | 01 1d | 02 10 | 00 06 27 11 00 00 | 00 06 7d 03 00 00 | ff | 4b 5f | 02 04 | 00 04 01 04 | d0 07 | 41 4d 58 50 61 6e 65 6c 2f 6d 61 6e 69 66 65 73 74 2e 78 6d 61 ... 55  (0xD0, 0x07, AMXPanel/manifest.xma)
-            [D->M] Ack          : 02 | 00 13 | 02 08 | 00 06 7d 03 00 00 | 00 06 27 11 00 00 | 0f | 4b 5f | 00 01 | 9d
-            [D->M] FileTransfer : 02 | 00 1F | 02 00 | 00 06 7D 03 00 00 | 00 06 27 13 00 00 | FF | 00 0D | 02 04 | 00 04 01 05 | 00 00 1F FA FF FF FF FF | 1A
-            -------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-            - If File not exists: (Nak, ErrorOpeningFile)
-            [D->M] FileTransfer : 02 | 00 19 | 02 00 | 00 06 7d 03 00 00 | 00 06 27 11 00 00 | 0f | ff bc | 02 04 | 00 04 00 01 | 00 05 | bb
-            */
-
-            var lSize = m.FileData.GetBigEndianInt16(0);
-
-            mCurrentFileName = AmxUtils.GetNullStr(m.FileData, 2);
-
-            Logger.LogDebug(false, "FileManager[TransferGetFile]: Size={0} Bytes", lSize);
-            Logger.LogDebug(false, "FileManager[TransferGetFile]: FileName={0:l}", mCurrentFileName);
-
-            var lSuccess = ReadFile(mCurrentFileName);
-
-            if(lSuccess)
+            case FunctionsAxcess2Tokens.TransferSingleFile: // 0x0100
             {
-              var lBytes = new byte[] { 0x00, 0x00, }
-              .Concat(ArrayExtensions.Int16ToBigEndian(mRawData?.Count ?? 0))
-              .Concat(AccessToken).ToArray();
+              /*
+              -                  : P  | Len   | Flag  | Dest              | Source            | H  | ID    | CMD   | N-Data      | CS
+              -------------------------------------------------------------------------------------------------------------------------------------------------
+              [M->D] FileTransfer: 02 | 00 17 | 02 00 | 00 06 27 13 00 00 | 00 06 7D 03 00 00 | 0F | FF 98 | 02 04 | 00 04 01 00 | 92
+              [D->M] Ack         : 02 | 00 13 | 02 00 | 00 06 7D 03 00 00 | 00 06 27 13 00 00 | FF | FF 98 | 00 01 | 74
+              [D->M] FileTransfer: 02 | 00 1F | 02 00 | 00 06 7D 03 00 00 | 00 06 27 13 00 00 | FF | 00 1A | 02 04 | 00 04 01 01 | 7F FF FF FF 00 00 00 00 | 8A
+              */
 
-              lResponse = MsgCmdFileTransfer.CreateRequest(m.Source, m.Dest, FileType.Axcess2Tokens, FunctionsAxcess2Tokens.TransferGetFileAccessTokenAck, lBytes);
+              Logger.LogDebug(false, "FileManager[TransferSingleFile] ...");
+
+              return MsgCmdFileTransfer.CreateRequest(m.Source, m.Dest, FileType.Axcess2Tokens, FunctionsAxcess2Tokens.TransferSingleFileAck, new byte[] { 0x7F, 0xFF, 0xFF, 0xFF, 0x00, 0x00, 0x00, 0x00, });
             }
-            else
+            case FunctionsAxcess2Tokens.TransferSingleFileAck: // 0x0101
             {
-              // Return (Nak, ErrorOpeningFile)
-              // -> GetPanelHierarchy 0x0100
-              lResponse = MsgCmdFileTransfer.CreateRequest(m.Source, m.Dest, FileType.Axcess2Tokens, FileTransferFunction.Nak, ArrayExtensions.Int16ToBigEndian(FileTransferStatusCode.ErrorOpeningFile));
+              mManager.Send(MsgCmdAck.CreateRequest(m.Source, m.Dest, m.ID));
+
+              return null;
             }
-
-            return lResponse;
-          }
-
-          // Read File ready ...
-          if(lFunction == FunctionsAxcess2Tokens.TransferGetFileAccessTokenAck) // 0x0105
-          {
-            var lToken = m.FileData.Range(0, 4);
-
-            return MsgCmdFileTransfer.CreateRequest(m.Source, m.Dest, FileType.Axcess2Tokens, FunctionsAxcess2Tokens.TransferGetFile, lToken);
-          }
-
-          if(lFunction == FunctionsAxcess2Tokens.TransferGetFile) // 0x0106
-          {
-            /*
-            - FileType: Axcess2 Tokens
-            - Function: Get Panel Manifest
-            -                   : P  | Len   | Flag  | Dest              | Source            | H  | ID    | CMD   | N-Data                    | CS
-            --------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-            [M->D] File Transfer: 02 | 00 1b | 02 10 | 00 06 27 11 00 00 | 00 06 7d 03 00 00 | ff | 4b 60 | 02 04 | 00 04 01 06 | 00 00 c3 50 | c1
-            [D->M] Ack          : 02 | 00 13 | 02 08 | 00 06 7d 03 00 00 | 00 06 27 11 00 00 | 0f | 4b 60 | 00 01 | 9e
-            [D->M] FileTransfer : 
-            -------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-            - If Manifest not exists: (Nak, ErrorOpeningFile)
-            [D->M] FileTransfer : 02 | 00 19 | 02 00 | 00 06 7d 03 00 00 | 00 06 27 11 00 00 | 0f | ff bc | 02 04 | 00 04 00 01 | 00 05 | bb
-            -------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-            */
-
-            var lToken = m.FileData.Range(0, 4);
-
-            Logger.LogDebug(false, "FileManager[TransferGetFile]: Token={0:l}", BitConverter.ToString(lToken).Replace("-", " "));
-
-            if(mRawData != null && mRawData.Count > 0)
+            case FunctionsAxcess2Tokens.TransferSingleFileInfo: // 0x0102
             {
-              var lJunkSize = Math.Min(mRawData.Count, 2000);
+              /*
+              -                  : P  | Len   | Flag  | Dest              | Source            | H  | ID    | CMD   | N-Data                                                                                              | CS
+              ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+              [M->D] FileTransfer: 02 | 01 23 | 02 00 | 00 06 27 13 00 00 | 00 06 7D 03 00 00 | 0F | FF 99 | 02 04 | 00 04 01 02 | 00 00 01 37 | 00 00 4E 20 | 41 4D 58 50 61 6E 65 6C 2F 66 6F 6E 74 73 2E 78 6D 61 ... | EB
+              [D->M] Ack         : 02 | 00 13 | 02 00 | 00 06 7D 03 00 00 | 00 06 27 13 00 00 | FF | FF 99 | 00 01 | 75
+              [D->M] FileTransfer: 02 | 00 1D | 02 00 | 00 06 7D 03 00 00 | 00 06 27 13 00 00 | FF | 00 1B | 02 04 | 00 04 01 03 | 07 D0 | 00 00 C3 50 | F9
+              */
 
-              var lBytes = mRawData.GetRange(0, lJunkSize).ToArray();
+              var lFileSize = m.FileData.GetBigEndianInt32(0);
 
-              mRawData.RemoveRange(0, lJunkSize);
+              mCurrentFileNameData = AmxUtils.GetNullStr(m.FileData, 8);
 
-              lBytes = AmxUtils.Int16ToBigEndian(lJunkSize).Concat(lBytes).ToArray();
+              Logger.LogDebug(false, "FileManager[TransferSingleFileInfo]: FileSize={0} Bytes", lFileSize);
+              Logger.LogDebug(false, "FileManager[TransferSingleFileInfo]: FileName={0:l}", mCurrentFileNameData);
+              Logger.LogDebug(false, "----------------------------------------------------------------");
 
-              return MsgCmdFileTransfer.CreateRequest(m.Source, m.Dest, FileType.Axcess2Tokens, FileTransferFunction.TransferFileData, lBytes);
+              mBufferData = new List<byte>();
+
+              // Junk-Size (Max 2000 Bytes) / Token
+              var lBytes = AmxUtils.Int16ToBigEndian(JunkSizeMax).Concat(new byte[] { 0x00, 0x00, 0x00, 0x00, }).ToArray();
+
+              return MsgCmdFileTransfer.CreateRequest(m.Source, m.Dest, FileType.Axcess2Tokens, FunctionsAxcess2Tokens.TransferSingleFileInfoAck, lBytes);
             }
-            else
+            case FunctionsAxcess2Tokens.TransferSingleFileInfoAck: // 0x0103
             {
-              // Return (Nak, ErrorOpeningFile)
-              // -> GetPanelHierarchy 0x0100
-              return MsgCmdFileTransfer.CreateRequest(m.Source, m.Dest, FileType.Axcess2Tokens, FileTransferFunction.Nak, ArrayExtensions.Int16ToBigEndian(FileTransferStatusCode.ErrorOpeningFile));
+              /*
+              -                  : P  | Len   | Flag  | Dest              | Source            | H  | ID    | CMD   | N-Data                            | CS
+              -------------------------------------------------------------------------------------------------------------------------------------------------
+              [M->D] FileTransfer: 02 | 00 1d | 02 00 | 00 01 7d 01 00 00 | 00 01 27 11 00 00 | 0f | ff f1 | 02 04 | 00 04 01 03 | 07 d0 | 00 00 c3 50 | d0
+              */
+
+
+              var lJunkSize = ArrayExtensions.GetBigEndianInt16(m.FileData, 0);
+              var lToken = m.FileData.Range(2, 4);
+
+              Logger.LogDebug(false, "FileManager[TransferSingleFileInfoAck]: JunkSize={0} Bytes", lJunkSize);
+              Logger.LogDebug(false, "FileManager[TransferSingleFileInfoAck]: Token={0:l}", BitConverter.ToString(lToken).Replace("-", " "));
+
+              return null;
             }
-          }
-
-          // Transfer Local Panel Files: Initialize ... (176)
-          if(lFileTransferFunction == FileTransferFunction.TransferFilesInitialize) // 0x0006
-          {
-            // Received Files: 13 (00 0A)
-            /*
-            Ack only ...
-            -                   : P  | Len   | Flag  | Dest              | Source            | H  | ID    | CMD   | N-Data              | CS
-            [M->D] File Transfer: 02 | 00 19 | 02 00 | 00 06 27 13 00 00 | 00 06 7D 03 00 00 | 0F | FF 97 | 02 04 | 00 04 00 06 | 00 B0 | 48 (176)
-            [D->M] Ack          : 02 | 00 13 | 02 00 | 00 06 7D 03 00 00 | 00 06 27 13 00 00 | FF | FF 97 | 00 01 | 73
-            */
-
-            Logger.LogDebug(false, "FileManager[TransferFilesInitialize]: FileCount={0}", ArrayExtensions.GetBigEndianInt16(m.FileData, 0));
-
-            SendAck(m, null);
-
-            return null;
-          }
-
-          // Transfer Local Panel Files: Request File Initialize
-          if(lFunction == FunctionsAxcess2Tokens.TransferSingleFile) // 0x0100
-          {
-            /*
-            -                   : P  | Len   | Flag  | Dest              | Source            | H  | ID    | CMD   | N-Data      | CS
-            [M->D] File Transfer: 02 | 00 17 | 02 00 | 00 06 27 13 00 00 | 00 06 7D 03 00 00 | 0F | FF 98 | 02 04 | 00 04 01 00 | 92
-            [D->M] Ack          : 02 | 00 13 | 02 00 | 00 06 7D 03 00 00 | 00 06 27 13 00 00 | FF | FF 98 | 00 01 | 74
-            [D->M] FileTransfer : 02 | 00 1F | 02 00 | 00 06 7D 03 00 00 | 00 06 27 13 00 00 | FF | 00 1A | 02 04 | 00 04 01 01 | 7F FF FF FF 00 00 00 00 | 8A
-            */
-
-            Logger.LogDebug(false, "FileManager[TransferSingleFile] ...");
-
-            // Function: -> 0x0100 FileName Request ...
-            // Function: <- 0x0101 FileName Response ...- (Ready)
-            return MsgCmdFileTransfer.CreateRequest(m.Source, m.Dest, FileType.Axcess2Tokens, FunctionsAxcess2Tokens.TransferSingleFileAck, new byte[] { 0x7F, 0xFF, 0xFF, 0xFF, 0x00, 0x00, 0x00, 0x00, });
-          }
-
-          // Transfer Local Panel Files: Request File Info
-          if(lFunction == FunctionsAxcess2Tokens.TransferSingleFileInfo) // 0x0102
-          {
-            /*
-            -                   : P  | Len   | Flag  | Dest              | Source            | H  | ID    | CMD   | N-Data                                                                                                | CS
-            [M->D] File Transfer: 02 | 01 23 | 02 00 | 00 06 27 13 00 00 | 00 06 7D 03 00 00 | 0F | FF 99 | 02 04 | 00 04 01 02 | 00 00 | 01 37 | 00 00 4E 20 | 41 4D 58 50 61 6E 65 6C 2F 66 6F 6E 74 73 2E 78 6D 61 ... | EB
-            [D->M] Ack          : 02 | 00 13 | 02 00 | 00 06 7D 03 00 00 | 00 06 27 13 00 00 | FF | FF 99 | 00 01 | 75
-            [D->M] FileTransfer : 02 | 00 1D | 02 00 | 00 06 7D 03 00 00 | 00 06 27 13 00 00 | FF | 00 1B | 02 04 | 00 04 01 03 | 07 D0 00 00 C3 50 | F9
-            */
-
-            var lFileSize = m.FileData.GetBigEndianInt16(2);
-
-            mCurrentFileName = AmxUtils.GetNullStr(m.FileData, 8);
-
-            Logger.LogDebug(false, "FileManager[TransferSingleFileInfo]: FileSize={0} Bytes", lFileSize);
-            Logger.LogDebug(false, "FileManager[TransferSingleFileInfo]: FileName={0:l}", mCurrentFileName);
-            Logger.LogDebug(false, "----------------------------------------------------------------");
-
-            mRawData = new List<byte>();
-
-            // Function: -> 0x0102 FileName Info Request ...   (Junk-Size/AMXPanel/fonts.xma)
-            // Function: <- 0x0103 FileName Info Response ...- (Junk-Size/Token)
-            // mManager.Send(MsgCmdFileTransfer.CreateRequest(m.Source, m.Dest, FileType.Axcess2Tokens, FileTransferFunction.TransferSingleFileInfoAck, new byte[] { 0x07, 0xd0, 0x00, 0x00, 0xc3, 0x50, }));
-
-            // Junk-Size (Max 2000 Bytes)
-            var lBytes = AmxUtils.Int16ToBigEndian(2000).Concat(new byte[] { 0x00, 0x00, 0x00, 0x00, }).ToArray();
-
-            return MsgCmdFileTransfer.CreateRequest(m.Source, m.Dest, FileType.Axcess2Tokens, FunctionsAxcess2Tokens.TransferSingleFileInfoAck, lBytes);
-          }
-
-          // Transfer Local Panel Files: Request File Data
-          if(lFileTransferFunction == FileTransferFunction.Ack) // 0x0002
-          {
-            if(mRawData != null && mRawData.Count > 0)
+            case FunctionsAxcess2Tokens.TransferGetFileAccessToken: // 0x0104
             {
-              var lJunkSize = Math.Min(mRawData.Count, 2000);
+              /*
+              -                  : P  | Len   | Flag  | Dest              | Source            | H  | ID    | CMD   | N-Data                                                                                   | CS
+              ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+              [M->D] FileTransfer: 02 | 01 1d | 02 10 | 00 06 27 11 00 00 | 00 06 7d 03 00 00 | ff | 4b 5f | 02 04 | 00 04 01 04 | d0 07 | 41 4d 58 50 61 6e 65 6c 2f 6d 61 6e 69 66 65 73 74 2e 78 6d 61 ... | 55  (0xD0, 0x07, AMXPanel/manifest.xma)
+              [D->M] Ack         : 02 | 00 13 | 02 08 | 00 06 7d 03 00 00 | 00 06 27 11 00 00 | 0f | 4b 5f | 00 01 | 9d
+              [D->M] FileTransfer: 02 | 00 1F | 02 00 | 00 06 7D 03 00 00 | 00 06 27 13 00 00 | FF | 00 0D | 02 04 | 00 04 01 05 | 00 00 1F FA | FF FF FF FF | 1A
+              ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+              - If File not exists: (Nak, ErrorOpeningFile)
+              [D->M] FileTransfer: 02 | 00 19 | 02 00 | 00 06 7d 03 00 00 | 00 06 27 11 00 00 | 0f | ff bc | 02 04 | 00 04 00 01 | 00 05 | bb
+              */
 
-              var lBytes = mRawData.GetRange(0, lJunkSize).ToArray();
-
-              mRawData.RemoveRange(0, lJunkSize);
-
-              lBytes = AmxUtils.Int16ToBigEndian(lJunkSize).Concat(lBytes).ToArray();
-
-              return MsgCmdFileTransfer.CreateRequest(m.Source, m.Dest, FileType.Axcess2Tokens, FileTransferFunction.TransferFileData, lBytes);
+              return TransferGetFileAccessToken(m);
             }
-            else
+            case FunctionsAxcess2Tokens.TransferGetFileAccessTokenAck: // 0x0105
             {
-              // Return (Axcess2Tokens, TransferFileDataComplete)
-              return MsgCmdFileTransfer.CreateRequest(m.Source, m.Dest, FileType.Axcess2Tokens, FileTransferFunction.TransferFileDataComplete);
+              /*
+              -                  : P  | Len   | Flag  | Dest              | Source            | H  | ID    | CMD   | N-Data                                  | CS
+              ---------------------------------------------------------------------------------------------------------------------------------------------------
+              [M->D] FileTransfer: 02 | 00 1F | 02 00 | 00 01 7D 01 00 01 | 00 01 27 11 00 00 | 0F | FF 86 | 02 04 | 00 04 01 05 | 00 00 03 C0 | 00 00 C3 50 | 56
+              [D->M] FileTransfer: 02 | 00 13 | 02 00 | 00 01 27 11 00 00 | 00 01 7D 01 00 01 | FF | FF 86 | 00 01 | 55
+              [D->M] FileTransfer: 02 | 00 1B | 02 00 | 00 01 27 11 00 00 | 00 01 7D 01 00 01 | FF | 00 06 | 02 04 | 00 04 01 06 | 00 00 03 C0 | B1
+              */
+
+              var lFileSize = ArrayExtensions.GetBigEndianInt32(m.FileData, 0);
+              var lToken = m.FileData.Range(4, 4);
+
+              Logger.LogDebug(false, "FileManager[TransferGetFileAccessTokenAck]: FileSize={0} Bytes, Token={1:l}", lFileSize, BitConverter.ToString(lToken).Replace("-", " "));
+
+              return MsgCmdFileTransfer.CreateRequest(m.Source, m.Dest, FileType.Axcess2Tokens, FunctionsAxcess2Tokens.TransferGetFile, ArrayExtensions.Int32ToBigEndian(lFileSize));
+            }
+            case FunctionsAxcess2Tokens.TransferGetFile: // 0x0106
+            {
+              /*
+              -                  : P  | Len   | Flag  | Dest              | Source            | H  | ID    | CMD   | N-Data                    | CS
+              -------------------------------------------------------------------------------------------------------------------------------------
+              [M->D] FileTransfer: 02 | 00 1b | 02 10 | 00 06 27 11 00 00 | 00 06 7d 03 00 00 | ff | 4b 60 | 02 04 | 00 04 01 06 | 00 00 c3 50 | c1
+              [D->M] Ack         : 02 | 00 13 | 02 08 | 00 06 7d 03 00 00 | 00 06 27 11 00 00 | 0f | 4b 60 | 00 01 | 9e
+              [D->M] FileTransfer: Junksize | Rawdata
+              -------------------------------------------------------------------------------------------------------------------------------------
+              - If File not exists: (Nak, ErrorOpeningFile)
+              [D->M] FileTransfer: 02 | 00 19 | 02 00 | 00 06 7d 03 00 00 | 00 06 27 11 00 00 | 0f | ff bc | 02 04 | 00 04 00 01 | 00 05 | bb
+              -------------------------------------------------------------------------------------------------------------------------------------
+              */
+
+              var lToken = m.FileData.Range(0, 4);
+
+              Logger.LogDebug(false, "FileManager[TransferGetFile]: Token={0:l}", BitConverter.ToString(lToken).Replace("-", " "));
+
+              if(mBufferSend != null && mBufferSend.Count > 0)
+              {
+                var lJunkSize = (ushort)Math.Min(mBufferSend.Count, JunkSizeMax);
+
+                var lBytes = mBufferSend.GetRange(0, lJunkSize).ToArray();
+
+                mBufferSend.RemoveRange(0, lJunkSize);
+
+                lBytes = AmxUtils.Int16ToBigEndian(lJunkSize).Concat(lBytes).ToArray();
+
+                return MsgCmdFileTransfer.CreateRequest(m.Source, m.Dest, FileType.Axcess2Tokens, FileTransferFunction.TransferFileData, lBytes);
+              }
+              else
+              {
+                return MsgCmdFileTransfer.CreateErrorRequest(m.Source, m.Dest, FileType.Axcess2Tokens, FileTransferStatusCode.ErrorOpeningFile);
+              }
             }
           }
 
-          // Transfer Local Panel Files: Request File Data
-          if(lFileTransferFunction == FileTransferFunction.TransferFileData) // 0x0003
+          switch((FileTransferFunction)m.Function)
           {
-            /*
-            -                   : P  | Len   | Flag  | Dest              | Source            | H  | ID    | CMD   | N-Data                             | CS
-            [M->D] File Transfer: 02 | 04 79 | 02 00 | 00 06 27 13 00 00 | 00 06 7D 03 00 00 | 0F | FF AE | 02 04 | 00 04 00 03 | 04 60 | 1F 8B 08 ... | E6
-            [D->M] Ack          : 02 | 00 13 | 02 00 | 00 06 7D 03 00 00 | 00 06 27 13 00 00 | FF | FF AE | 00 01 | 8A
-            [D->M] FileTransfer : 02 | 00 17 | 02 00 | 00 06 7D 03 00 00 | 00 06 27 13 00 00 | FF | 00 30 | 02 04 | 00 04 00 02 | 1C
-            */
+            case FileTransferFunction.Nak: // 0x0001
+            {
+              Logger.LogWarn(false, "FileManager[Nak]: ErrorCode=0x{1:X4}", ArrayExtensions.GetBigEndianInt16(m.FileData, 0));
 
-            var lJunkSize = m.FileData.GetBigEndianInt16(0);
+              mManager.Send(MsgCmdAck.CreateRequest(m.Source, m.Dest, m.ID));
 
-            Logger.LogDebug(false, "FileManager[TransferFileData]: FileName={0:l}, JunkSize={1}, RawData ...", mCurrentFileName, lJunkSize);
+              return null;
+            }
+            case FileTransferFunction.Ack: // 0x0002
+            {
+              Logger.LogWarn(false, "FileManager[Ack]: ...");
 
-            if(mRawData == null)
-              mRawData = new List<byte>();
+              if(mBufferSend?.Count > 0)
+              {
+                var lJunkSize = (ushort)Math.Min(mBufferSend.Count, JunkSizeMax);
 
-            mRawData.AddRange(m.FileData.Range(2, lJunkSize));
+                var lBytes = mBufferSend.GetRange(0, lJunkSize).ToArray();
 
-            // Function: -> 0x0003 RawData Request ...
-            // Function: <- 0x0002 RawData Response ... (Next data)
-            return MsgCmdFileTransfer.CreateRequest(m.Source, m.Dest, FileType.Axcess2Tokens, FileTransferFunction.Ack);
+                mBufferSend.RemoveRange(0, lJunkSize);
+
+                lBytes = AmxUtils.Int16ToBigEndian(lJunkSize).Concat(lBytes).ToArray();
+
+                return MsgCmdFileTransfer.CreateRequest(m.Source, m.Dest, FileType.Axcess2Tokens, FileTransferFunction.TransferFileData, lBytes);
+              }
+              else
+              {
+                mBufferSend = null;
+
+                return MsgCmdFileTransfer.CreateRequest(m.Source, m.Dest, FileType.Axcess2Tokens, FileTransferFunction.TransferFileDataComplete);
+              }
+            }
+            case FileTransferFunction.TransferFileData: // 0x0003
+            {
+              /*
+              -                  : P  | Len   | Flag  | Dest              | Source            | H  | ID    | CMD   | N-Data                             | CS
+              ----------------------------------------------------------------------------------------------------------------------------------------------
+              [M->D] FileTransfer: 02 | 04 79 | 02 00 | 00 06 27 13 00 00 | 00 06 7D 03 00 00 | 0F | FF AE | 02 04 | 00 04 00 03 | 04 60 | 1F 8B 08 ... | E6
+              [D->M] Ack         : 02 | 00 13 | 02 00 | 00 06 7D 03 00 00 | 00 06 27 13 00 00 | FF | FF AE | 00 01 | 8A
+              [D->M] FileTransfer: 02 | 00 17 | 02 00 | 00 06 7D 03 00 00 | 00 06 27 13 00 00 | FF | 00 30 | 02 04 | 00 04 00 02 | 1C
+              
+              28 6f 7f 03 aa 25 ec 8e b5 9b e3 ed 08 00 45 00 03 29 22 74 40 00 80 06 ed 6d ac 10 10 d2 ac 10 7e fa 5b ba 05 27 31 85 ed cc 76 ed 2c 42 | 50 18 02 02 | c3 78 | 00 ... dc
+
+              */
+
+              var lJunkSize = m.FileData.GetBigEndianInt16(0);
+
+              Logger.LogDebug(false, "FileManager[TransferFileData]: FileName={0:l}, JunkSize={1}, RawData ...", mCurrentFileNameData, lJunkSize);
+
+              if(mBufferData == null)
+                mBufferData = new List<byte>();
+
+              mBufferData.AddRange(m.FileData.Range(2, lJunkSize));
+
+              // Function: -> 0x0003 RawData Request ...
+              // Function: <- 0x0002 RawData Response ... (Next data)
+              return MsgCmdFileTransfer.CreateRequest(m.Source, m.Dest, FileType.Axcess2Tokens, FileTransferFunction.Ack);
+            }
+            case FileTransferFunction.TransferFileDataComplete: // 0x0004
+            {
+              /*
+              -                  : P  | Len   | Flag  | Dest              | Source            | H  | ID    | CMD   | N-Data      | CS
+              -----------------------------------------------------------------------------------------------------------------------
+              [M->D] FileTransfer: 02 | 00 17 | 02 00 | 00 06 27 13 00 00 | 00 06 7D 03 00 00 | 0F | FF AF | 02 04 | 00 04 00 04 | AC
+              [D->M] Ack         : 02 | 00 13 | 02 00 | 00 06 7D 03 00 00 | 00 06 27 13 00 00 | FF | FF AF | 00 01 | 8B
+              [D->M] FileTransfer: 02 | 00 17 | 02 00 | 00 06 7D 03 00 00 | 00 06 27 13 00 00 | FF | 00 31 | 02 04 | 00 04 00 05 | 20
+              */
+
+              return TransferFileDataComplete(m);
+            }
+            case FileTransferFunction.TransferFileDataCompleteAck: // 0x0005
+            {
+              mManager.Send(MsgCmdAck.CreateRequest(m.Source, m.Dest, m.ID));
+
+              return null;
+            }
+            case FileTransferFunction.TransferFilesInitialize: // 0x0006
+            {
+              /*
+              -                  : P  | Len   | Flag  | Dest              | Source            | H  | ID    | CMD   | N-Data              | CS
+              -------------------------------------------------------------------------------------------------------------------------------
+              [M->D] FileTransfer: 02 | 00 19 | 02 00 | 00 06 27 13 00 00 | 00 06 7D 03 00 00 | 0F | FF 97 | 02 04 | 00 04 00 06 | 00 B0 | 48
+              [D->M] Ack         : 02 | 00 13 | 02 00 | 00 06 7D 03 00 00 | 00 06 27 13 00 00 | FF | FF 97 | 00 01 | 73
+              */
+
+              Logger.LogDebug(false, "FileManager[TransferFilesInitialize]: FileCount={0}", ArrayExtensions.GetBigEndianInt16(m.FileData, 0));
+
+              mManager.Send(MsgCmdAck.CreateRequest(m.Source, m.Dest, m.ID));
+
+              return null;
+            }
+            case FileTransferFunction.TransferFilesComplete: // 0x0007
+            {
+              /*
+              -                  : P  | Len   | Flag  | Dest              | Source            | H  | ID    | CMD   | N-Data      | CS
+              ------------------------------------------------------------------------------------------------------------------------
+              [M->D] FileTransfer: 02 | 00 17 | 02 10 | 00 01 27 11 00 00 | 00 01 7d 02 00 00 | ff | 0c a6 | 02 04 | 00 04 00 07 | a6
+              [D->M] Ack         : 02 | 00 13 | 02 08 | 00 01 7d 02 00 00 | 00 01 27 11 00 00 | 0f | 0c a6 | 00 01 | 9a
+              */
+
+              Logger.LogDebug(false, "FileManager[TransferFilesComplete] ...");
+
+              mManager.Send(MsgCmdAck.CreateRequest(m.Source, m.Dest, m.ID));
+
+              return null;
+            }
           }
 
-          // Transfer Local Panel Files: Request File Data End
-          if(lFileTransferFunction == FileTransferFunction.TransferFileDataComplete) // 0x0004
-          {
-            /*
-            -                   : P  | Len   | Flag  | Dest              | Source            | H  | ID    | CMD   | N-Data      | CS
-            [M->D] File Transfer: 02 | 00 17 | 02 00 | 00 06 27 13 00 00 | 00 06 7D 03 00 00 | 0F | FF AF | 02 04 | 00 04 00 04 | AC
-            [D->M] Ack          : 02 | 00 13 | 02 00 | 00 06 7D 03 00 00 | 00 06 27 13 00 00 | FF | FF AF | 00 01 | 8B
-            [D->M] FileTransfer : 02 | 00 17 | 02 00 | 00 06 7D 03 00 00 | 00 06 27 13 00 00 | FF | 00 31 | 02 04 | 00 04 00 05 | 20
-
-            */
-
-            WriteDataToFile();
-
-            // Function: -> 0x0004 RawData End Request ...
-            // Function: <- 0x0005 RawData End Response ... (Next file)
-            return MsgCmdFileTransfer.CreateRequest(m.Source, m.Dest, FileType.Axcess2Tokens, FileTransferFunction.TransferFileDataCompleteAck);
-          }
-
-          // Transfer Local Panel Files: Request File Data End
-          if(lFileTransferFunction == FileTransferFunction.TransferFileDataCompleteAck) // 0x0005
-          {
-            SendAck(m, null);
-
-            return null;
-          }
-
-          // Transfer Local Panel Files: End
-          if(lFileTransferFunction == FileTransferFunction.TransferFilesComplete) // 0x0007
-          {
-            // End File Transfer
-            /*
-            -                   : P  | Len   | Flag  | Dest              | Source            | H  | ID    | CMD   | N-Data      | CS
-            [M->D] File Transfer: 02 | 00 17 | 02 10 | 00 01 27 11 00 00 | 00 01 7d 02 00 00 | ff | 0c a6 | 02 04 | 00 04 00 07 | a6
-            [M->D] Ack          : 02 | 00 13 | 02 08 | 00 01 7d 02 00 00 | 00 01 27 11 00 00 | 0f | 0c a6 | 00 01 | 9a
-            */
-
-            SendAck(m, null);
-
-            return null;
-          }
-
-          break;
+          return null;
         }
         default:
         {
           return MsgCmdFileTransfer.CreateRequest(m.Source, m.Dest, FileType.Unused, FileTransferFunction.Ack);
         }
       }
-
-      return null;
     }
 
-    private FileTransferStatusCode CreateResourceDirectory(string directory)
+    private ICSPMsg DeleteFile(MsgCmdFileTransfer m)
     {
-      Logger.LogDebug(false, "FileManager.CreateResourceDirectory: Directory={0:l}", directory);
+      /*
+      -                  : P  | Len   | Flag  | Dest              | Source            | H  | ID    | CMD   | N-Data                                                                                    | CS
+      -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+      [M->D] FileTransfer: 02 | 01 1B | 02 00 | 00 01 27 13 00 00 | 00 01 7D 02 00 00 | 0F | FF AE | 02 04 | 00 00 01 04 | 41 4D 58 50 61 6E 65 6C 2F 66 6F 6E 74 73 61 72 69 61 6C 2E 74 74 66 00 ... | 56 (AMXPanel/fontsarial.ttf)
+      [D->M] Ack         : 02 | 00 13 | 02 00 | 00 01 7D 02 00 00 | 00 01 27 13 00 00 | FF | FF AF | 00 01 | 80
+      [D->M] FileTransfer: 02 | 00 17 | 02 00 | 00 01 7D 02 00 00 | 00 01 27 13 00 00 | FF | 00 3F | 02 04 | 00 00 00 02 | 1C
+      */
+
+      var lFileName = AmxUtils.GetNullStr(m.FileData, 0);
 
       try
       {
-        var lPath = Path.Combine(BaseDirectory, directory);
+        Logger.LogDebug(false, "FileManager[DeleteFile]: FileName={0:l}", lFileName);
 
-        if(Directory.Exists(lPath))
-          return FileTransferStatusCode.DirectoryAlreadyExists;
+        // File.Delete(lFileName);
 
-        Directory.CreateDirectory(lPath);
-
-        return FileTransferStatusCode.NoError;
+        return MsgCmdFileTransfer.CreateRequest(m.Source, m.Dest, FileType.Unused, FileTransferFunction.Ack);
       }
       catch(Exception ex)
       {
-        Logger.LogError(false, "FileManager.CreateResourceDirectory: Message={0:l}", ex.Message);
+        Logger.LogError(false, "FileManager[DeleteFile]: Message={0:l}", ex.Message);
 
-        return FileTransferStatusCode.ErrorCreatingDirectory;
+        return MsgCmdFileTransfer.CreateRequest(m.Source, m.Dest, FileType.Unused, FileTransferFunction.Nak, ArrayExtensions.Int16ToBigEndian((ushort)FileTransferStatusCode.ErrorRemovingFile));
       }
     }
 
-    private void ProcessDirectoryInfo(MsgCmdFileTransfer m, string path)
+    private ICSPMsg CreateDirectory(MsgCmdFileTransfer m)
     {
       /*
-      - FileType: Unused
-      - Function: Get Panel Hierarchy
-      -                   : P  | Len   | Flag  | Dest              | Source            | H  | ID    | CMD   | N-Data | CS
-      ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-      [M->D] File Transfer: 02 | 01 1d | 02 10 | 00 06 27 11 00 00 | 00 06 7d 03 00 00 | ff | 4f 8e | 02 04 | 00 00 01 00 | 00 00 41 4d 58 50 61 6e 65 6c 2f ... de (AMXPanel/)
-      [D->M] Ack          : 02 | 00 13 | 02 08 | 00 06 7d 03 00 00 | 00 06 27 11 00 00 | 0f | 02 32 | 00 01 | 27
-      [D->M] FileTransfer : 02 | 00 36 | 02 00 | 00 06 7d 03 00 00 | 00 06 27 11 00 00 | 0f | ff bd | 02 04 | 00 00 01 01 | 00 00 00 00 | 00 00 10 00 00 33 8d 83 00 30 7b 66 2f 2e 61 6d 78 2f 41 4d 58 50 61 6e 65 6c 00 | dd (FullPath)
-      [D->M] FileTransfer : 02 | 00 3a | 02 00 | 00 06 7d 03 00 00 | 00 06 27 11 00 00 | 0f | ff be | 02 04 | 00 00 01 02 | 00 00 00 01 | 00 03 | 00 01 | 00 00 20 00 05 03 07 e4 12 09 16 | 41 4d 58 50 61 6e 65 6c 2f 69 6d 61 67 65 73 00 | 9b      (AMXPanel/images)
-      [D->M] FileTransfer : 02 | 00 3a | 02 00 | 00 06 7d 03 00 00 | 00 06 27 11 00 00 | 0f | ff bf | 02 04 | 00 00 01 02 | 00 00 00 01 | 00 03 | 00 02 | 00 00 10 00 0a 07 07 e3 0d 20 17 | 41 4d 58 50 61 6e 65 6c 2f 73 6f 75 6e 64 73 00 | ce | dd (AMXPanel/sounds)
-      [D->M] FileTransfer : 02 | 00 39 | 02 00 | 00 06 7d 03 00 00 | 00 06 27 11 00 00 | 0f | ff c0 | 02 04 | 00 00 01 02 | 00 00 00 01 | 00 03 | 00 03 | 00 00 10 00 05 03 07 e4 12 09 16 | 41 4d 58 50 61 6e 65 6c 2f 66 6f 6e 74 73 00 | 42         (AMXPanel/fonts)
-      ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-      ...
-      [D->M] FileTransfer : 02 | 00 2c | 02 00 | 00 06 7d 03 00 00 | 00 06 27 11 00 00 | 0f | ff c2 | 02 04 | 00 00 01 02 | 00 00 00 00 | 00 00 | 00 00 | 00 00 00 00 00 00 00 00 00 00 00 | 3f 00 0c (? -> 0x3F- > empty)
-                            02 | 00 39 | 02 00 | 00 01 7D 01 00 00 | 00 01 27 13 00 00 | FF | 00 0F | 02 04 | 00 00 01 02 | 00 00 00 01 | 00 10 | 00 11 | 00 00 00 00 00 00 00 00 00 00 00 41 4D 58 50 61 6E 65 6C 2F 66 6F 6E 74 73 00 5F
-      ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-      ...
+      -                  : P  | Len   | Flag  | Dest              | Source            | H  | ID    | CMD   | N-Data                                    | CS
+      ----------------------------------------------------------------------------------------------------------------------------------------------------------------
+      [M->D] FileTransfer: 02 | 01 1b | 02 10 | 00 06 27 11 00 00 | 00 06 7d 03 00 00 | ff | 02 32 | 02 04 | 00 00 01 05 | 41 4d 58 50 61 6e 65 6c ... | 09 (AMXPanel)
+      [D->M] Ack         : 02 | 00 13 | 02 08 | 00 06 7d 03 00 00 | 00 06 27 11 00 00 | 0f | 02 32 | 00 01 | 27
+      [D->M] FileTransfer: 02 | 00 19 | 02 00 | 00 06 7d 03 00 00 | 00 06 27 11 00 00 | 0f | 00 ab | 02 04 | 00 00 00 01 | 00 10 | b2
+      ----------------------------------------------------------------------------------------------------------------------------------------------------------------
       */
+
+      var lDirectory = AmxUtils.GetNullStr(m.FileData, 0);
+
+      Logger.LogDebug(false, "FileManager[CreateDirectory]: Directory={0:l}", lDirectory);
 
       try
       {
-        var lBaseDirectory = new DirectoryInfo(Path.Combine(BaseDirectory, path));
+        var lPath = Path.Combine(BaseDirectory, lDirectory);
 
-        Logger.LogDebug(false, "FileManager.ProcessDirectoryInfo[DirectoryInfo]: FullPath={0:l}", lBaseDirectory.FullName);
+        if(Directory.Exists(lPath))
+          return MsgCmdFileTransfer.CreateErrorRequest(m.Source, m.Dest, FileType.Unused, FileTransferStatusCode.DirectoryAlreadyExists);
 
-        // Directory Info ...
+        Directory.CreateDirectory(lPath);
+
+        return MsgCmdFileTransfer.CreateRequest(m.Source, m.Dest, FileType.Unused, FileTransferFunction.Ack);
+      }
+      catch(Exception ex)
+      {
+        Logger.LogError(false, "FileManager[CreateDirectory]: Message={0:l}", ex.Message);
+
+        return MsgCmdFileTransfer.CreateErrorRequest(m.Source, m.Dest, FileType.Unused, FileTransferStatusCode.ErrorCreatingDirectory);
+      }
+    }
+
+    private ICSPMsg GetDirectoryInfo(MsgCmdFileTransfer m)
+    {
+      /*
+      -                  : P  | Len   | Flag  | Dest              | Source            | H  | ID    | CMD   | N-Data                                             | CS
+      --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+      [M->D] FileTransfer: 02 | 01 1d | 02 10 | 00 06 27 11 00 00 | 00 06 7d 03 00 00 | ff | 4f 8e | 02 04 | 00 00 01 00 | 00 00 41 4d 58 50 61 6e 65 6c 2f ... | de (AMXPanel/)
+      [D->M] Ack         : 02 | 00 13 | 02 08 | 00 06 7d 03 00 00 | 00 06 27 11 00 00 | 0f | 02 32 | 00 01 | 27
+      [D->M] FileTransfer: 02 | 00 36 | 02 00 | 00 06 7d 03 00 00 | 00 06 27 11 00 00 | 0f | ff bd | 02 04 | 00 00 01 01 | 00 00 00 00 00 00 10 00 00 33 8d 83 00 30 7b 66 | 2f 2e 61 6d 78 2f 41 4d 58 50 61 6e 65 6c 00 | dd (FullPath)
+      --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+      - Items:
+      - 
+      - Directory      --> 02 | 00 3a | 02 00 | 00 06 7d 03 00 00 | 00 06 27 11 00 00 | 0f | ff be | 02 04 | 00 00 01 02 | 00 00 00 01 | 00 03 | 00 01 | 00 00 20 00 | 05 03 07 e4 12 09 16 | 41 4d 58 50 61 6e 65 6c 2f 69 6d 61 67 65 73 00 | 9b (AMXPanel/images)
+      - Directory      --> 02 | 00 3a | 02 00 | 00 06 7d 03 00 00 | 00 06 27 11 00 00 | 0f | ff bf | 02 04 | 00 00 01 02 | 00 00 00 01 | 00 03 | 00 02 | 00 00 10 00 | 0a 07 07 e3 0d 20 17 | 41 4d 58 50 61 6e 65 6c 2f 73 6f 75 6e 64 73 00 | ce (AMXPanel/sounds)
+      - Directory      --> 02 | 00 39 | 02 00 | 00 06 7d 03 00 00 | 00 06 27 11 00 00 | 0f | ff c0 | 02 04 | 00 00 01 02 | 00 00 00 01 | 00 03 | 00 03 | 00 00 10 00 | 05 03 07 e4 12 09 16 | 41 4d 58 50 61 6e 65 6c 2f 66 6f 6e 74 73 00 | 42    (AMXPanel/fonts)
+      - 
+      - File           --> 02 | 00 4f | 02 00 | 00 01 7d 01 00 00 | 00 01 27 11 00 00 | 0f | ff c7 | 02 04 | 00 00 01 02 | 00 00 00 00 | 00 01 | 00 01 | 00 00 15 26 | 05 0a 07 e4 0c 07 19 | 41 4d 58 50 61 6e 65 6c 2f 69 6d 61 67 65 73 2f 47 65 6e 65 72 61 6c 5f 43 68 65 63 6b 5f 36 34 2e 70 6e 67 00 2d
+      - File           --> 02 | 00 51 | 02 00 | 00 01 7d 01 00 00 | 00 01 27 11 00 00 | 0f | ff c9 | 02 04 | 00 00 01 02 | 00 00 00 00 | 00 01 | 00 01 | 00 01 00 00 | 05 0a 07 e4 0c 07 19 | 41 4d 58 50 61 6e 65 6c 2f 73 6f 75 6e 64 73 2f 46 69 6c 65 53 69 7a 65 5f 30 78 30 30 30 31 30 30 30 2e 6d 70 33 00 FB
+      --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+      If empty:
+      [D->M] FileTransfer: 02 | 00 2c | 02 00 | 00 06 7d 03 00 00 | 00 06 27 11 00 00 | 0f | ff c2 | 02 04 | 00 00 01 02 | 00 00 00 00 | 00 00 | 00 00 | 00 00 00 00 00 00 00 00 00 00 00 | 3f 00 0c (? -> 0x3F- > empty)
+      --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+      */
+
+      var lPath = AmxUtils.GetNullStr(m.FileData, 2);
+
+      Logger.LogDebug(false, "FileManager[GetDirectoryInfo]: Path={0:l}", lPath);
+
+      mManager.Send(MsgCmdAck.CreateRequest(m.Source, m.Dest, m.ID));
+
+      try
+      {
+        var lBaseDirectory = new DirectoryInfo(Path.Combine(BaseDirectory, lPath));
+
+        Logger.LogDebug(false, "FileManager[GetDirectoryInfo]: FullPath={0:l}", lBaseDirectory.FullName);
+
+        // Directory Info ... (16 Bytes)
         var lBytes = new byte[] { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x10, 0x00, 0x00, 0x33, 0x8d, 0x83, 0x00, 0x30, 0x7b, 0x66 };
 
         lBytes = lBytes.Concat(Encoding.Default.GetBytes(lBaseDirectory.FullName + "\0")).ToArray();
@@ -513,14 +487,26 @@ namespace ICSP.IO
 
         // Add directories
         foreach(var lDirectory in lBaseDirectory.GetDirectories())
-          lItems.Add(new DirectoryItem() { Type = DirectoryItemType.Directory, Name = string.Format("{0}{1}", path, lDirectory.Name) });
+          lItems.Add(new DirectoryItem()
+          {
+            Type = DirectoryItemType.Directory,
+            Name = Path.Combine(lPath, lDirectory.Name).Replace("\\", "/"),
+            FileSize = (int)GetDirectorySize(lDirectory),
+            DateTime = lDirectory.CreationTime,
+          });
 
         // Add files
         foreach(var lFile in lBaseDirectory.GetFiles())
-          lItems.Add(new DirectoryItem() { Type = DirectoryItemType.File, Name = string.Format("{0}{1}", path, lFile.Name) });
+          lItems.Add(new DirectoryItem()
+          {
+            Type = DirectoryItemType.File,
+            Name = Path.Combine(lPath, lFile.Name).Replace("\\", "/"),
+            FileSize = (int)lFile.Length,
+            DateTime = lFile.CreationTime,
+          });
 
-        var lItemCount = lItems.Count;
-        var lItemNo = lItemCount > 0 ? 0 : -1;
+        var lItemCount = (ushort)lItems.Count;
+        var lItemNo = (ushort)(lItemCount > 0 ? 0 : -1);
 
         // No Items
         if(lItemCount == 0)
@@ -543,11 +529,14 @@ namespace ICSP.IO
             // Total Count
             lStream.Write(AmxUtils.Int16ToBigEndian(lItemCount), 0, 2);
 
-            // Sequence
+            // Item
             lStream.Write(AmxUtils.Int16ToBigEndian(lItemNo), 0, 2);
 
-            // Unknown (11 Bytes)
-            lStream.Write(new byte[] { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, }, 0, 11);
+            // FileSize
+            lStream.Write(AmxUtils.Int32ToBigEndian(item.FileSize), 0, 4);
+
+            // Date/Time (Created/Modified)
+            lStream.Write(item.GetDateTime(), 0, 7);
 
             // Directory Name (Null-Terminated)
             lBytes = Encoding.Default.GetBytes(item.Name + "\0");
@@ -556,51 +545,108 @@ namespace ICSP.IO
             lData = lStream.ToArray();
           }
 
-          Logger.LogDebug(false, "FileManager.ProcessDirectoryInfo[DirectoryItem]: {0:l}", item);
+          Logger.LogDebug(false, "FileManager[GetDirectoryInfo]: {0:l}", item);
 
           mManager.Send(MsgCmdFileTransfer.CreateRequest(m.Source, m.Dest, FileType.Unused, FunctionsUnused.DirectoryItem, lData));
         }
       }
       catch(Exception ex)
       {
-        Logger.LogError(false, "FileManager.ProcessDirectoryInfo: Message={0:l}", ex.Message);
+        Logger.LogError(false, "FileManager[GetDirectoryInfo]: Message={0:l}", ex.Message);
       }
+
+      return null;
     }
 
-    private bool ReadFile(string fileName)
+    public static long GetDirectorySize(DirectoryInfo d)
     {
+      var lSize = 0L;
+
+      // Add file sizes
+      foreach(FileInfo file in d.GetFiles())
+        lSize += GetFileSizeOnDisk(file);
+
+      // Add subdirectory sizes
+      foreach(DirectoryInfo di in d.GetDirectories())
+        lSize += GetDirectorySize(di);
+
+      return lSize;
+    }
+
+    public static long GetFileSizeOnDisk(FileInfo info)
+    {
+      var lResult = GetDiskFreeSpaceW(info.Directory.Root.FullName, out var lSectorsPerCluster, out var lBytesPerSector, out _, out _);
+
+      if(lResult == 0)
+        return 0;
+
+      var lClusterSize = lSectorsPerCluster * lBytesPerSector;
+
+      var lOutSize = GetCompressedFileSizeW(info.FullName, out var lFileSizeHigh);
+
+      var lSize = (long)lFileSizeHigh << 32 | lOutSize;
+
+      return (lSize + lClusterSize - 1) / lClusterSize * lClusterSize;
+    }
+
+    private ICSPMsg TransferGetFileAccessToken(MsgCmdFileTransfer m)
+    {
+      /*
+      -                  : P  | Len   | Flag  | Dest              | Source            | H  | ID    | CMD   | N-Data                                                                                   | CS
+      ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+      [M->D] FileTransfer: 02 | 01 1d | 02 10 | 00 06 27 11 00 00 | 00 06 7d 03 00 00 | ff | 4b 5f | 02 04 | 00 04 01 04 | d0 07 | 41 4d 58 50 61 6e 65 6c 2f 6d 61 6e 69 66 65 73 74 2e 78 6d 61 ... | 55  (0xD0, 0x07, AMXPanel/manifest.xma)
+      [D->M] Ack         : 02 | 00 13 | 02 08 | 00 06 7d 03 00 00 | 00 06 27 11 00 00 | 0f | 4b 5f | 00 01 | 9d
+      [D->M] FileTransfer: 02 | 00 1F | 02 00 | 00 06 7D 03 00 00 | 00 06 27 13 00 00 | FF | 00 0D | 02 04 | 00 04 01 05 | 00 00 1F FA | FF FF FF FF | 1A
+      ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+      - If File not exists: (Nak, ErrorOpeningFile)
+      [D->M] FileTransfer: 02 | 00 19 | 02 00 | 00 06 7d 03 00 00 | 00 06 27 11 00 00 | 0f | ff bc | 02 04 | 00 04 00 01 | 00 05 | bb
+      */
+
+      var lSize = m.FileData.GetBigEndianInt16(0);
+
+      mCurrentFileNameSend = AmxUtils.GetNullStr(m.FileData, 2);
+
+      Logger.LogDebug(false, "FileManager[TransferGetFileAccessToken]: Size={0} Bytes", lSize);
+      Logger.LogDebug(false, "FileManager[TransferGetFileAccessToken]: FileName={0:l}", mCurrentFileNameSend);
+
       try
       {
-        Logger.LogDebug(false, "FileManager.ReadFile: FileName={0:l}", mCurrentFileName);
+        mBufferSend = File.ReadAllBytes(mCurrentFileNameSend).ToList();
 
-        mRawData = File.ReadAllBytes(fileName).ToList();
+        var lBytes = ArrayExtensions.Int32ToBigEndian(mBufferSend?.Count ?? 0).Concat(AccessToken).ToArray();
 
-        return true;
+        return MsgCmdFileTransfer.CreateRequest(m.Source, m.Dest, FileType.Axcess2Tokens, FunctionsAxcess2Tokens.TransferGetFileAccessTokenAck, lBytes);
       }
       catch(Exception ex)
       {
-        Logger.LogError(false, "FileManager.ReadFile: Message={0}", ex.Message);
+        Logger.LogError(false, "FileManager[TransferGetFileAccessToken]: Message={0}", ex.Message);
 
-        return false;
+        return MsgCmdFileTransfer.CreateErrorRequest(m.Source, m.Dest, FileType.Axcess2Tokens, FileTransferStatusCode.ErrorOpeningFile);
       }
     }
 
-    private void WriteDataToFile()
+    private ICSPMsg TransferFileDataComplete(MsgCmdFileTransfer m)
     {
       try
       {
-        Logger.LogDebug(false, "FileManager.WriteDataToFile: FileName={0:l}", mCurrentFileName);
+        Logger.LogDebug(false, "FileManager[TransferFileDataComplete]: FileName={0:l}", mCurrentFileNameData);
 
-        var lExt = Path.GetExtension(mCurrentFileName);
+        if(mCurrentFileNameData == null)
+          return MsgCmdFileTransfer.CreateRequest(m.Source, m.Dest, FileType.Axcess2Tokens, FileTransferFunction.TransferFileDataCompleteAck);
 
-        if(lExt == ".xma" || lExt == ".xml")
+        var lExt = Path.GetExtension(mCurrentFileNameData);
+
+        var lIsManifest = mCurrentFileNameData.Equals("AMXPanel/manifest.xma", StringComparison.OrdinalIgnoreCase);
+
+        if(!lIsManifest && (lExt == ".xma" || lExt == ".xml"))
         {
-          var lRawData = mRawData.ToArray();
+          var lRawData = mBufferData?.ToArray() ?? Array.Empty<byte>();
 
           if(lRawData.Length < 2)
           {
-            Logger.LogDebug(false, "FileManager.WriteDataToFile: Invalid Raw Data, Size={0}", lRawData.Length);
-            return;
+            Logger.LogDebug(false, "FileManager[TransferFileDataComplete]: Invalid Raw Data, FileName={0}, Size={1}", mCurrentFileNameData, lRawData.Length);
+
+            return MsgCmdFileTransfer.CreateRequest(m.Source, m.Dest, FileType.Axcess2Tokens, FileTransferFunction.TransferFileDataCompleteAck);
           }
 
           // Get first 2 bytes
@@ -653,9 +699,9 @@ namespace ICSP.IO
             // bc 06 cb 95 a4 45 73 29 11 b8 4a 0a 80 b2 06 fc 82 da 4a 8d 8a 40 10 d8 55 25 ed ea 8b 26 c2 54 b4 ac 3c 62 ca af 73 4a 9a e5 0e 88 d2 eb 10 d1 c3 93 dc e7 32 36 22 a3 7e 0c 15 5e fb e1 98 1c | df 18 26 da 17 63 80 84 0a 95 94 82 90 94 27 93 b0 b1 d7 6b df f0 62 46 6c ff 38 e9 9d aa e9 ba  
 
             // Write Raw ...
-            File.WriteAllBytes(mCurrentFileName, mRawData.ToArray());
+            File.WriteAllBytes(mCurrentFileNameData, mBufferData.ToArray());
 
-            return;
+            return MsgCmdFileTransfer.CreateRequest(m.Source, m.Dest, FileType.Axcess2Tokens, FileTransferFunction.TransferFileDataCompleteAck);
           }
 
           // .xma -> Archive (GZip)
@@ -672,8 +718,8 @@ namespace ICSP.IO
             }
             catch(Exception ex)
             {
-              Logger.LogError(false, "FileManager.WriteDataToFile: FileName={0}, GZip.Decompress => {1}", mCurrentFileName, ex.Message);
-              Logger.LogError(false, "FileManager.WriteDataToFile: FileName={0}, RawData={1}", mCurrentFileName, BitConverter.ToString(lRawData).Replace("-", " "));
+              Logger.LogError(false, "FileManager[TransferFileDataComplete]: FileName={0}, GZip.Decompress => {1}", mCurrentFileNameData, ex.Message);
+              Logger.LogError(false, "FileManager[TransferFileDataComplete]: FileName={0}, RawData={1}", mCurrentFileNameData, BitConverter.ToString(lRawData).Replace("-", " "));
             }
           }
 
@@ -685,37 +731,28 @@ namespace ICSP.IO
           {
             lXmlDoc.LoadXml(lXml);
 
-            lXmlDoc.Save(mCurrentFileName);
+            lXmlDoc.Save(mCurrentFileNameData);
           }
           catch(Exception ex)
           {
-            Logger.LogError(false, "FileManager.WriteDataToFile: FileName={0}, XmlDocument.LoadXml => {1}", mCurrentFileName, ex.Message);
-            Logger.LogError(false, "FileManager.WriteDataToFile: FileName={0}, RawData={1}", mCurrentFileName, BitConverter.ToString(lRawData).Replace("-", " "));
+            Logger.LogError(false, "FileManager[TransferFileDataComplete]: FileName={0}, XmlDocument.LoadXml => {1}", mCurrentFileNameData, ex.Message);
+            Logger.LogError(false, "FileManager[TransferFileDataComplete]: FileName={0}, RawData={1}", mCurrentFileNameData, BitConverter.ToString(lRawData).Replace("-", " "));
 
-            File.WriteAllBytes(mCurrentFileName, mRawData.ToArray());
+            File.WriteAllBytes(mCurrentFileNameData, mBufferData.ToArray());
           }
         }
         else
         {
           // Write Raw ...
-          File.WriteAllBytes(mCurrentFileName, mRawData.ToArray());
+          File.WriteAllBytes(mCurrentFileNameData, mBufferData.ToArray());
         }
       }
       catch(Exception ex)
       {
-        Logger.LogError(false, "FileManager.WriteDataToFile: Message={0}", ex.Message);
+        Logger.LogError(false, "FileManager[TransferFileDataComplete]: FileName={0}, Message={1}", mCurrentFileNameData, ex.Message);
       }
-    }
 
-    private void SendAck(MsgCmdFileTransfer m, ICSPMsg msg)
-    {
-      // Confirm
-      var lAckMsg = MsgCmdAck.CreateRequest(m.Source, m.Dest, m.ID);
-
-      mManager.Send(lAckMsg);
-
-      if(msg != null)
-        mManager.Send(msg);
+      return MsgCmdFileTransfer.CreateRequest(m.Source, m.Dest, FileType.Axcess2Tokens, FileTransferFunction.TransferFileDataCompleteAck);
     }
 
     private string GetG5DesignTmpPath()
@@ -768,7 +805,5 @@ namespace ICSP.IO
         Logger.LogError(false, ex.Message);
       }
     }
-
-    public string BaseDirectory { get; set; }
   }
 }

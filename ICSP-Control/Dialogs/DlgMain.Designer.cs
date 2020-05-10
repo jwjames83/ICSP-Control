@@ -29,19 +29,19 @@
         private void InitializeComponent()
         {
       this.components = new System.ComponentModel.Container();
-      System.Windows.Forms.TreeNode treeNode8 = new System.Windows.Forms.TreeNode("Knoten4", 2, 3);
-      System.Windows.Forms.TreeNode treeNode9 = new System.Windows.Forms.TreeNode("Knoten5", 2, 3);
-      System.Windows.Forms.TreeNode treeNode10 = new System.Windows.Forms.TreeNode("Knoten6", 4, 5);
-      System.Windows.Forms.TreeNode treeNode11 = new System.Windows.Forms.TreeNode("Knoten1", 0, 1, new System.Windows.Forms.TreeNode[] {
-            treeNode8,
-            treeNode9,
-            treeNode10});
-      System.Windows.Forms.TreeNode treeNode12 = new System.Windows.Forms.TreeNode("Knoten2", 0, 1);
-      System.Windows.Forms.TreeNode treeNode13 = new System.Windows.Forms.TreeNode("Knoten3", 6, 7);
-      System.Windows.Forms.TreeNode treeNode14 = new System.Windows.Forms.TreeNode("<Empty Device Tree>", 0, 1, new System.Windows.Forms.TreeNode[] {
-            treeNode11,
-            treeNode12,
-            treeNode13});
+      System.Windows.Forms.TreeNode treeNode1 = new System.Windows.Forms.TreeNode("Knoten4", 2, 3);
+      System.Windows.Forms.TreeNode treeNode2 = new System.Windows.Forms.TreeNode("Knoten5", 2, 3);
+      System.Windows.Forms.TreeNode treeNode3 = new System.Windows.Forms.TreeNode("Knoten6", 4, 5);
+      System.Windows.Forms.TreeNode treeNode4 = new System.Windows.Forms.TreeNode("Knoten1", 0, 1, new System.Windows.Forms.TreeNode[] {
+            treeNode1,
+            treeNode2,
+            treeNode3});
+      System.Windows.Forms.TreeNode treeNode5 = new System.Windows.Forms.TreeNode("Knoten2", 0, 1);
+      System.Windows.Forms.TreeNode treeNode6 = new System.Windows.Forms.TreeNode("Knoten3", 6, 7);
+      System.Windows.Forms.TreeNode treeNode7 = new System.Windows.Forms.TreeNode("<Empty Device Tree>", 0, 1, new System.Windows.Forms.TreeNode[] {
+            treeNode4,
+            treeNode5,
+            treeNode6});
       System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(DlgMain));
       this.MainStatusStrip = new System.Windows.Forms.StatusStrip();
       this.tssl_ClientState = new System.Windows.Forms.ToolStripStatusLabel();
@@ -92,7 +92,9 @@
       this.cmd_ShowTraceWindow = new System.Windows.Forms.Button();
       this.cmd_CreatePhysicalDevice = new System.Windows.Forms.Button();
       this.cmd_ShowFeedbackTest = new System.Windows.Forms.Button();
-      this.tsmi_InfoFileTransfer = new System.Windows.Forms.ToolStripMenuItem();
+      this.tsmi_Tools = new System.Windows.Forms.ToolStripMenuItem();
+      this.tsmi_Tools_OpenTmpFolder = new System.Windows.Forms.ToolStripMenuItem();
+      this.tsmi_Tools_InfoFileTransfer = new System.Windows.Forms.ToolStripMenuItem();
       this.MainStatusStrip.SuspendLayout();
       ((System.ComponentModel.ISupportInitialize)(this.num_System)).BeginInit();
       this.groupBox1.SuspendLayout();
@@ -541,10 +543,10 @@
       this.MainMenu.ImageScalingSize = new System.Drawing.Size(24, 24);
       this.MainMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.tsmi_Settings,
-            this.tsmi_InfoFileTransfer});
+            this.tsmi_Tools});
       this.MainMenu.Location = new System.Drawing.Point(0, 0);
       this.MainMenu.Name = "MainMenu";
-      this.MainMenu.Size = new System.Drawing.Size(1521, 36);
+      this.MainMenu.Size = new System.Drawing.Size(1521, 33);
       this.MainMenu.TabIndex = 25;
       // 
       // tsmi_Settings
@@ -586,36 +588,36 @@
       this.OnlineTree.Location = new System.Drawing.Point(826, 74);
       this.OnlineTree.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
       this.OnlineTree.Name = "OnlineTree";
-      treeNode8.ImageIndex = 2;
-      treeNode8.Name = "Knoten4";
-      treeNode8.SelectedImageIndex = 3;
-      treeNode8.Text = "Knoten4";
-      treeNode9.ImageIndex = 2;
-      treeNode9.Name = "Knoten5";
-      treeNode9.SelectedImageIndex = 3;
-      treeNode9.Text = "Knoten5";
-      treeNode10.ImageIndex = 4;
-      treeNode10.Name = "Knoten6";
-      treeNode10.SelectedImageIndex = 5;
-      treeNode10.Text = "Knoten6";
-      treeNode11.ImageIndex = 0;
-      treeNode11.Name = "Knoten1";
-      treeNode11.SelectedImageIndex = 1;
-      treeNode11.Text = "Knoten1";
-      treeNode12.ImageIndex = 0;
-      treeNode12.Name = "Knoten2";
-      treeNode12.SelectedImageIndex = 1;
-      treeNode12.Text = "Knoten2";
-      treeNode13.ImageIndex = 6;
-      treeNode13.Name = "Knoten3";
-      treeNode13.SelectedImageIndex = 7;
-      treeNode13.Text = "Knoten3";
-      treeNode14.ImageIndex = 0;
-      treeNode14.Name = "Root";
-      treeNode14.SelectedImageIndex = 1;
-      treeNode14.Text = "<Empty Device Tree>";
+      treeNode1.ImageIndex = 2;
+      treeNode1.Name = "Knoten4";
+      treeNode1.SelectedImageIndex = 3;
+      treeNode1.Text = "Knoten4";
+      treeNode2.ImageIndex = 2;
+      treeNode2.Name = "Knoten5";
+      treeNode2.SelectedImageIndex = 3;
+      treeNode2.Text = "Knoten5";
+      treeNode3.ImageIndex = 4;
+      treeNode3.Name = "Knoten6";
+      treeNode3.SelectedImageIndex = 5;
+      treeNode3.Text = "Knoten6";
+      treeNode4.ImageIndex = 0;
+      treeNode4.Name = "Knoten1";
+      treeNode4.SelectedImageIndex = 1;
+      treeNode4.Text = "Knoten1";
+      treeNode5.ImageIndex = 0;
+      treeNode5.Name = "Knoten2";
+      treeNode5.SelectedImageIndex = 1;
+      treeNode5.Text = "Knoten2";
+      treeNode6.ImageIndex = 6;
+      treeNode6.Name = "Knoten3";
+      treeNode6.SelectedImageIndex = 7;
+      treeNode6.Text = "Knoten3";
+      treeNode7.ImageIndex = 0;
+      treeNode7.Name = "Root";
+      treeNode7.SelectedImageIndex = 1;
+      treeNode7.Text = "<Empty Device Tree>";
       this.OnlineTree.Nodes.AddRange(new System.Windows.Forms.TreeNode[] {
-            treeNode14});
+            treeNode7});
       this.OnlineTree.SelectedImageIndex = 0;
       this.OnlineTree.Size = new System.Drawing.Size(674, 466);
       this.OnlineTree.TabIndex = 26;
@@ -702,11 +704,28 @@
       this.cmd_ShowFeedbackTest.Text = "Feedback Test";
       this.cmd_ShowFeedbackTest.UseVisualStyleBackColor = true;
       // 
-      // tsmi_InfoFileTransfer
+      // tsmi_Tools
       // 
-      this.tsmi_InfoFileTransfer.Name = "tsmi_InfoFileTransfer";
-      this.tsmi_InfoFileTransfer.Size = new System.Drawing.Size(157, 30);
-      this.tsmi_InfoFileTransfer.Text = "&Info File Transfer";
+      this.tsmi_Tools.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.tsmi_Tools_InfoFileTransfer,
+            this.tsmi_Tools_OpenTmpFolder});
+      this.tsmi_Tools.Name = "tsmi_Tools";
+      this.tsmi_Tools.Size = new System.Drawing.Size(69, 29);
+      this.tsmi_Tools.Text = "&Tools";
+      // 
+      // tsmi_Tools_OpenTmpFolder
+      // 
+      this.tsmi_Tools_OpenTmpFolder.Image = global::ICSPControl.Properties.Resources.file_config;
+      this.tsmi_Tools_OpenTmpFolder.Name = "tsmi_Tools_OpenTmpFolder";
+      this.tsmi_Tools_OpenTmpFolder.Size = new System.Drawing.Size(288, 34);
+      this.tsmi_Tools_OpenTmpFolder.Text = "Open G5 Temp Folder";
+      // 
+      // tsmi_Tools_InfoFileTransfer
+      // 
+      this.tsmi_Tools_InfoFileTransfer.Image = global::ICSPControl.Properties.Resources.realvista_general_info_32;
+      this.tsmi_Tools_InfoFileTransfer.Name = "tsmi_Tools_InfoFileTransfer";
+      this.tsmi_Tools_InfoFileTransfer.Size = new System.Drawing.Size(288, 34);
+      this.tsmi_Tools_InfoFileTransfer.Text = "&Info File Transfer";
       // 
       // DlgMain
       // 
@@ -808,7 +827,9 @@
     private System.Windows.Forms.ToolStripStatusLabel tssl_ProgramName;
     private System.Windows.Forms.ToolStripStatusLabel tssl_MainFile;
     private System.Windows.Forms.Button cmd_ShowFeedbackTest;
-        private System.Windows.Forms.ToolStripMenuItem tsmi_InfoFileTransfer;
+        private System.Windows.Forms.ToolStripMenuItem tsmi_Tools;
+        private System.Windows.Forms.ToolStripMenuItem tsmi_Tools_InfoFileTransfer;
+        private System.Windows.Forms.ToolStripMenuItem tsmi_Tools_OpenTmpFolder;
     }
 }
 

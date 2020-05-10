@@ -409,35 +409,38 @@ namespace ICSP
         // ====================================================================
 
         case SetDeviceNumber: return "SetDevice Number";
-        
+
         case SetIdentifyModeAddress: return "Set Identify Mode/Address";
-        
+
         case SetSerialNumber: return "Set SerialNumber";
-        
+
         case FileTransfer: return "File Transfer";
-        
+
         case RequestIpAddressList: return "Request IP Address List";
         case IpAddressList: return "IP Address List";
         case AddIpAddress: return "Add IP Address";
         case DeleteIpAddress: return "Delete IP Address";
-        
+
         case SetDnsIpAddresses: return "Set DNS IP Addresses";
         case RequestDnsIpAddresses: return "Request DNS IP Addresses";
         case GetDnsIpAddresses: return "Get DNS IP Addresses";
-        
+
         case SetEthernetIPAddress: return "Set Ethernet IPAddress";
         case RequestEthernetIpAddress: return "Request Ethernet IP Address";
         case GetEthernetIpAddress: return "Get Ethernet IP Address";
-        
+
         case SetDateTime: return "Set Time & Date";
         case RequestDateTime: return "Request Time & Date";
         case GetDateTime: return "Get Time & Date";
-        
+
         case IdentifyModeAddressResponse: return "Identify Mode/Address Response";
 
         case Restart: return "Restart";
 
         case CompletionCode: return "Completion Code";
+
+        default:
+          break;
       }
 
       return "Unknown";

@@ -70,6 +70,11 @@ namespace ICSP.Manager.ConfigurationManager
       return CreateRequest(dest, source, fileType, (ushort)function, data);
     }
 
+    internal static ICSPMsg CreateErrorRequest(AmxDevice dest, AmxDevice source, FileType fileType, FileTransferStatusCode statusCode)
+    {
+      return CreateRequest(dest, source, fileType, (ushort)FileTransferFunction.Nak, ArrayExtensions.Int16ToBigEndian((ushort)statusCode));
+    }
+
     protected override void WriteLogExtended()
     {
       Logger.LogDebug(false, "{0:l} FileType     : 0x{1:X4} ({2})", GetType().Name, (byte)FileType, FileType);

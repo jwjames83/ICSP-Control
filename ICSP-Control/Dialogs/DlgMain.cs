@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Text;
@@ -14,6 +15,8 @@ using ICSP.Manager.DiagnosticManager;
 
 using ICSPControl.Controls;
 using ICSPControl.Properties;
+
+using Microsoft.Win32;
 
 using TpControls;
 
@@ -47,7 +50,8 @@ namespace ICSPControl.Dialogs
       tsmi_CommunicationSetttings.Click += OnCommunicationSetttingsClick;
       tsmi_Exit.Click += OnExitClick;
 
-      tsmi_InfoFileTransfer.Click += (s, e) => { new DlgFileTransfer().ShowDialog(); };
+      tsmi_Tools_InfoFileTransfer.Click += (s, e) => { new DlgFileTransfer().ShowDialog(); };
+      tsmi_Tools_OpenTmpFolder.Click += (s, e) => { OpenTmpFolder(); };
 
       tssl_Host.Text = string.Format("Host: {0}", Settings.Default.AmxHost);
       tssl_Port.Text = string.Format("Port: {0}", Settings.Default.AmxPort);
@@ -483,6 +487,31 @@ namespace ICSPControl.Dialogs
       };
 
       mICSPManager?.CreateDeviceInfo(lDeviceInfo, Settings.Default.PhysicalDevicePortCount);
+    }
+
+    private void OpenTmpFolder()
+    {
+      try
+      {
+        using var lKey = Registry.CurrentUser.OpenSubKey(@"Software\AMX Corp.\TPDesign5\Settings\User Preferences");
+
+        if(lKey != null)
+        {
+          if(lKey.GetValue("User selected temp directory") is string lPath)
+          {
+            Process.Start(lPath);
+            return;
+          }
+        }
+      }
+      catch(Exception ex)
+      {
+        ErrorMessageBox.Show(ex);
+
+        return;
+      }
+
+      InfoMessageBox.Show("G5 Designer not installed.");
     }
 
     private AmxDevice GetDevice()

@@ -63,9 +63,29 @@ namespace ICSPControl.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap file_config {
+            get {
+                object obj = ResourceManager.GetObject("file_config", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap FileTransferWorkaround {
             get {
                 object obj = ResourceManager.GetObject("FileTransferWorkaround", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap realvista_general_info_32 {
+            get {
+                object obj = ResourceManager.GetObject("realvista_general_info_32", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

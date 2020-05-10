@@ -22,8 +22,6 @@ namespace ICSP.Manager.DeviceManager
 
     public MsgCmdDeviceInfo(ICSPMsgData msg) : base(msg)
     {
-      var lOffset = 0;
-
       if(msg.Data.Length > 0)
       {
         // Device
@@ -53,7 +51,7 @@ namespace ICSP.Manager.DeviceManager
         // FWID
         FirmwareId = msg.Data.GetBigEndianInt16(28);
 
-        lOffset = 30;
+        var lOffset = 30;
 
         // Null-Terminated Strings ...
 
@@ -146,20 +144,20 @@ namespace ICSP.Manager.DeviceManager
       var lDest = new AmxDevice(0, 1, deviceInfo.System);
       var lSource = new AmxDevice(deviceInfo.Device, 0, deviceInfo.System);
 
-      var lRequest = new MsgCmdDeviceInfo();
-
-      lRequest.IPv4Address = deviceInfo.IPv4Address;
+      var lRequest = new MsgCmdDeviceInfo
+      {
+        IPv4Address = deviceInfo.IPv4Address,
+        Device = deviceInfo.Device,
+        System = deviceInfo.System,
+        DataFlag = deviceInfo.DataFlag,
+        ObjectId = deviceInfo.ObjectId,
+        ParentId = deviceInfo.ParentId,
+        ManufactureId = deviceInfo.ManufactureId,
+        DeviceId = deviceInfo.DeviceId,
+        SerialNumber = deviceInfo.SerialNumber
+      };
 
       Logger.LogDebug(false, "MsgCmdDeviceInfo.CreateRequest: Dest={0:l}, Source={1:l}, IPv4Address={2:l}", lDest, lSource, lRequest.IPv4Address);
-
-      lRequest.Device = deviceInfo.Device;
-      lRequest.System = deviceInfo.System;
-      lRequest.DataFlag = deviceInfo.DataFlag;
-      lRequest.ObjectId = deviceInfo.ObjectId;
-      lRequest.ParentId = deviceInfo.ParentId;
-      lRequest.ManufactureId = deviceInfo.ManufactureId; 
-      lRequest.DeviceId = deviceInfo.DeviceId; 
-      lRequest.SerialNumber = deviceInfo.SerialNumber;
 
       // SerialNumber => 16 bytes of data
       if(string.IsNullOrWhiteSpace(lRequest.SerialNumber))
@@ -426,7 +424,7 @@ namespace ICSP.Manager.DeviceManager
 
     public IPAddress IPv4Address { get; private set; }
 
-    public int IpPort { get; private set; }
+    public ushort IpPort { get; private set; }
 
     public PhysicalAddress MacAddress { get; private set; }
 

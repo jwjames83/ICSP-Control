@@ -35,13 +35,14 @@ namespace ICSP.Manager.DeviceManager
     {
       var lDest = new AmxDevice(0, 0, source.System);
 
-      var lRequest = new MsgCmdPortCountBy();
+      var lRequest = new MsgCmdPortCountBy
+      {
+        Device = device,
+        System = system,
+        PortCount = portCount
+      };
 
-      lRequest.Device = device;
-      lRequest.System = system;
-      lRequest.PortCount = portCount;
-
-      Logger.LogDebug(false, "MsgCmdPortCountBy.CreateRequest: Device={0:l}, System={1}, PortCount={2}", lRequest.Device, lRequest.System, lRequest.PortCount);
+      Logger.LogDebug(false, "MsgCmdPortCountBy.CreateRequest: Device={0}, System={1}, PortCount={2}", lRequest.Device, lRequest.System, lRequest.PortCount);
 
       var lData = ArrayExtensions.Int16ToBigEndian(device)
         .Concat(ArrayExtensions.Int16ToBigEndian(system))

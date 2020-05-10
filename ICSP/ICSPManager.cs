@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net;
-using System.Text;
+
 using ICSP.Client;
 using ICSP.IO;
 using ICSP.Logging;
@@ -223,7 +222,8 @@ namespace ICSP
             // =======================================================================================
             // Test-Stuff ...
             // =======================================================================================
-            
+
+            /*
             var lDest = new AmxDevice(10001, 0, 1);
 
             var lDirectory = "/"; // Get Root-Directory
@@ -249,7 +249,7 @@ namespace ICSP
             Logger.LogDebug(false, "GetDirectoryInfo: Directory={0:l}", lDirectory);
             Logger.LogDebug(false, "----------------------------------------------------------------");
 
-            lBytes = new byte[] { 0x00, 0x00, }.Concat(Encoding.Default.GetBytes(lDirectory + "\0")).ToArray();
+            var lBytes = new byte[] { 0x00, 0x00, }.Concat(Encoding.Default.GetBytes(lDirectory + "\0")).ToArray();
 
             lRequest = MsgCmdFileTransfer.CreateRequest(lDest, DynamicDevice, FileType.Unused, FunctionsUnused.GetDirectoryInfo, lBytes);
 
@@ -259,14 +259,20 @@ namespace ICSP
             // .
             // ..
             // images
+            
+            Logger.LogDebug(false, "----------------------------------------------------------------");
+            Logger.LogDebug(false, "TransferGetFileAccessToken: FileName=AMXPanel/Page.xml");
+            Logger.LogDebug(false, "----------------------------------------------------------------");
 
             //  d0 07 | AMXPanel/Page.xml
-            lBytes = new byte[] { 0xd0, 0x07, 0x41, 0x4d, 0x58, 0x50, 0x61, 0x6e, 0x65, 0x6c, 0x2f, 0x50, 0x61, 0x67, 0x65, 0x2e, 0x78, 0x6d, 0x6c, 0x00, };
+            var lBytes = new byte[] { 0xd0, 0x07, 0x41, 0x4d, 0x58, 0x50, 0x61, 0x6e, 0x65, 0x6c, 0x2f, 0x50, 0x61, 0x67, 0x65, 0x2e, 0x78, 0x6d, 0x6c, 0x00, };
 
             // Read File (AMXPanel/Page.xml)
             lRequest = MsgCmdFileTransfer.CreateRequest(lDest, DynamicDevice, FileType.Axcess2Tokens, FunctionsAxcess2Tokens.TransferGetFileAccessToken, lBytes);
 
             Send(lRequest);
+            
+            */
 
             break;
           }
@@ -427,7 +433,8 @@ namespace ICSP
         var lSource = DynamicDevice;
 
         // lSource = new AmxDevice(deviceInfo.Device, 0, deviceInfo.System);
-
+        
+        // It is sent by a device upon reporting if the device has more than one port.
         var lPortCountRequest = MsgCmdPortCountBy.CreateRequest(lSource, deviceInfo.Device, deviceInfo.System, portCount);
 
         Send(lPortCountRequest);

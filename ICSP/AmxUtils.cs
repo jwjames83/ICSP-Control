@@ -5,14 +5,15 @@ namespace ICSP
 {
   public static class AmxUtils
   {
-    public static byte[] Int16ToBigEndian(int value)
+
+    public static byte[] Int32ToBigEndian(int value)
     {
-      var lBytes = new byte[2];
+      return new byte[] { (byte)(value >> 24), (byte)(value >> 16), (byte)(value >> 8), (byte)value };
+    }
 
-      lBytes[0] = (byte)(value >> 8);
-      lBytes[1] = (byte)value;
-
-      return lBytes;
+    public static byte[] Int16ToBigEndian(ushort value)
+    {
+      return new byte[] { (byte)((ushort)value >> 8), (byte)value };
     }
 
     public static byte[] Int16To8Bit(int value)
@@ -58,7 +59,7 @@ namespace ICSP
 
       if(lIndex >= 0)
       {
-        lIndex = lIndex - offset;
+        lIndex -= offset;
 
         lStr = Encoding.GetEncoding(1252).GetString(bytes, offset, lIndex);
 

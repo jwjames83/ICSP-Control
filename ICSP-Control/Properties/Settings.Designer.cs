@@ -227,15 +227,12 @@ namespace ICSPControl.Properties {
             }
         }
         
-        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("Debug")]
         public global::Serilog.Events.LogEventLevel LogLevel {
             get {
                 return ((global::Serilog.Events.LogEventLevel)(this["LogLevel"]));
-            }
-            set {
-                this["LogLevel"] = value;
             }
         }
     }

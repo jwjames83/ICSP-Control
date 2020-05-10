@@ -7,6 +7,7 @@
       .exe.config;
       .dll.config
     </AllowedReferenceRelatedFileExtensions>
+    <LangVersion>latestMajor</LangVersion>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>9.0.21022</ProductVersion>
@@ -188,7 +189,9 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="App.ico" />
+    <None Include="Resources\realvista_general_info_32.png" />
     <None Include="Resources\FileTransferWorkaround.png" />
+    <None Include="Resources\file_config.png" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ICSP\ICSP.csproj">
@@ -196,7 +199,7 @@
       <Name>ICSP</Name>
     </ProjectReference>
     <ProjectReference Include="..\TpButton\TpControls.csproj">
-      <Project>{D5011E59-2E24-4B7A-950A-195AEB456AC1}</Project>
+      <Project>{d5011e59-2e24-4b7a-950a-195aeb456ac1}</Project>
       <Name>TpControls</Name>
     </ProjectReference>
   </ItemGroup>

@@ -61,7 +61,7 @@ namespace ICSP.Manager.DeviceManager
       var lData = device.GetBytesDPS().
         Concat(ArrayExtensions.Int16ToBigEndian(level)).
         Concat(ArrayExtensions.Int16To8Bit((byte)lRequest.ValueType)).
-        Concat(ArrayExtensions.Int16ToBigEndian(lRequest.Value)).
+        Concat(ArrayExtensions.Int16ToBigEndian((ushort)lRequest.Value)).
         ToArray();
 
       return lRequest.Serialize(device, source, MsgCmd, lData);
