@@ -22,12 +22,17 @@ namespace ICSP.Manager.ConfigurationManager
     {
     }
 
-    public MsgCmdGetEthernetIpAddress(ICSPMsgData msg) : base(msg)
+    public MsgCmdGetEthernetIpAddress(byte[] buffer) : base(buffer)
     {
-      if(msg.Data.Length > 0)
+      if(Data.Length > 0)
       {
-        // DataFlag = (RestartType)msg.Data.GetBigEndianInt16(0);
+        // DataFlag = (RestartType)Data.GetBigEndianInt16(0);
       }
+    }
+
+    public override ICSPMsg FromData(byte[] bytes)
+    {
+      return new MsgCmdGetEthernetIpAddress(bytes);
     }
 
     public static ICSPMsg CreateRequest(AmxDevice dest, AmxDevice source, IPAddress ipAddress)

@@ -14,20 +14,20 @@ namespace ICSP.Manager.DeviceManager
     {
     }
 
-    public MsgBaseCmdText(ICSPMsgData msg) : base(msg)
+    public MsgBaseCmdText(byte[] buffer) : base(buffer)
     {
-      if(msg.Data.Length > 0)
+      if(Data.Length > 0)
       {
-        Device = AmxDevice.FromDPS(msg.Data.Range(0, 6));
+        Device = AmxDevice.FromDPS(Data.Range(0, 6));
 
-        ValueType = (EncodingType)msg.Data[6];
+        ValueType = (EncodingType)Data[6];
 
-        Length = msg.Data.GetBigEndianInt16(7);
+        Length = Data.GetBigEndianInt16(7);
 
         switch(ValueType)
         {
-          case EncodingType.Default: Text = AmxUtils.GetString(msg.Data, 9, Length); break;
-          case EncodingType.Unicode: Text = AmxUtils.GetUnicodeString(msg.Data, 9, Length); break;
+          case EncodingType.Default: Text = AmxUtils.GetString(Data, 9, Length); break;
+          case EncodingType.Unicode: Text = AmxUtils.GetUnicodeString(Data, 9, Length); break;
         }
       }
     }

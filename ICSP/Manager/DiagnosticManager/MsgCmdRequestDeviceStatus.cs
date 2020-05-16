@@ -21,18 +21,24 @@ namespace ICSP.Manager.DiagnosticManager
     {
     }
 
-    public MsgCmdRequestDeviceStatus(ICSPMsgData msg) : base(msg)
+    public MsgCmdRequestDeviceStatus(byte[] buffer) : base(buffer)
     {
-      if(msg.Data.Length > 0)
-        Device = AmxDevice.FromDPS(msg.Data.Range(0, 6));
+      if(Data.Length > 0)
+        Device = AmxDevice.FromDPS(Data.Range(0, 6));
+    }
+
+    public override ICSPMsg FromData(byte[] bytes)
+    {
+      return new MsgCmdRequestDeviceStatus(bytes);
     }
 
     public static ICSPMsg CreateRequest(AmxDevice source, AmxDevice device)
     {
-      var lRequest = new MsgCmdRequestDeviceStatus();
+      var lRequest = new MsgCmdRequestDeviceStatus
+      {
+        Device = device
+      };
 
-      lRequest.Device = device;
-      
       var lData = device.GetBytesDPS().ToArray();
 
       return lRequest.Serialize(AmxDevice.Empty, source, MsgCmd, lData);

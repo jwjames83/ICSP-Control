@@ -15,8 +15,13 @@ namespace ICSP.Manager.DiagnosticManager
     {
     }
 
-    public MsgCmdProbablyProgramInfoEOT(ICSPMsgData msg) : base(msg)
+    public MsgCmdProbablyProgramInfoEOT(byte[] buffer) : base(buffer)
     {
+    }
+
+    public override ICSPMsg FromData(byte[] bytes)
+    {
+      return new MsgCmdProbablyProgramInfoEOT(bytes);
     }
 
     public static ICSPMsg CreateRequest(AmxDevice source)

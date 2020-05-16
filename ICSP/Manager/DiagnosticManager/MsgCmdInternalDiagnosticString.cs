@@ -16,29 +16,31 @@ namespace ICSP.Manager.DiagnosticManager
     {
     }
 
-    public MsgCmdInternalDiagnosticString(ICSPMsgData msg) : base(msg)
+    public MsgCmdInternalDiagnosticString(byte[] buffer) : base(buffer)
     {
-      var lOffset = 0;
-
-      if(msg.Data.Length > 0)
+      if(Data.Length > 0)
       {
-        ObjectId = msg.Data.GetBigEndianInt16(0);
+        ObjectId = Data.GetBigEndianInt16(0);
 
-        Severity = msg.Data.GetBigEndianInt16(2);
+        Severity = Data.GetBigEndianInt16(2);
 
-        lOffset = 4;
-
-        Text = AmxUtils.GetNullStr(msg.Data, ref lOffset);
+        Text = AmxUtils.GetNullStr(Data, 4);
       }
+    }
+
+    public override ICSPMsg FromData(byte[] bytes)
+    {
+      return new MsgCmdInternalDiagnosticString(bytes);
     }
 
     public static ICSPMsg CreateRequest(AmxDevice source, AmxDevice device, ushort objectId, ushort severity, string text)
     {
-      var lRequest = new MsgCmdInternalDiagnosticString();
-
-      lRequest.ObjectId = objectId;
-      lRequest.Severity = severity;
-      lRequest.Text = text;
+      var lRequest = new MsgCmdInternalDiagnosticString
+      {
+        ObjectId = objectId,
+        Severity = severity,
+        Text = text
+      };
 
       var lBytes = Encoding.Default.GetBytes(lRequest.Text + "\0");
       

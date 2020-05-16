@@ -28,6 +28,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -36,6 +37,9 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AutoGenerateBindingRedirects>false</AutoGenerateBindingRedirects>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="ICSharpCode.SharpZipLib, Version=1.2.0.246, Culture=neutral, PublicKeyToken=1b03e6acf1164f73, processorArchitecture=MSIL">
@@ -85,6 +89,7 @@
     <Compile Include="Logging\LoggingConfigurator.cs" />
     <Compile Include="Logging\MethodInfo.cs" />
     <Compile Include="Logging\TraceListener.cs" />
+    <Compile Include="Manager\MsgCmdUnknown.cs" />
     <Compile Include="Manager\ConfigurationManager\MsgCmdCompletionCode.cs" />
     <Compile Include="Manager\ConfigurationManager\MsgCmdFileTransfer.cs" />
     <Compile Include="Manager\ConfigurationManager\MsgCmdGetEthernetIpAddress.cs" />
@@ -156,7 +161,7 @@
     <Compile Include="Extensions\TaskExtensions.cs" />
     <Compile Include="ICSPManager.cs" />
     <Compile Include="ICSPMsg.cs" />
-    <Compile Include="ICSPMsgData.cs" />
+    <Compile Include="MsgFactory.cs" />
     <Compile Include="Reflection\AttributeHelper.cs" />
     <Compile Include="Reflection\MethodHelper.cs" />
     <Compile Include="Reflection\TypeHelper.cs" />

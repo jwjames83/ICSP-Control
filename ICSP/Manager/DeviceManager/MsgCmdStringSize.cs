@@ -24,31 +24,37 @@ namespace ICSP.Manager.DeviceManager
     {
     }
 
-    public MsgCmdStringSize(ICSPMsgData msg) : base(msg)
+    public MsgCmdStringSize(byte[] buffer) : base(buffer)
     {
-      if(msg.Data.Length > 0)
+      if(Data.Length > 0)
       {
-        Device = AmxDevice.FromDPS(msg.Data.Range(0, 6));
+        Device = AmxDevice.FromDPS(Data.Range(0, 6));
 
-        ValueType = (EncodingType)msg.Data[6];
+        ValueType = (EncodingType)Data[6];
 
-        Length = msg.Data.GetBigEndianInt16(7);
+        Length = Data.GetBigEndianInt16(7);
       }
     }
 
-    public static ICSPMsg CreateRequest(AmxDevice source, AmxDevice device, EncodingType valueType  , ushort length)
+    public override ICSPMsg FromData(byte[] bytes)
     {
-      var lRequest = new MsgCmdStringSize();
+      return new MsgCmdStringSize(bytes);
+    }
 
-      lRequest.Device = device;
-      lRequest.ValueType = valueType;
-      lRequest.Length = length;
+    public static ICSPMsg CreateRequest(AmxDevice source, AmxDevice device, EncodingType valueType, ushort length)
+    {
+      var lRequest = new MsgCmdStringSize
+      {
+        Device = device,
+        ValueType = valueType,
+        Length = length
+      };
 
       var lData = device.GetBytesDPS().
         Concat(ArrayExtensions.Int16To8Bit((byte)lRequest.ValueType)).
         Concat(ArrayExtensions.Int16ToBigEndian(lRequest.Length)).
         ToArray();
-      
+
       return lRequest.Serialize(device, source, MsgCmd, lData);
     }
 
@@ -63,7 +69,7 @@ namespace ICSP.Manager.DeviceManager
     ///  Unsigned 16-bit value
     /// </summary>
     public ushort Length { get; set; }
-    
+
     protected override void WriteLogExtended()
     {
       Logger.LogDebug(false, "{0:l} Device: {1:l}", GetType().Name, Device);

@@ -20,17 +20,23 @@ namespace ICSP.Manager.DeviceManager
     {
     }
 
-    public MsgCmdRequestCommandSize(ICSPMsgData msg) : base(msg)
+    public MsgCmdRequestCommandSize(byte[] buffer) : base(buffer)
     {
-      if(msg.Data.Length > 0)
-        Device = AmxDevice.FromDPS(msg.Data.Range(0, 6));
+      if(Data.Length > 0)
+        Device = AmxDevice.FromDPS(Data.Range(0, 6));
+    }
+
+    public override ICSPMsg FromData(byte[] bytes)
+    {
+      return new MsgCmdRequestCommandSize(bytes);
     }
 
     public static ICSPMsg CreateRequest(AmxDevice source, AmxDevice device)
     {
-      var lRequest = new MsgCmdRequestCommandSize();
-
-      lRequest.Device = device;
+      var lRequest = new MsgCmdRequestCommandSize
+      {
+        Device = device
+      };
 
       var lData = device.GetBytesDPS().ToArray();
 

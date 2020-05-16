@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
+using System.Threading;
+using System.Threading.Tasks;
 
 using ICSP.Extensions;
 using ICSP.Logging;
@@ -35,6 +37,42 @@ namespace ICSP.Client
     {
       Dispose(false);
     }
+
+    public static MsgFactory Factory { get; } = new MsgFactory();
+
+    /// <summary>
+    /// Gets the time to wait while trying to establish a connection
+    /// before terminating the attempt and generating an error.
+    /// </summary>
+    /// <remarks>
+    /// You can set the amount of time a connection waits to time out by 
+    /// using the ConnectTimeout or Connection Timeout keywords in the connection string.
+    /// A value of 0 indicates no limit, and should be avoided in a ConnectionString 
+    /// because an attempt to connect waits indefinitely.
+    /// </remarks>
+    public int ConnectionTimeout
+    {
+      get
+      {
+        return mConnectionTimeout;
+      }
+      set
+      {
+        if(value < 0)
+          throw new ArgumentOutOfRangeException(nameof(ConnectionTimeout));
+
+        mConnectionTimeout = value;
+      }
+    }
+
+    public bool Connected
+    {
+      get { return mSocket?.Connected ?? false; }
+    }
+
+    public IPAddress RemoteIpAddress { get; private set; }
+
+    public IPAddress LocalIpAddress { get; private set; }
 
     public void Dispose()
     {
@@ -79,7 +117,11 @@ namespace ICSP.Client
 
       Logger.LogInfo("StartClient: Host={0:l}, Port={1}", lIpAddress, port);
 
-      mSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+      mSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp)
+      {
+        ReceiveBufferSize = 8192,
+        SendBufferSize = 8192
+      };
 
       try
       {
@@ -122,9 +164,11 @@ namespace ICSP.Client
         RemoteIpAddress = ((IPEndPoint)mSocket.RemoteEndPoint).Address;
         LocalIpAddress = ((IPEndPoint)mSocket.LocalEndPoint).Address;
 
-        mStream = new NetworkStream(mSocket);
+        mStream = new NetworkStream(mSocket, true);
 
-        ReadAsync();
+        var mCts = new CancellationTokenSource();
+
+        ReadAsync(mCts.Token);
 
         ClientOnlineStatusChanged?.Invoke(this, new ClientOnlineOfflineEventArgs(0, true, RemoteIpAddress?.ToString()));
       }
@@ -154,15 +198,15 @@ namespace ICSP.Client
       }
     }
 
-    public void Send(byte[] bytes)
+    public async Task SendAsync(byte[] bytes)
     {
       try
       {
         if(mSocket != null)
         {
-          Logger.LogDebug("{0} Bytes", bytes.Length);
+          Logger.LogVerbose("{0} Bytes", bytes.Length);
 
-          mStream.WriteAsync(bytes, 0, bytes.Length);
+          await mStream.WriteAsync(bytes, 0, bytes.Length);
         }
       }
       catch(Exception ex)
@@ -172,7 +216,7 @@ namespace ICSP.Client
       }
     }
 
-    public void Send(ICSPMsg request)
+    public async Task SendAsync(ICSPMsg request)
     {
       if(request == null)
         throw new ArgumentNullException(nameof(request));
@@ -181,10 +225,10 @@ namespace ICSP.Client
       {
         if(mSocket != null)
         {
-          Logger.LogDebug(false, "ICSPClient.Send[1]: MessageId=0x{0:X4}, Source={1:l}, Dest={2:l}, Type={3:l}", request.ID, request.Source, request.Dest, request.GetType().Name);
-          Logger.LogDebug(false, "ICSPClient.Send[2]: Data={0:l}", BitConverter.ToString(request.RawData).Replace("-", " "));
+          Logger.LogVerbose(false, "ICSPClient.Send[1]: MessageId=0x{0:X4}, Source={1:l}, Dest={2:l}, Type={3:l}", request.ID, request.Source, request.Dest, request.GetType().Name);
+          Logger.LogVerbose(false, "ICSPClient.Send[2]: Data={0:l}", BitConverter.ToString(request.RawData).Replace("-", " "));
 
-          mStream.WriteAsync(request.RawData, 0, request.RawData.Length);
+          await mStream.WriteAsync(request.RawData, 0, request.RawData.Length);
         }
       }
       catch(Exception ex)
@@ -194,22 +238,21 @@ namespace ICSP.Client
       }
     }
 
-    private async void ReadAsync()
+    private async void ReadAsync(CancellationToken cancellationToken)
     {
       try
       {
         var lBytes = new List<byte>();
-        
+
         while(true)
         {
           var lBuffer = new byte[mSocket.ReceiveBufferSize];
 
-          var lCount = await mStream.ReadAsync(lBuffer, 0, lBuffer.Length);
+          var lCount = await mStream.ReadAsync(lBuffer, 0, lBuffer.Length, cancellationToken);
 
           if(lCount == 0)
           {
             OnClientDisconnected();
-
             return;
           }
 
@@ -219,24 +262,25 @@ namespace ICSP.Client
 
           // Incoming packages are not always complete
           // Preprocess Packet
-          while(lBytes.Count >= 3)
+          while(lBytes.Count >= ICSPMsg.PacketLengthMin)
           {
             // +4 => Protocol (1), Length (2), Checksum (1)
             var lSize = ((lBytes[1] << 8) | lBytes[2]) + 4;
 
             if(lBytes.Count >= lSize)
             {
-              var lMsgBytes = new byte[lSize];
-
-              var lRange = lBytes.GetRange(0, lSize).ToArray();
+              var lMsg = Factory.FromData(lBytes.GetRange(0, lSize).ToArray());
 
               lBytes.RemoveRange(0, lSize);
+              
+              OnDataReceived(new ICSPMsgDataEventArgs(lMsg));
 
-              OnDataReceived(new ICSPMsgDataEventArgs(ICSPMsgData.Create(lRange)));
+              // mManager.OnDataReceived(this, lMsg);
             }
             else
             {
               Logger.LogVerbose("Buffer: {0} Bytes, Needed {1} Bytes", lCount, lSize);
+              break;
             }
           }
         }
@@ -283,39 +327,5 @@ namespace ICSP.Client
         Logger.LogError(ex);
       }
     }
-
-    /// <summary>
-    /// Gets the time to wait while trying to establish a connection
-    /// before terminating the attempt and generating an error.
-    /// </summary>
-    /// <remarks>
-    /// You can set the amount of time a connection waits to time out by 
-    /// using the ConnectTimeout or Connection Timeout keywords in the connection string.
-    /// A value of 0 indicates no limit, and should be avoided in a ConnectionString 
-    /// because an attempt to connect waits indefinitely.
-    /// </remarks>
-    public int ConnectionTimeout
-    {
-      get
-      {
-        return mConnectionTimeout;
-      }
-      set
-      {
-        if(value < 0)
-          throw new ArgumentOutOfRangeException(nameof(ConnectionTimeout));
-
-        mConnectionTimeout = value;
-      }
-    }
-
-    public bool Connected
-    {
-      get { return mSocket?.Connected ?? false; }
-    }
-
-    public IPAddress RemoteIpAddress { get; private set; }
-
-    public IPAddress LocalIpAddress { get; private set; }
   }
 }

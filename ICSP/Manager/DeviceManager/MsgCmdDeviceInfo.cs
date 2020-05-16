@@ -20,58 +20,58 @@ namespace ICSP.Manager.DeviceManager
     {
     }
 
-    public MsgCmdDeviceInfo(ICSPMsgData msg) : base(msg)
+    public MsgCmdDeviceInfo(byte[] buffer) : base(buffer)
     {
-      if(msg.Data.Length > 0)
+      if(Data.Length > 0)
       {
         // Device
-        Device = msg.Data.GetBigEndianInt16(0);
+        Device = Data.GetBigEndianInt16(0);
 
         // System
-        System = msg.Data.GetBigEndianInt16(2);
+        System = Data.GetBigEndianInt16(2);
 
         // DataFlag
-        DataFlag = msg.Data.GetBigEndianInt16(4);
+        DataFlag = Data.GetBigEndianInt16(4);
 
         // ObjId
-        ObjectId = msg.Data[6];
+        ObjectId = Data[6];
 
         // ParentID
-        ParentId = msg.Data[7];
+        ParentId = Data[7];
 
         // MfgId
-        ManufactureId = msg.Data.GetBigEndianInt16(8);
+        ManufactureId = Data.GetBigEndianInt16(8);
 
         // DeviceID
-        DeviceId = msg.Data.GetBigEndianInt16(10);
+        DeviceId = Data.GetBigEndianInt16(10);
 
         // SerialNumber
-        SerialNumber = Encoding.Default.GetString(msg.Data.Range(12, 16)).TrimEnd(new char[] { '\0', ' ' });
+        SerialNumber = Encoding.Default.GetString(Data.Range(12, 16)).TrimEnd(new char[] { '\0', ' ' });
 
         // FWID
-        FirmwareId = msg.Data.GetBigEndianInt16(28);
+        FirmwareId = Data.GetBigEndianInt16(28);
 
         var lOffset = 30;
 
         // Null-Terminated Strings ...
 
         // Version
-        Version = AmxUtils.GetNullStr(msg.Data, ref lOffset);
+        Version = AmxUtils.GetNullStr(Data, ref lOffset);
 
         // DeviceIdStr
-        Name = AmxUtils.GetNullStr(msg.Data, ref lOffset);
+        Name = AmxUtils.GetNullStr(Data, ref lOffset);
 
         // Manufacture
-        Manufacture = AmxUtils.GetNullStr(msg.Data, ref lOffset);
+        Manufacture = AmxUtils.GetNullStr(Data, ref lOffset);
 
         // ExtAddressType
-        ExtAddressType = (ExtAddressType)msg.Data[lOffset++];
+        ExtAddressType = (ExtAddressType)Data[lOffset++];
 
         // ExtAddressLength
-        ExtAddressLength = msg.Data[lOffset++];
+        ExtAddressLength = Data[lOffset++];
 
         // ExtAddress
-        ExtAddress = msg.Data.Range(lOffset, ExtAddressLength);
+        ExtAddress = Data.Range(lOffset, ExtAddressLength);
       }
 
       if(ExtAddressType == ExtAddressType.IPv4Address)
@@ -115,6 +115,11 @@ namespace ICSP.Manager.DeviceManager
           Logger.LogError("DeviceInfo : {0}", ex.Message);
         }
       }
+    }
+    
+    public override ICSPMsg FromData(byte[] bytes)
+    {
+      return new MsgCmdDeviceInfo(bytes);
     }
 
     public static ICSPMsg CreateRequest(ushort device, ushort system, string version, string name, string manufacture, IPAddress ipAddress)

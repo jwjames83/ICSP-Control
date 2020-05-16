@@ -17,8 +17,13 @@ namespace ICSP.Manager.DiagnosticManager
     {
     }
 
-    public MsgCmdRequestDevicesOnline(ICSPMsgData msg) : base(msg)
+    public MsgCmdRequestDevicesOnline(byte[] buffer) : base(buffer)
     {
+    }
+
+    public override ICSPMsg FromData(byte[] bytes)
+    {
+      return new MsgCmdRequestDevicesOnline(bytes);
     }
 
     public static ICSPMsg CreateRequest(AmxDevice source)

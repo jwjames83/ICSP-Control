@@ -13,8 +13,13 @@ namespace ICSP.Manager.DeviceManager
     {
     }
 
-    public MsgCmdFeedbackChannelOn(ICSPMsgData msg) : base(msg)
+    public MsgCmdFeedbackChannelOn(byte[] buffer) : base(buffer)
     {
+    }
+
+    public override ICSPMsg FromData(byte[] bytes)
+    {
+      return new MsgCmdFeedbackChannelOn(bytes);
     }
 
     protected override ushort MsgCmd

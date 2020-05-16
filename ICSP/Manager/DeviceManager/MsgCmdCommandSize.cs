@@ -24,25 +24,31 @@ namespace ICSP.Manager.DeviceManager
     {
     }
 
-    public MsgCmdCommandSize(ICSPMsgData msg) : base(msg)
+    public MsgCmdCommandSize(byte[] buffer) : base(buffer)
     {
-      if(msg.Data.Length > 0)
+      if(Data.Length > 0)
       {
-        Device = AmxDevice.FromDPS(msg.Data.Range(0, 6));
+        Device = AmxDevice.FromDPS(Data.Range(0, 6));
 
-        ValueType = (EncodingType)msg.Data[6];
+        ValueType = (EncodingType)Data[6];
 
-        Length = msg.Data.GetBigEndianInt16(7);
+        Length = Data.GetBigEndianInt16(7);
       }
+    }
+
+    public override ICSPMsg FromData(byte[] bytes)
+    {
+      return new MsgCmdCommandSize(bytes);
     }
 
     public static ICSPMsg CreateRequest(AmxDevice source, AmxDevice device, EncodingType valueType, ushort length)
     {
-      var lRequest = new MsgCmdCommandSize();
-
-      lRequest.Device = device;
-      lRequest.ValueType = valueType;
-      lRequest.Length = length;
+      var lRequest = new MsgCmdCommandSize
+      {
+        Device = device,
+        ValueType = valueType,
+        Length = length
+      };
 
       var lData = device.GetBytesDPS().
         Concat(ArrayExtensions.Int16To8Bit((byte)lRequest.ValueType)).

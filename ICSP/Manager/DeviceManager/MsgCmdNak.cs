@@ -17,8 +17,13 @@ namespace ICSP.Manager.DeviceManager
     {
     }
 
-    public MsgCmdNak(ICSPMsgData msg) : base(msg)
+    public MsgCmdNak(byte[] buffer) : base(buffer)
     {
+    }
+
+    public override ICSPMsg FromData(byte[] bytes)
+    {
+      return new MsgCmdNak(bytes);
     }
 
     public static ICSPMsg CreateRequest(AmxDevice dest, AmxDevice source, ushort id)

@@ -12,8 +12,13 @@ namespace ICSP.Manager.DeviceManager
     {
     }
 
-    public MsgCmdStringDevMaster(ICSPMsgData msg) : base(msg)
+    public MsgCmdStringDevMaster(byte[] buffer) : base(buffer)
     {
+    }
+
+    public override ICSPMsg FromData(byte[] bytes)
+    {
+      return new MsgCmdStringDevMaster(bytes);
     }
 
     protected override ushort MsgCmd

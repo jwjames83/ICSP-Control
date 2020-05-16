@@ -13,13 +13,13 @@ namespace ICSP.Manager.DeviceManager
     {
     }
 
-    public MsgBaseCmdChannel(ICSPMsgData msg) : base(msg)
+    public MsgBaseCmdChannel(byte[] buffer) : base(buffer)
     {
-      if(msg.Data.Length > 0)
+      if(Data.Length > 0)
       {
-        Device = AmxDevice.FromDPS(msg.Data.Range(0, 6));
+        Device = AmxDevice.FromDPS(Data.Range(0, 6));
 
-        Channel = msg.Data.GetBigEndianInt16(6);
+        Channel = Data.GetBigEndianInt16(6);
       }
     }
 

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Globalization;
 using System.Linq;
-
+using System.Text;
 using ICSP.Constants;
 using ICSP.Extensions;
 using ICSP.Logging;
@@ -23,46 +23,42 @@ namespace ICSP.Manager.ConnectionManager
     {
     }
 
-    public MsgCmdBlinkMessage(ICSPMsgData msg) : base(msg)
+    public MsgCmdBlinkMessage(byte[] buffer) : base(buffer)
     {
-      var lOffset = 0;
-
-      if(msg.Data.Length > 0)
+      if(Data.Length > 0)
       {
         // HeartbeatTiming
-        HeartbeatTiming = msg.Data[0];
+        HeartbeatTiming = Data[0];
 
         // LED
-        LED = msg.Data[1];
+        LED = Data[1];
 
         // Month
-        Month = msg.Data[2];
+        Month = Data[2];
 
         // Day
-        Day = msg.Data[3];
+        Day = Data[3];
 
         // Year
-        Year = msg.Data.GetBigEndianInt16(4);
+        Year = Data.GetBigEndianInt16(4);
 
         // Hour
-        Hour = msg.Data[6];
+        Hour = Data[6];
 
         // Minute
-        Minute = msg.Data[7];
+        Minute = Data[7];
 
         // Second
-        Second = msg.Data[8];
+        Second = Data[8];
         
         // DayOfWeek
-        DayOfWeek = (DayOfWeek)msg.Data[9];
+        DayOfWeek = (DayOfWeek)Data[9];
 
         // OutsideTemperature
-        OutsideTemperature = msg.Data.GetBigEndianInt16(10);
-
-        lOffset = 12;
+        OutsideTemperature = Data.GetBigEndianInt16(10);
 
         // Date
-        DateText = AmxUtils.GetNullStr(msg.Data, ref lOffset);
+        DateText = AmxUtils.GetNullStr(Data, 12);
       }
 
       try
@@ -70,6 +66,11 @@ namespace ICSP.Manager.ConnectionManager
         DateTime = new DateTime(Year, Month, Day, Hour, Minute, Second);
       }
       catch { }
+    }
+    
+    public override ICSPMsg FromData(byte[] bytes)
+    {
+      return new MsgCmdBlinkMessage(bytes);
     }
 
     public static ICSPMsg CreateRequest(AmxDevice dest, AmxDevice source)
@@ -84,26 +85,27 @@ namespace ICSP.Manager.ConnectionManager
 
     public static ICSPMsg CreateRequest(AmxDevice dest, AmxDevice source, byte heartbeatTiming, byte led, DateTime dateTime, ushort outsideTemperature)
     {
-      var lRequest = new MsgCmdBlinkMessage();
+      var lRequest = new MsgCmdBlinkMessage
+      {
+        HeartbeatTiming = heartbeatTiming,
+        LED = led,
+        DateTime = dateTime,
 
-      lRequest.HeartbeatTiming = heartbeatTiming;
-      lRequest.LED = led;
-      lRequest.DateTime = dateTime;
+        Month = (byte)dateTime.Month,
+        Day = (byte)dateTime.Day,
+        Year = (byte)dateTime.Year,
+        Hour = (byte)dateTime.Hour,
+        Minute = (byte)dateTime.Minute,
+        Second = (byte)dateTime.Second,
+        DayOfWeek = dateTime.DayOfWeek,
 
-      lRequest.Month = (byte)dateTime.Month;
-      lRequest.Day = (byte)dateTime.Day;
-      lRequest.Year = (byte)dateTime.Year;
-      lRequest.Hour = (byte)dateTime.Hour;
-      lRequest.Minute = (byte)dateTime.Minute;
-      lRequest.Second = (byte)dateTime.Second;
-      lRequest.DayOfWeek = dateTime.DayOfWeek;
+        OutsideTemperature = outsideTemperature,
 
-      lRequest.OutsideTemperature = outsideTemperature;
+        // "Sunday, Aug 27, 2017"
+        DateText = dateTime.ToString("dddd, MMM dd, yyyy", new CultureInfo("en-US"))
+      };
 
-      // "Sunday, Aug 27, 2017"
-      lRequest.DateText = dateTime.ToString("dddd, MMM dd, yyyy", new CultureInfo("en-US"));
-
-      var lBytes = System.Text.Encoding.Default.GetBytes(lRequest.DateText + '\0');
+      var lBytes = Encoding.Default.GetBytes(lRequest.DateText + '\0');
 
       var lData = new byte[] {
         lRequest.HeartbeatTiming,

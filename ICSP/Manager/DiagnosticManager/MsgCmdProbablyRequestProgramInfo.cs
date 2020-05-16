@@ -18,20 +18,26 @@ namespace ICSP.Manager.DiagnosticManager
     {
     }
 
-    public MsgCmdProbablyRequestProgramInfo(ICSPMsgData msg) : base(msg)
+    public MsgCmdProbablyRequestProgramInfo(byte[] buffer) : base(buffer)
     {
-      if(msg.Data.Length > 2)
-        Unknown = msg.Data.GetBigEndianInt16(0);
+      if(Data.Length > 2)
+        Unknown = Data.GetBigEndianInt16(0);
+    }
+
+    public override ICSPMsg FromData(byte[] bytes)
+    {
+      return new MsgCmdProbablyRequestProgramInfo(bytes);
     }
 
     public static ICSPMsg CreateRequest(AmxDevice source, ushort unknown)
     {
       var lDest = new AmxDevice(0, 1, source.System);
 
-      var lRequest = new MsgCmdProbablyRequestProgramInfo();
+      var lRequest = new MsgCmdProbablyRequestProgramInfo
+      {
+        Unknown = unknown
+      };
 
-      lRequest.Unknown = unknown;
-      
       var lData = ArrayExtensions.Int16ToBigEndian(unknown);
 
       return lRequest.Serialize(lDest, source, MsgCmd, lData);

@@ -18,45 +18,51 @@ namespace ICSP.Manager.DeviceManager
     {
     }
 
-    public MsgCmdLevelValueDevMaster(ICSPMsgData msg) : base(msg)
+    public MsgCmdLevelValueDevMaster(byte[] buffer) : base(buffer)
     {
-      if(msg.Data.Length > 0)
+      if(Data.Length > 0)
       {
-        Device = AmxDevice.FromDPS(msg.Data.Range(0, 6));
+        Device = AmxDevice.FromDPS(Data.Range(0, 6));
 
-        Level = msg.Data.GetBigEndianInt16(6);
+        Level = Data.GetBigEndianInt16(6);
 
-        ValueType = (LevelValueType)msg.Data[8];
+        ValueType = (LevelValueType)Data[8];
 
         switch(ValueType)
         {
-          // 1 Bytes
-          case LevelValueType.Byte: Value = msg.Data[9]; break;
-          case LevelValueType.Char: Value = msg.Data[9]; break;
+          // 1 Data
+          case LevelValueType.Byte: Value = Data[9]; break;
+          case LevelValueType.Char: Value = Data[9]; break;
 
-          // 2 Bytes
-          case LevelValueType.Integer: Value = msg.Data.GetBigEndianInt16(9); break;
-          case LevelValueType.SInteger: Value = msg.Data.GetBigEndianInt16(9); break;
+          // 2 Data
+          case LevelValueType.Integer: Value = Data.GetBigEndianInt16(9); break;
+          case LevelValueType.SInteger: Value = Data.GetBigEndianInt16(9); break;
 
-          // 4 Bytes
-          case LevelValueType.ULong: Value = msg.Data.GetBigEndianInt32(9); break;
-          case LevelValueType.Long: Value = msg.Data.GetBigEndianInt32(9); break;
-          case LevelValueType.Float: Value = msg.Data.GetBigEndianInt32(9); break;
+          // 4 Data
+          case LevelValueType.ULong: Value = Data.GetBigEndianInt32(9); break;
+          case LevelValueType.Long: Value = Data.GetBigEndianInt32(9); break;
+          case LevelValueType.Float: Value = Data.GetBigEndianInt32(9); break;
 
-          // 8 Bytes
+          // 8 Data
           case LevelValueType.Double: break;
         }
       }
     }
 
+    public override ICSPMsg FromData(byte[] bytes)
+    {
+      return new MsgCmdLevelValueDevMaster(bytes);
+    }
+
     public static ICSPMsg CreateRequest(AmxDevice source, AmxDevice device, ushort level, ushort value)
     {
-      var lRequest = new MsgCmdLevelValueDevMaster();
-
-      lRequest.Device = device;
-      lRequest.Level = level;
-      lRequest.ValueType = LevelValueType.Integer;
-      lRequest.Value = value;
+      var lRequest = new MsgCmdLevelValueDevMaster
+      {
+        Device = device,
+        Level = level,
+        ValueType = LevelValueType.Integer,
+        Value = value
+      };
 
       var lData = device.GetBytesDPS().
         Concat(ArrayExtensions.Int16ToBigEndian(level)).

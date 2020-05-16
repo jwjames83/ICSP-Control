@@ -20,20 +20,21 @@ namespace ICSP.Manager.DeviceManager
     {
     }
 
-    public MsgCmdMasterStatus(ICSPMsgData msg) : base(msg)
+    public MsgCmdMasterStatus(byte[] buffer) : base(buffer)
     {
-      var lOffset = 0;
-
-      if(msg.Data.Length > 0)
+      if(Data.Length > 0)
       {
-        System = msg.Data.GetBigEndianInt16(0);
+        System = Data.GetBigEndianInt16(0);
 
-        Status = (StatusType)msg.Data.GetBigEndianInt16(2);
+        Status = (StatusType)Data.GetBigEndianInt16(2);
 
-        lOffset = 4;
-
-        StatusString = AmxUtils.GetNullStr(msg.Data, ref lOffset);
+        StatusString = AmxUtils.GetNullStr(Data, 4);
       }
+    }
+
+    public override ICSPMsg FromData(byte[] bytes)
+    {
+      return new MsgCmdMasterStatus(bytes);
     }
 
     public static ICSPMsg CreateRequest(AmxDevice source, ushort system, StatusType status, string statusString)
@@ -44,11 +45,12 @@ namespace ICSP.Manager.DeviceManager
 
       var lDest = new AmxDevice(0, 0, source.System);
 
-      var lRequest = new MsgCmdMasterStatus();
-
-      lRequest.System = system;
-      lRequest.Status = status;
-      lRequest.StatusString = statusString;
+      var lRequest = new MsgCmdMasterStatus
+      {
+        System = system,
+        Status = status,
+        StatusString = statusString
+      };
 
       var lData = ArrayExtensions.Int16ToBigEndian(system)
         .Concat(ArrayExtensions.Int16ToBigEndian((ushort)status))

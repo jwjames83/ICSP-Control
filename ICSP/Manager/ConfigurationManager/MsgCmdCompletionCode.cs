@@ -26,25 +26,31 @@ namespace ICSP.Manager.ConfigurationManager
     {
     }
 
-    public MsgCmdCompletionCode(ICSPMsgData msg) : base(msg)
+    public MsgCmdCompletionCode(byte[] buffer) : base(buffer)
     {
-      if(msg.Data.Length > 0)
+      if(Data.Length > 0)
       {
         // Message
-        Message = msg.Data.GetBigEndianInt16(0);
+        Message = Data.GetBigEndianInt16(0);
 
         // Status
-        Status = msg.Data[2];
+        Status = Data[2];
       }
+    }
+
+    public override ICSPMsg FromData(byte[] bytes)
+    {
+      return new MsgCmdCompletionCode(bytes);
     }
 
     public static ICSPMsg CreateRequest(AmxDevice dest, AmxDevice source, ushort message, bool success)
     {
-      var lRequest = new MsgCmdCompletionCode();
+      var lRequest = new MsgCmdCompletionCode
+      {
+        Message = message,
 
-      lRequest.Message = message;
-
-      lRequest.Status = success ? StatusSuccess : StatusFailed;
+        Status = success ? StatusSuccess : StatusFailed
+      };
 
       var lData = 
         ArrayExtensions.Int16ToBigEndian(message)

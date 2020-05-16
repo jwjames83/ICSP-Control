@@ -21,22 +21,28 @@ namespace ICSP.Manager.DeviceManager
     {
     }
 
-    public MsgCmdRequestDeviceInfo(ICSPMsgData msg) : base(msg)
+    public MsgCmdRequestDeviceInfo(byte[] buffer) : base(buffer)
     {
-      if(msg.Data.Length > 0)
+      if(Data.Length > 0)
       {
-        Device = msg.Data.GetBigEndianInt16(0);
+        Device = Data.GetBigEndianInt16(0);
 
-        System = msg.Data.GetBigEndianInt16(2);
+        System = Data.GetBigEndianInt16(2);
       }
     }
 
+    public override ICSPMsg FromData(byte[] bytes)
+    {
+      return new MsgCmdRequestDeviceInfo(bytes);
+    }
+    
     public static ICSPMsg CreateRequest(AmxDevice source, ushort device, ushort system)
     {
-      var lRequest = new MsgCmdRequestDeviceInfo();
-
-      lRequest.Device = device;
-      lRequest.System = system;
+      var lRequest = new MsgCmdRequestDeviceInfo
+      {
+        Device = device,
+        System = system
+      };
 
       var lData = ArrayExtensions.Int16ToBigEndian(device)
         .Concat(ArrayExtensions.Int16ToBigEndian(system)).ToArray();

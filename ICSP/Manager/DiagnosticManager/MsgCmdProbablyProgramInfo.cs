@@ -18,10 +18,8 @@ namespace ICSP.Manager.DiagnosticManager
     {
     }
 
-    public MsgCmdProbablyProgramInfo(ICSPMsgData msg) : base(msg)
+    public MsgCmdProbablyProgramInfo(byte[] buffer) : base(buffer)
     {
-      var lOffset = 0;
-
       System = string.Empty;
       ProgramName = string.Empty;
       MainFile = string.Empty;
@@ -37,22 +35,22 @@ namespace ICSP.Manager.DiagnosticManager
       00 00 ff ff ac 10 10 65 00 00 1b                 .......e...
       */
 
-      if(msg.Data.Length > 8)
+      if(Data.Length > 8)
       {
         // 80 00 00 01 00 00 01 8c Unknown
         // NX-1200 Master v1.5.78 (Null Terminated)
         // ICSP-Test "Main.axs"   (Null Terminated)
         // 18 1c ac 10 ... Unkwnown
 
-        lOffset = 8;
+        var lOffset = 8;
 
         // System ?
-        System = AmxUtils.GetNullStr(msg.Data, ref lOffset);
+        System = AmxUtils.GetNullStr(Data, ref lOffset);
 
         // ProgramInfo ?
-        if(lOffset <= msg.Data.Length)
+        if(lOffset <= Data.Length)
         {
-          var lProgramInfo = AmxUtils.GetNullStr(msg.Data, ref lOffset);
+          var lProgramInfo = AmxUtils.GetNullStr(Data, ref lOffset);
 
           // ICSP - "Test  "Main.axs"
           if(!string.IsNullOrWhiteSpace(lProgramInfo) && lProgramInfo.Contains("\""))
@@ -74,6 +72,11 @@ namespace ICSP.Manager.DiagnosticManager
             ProgramName = lProgramInfo;
         }
       }
+    }
+
+    public override ICSPMsg FromData(byte[] bytes)
+    {
+      return new MsgCmdProbablyProgramInfo(bytes);
     }
 
     public static ICSPMsg CreateRequest(AmxDevice source)

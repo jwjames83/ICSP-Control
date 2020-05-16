@@ -17,20 +17,26 @@ namespace ICSP.Manager.ConfigurationManager
     {
     }
 
-    public MsgCmdRestart(ICSPMsgData msg) : base(msg)
+    public MsgCmdRestart(byte[] buffer) : base(buffer)
     {
-      if(msg.Data.Length > 0)
+      if(Data.Length > 0)
       {
-        DataFlag = (RestartType)msg.Data.GetBigEndianInt16(0);
+        DataFlag = (RestartType)Data.GetBigEndianInt16(0);
       }
+    }
+
+    public override ICSPMsg FromData(byte[] bytes)
+    {
+      return new MsgCmdRestart(bytes);
     }
 
     public static ICSPMsg CreateRequest(AmxDevice source, AmxDevice device, RestartType flag)
     {
-      var lRequest = new MsgCmdRestart();
-      
-      lRequest.DataFlag = flag;
-      
+      var lRequest = new MsgCmdRestart
+      {
+        DataFlag = flag
+      };
+
       return lRequest.Serialize(device, source, MsgCmd, AmxUtils.Int16ToBigEndian((ushort)lRequest.DataFlag));
     }
 

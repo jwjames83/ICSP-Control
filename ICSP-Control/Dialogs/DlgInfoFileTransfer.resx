@@ -121,10 +121,10 @@
     <value>XML-Files in G5-Designs are always encrypted.
 A workaround for receive unencrypted XML-Files is:
 
-1: Create a new design with same paneltype, but do not save this design.
-2: Copy the pages / subpages from original design to new design by [Ctrl]-[C] / [Ctrl]-[V].
-3: Transfer the new design via [Transfer][Send to Panel...] to this application.
-</value>
+1: Execute from TPDesing5-Menu: [Panel]/[Verify Function Maps].
+
+2: Transfer the design via [Transfer][Send to Panel...] to this application,
+but do not save before.</value>
   </data>
   <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
   <data name="$this.Icon" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">

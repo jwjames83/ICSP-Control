@@ -23,8 +23,13 @@ namespace ICSP.Manager.ConnectionManager
     {
     }
 
-    public MsgCmdDynamicDeviceAddressRequest(ICSPMsgData msg) : base(msg)
+    public MsgCmdDynamicDeviceAddressRequest(byte[] buffer) : base(buffer)
     {
+    }
+
+    public override ICSPMsg FromData(byte[] bytes)
+    {
+      return new MsgCmdDynamicDeviceAddressRequest(bytes);
     }
 
     public static ICSPMsg CreateRequest()
@@ -60,13 +65,15 @@ namespace ICSP.Manager.ConnectionManager
       
       var lSource = new AmxDevice(proposedDevice, 0, 0);
 
-      var lRequest = new MsgCmdDynamicDeviceAddressRequest();
-      
-      lRequest.IPv4Address = ipAddress;
+      var lRequest = new MsgCmdDynamicDeviceAddressRequest
+      {
+        IPv4Address = ipAddress,
 
-      lRequest.ProposedDevice = lSource.Device;
-      lRequest.ExtAddressType = ExtAddressType.IPv4Address;
-      lRequest.ExtAddressLength = 4;
+        ProposedDevice = lSource.Device,
+        ExtAddressType = ExtAddressType.IPv4Address,
+        ExtAddressLength = 4
+      };
+
       lRequest.ExtAddress = lRequest.IPv4Address.GetAddressBytes();
 
       byte[] lData;

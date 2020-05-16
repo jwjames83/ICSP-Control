@@ -16,8 +16,13 @@ namespace ICSP.Manager.ConfigurationManager
     {
     }
 
-    public MsgCmdRequestEthernetIp(ICSPMsgData msg) : base(msg)
+    public MsgCmdRequestEthernetIp(byte[] buffer) : base(buffer)
     {
+    }
+
+    public override ICSPMsg FromData(byte[] bytes)
+    {
+      return new MsgCmdRequestEthernetIp(bytes);
     }
 
     public static ICSPMsg CreateRequest(AmxDevice dest, AmxDevice source)

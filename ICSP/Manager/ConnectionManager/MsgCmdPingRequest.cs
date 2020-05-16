@@ -18,22 +18,28 @@ namespace ICSP.Manager.ConnectionManager
     {
     }
 
-    public MsgCmdPingRequest(ICSPMsgData msg) : base(msg)
+    public MsgCmdPingRequest(byte[] buffer) : base(buffer)
     {
-      if(msg.Data.Length > 0)
+      if(Data.Length > 0)
       {
-        Device = msg.Data.GetBigEndianInt16(0);
+        Device = Data.GetBigEndianInt16(0);
 
-        System = msg.Data.GetBigEndianInt16(2);
+        System = Data.GetBigEndianInt16(2);
       }
+    }
+
+    public override ICSPMsg FromData(byte[] bytes)
+    {
+      return new MsgCmdPingRequest(bytes);
     }
 
     public static ICSPMsg CreateRequest(AmxDevice source, ushort device, ushort system)
     {
-      var lRequest = new MsgCmdPingRequest();
-
-      lRequest.Device = device;
-      lRequest.System = system;
+      var lRequest = new MsgCmdPingRequest
+      {
+        Device = device,
+        System = system
+      };
 
       var lData = ArrayExtensions.Int16ToBigEndian(device)
         .Concat(ArrayExtensions.Int16ToBigEndian(system)).ToArray();
@@ -51,7 +57,7 @@ namespace ICSP.Manager.ConnectionManager
     /// </summary>
     public ushort System { get; private set; }
 
-    public override void WriteLog()
+    public override void WriteLogVerbose()
     {
       Logger.LogDebug(false, "{0:l}: Dest={1:00000}:{2}", GetType().Name, Dest.Device, Dest.System);
     }

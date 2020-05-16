@@ -13,9 +13,7 @@ namespace ICSPControl.Dialogs
   {
     private const int MaxLogEntries = 1001;
 
-    private ICSPManager mManager;
-
-    private Queue<string> mLogQueue = new Queue<string>();
+    private readonly ICSPManager mManager;
 
     private bool mTraceEnabled;
 
@@ -59,16 +57,18 @@ namespace ICSPControl.Dialogs
 
     private void OnCommandNotImplemented(object sender, ICSPMsgDataEventArgs e)
     {
-      AppendLog(e.Data.ID, "NotImplemented: Protocol : {0}", e.Data.Protocol);
-      AppendLog(e.Data.ID, "NotImplemented: Length   : {0}", e.Data.Length);
-      AppendLog(e.Data.ID, "NotImplemented: Flag     : {0}", e.Data.Flag);
-      AppendLog(e.Data.ID, "NotImplemented: Dest     : {0}", e.Data.Dest);
-      AppendLog(e.Data.ID, "NotImplemented: Source   : {0}", e.Data.Source);
-      AppendLog(e.Data.ID, "NotImplemented: Hop      : {0}", e.Data.Hop);
-      AppendLog(e.Data.ID, "NotImplemented: MessageId: 0x{0:X4}", e.Data.ID);
-      AppendLog(e.Data.ID, "NotImplemented: Command  : 0x{0:X4} ({1})", e.Data.Command, ICSPMsg.GetFrindlyName(e.Data.Command));
-      AppendLog(e.Data.ID, "NotImplemented: Checksum : 0x{0:X4}", e.Data.Checksum);
-      AppendLog(e.Data.ID, "NotImplemented: Data (0x): {0}", BitConverter.ToString(e.Data.Data).Replace("-", " "));
+      /*
+      AppendLog(e.Message.ID, "NotImplemented: Protocol : {0}", e.Message.Protocol);
+      AppendLog(e.Message.ID, "NotImplemented: Length   : {0}", e.Message.Length);
+      AppendLog(e.Message.ID, "NotImplemented: Flag     : {0}", e.Message.Flag);
+      AppendLog(e.Message.ID, "NotImplemented: Dest     : {0}", e.Message.Dest);
+      AppendLog(e.Message.ID, "NotImplemented: Source   : {0}", e.Message.Source);
+      AppendLog(e.Message.ID, "NotImplemented: Hop      : {0}", e.Message.Hop);
+      */
+      AppendLog(e.Message.ID, "NotImplemented: MessageId: 0x{0:X4}", e.Message.ID);
+      AppendLog(e.Message.ID, "NotImplemented: Command  : 0x{0:X4} ({1})", e.Message.Command, ICSPMsg.GetFrindlyName(e.Message.Command));
+      AppendLog(e.Message.ID, "NotImplemented: Checksum : 0x{0:X4}", e.Message.Checksum);
+      AppendLog(e.Message.ID, "NotImplemented: Data (0x): {0}", BitConverter.ToString(e.Message.Data).Replace("-", " "));
     }
 
     private void OnStartStopTraceClick(object sender, EventArgs e)
@@ -85,8 +85,6 @@ namespace ICSPControl.Dialogs
 
     private void OnClearLogClick(object sender, EventArgs e)
     {
-      mLogQueue.Clear();
-
       txt_Log.Clear();
     }
 

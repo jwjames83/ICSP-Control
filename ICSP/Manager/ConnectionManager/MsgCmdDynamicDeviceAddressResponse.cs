@@ -20,16 +20,21 @@ namespace ICSP.Manager.ConnectionManager
     {
     }
 
-    public MsgCmdDynamicDeviceAddressResponse(ICSPMsgData msg) : base(msg)
+    public MsgCmdDynamicDeviceAddressResponse(byte[] buffer) : base(buffer)
     {
-      if(msg.Data.Length > 0)
+      if(Data.Length > 0)
       {
-        Device = msg.Data.GetBigEndianInt16(0);
+        Device = Data.GetBigEndianInt16(0);
 
-        System = msg.Data.GetBigEndianInt16(2);
+        System = Data.GetBigEndianInt16(2);
       }
     }
-    
+
+    public override ICSPMsg FromData(byte[] bytes)
+    {
+      return new MsgCmdDynamicDeviceAddressResponse(bytes);
+    }
+
     /// <summary>
     /// Unsigned 16-bit value.
     /// </summary>

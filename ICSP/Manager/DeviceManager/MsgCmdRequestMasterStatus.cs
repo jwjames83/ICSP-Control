@@ -17,19 +17,25 @@ namespace ICSP.Manager.ConfigurationManager
     {
     }
 
-    public MsgCmdRequestMasterStatus(ICSPMsgData msg) : base(msg)
+    public MsgCmdRequestMasterStatus(byte[] buffer) : base(buffer)
     {
-      if(msg.Data.Length > 0)
+      if(Data.Length > 0)
       {
-        System = msg.Data.GetBigEndianInt16(0);
+        System = Data.GetBigEndianInt16(0);
       }
+    }
+
+    public override ICSPMsg FromData(byte[] bytes)
+    {
+      return new MsgCmdRequestMasterStatus(bytes);
     }
 
     public static ICSPMsg CreateRequest(AmxDevice source, ushort system)
     {
-      var lRequest = new MsgCmdRequestMasterStatus();
-
-      lRequest.System = system;
+      var lRequest = new MsgCmdRequestMasterStatus
+      {
+        System = system
+      };
 
       return lRequest.Serialize(AmxDevice.Empty, source, MsgCmd, AmxUtils.Int16ToBigEndian(lRequest.System));
     }

@@ -11,12 +11,12 @@ namespace ICSP
 {
   public sealed class ICSPMsgDataEventArgs : EventArgs
   {
-    public ICSPMsgDataEventArgs(ICSPMsgData data)
+    public ICSPMsgDataEventArgs(ICSPMsg data)
     {
-      Data = data;
+      Message = data;
     }
 
-    public ICSPMsgData Data { get; }
+    public ICSPMsg Message { get; }
 
     public bool Handled { get; set; }
   }

@@ -82,6 +82,9 @@
       this.tsmi_CommunicationSetttings = new System.Windows.Forms.ToolStripMenuItem();
       this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
       this.tsmi_Exit = new System.Windows.Forms.ToolStripMenuItem();
+      this.tsmi_Tools = new System.Windows.Forms.ToolStripMenuItem();
+      this.tsmi_Tools_InfoFileTransfer = new System.Windows.Forms.ToolStripMenuItem();
+      this.tsmi_Tools_OpenTmpFolder = new System.Windows.Forms.ToolStripMenuItem();
       this.OnlineTree = new System.Windows.Forms.TreeView();
       this.ImageList = new System.Windows.Forms.ImageList(this.components);
       this.cm_OnlineTree = new System.Windows.Forms.ContextMenuStrip(this.components);
@@ -92,9 +95,6 @@
       this.cmd_ShowTraceWindow = new System.Windows.Forms.Button();
       this.cmd_CreatePhysicalDevice = new System.Windows.Forms.Button();
       this.cmd_ShowFeedbackTest = new System.Windows.Forms.Button();
-      this.tsmi_Tools = new System.Windows.Forms.ToolStripMenuItem();
-      this.tsmi_Tools_OpenTmpFolder = new System.Windows.Forms.ToolStripMenuItem();
-      this.tsmi_Tools_InfoFileTransfer = new System.Windows.Forms.ToolStripMenuItem();
       this.MainStatusStrip.SuspendLayout();
       ((System.ComponentModel.ISupportInitialize)(this.num_System)).BeginInit();
       this.groupBox1.SuspendLayout();
@@ -576,6 +576,29 @@
       this.tsmi_Exit.Size = new System.Drawing.Size(321, 34);
       this.tsmi_Exit.Text = "&Exit";
       // 
+      // tsmi_Tools
+      // 
+      this.tsmi_Tools.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.tsmi_Tools_InfoFileTransfer,
+            this.tsmi_Tools_OpenTmpFolder});
+      this.tsmi_Tools.Name = "tsmi_Tools";
+      this.tsmi_Tools.Size = new System.Drawing.Size(69, 29);
+      this.tsmi_Tools.Text = "&Tools";
+      // 
+      // tsmi_Tools_InfoFileTransfer
+      // 
+      this.tsmi_Tools_InfoFileTransfer.Image = global::ICSPControl.Properties.Resources.realvista_general_info_32;
+      this.tsmi_Tools_InfoFileTransfer.Name = "tsmi_Tools_InfoFileTransfer";
+      this.tsmi_Tools_InfoFileTransfer.Size = new System.Drawing.Size(288, 34);
+      this.tsmi_Tools_InfoFileTransfer.Text = "&Info File Transfer ...";
+      // 
+      // tsmi_Tools_OpenTmpFolder
+      // 
+      this.tsmi_Tools_OpenTmpFolder.Image = global::ICSPControl.Properties.Resources.file_config;
+      this.tsmi_Tools_OpenTmpFolder.Name = "tsmi_Tools_OpenTmpFolder";
+      this.tsmi_Tools_OpenTmpFolder.Size = new System.Drawing.Size(288, 34);
+      this.tsmi_Tools_OpenTmpFolder.Text = "Open G5 Temp Folder";
+      // 
       // OnlineTree
       // 
       this.OnlineTree.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
@@ -704,29 +727,6 @@
       this.cmd_ShowFeedbackTest.Text = "Feedback Test";
       this.cmd_ShowFeedbackTest.UseVisualStyleBackColor = true;
       // 
-      // tsmi_Tools
-      // 
-      this.tsmi_Tools.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.tsmi_Tools_InfoFileTransfer,
-            this.tsmi_Tools_OpenTmpFolder});
-      this.tsmi_Tools.Name = "tsmi_Tools";
-      this.tsmi_Tools.Size = new System.Drawing.Size(69, 29);
-      this.tsmi_Tools.Text = "&Tools";
-      // 
-      // tsmi_Tools_OpenTmpFolder
-      // 
-      this.tsmi_Tools_OpenTmpFolder.Image = global::ICSPControl.Properties.Resources.file_config;
-      this.tsmi_Tools_OpenTmpFolder.Name = "tsmi_Tools_OpenTmpFolder";
-      this.tsmi_Tools_OpenTmpFolder.Size = new System.Drawing.Size(288, 34);
-      this.tsmi_Tools_OpenTmpFolder.Text = "Open G5 Temp Folder";
-      // 
-      // tsmi_Tools_InfoFileTransfer
-      // 
-      this.tsmi_Tools_InfoFileTransfer.Image = global::ICSPControl.Properties.Resources.realvista_general_info_32;
-      this.tsmi_Tools_InfoFileTransfer.Name = "tsmi_Tools_InfoFileTransfer";
-      this.tsmi_Tools_InfoFileTransfer.Size = new System.Drawing.Size(288, 34);
-      this.tsmi_Tools_InfoFileTransfer.Text = "&Info File Transfer";
-      // 
       // DlgMain
       // 
       this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
@@ -778,6 +778,7 @@
         }
 
         #endregion
+
     private System.Windows.Forms.StatusStrip MainStatusStrip;
     private System.Windows.Forms.ToolStripStatusLabel tssl_Host;
     private System.Windows.Forms.ToolStripStatusLabel tssl_Port;

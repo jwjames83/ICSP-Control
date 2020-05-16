@@ -14,6 +14,7 @@ using ICSP.Manager.DeviceManager;
 using ICSP.Manager.DiagnosticManager;
 
 using ICSPControl.Controls;
+using ICSPControl.Extensions;
 using ICSPControl.Properties;
 
 using Microsoft.Win32;
@@ -50,7 +51,7 @@ namespace ICSPControl.Dialogs
       tsmi_CommunicationSetttings.Click += OnCommunicationSetttingsClick;
       tsmi_Exit.Click += OnExitClick;
 
-      tsmi_Tools_InfoFileTransfer.Click += (s, e) => { new DlgFileTransfer().ShowDialog(); };
+      tsmi_Tools_InfoFileTransfer.Click += (s, e) => { new DlgInfoFileTransfer().ShowDialog(); };
       tsmi_Tools_OpenTmpFolder.Click += (s, e) => { OpenTmpFolder(); };
 
       tssl_Host.Text = string.Format("Host: {0}", Settings.Default.AmxHost);
@@ -111,8 +112,11 @@ namespace ICSPControl.Dialogs
 
     private void OnDynamicDeviceCreated(object sender, DynamicDeviceCreatedEventArgs e)
     {
-      tssl_CurrentSystem.Text = string.Format("Current System: {0}", e.System);
-      tssl_DynamicDevice.Text = string.Format("Dynamic Device: {0:00000}", e.Device);
+      this.InvokeIfRequired(a =>
+      {
+        tssl_CurrentSystem.Text = string.Format("Current System: {0}", e.System);
+        tssl_DynamicDevice.Text = string.Format("Dynamic Device: {0:00000}", e.Device);
+      });
 
       if(Settings.Default.PhysicalDeviceAutoCreate)
         CreatePhysicalDevice();
@@ -300,21 +304,24 @@ namespace ICSPControl.Dialogs
 
     private void OnManagerRequestDevicesOnlineEOT(object sender, EventArgs e)
     {
-      if(OnlineTree.Nodes.Count > 0)
+      this.InvokeIfRequired(a =>
       {
-        OnlineTree.Nodes[0].Expand();
-
-        var lNode = OnlineTree.Nodes[0].Nodes["Virtual"];
-
-        if(lNode != null)
+        if(OnlineTree.Nodes.Count > 0)
         {
-          OnlineTree.Nodes[0].Nodes.RemoveByKey("Virtual");
+          OnlineTree.Nodes[0].Expand();
 
-          OnlineTree.Nodes[0].Nodes.Add(lNode);
+          var lNode = OnlineTree.Nodes[0].Nodes["Virtual"];
 
-          lNode.Expand();
+          if(lNode != null)
+          {
+            OnlineTree.Nodes[0].Nodes.RemoveByKey("Virtual");
+
+            OnlineTree.Nodes[0].Nodes.Add(lNode);
+
+            lNode.Expand();
+          }
         }
-      }
+      });
 
       // Request ProgramInfo ...
       var lRequest = MsgCmdProbablyRequestProgramInfo.CreateRequest(mICSPManager.DynamicDevice, 0x1F);
@@ -324,15 +331,21 @@ namespace ICSPControl.Dialogs
 
     private void OnManagerProgramInfo(object sender, ProgramInfoEventArgs e)
     {
-      tssl_ProgramName.Text = string.Format("Program Name: {0}", e.ProgramName);
-      tssl_MainFile.Text = string.Format("Main File: {0}", e.MainFile);
+      this.InvokeIfRequired(a =>
+      {
+        tssl_ProgramName.Text = string.Format("Program Name: {0}", e.ProgramName);
+        tssl_MainFile.Text = string.Format("Main File: {0}", e.MainFile);
+      });
     }
 
     private void OnBlinkMessage(object sender, BlinkEventArgs e)
     {
       mBlinkTimer.Stop();
 
-      tssl_Blink.BackColor = Color.Green;
+      this.InvokeIfRequired(a =>
+      {
+        tssl_Blink.BackColor = Color.Green;
+      });
 
       mBlinkTimer.Start();
     }
@@ -344,47 +357,50 @@ namespace ICSPControl.Dialogs
 
       TreeNode lNode;
 
-      // System-Device
-      if(e.Device == 0 && e.ObjectId == 0)
+      this.InvokeIfRequired(a =>
       {
-        OnlineTree.Nodes.Clear();
+        // System-Device
+        if(e.Device == 0 && e.ObjectId == 0)
+        {
+          OnlineTree.Nodes.Clear();
 
-        lNode = OnlineTree.Nodes.Add("System", string.Format("System {0} [{1}]", e.System, e.IPv4Address), lImageKey, lSelectedImageKey);
+          lNode = OnlineTree.Nodes.Add("System", string.Format("System {0} [{1}]", e.System, e.IPv4Address), lImageKey, lSelectedImageKey);
+          lNode.Tag = e;
+
+          // Add Dynamic/Virtual Devices
+          lNode.Nodes.Add("Virtual", "Dynamic/Virtual Devices", "VirtualDeviceDefault", "VirtualDeviceSelected");
+        }
+
+        var lKeyCurrent = string.Format("{0}-{1}", e.Device, e.ObjectId);
+        var lKeyParent = string.Format("{0}-{1}", e.Device, e.ParentId);
+
+        if(e.Device > 32000)
+        {
+          lImageKey = "CloudDefault";
+          lSelectedImageKey = "CloudSelected";
+
+          lKeyParent = "Virtual";
+        }
+
+        var lTxt = string.Format("{0:00000} - {1} ({2})", e.Device, e.Name, e.Version);
+
+        if(e.ObjectId > 0)
+        {
+          lTxt = string.Format("[OID={0}] - {1} ({2})", e.ObjectId, e.Name, e.Version);
+
+          lImageKey = "OIDDeviceDefault";
+          lSelectedImageKey = "OIDDeviceSelected";
+        }
+
+        var lNodes = OnlineTree.Nodes[0].Nodes.Find(lKeyParent, true);
+
+        if(lNodes.Length == 0)
+          lNode = OnlineTree.Nodes[0].Nodes.Add(lKeyCurrent, lTxt, lImageKey, lSelectedImageKey);
+        else
+          lNode = lNodes[0].Nodes.Add(lKeyCurrent, lTxt, lImageKey, lSelectedImageKey);
+
         lNode.Tag = e;
-
-        // Add Dynamic/Virtual Devices
-        lNode.Nodes.Add("Virtual", "Dynamic/Virtual Devices", "VirtualDeviceDefault", "VirtualDeviceSelected");
-      }
-
-      var lKeyCurrent = string.Format("{0}-{1}", e.Device, e.ObjectId);
-      var lKeyParent = string.Format("{0}-{1}", e.Device, e.ParentId);
-
-      if(e.Device > 32000)
-      {
-        lImageKey = "CloudDefault";
-        lSelectedImageKey = "CloudSelected";
-
-        lKeyParent = "Virtual";
-      }
-
-      var lTxt = string.Format("{0:00000} - {1} ({2})", e.Device, e.Name, e.Version);
-
-      if(e.ObjectId > 0)
-      {
-        lTxt = string.Format("[OID={0}] - {1} ({2})", e.ObjectId, e.Name, e.Version);
-
-        lImageKey = "OIDDeviceDefault";
-        lSelectedImageKey = "OIDDeviceSelected";
-      }
-
-      var lNodes = OnlineTree.Nodes[0].Nodes.Find(lKeyParent, true);
-
-      if(lNodes.Length == 0)
-        lNode = OnlineTree.Nodes[0].Nodes.Add(lKeyCurrent, lTxt, lImageKey, lSelectedImageKey);
-      else
-        lNode = lNodes[0].Nodes.Add(lKeyCurrent, lTxt, lImageKey, lSelectedImageKey);
-
-      lNode.Tag = e;
+      });
     }
 
     private void OnPortCount(object sender, PortCountEventArgs e)
@@ -392,22 +408,25 @@ namespace ICSPControl.Dialogs
       var lImageKey = "IODeviceDefault";
       var lSelectedImageKey = "IODeviceSelected";
 
-      var lDevice = OnlineTree.Nodes.Find(string.Format("{0}-0", e.Device), true).FirstOrDefault();
-
-      if(lDevice != null)
+      this.InvokeIfRequired(a =>
       {
-        // PadLeft
-        var lTotalWidth = e.PortCount.ToString().Length;
+        var lDevice = OnlineTree.Nodes.Find(string.Format("{0}-0", e.Device), true).FirstOrDefault();
 
-        for(var i = 1; i <= e.PortCount; i++)
+        if(lDevice != null)
         {
-          var lTxt = string.Format("Port - {1}", e.Device, i.ToString().PadLeft(lTotalWidth));
+          // PadLeft
+          var lTotalWidth = e.PortCount.ToString().Length;
 
-          var lNode = lDevice.Nodes.Add(string.Format("{0}-IO-{1}", e.Device, i), lTxt, lImageKey, lSelectedImageKey);
+          for(var i = 1; i <= e.PortCount; i++)
+          {
+            var lTxt = string.Format("Port - {1}", e.Device, i.ToString().PadLeft(lTotalWidth));
 
-          lNode.Tag = e;
+            var lNode = lDevice.Nodes.Add(string.Format("{0}-IO-{1}", e.Device, i), lTxt, lImageKey, lSelectedImageKey);
+
+            lNode.Tag = e;
+          }
         }
-      }
+      });
     }
 
     private void OnThreadException(object sender, ThreadExceptionEventArgs e)

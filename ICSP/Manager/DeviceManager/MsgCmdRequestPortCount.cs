@@ -20,18 +20,24 @@ namespace ICSP.Manager.DeviceManager
     {
     }
 
-    public MsgCmdRequestPortCount(ICSPMsgData msg) : base(msg)
+    public MsgCmdRequestPortCount(byte[] buffer) : base(buffer)
     {
+    }
+
+    public override ICSPMsg FromData(byte[] bytes)
+    {
+      return new MsgCmdRequestPortCount(bytes);
     }
 
     public static ICSPMsg CreateRequest(AmxDevice source, ushort device, ushort system)
     {
       var lDest = new AmxDevice(0, 0, source.System);
 
-      var lRequest = new MsgCmdRequestPortCount();
-
-      lRequest.Device = device;
-      lRequest.System = system;
+      var lRequest = new MsgCmdRequestPortCount
+      {
+        Device = device,
+        System = system
+      };
 
       var lData = ArrayExtensions.Int16ToBigEndian(device)
         .Concat(ArrayExtensions.Int16ToBigEndian(system)).ToArray();

@@ -24,18 +24,23 @@ namespace ICSP.Manager.ConfigurationManager
     {
     }
 
-    public MsgCmdFileTransfer(ICSPMsgData msg) : base(msg)
+    public MsgCmdFileTransfer(byte[] buffer) : base(buffer)
     {
-      if(msg.Data.Length > 0)
+      if(Data.Length > 0)
       {
         // FileType
-        FileType = (FileType)msg.Data.GetBigEndianInt16(0);
+        FileType = (FileType)Data.GetBigEndianInt16(0);
 
         // Function
-        Function = msg.Data.GetBigEndianInt16(2);
+        Function = Data.GetBigEndianInt16(2);
 
-        FileData = msg.Data.Range(4, msg.Data.Length - 4);
+        FileData = Data.Range(4, Data.Length - 4);
       }
+    }
+
+    public override ICSPMsg FromData(byte[] bytes)
+    {
+      return new MsgCmdFileTransfer(bytes);
     }
 
     public static ICSPMsg CreateRequest(AmxDevice dest, AmxDevice source, FileType fileType, ushort function, byte[] data = null)
@@ -100,7 +105,7 @@ namespace ICSP.Manager.ConfigurationManager
       Logger.LogDebug(false, "{0:l} Function     : 0x{1:X4} ({2:l})", GetType().Name, Function, lFunction);
       Logger.LogDebug(false, "{0:l} FileData (0x): {1:l}", GetType().Name, BitConverter.ToString(FileData).Replace("-", " "));
     }
-
+    
     #region Properties
 
     /// <summary>

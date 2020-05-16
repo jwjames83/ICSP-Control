@@ -19,16 +19,21 @@ namespace ICSP.Manager.DeviceManager
     {
     }
 
-    public MsgCmdPortCountBy(ICSPMsgData msg) : base(msg)
+    public MsgCmdPortCountBy(byte[] buffer) : base(buffer)
     {
-      if(msg.Data.Length > 0)
+      if(Data.Length > 0)
       {
-        Device = msg.Data.GetBigEndianInt16(0);
+        Device = Data.GetBigEndianInt16(0);
 
-        System = msg.Data.GetBigEndianInt16(2);
+        System = Data.GetBigEndianInt16(2);
 
-        PortCount = msg.Data.GetBigEndianInt16(4);
+        PortCount = Data.GetBigEndianInt16(4);
       }
+    }
+
+    public override ICSPMsg FromData(byte[] bytes)
+    {
+      return new MsgCmdPortCountBy(bytes);
     }
 
     public static ICSPMsg CreateRequest(AmxDevice source, ushort device, ushort system, ushort portCount)

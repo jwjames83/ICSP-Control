@@ -23,30 +23,30 @@ namespace ICSP.Manager.ConnectionManager
     {
     }
 
-    public MsgCmdPingResponse(ICSPMsgData msg) : base(msg)
+    public MsgCmdPingResponse(byte[] buffer) : base(buffer)
     {
-      if(msg.Data.Length > 0)
+      if(Data.Length > 0)
       {
         // Device
-        Device = msg.Data.GetBigEndianInt16(0);
+        Device = Data.GetBigEndianInt16(0);
 
         // System
-        System = msg.Data.GetBigEndianInt16(2);
+        System = Data.GetBigEndianInt16(2);
         
         // MfgId
-        ManufactureId = msg.Data.GetBigEndianInt16(4);
+        ManufactureId = Data.GetBigEndianInt16(4);
 
         // DeviceID
-        DeviceId = msg.Data.GetBigEndianInt16(6);
+        DeviceId = Data.GetBigEndianInt16(6);
         
         // ExtAddressType
-        ExtAddressType = (ExtAddressType)msg.Data[8];
+        ExtAddressType = (ExtAddressType)Data[8];
 
         // ExtAddressLength
-        ExtAddressLength = msg.Data[9];
+        ExtAddressLength = Data[9];
 
         // ExtAddress
-        ExtAddress = msg.Data.Range(10, ExtAddressLength);
+        ExtAddress = Data.Range(10, ExtAddressLength);
       }
 
       if(ExtAddressType == ExtAddressType.IPv4Address)
@@ -92,20 +92,27 @@ namespace ICSP.Manager.ConnectionManager
       }
     }
 
+    public override ICSPMsg FromData(byte[] bytes)
+    {
+      return new MsgCmdPingResponse(bytes);
+    }
+
     public static ICSPMsg CreateRequest(ushort device, ushort system, ushort mfgID, ushort deviceId, IPAddress ipAddress)
     {
       var lSource = new AmxDevice(device, 0, system);
-      
-      var lRequest = new MsgCmdPingResponse();
 
-      lRequest.Device = device;
-      lRequest.System = system;
-      lRequest.ManufactureId = mfgID;
-      lRequest.DeviceId = deviceId;
-      lRequest.IPv4Address = ipAddress;
+      var lRequest = new MsgCmdPingResponse
+      {
+        Device = device,
+        System = system,
+        ManufactureId = mfgID,
+        DeviceId = deviceId,
+        IPv4Address = ipAddress,
 
-      lRequest.ExtAddressType = ExtAddressType.IPv4Address;
-      lRequest.ExtAddressLength = 4;
+        ExtAddressType = ExtAddressType.IPv4Address,
+        ExtAddressLength = 4
+      };
+
       lRequest.ExtAddress = lRequest.IPv4Address.GetAddressBytes();
 
       byte[] lData;

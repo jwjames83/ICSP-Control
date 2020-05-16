@@ -44,10 +44,12 @@ namespace ICSP.Reflection
     public static T CreateInstance<T>(Type t, params object[] args) where T : class
     {
       T local = Activator.CreateInstance(t, args) as T;
+
       if (local == null)
       {
         throw new Exception(string.Format("{0} ist nicht vom Typ {1}", t.ToString(), typeof(T).ToString()));
       }
+
       return local;
     }
 

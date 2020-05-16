@@ -13,8 +13,13 @@ namespace ICSP.Manager.DeviceManager
     {
     }
 
-    public MsgCmdInputChannelOffStatus(ICSPMsgData msg) : base(msg)
+    public MsgCmdInputChannelOffStatus(byte[] buffer) : base(buffer)
     {
+    }
+
+    public override ICSPMsg FromData(byte[] bytes)
+    {
+      return new MsgCmdInputChannelOffStatus(bytes);
     }
 
     protected override ushort MsgCmd

@@ -46,7 +46,7 @@ namespace ICSP.Extensions
 
     public static byte[] Int16ToBigEndian(ushort value)
     {
-      return new byte[] { (byte)((ushort)value >> 8), (byte)value };
+      return new byte[] { (byte)(value >> 8), (byte)value };
     }
 
     public static byte[] Int16To8Bit(int value)

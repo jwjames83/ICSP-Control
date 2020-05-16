@@ -20,24 +20,29 @@ namespace ICSP.Manager.DeviceManager
     {
     }
 
-    public MsgCmdStatus(ICSPMsgData msg) : base(msg)
+    public MsgCmdStatus(byte[] buffer) : base(buffer)
     {
-      if(msg.Data.Length > 0)
+      if(Data.Length > 0)
       {
-        Device = AmxDevice.FromDPS(msg.Data.Range(0, 6));
+        Device = AmxDevice.FromDPS(Data.Range(0, 6));
 
         // StatusCode
-        StatusCode = (StatusType)msg.Data.GetBigEndianInt16(6);
+        StatusCode = (StatusType)Data.GetBigEndianInt16(6);
 
         // ValueType
-        ValueType = msg.Data[8];
+        ValueType = Data[8];
 
         // Length
-        Length = msg.Data.GetBigEndianInt16(9);
+        Length = Data.GetBigEndianInt16(9);
 
         // SerialNumber
-        StatusString = AmxUtils.GetString(msg.Data, 11, Length);
+        StatusString = AmxUtils.GetString(Data, 11, Length);
       }
+    }
+
+    public override ICSPMsg FromData(byte[] bytes)
+    {
+      return new MsgCmdStatus(bytes);
     }
 
     public static ICSPMsg CreateRequest(AmxDevice dest, AmxDevice source, AmxDevice device, StatusType statusCode, byte valueType, string statusString)
@@ -46,13 +51,14 @@ namespace ICSP.Manager.DeviceManager
 
       var lBytes = Encoding.Default.GetBytes(lStatusString);
 
-      var lRequest = new MsgCmdStatus();
-
-      lRequest.Device = device;
-      lRequest.StatusCode = statusCode;
-      lRequest.ValueType = valueType;
-      lRequest.Length = (ushort)(lBytes.Length);
-      lRequest.StatusString = statusString;
+      var lRequest = new MsgCmdStatus
+      {
+        Device = device,
+        StatusCode = statusCode,
+        ValueType = valueType,
+        Length = (ushort)(lBytes.Length),
+        StatusString = statusString
+      };
 
       byte[] lData;
 

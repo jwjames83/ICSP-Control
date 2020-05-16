@@ -19,24 +19,30 @@ namespace ICSP.Manager.DeviceManager
     {
     }
 
-    public MsgCmdLevelCount(ICSPMsgData msg) : base(msg)
+    public MsgCmdLevelCount(byte[] buffer) : base(buffer)
     {
-      if(msg.Data.Length > 0)
+      if(Data.Length > 0)
       {
-        Device = AmxDevice.FromDPS(msg.Data.Range(0, 6));
+        Device = AmxDevice.FromDPS(Data.Range(0, 6));
 
-        Count = msg.Data.GetBigEndianInt16(6);
+        Count = Data.GetBigEndianInt16(6);
       }
+    }
+
+    public override ICSPMsg FromData(byte[] bytes)
+    {
+      return new MsgCmdLevelCount(bytes);
     }
 
     public static ICSPMsg CreateRequest(AmxDevice device, ushort count)
     {
       var lDest = new AmxDevice(0, 0, device.System);
 
-      var lRequest = new MsgCmdLevelCount();
-
-      lRequest.Device = device;
-      lRequest.Count = count;
+      var lRequest = new MsgCmdLevelCount
+      {
+        Device = device,
+        Count = count
+      };
 
       var lData = device.GetBytesDPS().Concat(ArrayExtensions.Int16ToBigEndian(count)).ToArray();
 

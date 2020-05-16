@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 
 using ICSP.Logging;
 
@@ -10,14 +11,22 @@ using static ICSP.Extensions.ArrayExtensions;
 
 namespace ICSP
 {
-  public class ICSPMsg
+  public abstract class ICSPMsg
   {
+    // Minimum 23 Bytes
+    // ---------------------------------------------------------------------------------------------
+    // P  | Len   | Flag  | Dest              | Source            | H  | ID    | CMD   | N-Data | CS
+    // ---------------------------------------------------------------------------------------------
+    // 02 | 00 1B | 02 10 | 00 06 27 11 00 00 | 00 06 7D 03 00 00 | FF | 4B 60 | 02 04 | ...    | C1
+
+    public const int PacketLengthMin = 23;
+
     private static ushort MsgId;
 
     public const int DefaultHop = 0xFF;
 
     public const int DefaultFlag = 0x0200;
-    
+
     public const int FlagFileTransfer = 0x0208; // Not Documented: Found by Wireshark
 
     /// <summary>
@@ -42,43 +51,37 @@ namespace ICSP
       Hop = 0xFF;
     }
 
-    protected ICSPMsg(ICSPMsgData data)
+    public ICSPMsg(byte[] bytes)
     {
-      RawData = data.RawData;
+      RawData = bytes;
 
-      Protocol = data.Protocol;
+      Protocol = bytes[0];
 
-      Length = data.Length;
+      Length = bytes.GetBigEndianInt16(1);
 
-      Flag = data.Flag;
+      Flag = bytes.GetBigEndianInt16(3);
 
-      Dest = data.Dest;
+      Dest = AmxDevice.FromSDP(bytes.Range(5, 6));
 
-      Source = data.Source;
+      Source = AmxDevice.FromSDP(bytes.Range(11, 6));
 
-      Hop = data.Hop;
+      Hop = bytes[17];
 
-      ID = data.ID;
+      ID = bytes.GetBigEndianInt16(18);
 
-      Command = data.Command;
+      Command = bytes.GetBigEndianInt16(20);
 
       // Data
-      Data = data.Data;
+      Data = bytes.Range(22, bytes.Length - 22 - 1);
 
-      Checksum = data.Checksum;
-
-      // Checksum Calculated
-      var lChecksum = 0;
-
-      for(int i = 0; i < RawData?.Length - 1; i++)
-        lChecksum += data.RawData[i];
-
-      ChecksumCalculated = (byte)(lChecksum % 256);
+      Checksum = bytes[Length + 3];
     }
 
     #endregion
 
     #region Serialize
+
+    public abstract ICSPMsg FromData(byte[] bytes);
 
     protected ICSPMsg Serialize(AmxDevice dest, AmxDevice source, ushort command, byte[] data)
     {
@@ -103,10 +106,13 @@ namespace ICSP
     protected ICSPMsg Serialize(ushort flag, AmxDevice dest, AmxDevice source, byte hop, ushort id, ushort command, byte[] data)
     {
       Protocol = 0x02;
-      Length = 0;
+      
+      Length = (ushort)(PacketLengthMin  + (data?.Length ?? 0) - 4);
+      
       Flag = flag;
 
       Dest = dest;
+
       Source = source;
 
       Hop = hop;
@@ -120,53 +126,55 @@ namespace ICSP
 
       Data = data;
 
-      using(var lStream = new MemoryStream())
+      RawData = new byte[Length + 4];
+
+      RawData[00] = Protocol;
+
+      RawData[01] = (byte)(Length >> 8);
+      RawData[02] = (byte)(Length);
+
+      RawData[03] = (byte)(Flag >> 8);
+      RawData[04] = (byte)(Flag);
+
+      var lDsp = Dest.GetBytesSDP();
+
+      RawData[05] = lDsp[0];
+      RawData[06] = lDsp[1];
+      RawData[07] = lDsp[2];
+      RawData[08] = lDsp[3];
+      RawData[09] = lDsp[4];
+      RawData[10] = lDsp[5];
+
+      lDsp = Source.GetBytesSDP();
+
+      RawData[11] = lDsp[0];
+      RawData[12] = lDsp[1];
+      RawData[13] = lDsp[2];
+      RawData[14] = lDsp[3];
+      RawData[15] = lDsp[4];
+      RawData[16] = lDsp[5];
+
+      RawData[17] = Hop;
+
+      RawData[18] = (byte)(ID >> 8);
+      RawData[19] = (byte)(ID);
+
+      RawData[20] = (byte)(Command >> 8);
+      RawData[21] = (byte)(Command);
+
+      if(Data != null)
+        Array.Copy(Data, 0, RawData, 22, Data.Length);
+
+      byte lCs = 0;
+
+      unchecked // Let overflow occur without exceptions
       {
-        lStream.Write(Int16To8Bit(Protocol), 0, 1);
-
-        // Length: Calculate later
-        lStream.Write(Int16ToBigEndian(0), 0, 2);
-
-        lStream.Write(Int16ToBigEndian(Flag), 0, 2);
-
-        lStream.Write(Dest.GetBytesSDP(), 0, 6);
-
-        lStream.Write(Source.GetBytesSDP(), 0, 6);
-
-        lStream.Write(Int16To8Bit(Hop), 0, 1);
-
-        lStream.Write(Int16ToBigEndian(ID), 0, 2);
-
-        lStream.Write(Int16ToBigEndian(Command), 0, 2);
-
-        if(Data != null)
-          lStream.Write(Data, 0, Data.Length);
-
-        // Checksum: Calculate later
-        lStream.Write(Int16To8Bit(0), 0, 1);
-
-        RawData = lStream.ToArray();
+        foreach(byte b in RawData)
+          lCs += b;
       }
 
-      Length = (ushort)(RawData.Length - 4);
-
-      var lLength = Int16ToBigEndian(Length);
-
-      RawData[1] = lLength[0];
-      RawData[2] = lLength[1];
-
       // Checksum
-      var lChecksum = 0;
-
-      for(int i = 0; i < RawData.Length - 1; i++)
-        lChecksum += RawData[i];
-
-      lChecksum %= 256; // 4214 % 256 = 0x76 (118)
-
-      Checksum = (byte)lChecksum;
-
-      // Checksum
-      RawData[RawData.Length - 1] = (byte)Checksum;
+      RawData[RawData.Length - 1] = Checksum = lCs;
 
       return this;
     }
@@ -260,46 +268,42 @@ namespace ICSP
     /// <summary>
     /// Message Data
     /// </summary>
-    private byte[] Data { get; set; }
+    public byte[] Data { get; set; }
 
     /// <summary>
     /// Checksum (Sum of Bytes % 256)
     /// </summary>
     public byte Checksum { get; private set; }
 
+    /*
     /// <summary>
     /// Calculated Checksum (Sum of Bytes % 256)
     /// </summary>
     public byte ChecksumCalculated { get; private set; }
+    */
 
     public bool LogStripline { get; private set; }
 
     #endregion
 
-    public virtual void WriteLog()
+    public virtual void WriteLogVerbose()
     {
-      Logger.LogDebug(false, "----------------------------------------------------------------");
+      Logger.LogVerbose(false, "----------------------------------------------------------------");
 
       var lName = nameof(ICSPMsg);
 
-      Logger.LogDebug(false, "{0:l} Type     : {1:l}", lName, GetType().Name);
-      Logger.LogDebug(false, "{0:l} Protocol : {1}", lName, Protocol);
-      Logger.LogDebug(false, "{0:l} Length   : {1}", lName, Length);
-      Logger.LogDebug(false, "{0:l} Flag     : {1}", lName, Flag);
-      Logger.LogDebug(false, "{0:l} Dest     : {1:l}", lName, Dest);
-      Logger.LogDebug(false, "{0:l} Source   : {1:l}", lName, Source);
-      Logger.LogDebug(false, "{0:l} Hop      : {1}", lName, Hop);
-      Logger.LogDebug(false, "{0:l} MessageId: 0x{1:X4}", lName, ID);
-      Logger.LogDebug(false, "{0:l} Command  : 0x{1:X4} ({2:l})", lName, Command, GetFrindlyName(Command));
-
-      if(Checksum != ChecksumCalculated)
-        Logger.LogDebug(false, "{0:l} Checksum : 0x{1:X4} (Invalid => Calculated: 0x{2:X2})", lName, Checksum, ChecksumCalculated);
-      else
-        Logger.LogDebug(false, "{0:l} Checksum : 0x{1:X4} (Valid)", lName, Checksum);
+      Logger.LogVerbose(false, "{0:l} Type     : {1:l}", lName, GetType().Name);
+      Logger.LogVerbose(false, "{0:l} Protocol : {1}", lName, Protocol);
+      Logger.LogVerbose(false, "{0:l} Length   : {1}", lName, Length);
+      Logger.LogVerbose(false, "{0:l} Flag     : {1}", lName, Flag);
+      Logger.LogVerbose(false, "{0:l} Dest     : {1:l}", lName, Dest);
+      Logger.LogVerbose(false, "{0:l} Source   : {1:l}", lName, Source);
+      Logger.LogVerbose(false, "{0:l} Hop      : {1}", lName, Hop);
+      Logger.LogVerbose(false, "{0:l} MessageId: 0x{1:X4}", lName, ID);
+      Logger.LogVerbose(false, "{0:l} Command  : 0x{1:X4} ({2:l})", lName, Command, GetFrindlyName(Command));
+      Logger.LogVerbose(false, "{0:l} Checksum : 0x{1:X2}", lName, Checksum);
 
       WriteLogExtended();
-
-      Logger.LogDebug(false, "----------------------------------------------------------------");
     }
 
     protected virtual void WriteLogExtended()

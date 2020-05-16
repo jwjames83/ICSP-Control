@@ -1,6 +1,6 @@
 ﻿namespace ICSPControl.Dialogs
 {
-  partial class DlgFileTransfer
+  partial class DlgInfoFileTransfer
   {
     /// <summary>
     /// Required designer variable.
@@ -28,7 +28,7 @@
     /// </summary>
     private void InitializeComponent()
     {
-      System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(DlgFileTransfer));
+      System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(DlgInfoFileTransfer));
       this.label1 = new System.Windows.Forms.Label();
       this.pictureBox1 = new System.Windows.Forms.PictureBox();
       this.label2 = new System.Windows.Forms.Label();
@@ -43,7 +43,7 @@
       this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
       this.label1.Location = new System.Drawing.Point(20, 51);
       this.label1.Name = "label1";
-      this.label1.Size = new System.Drawing.Size(775, 150);
+      this.label1.Size = new System.Drawing.Size(631, 175);
       this.label1.TabIndex = 1;
       this.label1.Text = resources.GetString("label1.Text");
       // 
@@ -52,9 +52,9 @@
       this.pictureBox1.BackgroundImage = global::ICSPControl.Properties.Resources.FileTransferWorkaround;
       this.pictureBox1.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
       this.pictureBox1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-      this.pictureBox1.Location = new System.Drawing.Point(24, 252);
+      this.pictureBox1.Location = new System.Drawing.Point(24, 279);
       this.pictureBox1.Name = "pictureBox1";
-      this.pictureBox1.Size = new System.Drawing.Size(484, 447);
+      this.pictureBox1.Size = new System.Drawing.Size(367, 571);
       this.pictureBox1.TabIndex = 1;
       this.pictureBox1.TabStop = false;
       // 
@@ -62,7 +62,7 @@
       // 
       this.label2.AutoSize = true;
       this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-      this.label2.Location = new System.Drawing.Point(21, 220);
+      this.label2.Location = new System.Drawing.Point(21, 251);
       this.label2.Name = "label2";
       this.label2.Size = new System.Drawing.Size(82, 20);
       this.label2.TabIndex = 2;
@@ -88,13 +88,13 @@
       this.label3.TabIndex = 0;
       this.label3.Text = "Information";
       // 
-      // DlgFileTransfer
+      // DlgInfoFileTransfer
       // 
       this.AcceptButton = this.cmd_OK;
       this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
       this.CancelButton = this.cmd_OK;
-      this.ClientSize = new System.Drawing.Size(895, 726);
+      this.ClientSize = new System.Drawing.Size(895, 872);
       this.Controls.Add(this.cmd_OK);
       this.Controls.Add(this.label3);
       this.Controls.Add(this.label2);
@@ -104,7 +104,7 @@
       this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
       this.MaximizeBox = false;
       this.MinimizeBox = false;
-      this.Name = "DlgFileTransfer";
+      this.Name = "DlgInfoFileTransfer";
       this.ShowIcon = false;
       this.Text = "Info FileTransfer";
       ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();

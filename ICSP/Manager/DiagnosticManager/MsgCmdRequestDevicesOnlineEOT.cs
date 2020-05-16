@@ -17,8 +17,13 @@ namespace ICSP.Manager.DiagnosticManager
     {
     }
 
-    public MsgCmdRequestDevicesOnlineEOT(ICSPMsgData msg) : base(msg)
+    public MsgCmdRequestDevicesOnlineEOT(byte[] buffer) : base(buffer)
     {
+    }
+
+    public override ICSPMsg FromData(byte[] bytes)
+    {
+      return new MsgCmdRequestDevicesOnlineEOT(bytes);
     }
 
     public static ICSPMsg CreateRequest(AmxDevice source)

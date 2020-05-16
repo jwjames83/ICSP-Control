@@ -11,12 +11,14 @@ using ICSP.Manager.ConnectionManager;
 using ICSP.Manager.DeviceManager;
 using ICSP.Manager.DiagnosticManager;
 using ICSP.Reflection;
+using Serilog.Events;
 
 namespace ICSP
 {
   public class ICSPManager
   {
     private readonly Dictionary<ushort, Type> mMessages;
+    private readonly Dictionary<ushort, ICSPMsg> mTypes;
 
     private readonly Dictionary<ushort, DeviceInfoData> mDevices;
 
@@ -51,6 +53,7 @@ namespace ICSP
     public ICSPManager()
     {
       mMessages = new Dictionary<ushort, Type>();
+      mTypes = new Dictionary<ushort, ICSPMsg>();
 
       mDevices = new Dictionary<ushort, DeviceInfoData>();
 
@@ -74,6 +77,21 @@ namespace ICSP
         {
           if(!mMessages.ContainsKey(attribute.MsgCmd))
             mMessages.Add(attribute.MsgCmd, type);
+
+          try
+          {
+            // Type type = typeof(Foo);
+
+            var lType = (ICSPMsg)Activator.CreateInstance(type, true);
+
+            // var lType = (ICSPMsg)TypeHelper.CreateInstance(type, ICSPMsgData.Empty);
+
+            mTypes.Add(attribute.MsgCmd, lType);
+          }
+          catch(Exception ex)
+          {
+            Console.WriteLine(ex.Message);
+          }
         }
       }
     }
@@ -133,12 +151,12 @@ namespace ICSP
       ClientOnlineStatusChanged?.Invoke(this, e);
     }
 
-    private void OnDataReceived(object sender, ICSPMsgDataEventArgs e)
+    public void OnDataReceived(object sender, ICSPMsgDataEventArgs e)
     {
       try
       {
-        Logger.LogDebug("{0} Bytes", e.Data.RawData.Length);
-        Logger.LogDebug("Data 0x: {0:l}", BitConverter.ToString(e.Data.RawData).Replace("-", " "));
+        Logger.LogVerbose("{0} Bytes", e.Message.RawData.Length);
+        Logger.LogVerbose("Data 0x: {0:l}", BitConverter.ToString(e.Message.RawData).Replace("-", " "));
 
         DataReceived?.Invoke(this, e);
 
@@ -146,30 +164,11 @@ namespace ICSP
         if(e.Handled)
           return;
 
-        Type lMsgType = null;
-
-        if(mMessages.ContainsKey(e.Data.Command))
-          lMsgType = mMessages[e.Data.Command];
-
-        if(lMsgType == null)
-        {
-          Logger.LogDebug(false, "----------------------------------------------------------------");
-
-          Logger.LogWarn("Command: 0x{0:X4} ({1:l}) => Command not implemented", e.Data.Command, ICSPMsg.GetFrindlyName(e.Data.Command));
-
-          CommandNotImplemented?.Invoke(this, e);
-
-          return;
-        }
-
-        if(!(TypeHelper.CreateInstance(lMsgType, e.Data) is ICSPMsg lMsg))
-          return;
-
         // Speed up
-        if(Logger.LogLevel <= Serilog.Events.LogEventLevel.Debug)
-          lMsg.WriteLog();
+        if(Logger.LogLevel <= LogEventLevel.Verbose)
+          e.Message.WriteLogVerbose();
 
-        switch(lMsg)
+        switch(e.Message)
         {
           case MsgCmdFileTransfer m:
           {
@@ -302,7 +301,7 @@ namespace ICSP
           }
           case MsgCmdRequestStatus m:
           {
-            var lResponse = MsgCmdStatus.CreateRequest(lMsg.Source, lMsg.Dest, lMsg.Dest, StatusType.Normal, 1, "Normal");
+            var lResponse = MsgCmdStatus.CreateRequest(e.Message.Source, e.Message.Dest, e.Message.Dest, StatusType.Normal, 1, "Normal");
 
             Send(lResponse);
 
@@ -363,9 +362,19 @@ namespace ICSP
 
             break;
           }
+          case MsgCmdUnknown m:
+          {
+            Logger.LogDebug(false, "----------------------------------------------------------------");
+
+            // Logger.LogWarn("Command: 0x{0:X4} ({1:l}) => Command not implemented", e.Command, ICSPMsg.GetFrindlyName(e.Command));
+
+            CommandNotImplemented?.Invoke(this, new ICSPMsgDataEventArgs(m));
+
+            break;
+          }
           default:
           {
-            MessageReceived?.Invoke(this, new MessageReceivedEventArgs(lMsg));
+            MessageReceived?.Invoke(this, new MessageReceivedEventArgs(e.Message));
 
             break;
           }
@@ -433,7 +442,7 @@ namespace ICSP
         var lSource = DynamicDevice;
 
         // lSource = new AmxDevice(deviceInfo.Device, 0, deviceInfo.System);
-        
+
         // It is sent by a device upon reporting if the device has more than one port.
         var lPortCountRequest = MsgCmdPortCountBy.CreateRequest(lSource, deviceInfo.Device, deviceInfo.System, portCount);
 
@@ -462,7 +471,7 @@ namespace ICSP
     public void Send(ICSPMsg request)
     {
       if(mClient?.Connected ?? false)
-        mClient?.Send(request);
+        mClient?.SendAsync(request);
       else
       {
         Logger.LogDebug(false, "ICSPManager.Send[1]: MessageId=0x{0:X4}, Type={1:l}", request.ID, request.GetType().Name);
