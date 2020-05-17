@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Windows.Forms;
 
@@ -13,13 +10,12 @@ using ICSP.Client;
 using ICSP.Manager.DeviceManager;
 using ICSP.Manager.DiagnosticManager;
 
-using ICSPControl.Controls;
 using ICSPControl.Extensions;
 using ICSPControl.Properties;
 
 using Microsoft.Win32;
 
-using TpControls;
+using WeifenLuo.WinFormsUI.Docking;
 
 namespace ICSPControl.Dialogs
 {
@@ -27,10 +23,11 @@ namespace ICSPControl.Dialogs
   {
     private readonly System.Windows.Forms.Timer mBlinkTimer;
 
-    private DlgTrace mDlgNotifications;
-    private DlgTest mDlgTest;
-
     private readonly ICSPManager mICSPManager;
+
+    private DlgFileTransfer mDlgFileTransfer;
+    private DlgDiagnostic mDlgDiagnostic;
+    private DlgTrace mDlgTrace;
 
     public DlgMain()
     {
@@ -45,57 +42,41 @@ namespace ICSPControl.Dialogs
       MainStatusStrip.Padding =
         new Padding(MainStatusStrip.Padding.Left, MainStatusStrip.Padding.Top, MainStatusStrip.Padding.Left, MainStatusStrip.Padding.Bottom);
 
-      OnlineTree.Nodes.Clear();
-      OnlineTree.Nodes.Add("<Empty Device Tree>");
+      tsmi_File_Connect.Click += OnConnectClick;
+      tsmi_File_Disconnect.Click += OnDisconnectClick;
 
-      tsmi_CommunicationSetttings.Click += OnCommunicationSetttingsClick;
-      tsmi_Exit.Click += OnExitClick;
+      tsb_Connect.Click += OnConnectClick;
+      tsb_Disconnect.Click += OnDisconnectClick;
+
+      tsmi_File_CommunicationSetttings.Click += OnCommunicationSetttingsClick;
+      tsmi_File_Exit.Click += OnExitClick;
 
       tsmi_Tools_InfoFileTransfer.Click += (s, e) => { new DlgInfoFileTransfer().ShowDialog(); };
       tsmi_Tools_OpenTmpFolder.Click += (s, e) => { OpenTmpFolder(); };
+
+      tsmi_Tools_FileTransfer.Click += OnFileTransferClick;
+      tsmi_Tools_ControlDevice.Click += OnControlDeviceClick;
+      tsmi_Tools_DeviceNotifications.Click += OnDeviceNotificationsClick;
+
+      tsb_FileTransfer.Click += OnFileTransferClick;
+      tsb_ControlDevice.Click += OnControlDeviceClick;
+      tsb_DeviceNotifications.Click += OnDeviceNotificationsClick;
 
       tssl_Host.Text = string.Format("Host: {0}", Settings.Default.AmxHost);
       tssl_Port.Text = string.Format("Port: {0}", Settings.Default.AmxPort);
 
       // Physical Device
       tssl_Device.Text = string.Format("Device: {0}", Settings.Default.PhysicalDeviceNumber);
-
-      txt_Text.Text = Settings.Default.LastSendText;
-
-      cmd_CreatePhysicalDevice.Click += OnCreateDeviceInfo;
-
-      // ContextMenu
-      cmd_RefreshSystemOnlineTree.Click += OnRefreshSystemOnlineTreeClick;
-      cmd_ShowDeviceProperties.Click += OnShowDevicePropertiesClick;
-
+      
       // Add the event handler for handling UI thread exceptions to the event.
       Application.ThreadException += OnThreadException;
 
       mICSPManager = new ICSPManager();
 
       mICSPManager.ClientOnlineStatusChanged += OnClientOnlineStatusChanged;
-
       mICSPManager.DynamicDeviceCreated += OnDynamicDeviceCreated;
-
-      // mICSPManager.MessageReceived += OnMessageReceived;
-
-      mICSPManager.RequestDevicesOnlineEOT += OnManagerRequestDevicesOnlineEOT;
-      mICSPManager.ProgramInfo += OnManagerProgramInfo;
-
+      mICSPManager.DiscoveryInfo += OnDiscoveryInfo;
       mICSPManager.BlinkMessage += OnBlinkMessage;
-      mICSPManager.DeviceInfo += OnDeviceInfo;
-      mICSPManager.PortCount += OnPortCount;
-
-      cmd_Connect.Click += OnConnectClick;
-      cmd_Disconnect.Click += OnDisconnectClick;
-
-      cmd_ShowTraceWindow.Click += OnShowNotificationsClick;
-      cmd_ShowFeedbackTest.Click += OnShowFeedbackTestClick;
-
-      foreach(var lButton in GetControlsOfType<TpButton>(this))
-        lButton.SetManager(mICSPManager);
-
-      OnlineTree.MouseUp += OnlineTreeOnMouseUp;
 
       if(Settings.Default.AutoConnect)
       {
@@ -108,66 +89,6 @@ namespace ICSPControl.Dialogs
           ErrorMessageBox.Show(this, ex.Message);
         }
       }
-    }
-
-    private void OnDynamicDeviceCreated(object sender, DynamicDeviceCreatedEventArgs e)
-    {
-      this.InvokeIfRequired(a =>
-      {
-        tssl_CurrentSystem.Text = string.Format("Current System: {0}", e.System);
-        tssl_DynamicDevice.Text = string.Format("Dynamic Device: {0:00000}", e.Device);
-      });
-
-      if(Settings.Default.PhysicalDeviceAutoCreate)
-        CreatePhysicalDevice();
-    }
-
-    private void OnShowNotificationsClick(object sender, EventArgs e)
-    {
-      if(mDlgNotifications == null || mDlgNotifications.IsDisposed)
-        mDlgNotifications = new DlgTrace(mICSPManager);
-
-      mDlgNotifications.Show();
-      mDlgNotifications.BringToFront();
-    }
-
-    private void OnShowFeedbackTestClick(object sender, EventArgs e)
-    {
-      if(mDlgTest == null || mDlgTest.IsDisposed)
-        mDlgTest = new DlgTest(mICSPManager);
-
-      mDlgTest.Show();
-      mDlgTest.BringToFront();
-    }
-
-    private void OnCommunicationSetttingsClick(object sender, EventArgs e)
-    {
-      new DlgSettings().ShowDialog(this);
-
-      tssl_Host.Text = string.Format("Host: {0}", Settings.Default.AmxHost);
-      tssl_Port.Text = string.Format("Port: {0}", Settings.Default.AmxPort);
-      tssl_Device.Text = string.Format("Device: {0}", Settings.Default.PhysicalDeviceNumber);
-    }
-
-    protected override void OnClosing(CancelEventArgs e)
-    {
-      Settings.Default.LastSendText = txt_Text.Text;
-      Settings.Default.Save();
-    }
-
-    private void OnExitClick(object sender, EventArgs e)
-    {
-      Application.Exit();
-    }
-
-    public static IEnumerable<T> GetControlsOfType<T>(Control root) where T : Control
-    {
-      if(root is T t)
-        yield return t;
-
-      foreach(Control c in root.Controls)
-        foreach(var i in GetControlsOfType<T>(c))
-          yield return i;
     }
 
     private void OnConnectClick(object sender, EventArgs e)
@@ -194,96 +115,66 @@ namespace ICSPControl.Dialogs
       }
     }
 
-    private void OnlineTreeOnMouseUp(object sender, MouseEventArgs e)
+    private void OnCommunicationSetttingsClick(object sender, EventArgs e)
     {
-      if(e.Button == MouseButtons.Right)
-      {
-        var lNode = OnlineTree.GetNodeAt(e.X, e.Y);
+      new DlgSettings().ShowDialog(this);
 
-        if(lNode != null)
-        {
-          // Select the clicked node
-          OnlineTree.SelectedNode = lNode;
-        }
-
-        cmd_ShowDeviceProperties.Enabled = lNode?.Tag is DeviceInfoEventArgs;
-
-        cm_OnlineTree.Show(OnlineTree, e.Location);
-      }
+      tssl_Host.Text = string.Format("Host: {0}", Settings.Default.AmxHost);
+      tssl_Port.Text = string.Format("Port: {0}", Settings.Default.AmxPort);
+      tssl_Device.Text = string.Format("Device: {0}", Settings.Default.PhysicalDeviceNumber);
     }
 
-    private void OnRefreshSystemOnlineTreeClick(object sender, EventArgs e)
+    private void OnExitClick(object sender, EventArgs e)
     {
-      OnlineTree.Nodes.Clear();
-      OnlineTree.Nodes.Add("<Empty Device Tree>");
-
-      mICSPManager?.RequestDevicesOnline();
+      Application.Exit();
     }
 
-    private void OnShowDevicePropertiesClick(object sender, EventArgs e)
+    private void OnDeviceNotificationsClick(object sender, EventArgs e)
     {
-      var lNode = OnlineTree.SelectedNode;
-
-      if(lNode == null)
-        return;
-
-      var lLocation = lNode.Bounds.Location;
-
-      lLocation = OnlineTree.PointToScreen(lLocation);
-
-      lLocation.Offset(10, 12);
-
-      var lTitle = "Device Properties";
-
-      if(lNode.Tag is DeviceInfoEventArgs lInfo)
+      if(mDlgTrace == null || mDlgTrace.Disposing || mDlgTrace.IsDisposed)
       {
-        var lSb = new StringBuilder();
-
-        // System
-        if(lNode == OnlineTree.Nodes[0])
-        {
-          lSb.AppendFormat("System: {0:00000}\n", lInfo.System);
-
-          if(lInfo.IPv4Address != null)
-            lSb.AppendFormat("IPv4 Address: {0}\n", lInfo.IPv4Address);
-
-          if(lInfo.MacAddress != null)
-            lSb.AppendFormat("MAC Address: {0}\n", lInfo.MacAddress);
-
-          if(lInfo.IPv6Address != null)
-            lSb.AppendFormat("IPv6 Address: {0}\n", lInfo.IPv6Address);
-        }
-        else
-        {
-          if(lInfo.Device == 0 && lInfo.ObjectId == 0)
-            lTitle = "NDP Device Properties";
-
-          lSb.AppendFormat("Device: {0:00000}\n", lInfo.Device);
-          lSb.AppendFormat("Description: {0}\n", lInfo.Name);
-          lSb.AppendFormat("Manufacturer: {0}\n", lInfo.Manufacture);
-          lSb.AppendFormat("Firmware ID: 0x{0:X4}\n", lInfo.FirmwareId);
-          lSb.AppendFormat("Device ID: 0x{0:X4}\n", lInfo.DeviceId);
-          lSb.AppendFormat("Manufacture ID: 0x{0:X4}\n", lInfo.ManufactureId);
-
-          if(!string.IsNullOrWhiteSpace(lInfo.SerialNumber))
-            lSb.AppendFormat("Serial Number: {0}\n", lInfo.SerialNumber);
-
-          if(lInfo.IPv4Address != null)
-            lSb.AppendFormat("IPv4 Address: {0}\n", lInfo.IPv4Address);
-
-          if(lInfo.MacAddress != null)
-            lSb.AppendFormat("MAC Address: {0}\n", lInfo.MacAddress);
-
-          if(lInfo.IPv6Address != null)
-            lSb.AppendFormat("IPv6 Address: {0}\n", lInfo.IPv6Address);
-        }
-
-        new BalloonTip(OnlineTree, lTitle, lSb.ToString(), BalloonTip.Icon.Info, 10000, false, (short)lLocation.X, (short)lLocation.Y);
+        mDlgTrace = new DlgTrace(mICSPManager);
       }
+
+      mDlgTrace.Show(DockPanel, DockState.Document);
+      mDlgTrace.BringToFront();
+    }
+
+    private void OnFileTransferClick(object sender, EventArgs e)
+    {
+      if(mDlgFileTransfer == null || mDlgFileTransfer.Disposing || mDlgFileTransfer.IsDisposed)
+      {
+        mDlgFileTransfer = new DlgFileTransfer(mICSPManager);
+      }
+
+      mDlgFileTransfer.Show(DockPanel, DockState.Document);
+      mDlgFileTransfer.BringToFront();
+    }
+
+    private void OnControlDeviceClick(object sender, EventArgs e)
+    {
+      if(mDlgDiagnostic == null || mDlgDiagnostic.Disposing || mDlgDiagnostic.IsDisposed)
+      {
+        mDlgDiagnostic = new DlgDiagnostic(mICSPManager);
+      }
+
+      mDlgDiagnostic.Show(DockPanel, DockState.Document);
+      mDlgDiagnostic.BringToFront();
+    }
+
+    protected override void OnClosing(CancelEventArgs e)
+    {
+      Settings.Default.Save();
     }
 
     private void OnClientOnlineStatusChanged(object sender, ClientOnlineOfflineEventArgs e)
     {
+      tsmi_File_Connect.Enabled = !e.ClientOnline;
+      tsmi_File_Disconnect.Enabled = e.ClientOnline;
+
+      tsb_Connect.Enabled = !e.ClientOnline;
+      tsb_Disconnect.Enabled = e.ClientOnline;
+
       if(e.ClientOnline)
       {
         tssl_ClientState.Text = "Connected";
@@ -302,40 +193,31 @@ namespace ICSPControl.Dialogs
       }
     }
 
-    private void OnManagerRequestDevicesOnlineEOT(object sender, EventArgs e)
+    private void OnDynamicDeviceCreated(object sender, DynamicDeviceCreatedEventArgs e)
     {
       this.InvokeIfRequired(a =>
       {
-        if(OnlineTree.Nodes.Count > 0)
-        {
-          OnlineTree.Nodes[0].Expand();
-
-          var lNode = OnlineTree.Nodes[0].Nodes["Virtual"];
-
-          if(lNode != null)
-          {
-            OnlineTree.Nodes[0].Nodes.RemoveByKey("Virtual");
-
-            OnlineTree.Nodes[0].Nodes.Add(lNode);
-
-            lNode.Expand();
-          }
-        }
+        tssl_CurrentSystem.Text = string.Format("Current System: {0}", e.System);
+        tssl_DynamicDevice.Text = string.Format("Dynamic Device: {0:00000}", e.Device);
       });
+
+      if(Settings.Default.PhysicalDeviceAutoCreate)
+        CreatePhysicalDevice();
 
       // Request ProgramInfo ...
-      var lRequest = MsgCmdProbablyRequestProgramInfo.CreateRequest(mICSPManager.DynamicDevice, 0x1F);
-
-      mICSPManager.Send(lRequest);
+      mICSPManager.Send(MsgCmdRequestDiscoveryInfo.CreateRequest(mICSPManager.DynamicDevice, 0x1F));
     }
 
-    private void OnManagerProgramInfo(object sender, ProgramInfoEventArgs e)
+    private void OnDiscoveryInfo(object sender, DiscoveryInfoEventArgs e)
     {
-      this.InvokeIfRequired(a =>
+      if(e.IPv4Address.Equals(mICSPManager.CurrentRemoteIpAddress))
       {
-        tssl_ProgramName.Text = string.Format("Program Name: {0}", e.ProgramName);
-        tssl_MainFile.Text = string.Format("Main File: {0}", e.MainFile);
-      });
+        this.InvokeIfRequired(a =>
+        {
+          tssl_ProgramName.Text = string.Format("Program Name: {0}", e.ProgramName);
+          tssl_MainFile.Text = string.Format("Main File: {0}", e.MainFile);
+        });
+      }
     }
 
     private void OnBlinkMessage(object sender, BlinkEventArgs e)
@@ -349,120 +231,10 @@ namespace ICSPControl.Dialogs
 
       mBlinkTimer.Start();
     }
-
-    private void OnDeviceInfo(object sender, DeviceInfoEventArgs e)
-    {
-      var lImageKey = "AMXDeviceDefault";
-      var lSelectedImageKey = "AMXDeviceSelected";
-
-      TreeNode lNode;
-
-      this.InvokeIfRequired(a =>
-      {
-        // System-Device
-        if(e.Device == 0 && e.ObjectId == 0)
-        {
-          OnlineTree.Nodes.Clear();
-
-          lNode = OnlineTree.Nodes.Add("System", string.Format("System {0} [{1}]", e.System, e.IPv4Address), lImageKey, lSelectedImageKey);
-          lNode.Tag = e;
-
-          // Add Dynamic/Virtual Devices
-          lNode.Nodes.Add("Virtual", "Dynamic/Virtual Devices", "VirtualDeviceDefault", "VirtualDeviceSelected");
-        }
-
-        var lKeyCurrent = string.Format("{0}-{1}", e.Device, e.ObjectId);
-        var lKeyParent = string.Format("{0}-{1}", e.Device, e.ParentId);
-
-        if(e.Device > 32000)
-        {
-          lImageKey = "CloudDefault";
-          lSelectedImageKey = "CloudSelected";
-
-          lKeyParent = "Virtual";
-        }
-
-        var lTxt = string.Format("{0:00000} - {1} ({2})", e.Device, e.Name, e.Version);
-
-        if(e.ObjectId > 0)
-        {
-          lTxt = string.Format("[OID={0}] - {1} ({2})", e.ObjectId, e.Name, e.Version);
-
-          lImageKey = "OIDDeviceDefault";
-          lSelectedImageKey = "OIDDeviceSelected";
-        }
-
-        var lNodes = OnlineTree.Nodes[0].Nodes.Find(lKeyParent, true);
-
-        if(lNodes.Length == 0)
-          lNode = OnlineTree.Nodes[0].Nodes.Add(lKeyCurrent, lTxt, lImageKey, lSelectedImageKey);
-        else
-          lNode = lNodes[0].Nodes.Add(lKeyCurrent, lTxt, lImageKey, lSelectedImageKey);
-
-        lNode.Tag = e;
-      });
-    }
-
-    private void OnPortCount(object sender, PortCountEventArgs e)
-    {
-      var lImageKey = "IODeviceDefault";
-      var lSelectedImageKey = "IODeviceSelected";
-
-      this.InvokeIfRequired(a =>
-      {
-        var lDevice = OnlineTree.Nodes.Find(string.Format("{0}-0", e.Device), true).FirstOrDefault();
-
-        if(lDevice != null)
-        {
-          // PadLeft
-          var lTotalWidth = e.PortCount.ToString().Length;
-
-          for(var i = 1; i <= e.PortCount; i++)
-          {
-            var lTxt = string.Format("Port - {1}", e.Device, i.ToString().PadLeft(lTotalWidth));
-
-            var lNode = lDevice.Nodes.Add(string.Format("{0}-IO-{1}", e.Device, i), lTxt, lImageKey, lSelectedImageKey);
-
-            lNode.Tag = e;
-          }
-        }
-      });
-    }
-
+    
     private void OnThreadException(object sender, ThreadExceptionEventArgs e)
     {
       ErrorMessageBox.Show(this, e.Exception.Message);
-    }
-
-    private void OnCmdChannelOn(object sender, EventArgs e)
-    {
-      mICSPManager?.SetChannel(GetDevice(), (ushort)num_Channel.Value, true);
-    }
-
-    private void OnCmdChannelOff(object sender, EventArgs e)
-    {
-      mICSPManager?.SetChannel(GetDevice(), (ushort)num_Channel.Value, false);
-    }
-
-    private void OnCmdSendLevel(object sender, EventArgs e)
-    {
-      mICSPManager?.SendLevel(GetDevice(), (ushort)num_LevelInput.Value, (ushort)num_LevelValue.Value);
-    }
-
-    private void OnCmdSendString(object sender, EventArgs e)
-    {
-      if(txt_Text.SelectedText.Length > 0)
-        mICSPManager?.SendString(GetDevice(), txt_Text.SelectedText);
-      else
-        mICSPManager?.SendString(GetDevice(), txt_Text.Text);
-    }
-
-    private void OnCmdSendCmd(object sender, EventArgs e)
-    {
-      if(txt_Text.SelectedText.Length > 0)
-        mICSPManager?.SendCommand(GetDevice(), txt_Text.SelectedText);
-      else
-        mICSPManager?.SendCommand(GetDevice(), txt_Text.Text);
     }
 
     private void OnCreateDeviceInfo(object sender, EventArgs e)
@@ -474,11 +246,6 @@ namespace ICSPControl.Dialogs
       }
 
       CreatePhysicalDevice();
-    }
-
-    private void OnCmdRequestDeviceStatus(object sender, EventArgs e)
-    {
-      mICSPManager?.RequestDeviceStatus(GetDevice());
     }
 
     private void CreatePhysicalDevice()
@@ -531,11 +298,6 @@ namespace ICSPControl.Dialogs
       }
 
       InfoMessageBox.Show("G5 Designer not installed.");
-    }
-
-    private AmxDevice GetDevice()
-    {
-      return new AmxDevice((ushort)num_Device.Value, (ushort)num_DevPort.Value, (ushort)num_System.Value);
     }
   }
 }

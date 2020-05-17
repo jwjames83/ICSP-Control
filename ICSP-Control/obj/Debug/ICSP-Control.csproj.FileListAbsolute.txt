@@ -20,3 +20,7 @@ C:\Users\donald.peter\Source\Repos\ICSP-Control\ICSP-Control\obj\Debug\ICSPContr
 C:\Users\donald.peter\Source\Repos\ICSP-Control\ICSP-Control\obj\Debug\ICSPControl.Dialogs.DlgMain.resources
 C:\Users\donald.peter\Source\Repos\ICSP-Control\ICSP-Control\bin\Debug\ICSharpCode.SharpZipLib.dll
 C:\Users\donald.peter\Source\Repos\ICSP-Control\ICSP-Control\obj\Debug\ICSPControl.Dialogs.DlgInfoFileTransfer.resources
+C:\Users\donald.peter\Source\Repos\ICSP-Control\ICSP-Control\obj\Debug\ICSPControl.Dialogs.DlgFileTransfer.resources
+C:\Users\donald.peter\Source\Repos\ICSP-Control\ICSP-Control\obj\Debug\ICSPControl.Dialogs.DlgDiagnostic.resources
+C:\Users\donald.peter\Source\Repos\ICSP-Control\ICSP-Control\bin\Debug\WeifenLuo.WinFormsUI.Docking.dll
+C:\Users\donald.peter\Source\Repos\ICSP-Control\ICSP-Control\bin\Debug\WeifenLuo.WinFormsUI.Docking.ThemeVS2015.dll

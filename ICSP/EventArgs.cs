@@ -2,7 +2,7 @@
 using System.Globalization;
 using System.Net;
 using System.Net.NetworkInformation;
-
+using ICSP.Manager;
 using ICSP.Manager.ConnectionManager;
 using ICSP.Manager.DeviceManager;
 using ICSP.Manager.DiagnosticManager;
@@ -399,21 +399,43 @@ namespace ICSP
     public ushort System { get; }
   }
 
-  public sealed class ProgramInfoEventArgs : ICSPEventArgs
+  public sealed class DiscoveryInfoEventArgs : ICSPEventArgs
   {
-    public ProgramInfoEventArgs(MsgCmdProbablyProgramInfo message) : base(message)
+    public DiscoveryInfoEventArgs(MsgCmdDiscoveryInfo message) : base(message)
     {
       System = message.System;
-
+      DeviceId = message.DeviceId;
+      Description = message.Description;
       ProgramName = message.ProgramName;
-
       MainFile = message.MainFile;
+
+      ExtAddressType = message.ExtAddressType;
+      IPv4Address = message.IPv4Address;
+      IpPort = message.IpPort;
+      MacAddress = message.MacAddress;
+      IPv6Address = message.IPv6Address;
     }
 
-    public string System { get; }
+    public ushort System { get; private set; }
 
-    public string ProgramName { get; }
+    public ushort DeviceId { get; private set; }
 
-    public string MainFile { get; }
+    public string Description { get; private set; }
+
+    public string ProgramName { get; private set; }
+
+    public string MainFile { get; private set; }
+
+    public ExtAddressType ExtAddressType { get; private set; }
+
+    public byte ExtAddressLength { get; private set; }
+
+    public IPAddress IPv4Address { get; private set; }
+
+    public ushort IpPort { get; private set; }
+
+    public PhysicalAddress MacAddress { get; private set; }
+
+    public IPAddress IPv6Address { get; private set; }
   }
 }

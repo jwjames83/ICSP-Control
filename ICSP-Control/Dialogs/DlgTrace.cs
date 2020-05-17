@@ -1,15 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Windows.Forms;
 
 using ICSP;
-using ICSP.Constants;
-using ICSP.Manager.ConnectionManager;
-using ICSP.Manager.DeviceManager;
 
 namespace ICSPControl.Dialogs
 {
-  public partial class DlgTrace : Form
+  public partial class DlgTrace : WeifenLuo.WinFormsUI.Docking.DockContent
   {
     private const int MaxLogEntries = 1001;
 
@@ -57,14 +53,12 @@ namespace ICSPControl.Dialogs
 
     private void OnCommandNotImplemented(object sender, ICSPMsgDataEventArgs e)
     {
-      /*
       AppendLog(e.Message.ID, "NotImplemented: Protocol : {0}", e.Message.Protocol);
-      AppendLog(e.Message.ID, "NotImplemented: Length   : {0}", e.Message.Length);
+      AppendLog(e.Message.ID, "NotImplemented: Length   : {0}", e.Message.DataLength);
       AppendLog(e.Message.ID, "NotImplemented: Flag     : {0}", e.Message.Flag);
       AppendLog(e.Message.ID, "NotImplemented: Dest     : {0}", e.Message.Dest);
       AppendLog(e.Message.ID, "NotImplemented: Source   : {0}", e.Message.Source);
       AppendLog(e.Message.ID, "NotImplemented: Hop      : {0}", e.Message.Hop);
-      */
       AppendLog(e.Message.ID, "NotImplemented: MessageId: 0x{0:X4}", e.Message.ID);
       AppendLog(e.Message.ID, "NotImplemented: Command  : 0x{0:X4} ({1})", e.Message.Command, ICSPMsg.GetFrindlyName(e.Message.Command));
       AppendLog(e.Message.ID, "NotImplemented: Checksum : 0x{0:X4}", e.Message.Checksum);

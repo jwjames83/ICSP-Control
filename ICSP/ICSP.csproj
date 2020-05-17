@@ -94,10 +94,10 @@
     <Compile Include="Manager\ConfigurationManager\MsgCmdFileTransfer.cs" />
     <Compile Include="Manager\ConfigurationManager\MsgCmdGetEthernetIpAddress.cs" />
     <Compile Include="Manager\ConfigurationManager\MsgCmdRequestEthernetIp.cs" />
-    <Compile Include="Manager\DiagnosticManager\MsgCmdProbablyProgramInfoEOT.cs" />
-    <Compile Include="Manager\DiagnosticManager\MsgCmdProbablyProgramInfo.cs" />
+    <Compile Include="Manager\DiagnosticManager\MsgCmdDiscoveryInfoEOT.cs" />
+    <Compile Include="Manager\DiagnosticManager\MsgCmdDiscoveryInfo.cs" />
     <Compile Include="Manager\DiagnosticManager\MsgCmdRequestDevicesOnlineEOT.cs" />
-    <Compile Include="Manager\DiagnosticManager\MsgCmdProbablyRequestProgramInfo.cs" />
+    <Compile Include="Manager\DiagnosticManager\MsgCmdRequestDiscoveryInfo.cs" />
     <Compile Include="Manager\MsgCmdAttribute.cs" />
     <Compile Include="Manager\ConfigurationManager\MsgCmdRestart.cs" />
     <Compile Include="Manager\ConnectionManager\MsgCmdBlinkMessage.cs" />

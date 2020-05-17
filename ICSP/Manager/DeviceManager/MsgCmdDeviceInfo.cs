@@ -194,12 +194,12 @@ namespace ICSP.Manager.DeviceManager
       // IPv4PortMacIPv6: [IPV4, Port, MAC, IPv6] => 4 + 2 + 6 + 16
       switch(lRequest.ExtAddressType)
       {
-        case ExtAddressType.NeuronId: lRequest.ExtAddressLength = 6; break;
-        case ExtAddressType.IPv4Address: lRequest.ExtAddressLength = 4; break;
-        case ExtAddressType.AxLink: lRequest.ExtAddressLength = 0; break;
-        case ExtAddressType.IPv4PortMac: lRequest.ExtAddressLength = 12; break;
-        case ExtAddressType.RS232: lRequest.ExtAddressLength = 0; break;
-        case ExtAddressType.IPv4PortMacIPv6: lRequest.ExtAddressLength = 28; break;
+        case ExtAddressType.NeuronId        /**/: lRequest.ExtAddressLength = 6; break;
+        case ExtAddressType.IPv4Address     /**/: lRequest.ExtAddressLength = 4; break;
+        case ExtAddressType.AxLink          /**/: lRequest.ExtAddressLength = 0; break;
+        case ExtAddressType.IPv4PortMac     /**/: lRequest.ExtAddressLength = 12; break;
+        case ExtAddressType.RS232           /**/: lRequest.ExtAddressLength = 0; break;
+        case ExtAddressType.IPv4PortMacIPv6 /**/: lRequest.ExtAddressLength = 28; break;
       }
 
       lRequest.ExtAddress = new byte[] { };

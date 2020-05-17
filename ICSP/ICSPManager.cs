@@ -43,7 +43,7 @@ namespace ICSP
     public event EventHandler<LevelEventArgs> LevelEvent;
 
     public event EventHandler<EventArgs> RequestDevicesOnlineEOT;
-    public event EventHandler<ProgramInfoEventArgs> ProgramInfo;
+    public event EventHandler<DiscoveryInfoEventArgs> DiscoveryInfo;
 
     private readonly FileManager mFileManager;
     private ICSPClient mClient;
@@ -151,7 +151,7 @@ namespace ICSP
       ClientOnlineStatusChanged?.Invoke(this, e);
     }
 
-    public void OnDataReceived(object sender, ICSPMsgDataEventArgs e)
+    private void OnDataReceived(object sender, ICSPMsgDataEventArgs e)
     {
       try
       {
@@ -338,9 +338,9 @@ namespace ICSP
 
             break;
           }
-          case MsgCmdProbablyProgramInfo m:
+          case MsgCmdDiscoveryInfo m:
           {
-            ProgramInfo?.Invoke(this, new ProgramInfoEventArgs(m));
+            DiscoveryInfo?.Invoke(this, new DiscoveryInfoEventArgs(m));
 
             break;
           }

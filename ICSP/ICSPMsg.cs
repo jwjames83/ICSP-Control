@@ -57,7 +57,7 @@ namespace ICSP
 
       Protocol = bytes[0];
 
-      Length = bytes.GetBigEndianInt16(1);
+      DataLength = bytes.GetBigEndianInt16(1);
 
       Flag = bytes.GetBigEndianInt16(3);
 
@@ -74,7 +74,7 @@ namespace ICSP
       // Data
       Data = bytes.Range(22, bytes.Length - 22 - 1);
 
-      Checksum = bytes[Length + 3];
+      Checksum = bytes[DataLength + 3];
     }
 
     #endregion
@@ -107,7 +107,7 @@ namespace ICSP
     {
       Protocol = 0x02;
       
-      Length = (ushort)(PacketLengthMin  + (data?.Length ?? 0) - 4);
+      DataLength = (ushort)(PacketLengthMin  + (data?.Length ?? 0) - 4);
       
       Flag = flag;
 
@@ -126,12 +126,12 @@ namespace ICSP
 
       Data = data;
 
-      RawData = new byte[Length + 4];
+      RawData = new byte[DataLength + 4];
 
       RawData[00] = Protocol;
 
-      RawData[01] = (byte)(Length >> 8);
-      RawData[02] = (byte)(Length);
+      RawData[01] = (byte)(DataLength >> 8);
+      RawData[02] = (byte)(DataLength);
 
       RawData[03] = (byte)(Flag >> 8);
       RawData[04] = (byte)(Flag);
@@ -192,13 +192,13 @@ namespace ICSP
     /// The first field is a protocol field, and in one embodiment, one byte size.<br/>
     /// Protocol field identifies the format of the data section of the packet with some protocol.
     /// </summary>
-    private byte Protocol { get; set; }
+    public byte Protocol { get; set; }
 
     /// <summary>
     /// Length of data field.<br/>
     /// Indicates the total number of bytes in the data portion of the packet.
     /// </summary>
-    private ushort Length { get; set; }
+    public ushort DataLength { get; set; }
 
     /// <summary>
     /// Flag (Version, Type)<br/>
@@ -207,7 +207,7 @@ namespace ICSP
     /// A newbie flag is placed when a device is added to the network.<br/>
     /// This will then cause a response from the master indicating that it received the message from the newbie device.
     /// </summary>
-    private ushort Flag { get; set; }
+    public ushort Flag { get; set; }
 
     /// <summary>
     /// [6 Bytes: System:Device:Port]<br/>
@@ -249,7 +249,7 @@ namespace ICSP
     /// Each time a message passes through a master, the allowed hop count field is decremented by one and checked to see if it reaches Zero.<br/>
     /// Once the count reaches Zero, the master generates an error message indicating that the message has not reached the sender with an air.
     /// </summary>
-    private byte Hop { get; set; }
+    public byte Hop { get; set; }
 
     /// <summary>
     /// Message I.D. field contains the unique identification number for a message.<br/>
@@ -294,7 +294,7 @@ namespace ICSP
 
       Logger.LogVerbose(false, "{0:l} Type     : {1:l}", lName, GetType().Name);
       Logger.LogVerbose(false, "{0:l} Protocol : {1}", lName, Protocol);
-      Logger.LogVerbose(false, "{0:l} Length   : {1}", lName, Length);
+      Logger.LogVerbose(false, "{0:l} Length   : {1}", lName, DataLength);
       Logger.LogVerbose(false, "{0:l} Flag     : {1}", lName, Flag);
       Logger.LogVerbose(false, "{0:l} Dest     : {1:l}", lName, Dest);
       Logger.LogVerbose(false, "{0:l} Source   : {1:l}", lName, Source);
@@ -392,22 +392,6 @@ namespace ICSP
         case PassThroughRequests: return "Pass Through Requests";
         case NotificationRequest: return "Notification Request";
 
-        //  Diagnostic Manager Messages
-        case InternalDiagnosticString: return "Internal Diagnostic String";
-        case RequestDiagnosticInformation: return "Request Diagnostic Information";
-
-        case RequestDevicesOnline: return "Request Devices Online";
-        case RequestDevicesOnlineEOT: return "Request Devices Online EOT";
-
-        case RequestDeviceStatus: return "Request Device Status";
-        case RequestDeviceStatusEOT: return "Request Device Status EOT";
-
-        case RequestAsynchronousNotificationList: return "Request Asynchronous NotificationL ist";
-        case AsynchronousNotificationList: return "Asynchronous Notification List";
-
-        case AddModifyAsynchronousNotificationList: return "Add Modify Asynchronous Notification List";
-        case DeleteAsynchronousNotificationList: return "Delete Asynchronous Notification List";
-
         // ====================================================================
         // Configuration Manager Messages
         // ====================================================================
@@ -442,6 +426,30 @@ namespace ICSP
         case Restart: return "Restart";
 
         case CompletionCode: return "Completion Code";
+
+        // ====================================================================
+        // Diagnostic Manager Messages
+        // ====================================================================
+
+        //  Diagnostic Manager Messages
+        case InternalDiagnosticString: return "Internal Diagnostic String";
+        case RequestDiagnosticInformation: return "Request Diagnostic Information";
+
+        case RequestDevicesOnline: return "Request Devices Online";
+        case RequestDevicesOnlineEOT: return "Request Devices Online EOT";
+
+        case RequestDeviceStatus: return "Request Device Status";
+        case RequestDeviceStatusEOT: return "Request Device Status EOT";
+
+        case RequestAsynchronousNotificationList: return "Request Asynchronous NotificationL ist";
+        case AsynchronousNotificationList: return "Asynchronous Notification List";
+
+        case AddModifyAsynchronousNotificationList: return "Add Modify Asynchronous Notification List";
+        case DeleteAsynchronousNotificationList: return "Delete Asynchronous Notification List";
+
+        case RequestDiscoveryInfo: return "Request ProgramInfo";
+        case DiscoveryInfo: return "ProgramInfo";
+        case DiscoveryInfoEOT: return "ProgramInfo EOT";
 
         default:
           break;

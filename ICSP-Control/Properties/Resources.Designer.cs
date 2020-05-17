@@ -63,9 +63,9 @@ namespace ICSPControl.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap file_config {
+        internal static System.Drawing.Bitmap Exit {
             get {
-                object obj = ResourceManager.GetObject("file_config", resourceCulture);
+                object obj = ResourceManager.GetObject("Exit", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -83,9 +83,159 @@ namespace ICSPControl.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap realvista_general_info_32 {
+        internal static System.Drawing.Bitmap Info {
             get {
-                object obj = ResourceManager.GetObject("realvista_general_info_32", resourceCulture);
+                object obj = ResourceManager.GetObject("Info", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap Misc {
+            get {
+                object obj = ResourceManager.GetObject("Misc", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap NetLinxControlDevice {
+            get {
+                object obj = ResourceManager.GetObject("NetLinxControlDevice", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap NetLinxDeviceAddressing {
+            get {
+                object obj = ResourceManager.GetObject("NetLinxDeviceAddressing", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap NetLinxDeviceNotifications {
+            get {
+                object obj = ResourceManager.GetObject("NetLinxDeviceNotifications", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap NetLinxEmulateCustomEvent {
+            get {
+                object obj = ResourceManager.GetObject("NetLinxEmulateCustomEvent", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap NetLinxEmulateDevice {
+            get {
+                object obj = ResourceManager.GetObject("NetLinxEmulateDevice", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap NetLinxInternalDiagnosticsMessages {
+            get {
+                object obj = ResourceManager.GetObject("NetLinxInternalDiagnosticsMessages", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap NetLinxNetworkAddresses {
+            get {
+                object obj = ResourceManager.GetObject("NetLinxNetworkAddresses", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap NetLinxNetworkDeviceAddress {
+            get {
+                object obj = ResourceManager.GetObject("NetLinxNetworkDeviceAddress", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap NetLinxUrlListing {
+            get {
+                object obj = ResourceManager.GetObject("NetLinxUrlListing", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap OpenFolder {
+            get {
+                object obj = ResourceManager.GetObject("OpenFolder", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap TpDesignConnect {
+            get {
+                object obj = ResourceManager.GetObject("TpDesignConnect", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap TpDesignDisconnect {
+            get {
+                object obj = ResourceManager.GetObject("TpDesignDisconnect", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap TpDesignReceiveFromPanel {
+            get {
+                object obj = ResourceManager.GetObject("TpDesignReceiveFromPanel", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap TpDesignSendToPanel {
+            get {
+                object obj = ResourceManager.GetObject("TpDesignSendToPanel", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

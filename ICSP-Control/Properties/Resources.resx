@@ -118,13 +118,58 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="Exit" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Exit.gif;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
   <data name="FileTransferWorkaround" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\FileTransferWorkaround.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="file_config" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\file_config.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="Info" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Info.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="realvista_general_info_32" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\realvista_general_info_32.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="Misc" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Misc.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="NetLinxControlDevice" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\NetLinxControlDevice.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="NetLinxDeviceAddressing" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\NetLinxDeviceAddressing.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="NetLinxDeviceNotifications" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\NetLinxDeviceNotifications.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="NetLinxEmulateCustomEvent" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\NetLinxEmulateCustomEvent.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="NetLinxEmulateDevice" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\NetLinxEmulateDevice.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="NetLinxInternalDiagnosticsMessages" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\NetLinxInternalDiagnosticsMessages.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="NetLinxNetworkAddresses" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\NetLinxNetworkAddresses.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="NetLinxNetworkDeviceAddress" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\NetLinxNetworkDeviceAddress.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="NetLinxUrlListing" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\NetLinxUrlListing.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="OpenFolder" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\OpenFolder.gif;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="TpDesignConnect" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\TpDesignConnect.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="TpDesignDisconnect" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\TpDesignDisconnect.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="TpDesignReceiveFromPanel" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\TpDesignReceiveFromPanel.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="TpDesignSendToPanel" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\TpDesignSendToPanel.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
 </root>

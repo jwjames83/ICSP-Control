@@ -60,21 +60,21 @@
     public const int DeleteAsynchronousNotificationList = 0x0108;
 
     /// <summary>
-    /// Unknown: (Probably Request ProgramInfo)
+    /// Unknown: (Probably IP Device Discovery)
     /// </summary>
-    #warning Not confirmed
-    public const int ProbablyRequestProgramInfo = 0x010B;
+    #warning Not confirmed 
+    public const int RequestDiscoveryInfo = 0x010B;
 
     /// <summary>
-    /// Unknown: (Probably ProgramInfo -> Info)
+    /// Unknown: (Probably IP Device Discovery -> Info)
     /// </summary>
     #warning Not confirmed
-    public const int ProbablyProgramInfo = 0x010C;
+    public const int DiscoveryInfo = 0x010C;
 
     /// <summary>
-    /// Unknown: (Probably ProgramInfo -> EOT)
+    /// Unknown: (Probably IP Device Discovery -> EOT)
     /// </summary>
     #warning Not confirmed
-    public const int ProbablyProgramInfoEOT = 0x010D;
+    public const int DiscoveryInfoEOT = 0x010D;
   }
 }
