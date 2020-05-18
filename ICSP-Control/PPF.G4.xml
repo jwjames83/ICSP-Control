@@ -1,0 +1,5131 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?><ppfRoot>
+
+   <includes>
+      <systemCodeGroup>
+         <name>G4 Common Codes</name>
+         <file>G4Common.xml</file>
+      </systemCodeGroup>
+
+      <systemCodeGroup>
+         <name>G4 Common Codes v2</name>
+         <file>G4v2Common.xml</file>
+      </systemCodeGroup>
+
+      <systemCodeGroup>
+         <name>TPI-4 Common Codes</name>
+         <file>TPI4Common.xml</file>
+      </systemCodeGroup>
+
+      <systemCodeGroup>
+         <name>Modero Common Codes</name>
+         <file>moderoCommon.xml</file>
+      </systemCodeGroup>
+
+      <systemCodeGroup>
+         <name>Modero Video Codes</name>
+         <file>moderoVideo.xml</file>
+      </systemCodeGroup>
+
+      <systemCodeGroup>
+         <name>Modero Dual Battery Base Codes</name>
+         <file>moderoDualBatteryBase.xml</file>
+      </systemCodeGroup>
+
+      <systemCodeGroup>
+         <name>Modero Single Battery Base Codes</name>
+         <file>moderoSingleBatteryBase.xml</file>
+      </systemCodeGroup>
+
+      <systemCodeGroup>
+         <name>Modero Sensors Codes</name>
+         <file>moderoSensors.xml</file>
+      </systemCodeGroup>
+
+      <systemCodeGroup>
+         <name>Modero Secondary Interface Codes</name>
+         <file>moderoSecondaryInterface.xml</file>
+      </systemCodeGroup>
+
+      <systemCodeGroup>
+         <name>Modero IR Receiver Codes</name>
+         <file>moderoIRReceiver.xml</file>
+      </systemCodeGroup>
+
+      <systemCodeGroup>
+         <name>MVP Common</name>
+         <file>mvpCommon.xml</file>
+      </systemCodeGroup>
+
+      <systemCodeGroup>
+         <name>MVP 8400 Common</name>
+         <file>MVP-8400_Common.xml</file>
+      </systemCodeGroup>
+
+      <systemCodeGroup>
+         <name>Modero VG Common</name>
+         <file>moderoVG_common.xml</file>
+      </systemCodeGroup>
+
+      <systemCodeGroup>
+         <name>mips Firmware with Sound Common</name>
+         <file>mipsFirmwareWithSoundCommon.xml</file>
+      </systemCodeGroup>
+
+      <systemCodeGroup>
+         <name>Wireless G</name>
+         <file>wirelessCF.xml</file>
+      </systemCodeGroup>
+
+      <systemCodeGroup>
+         <name>DMS Codes</name>
+         <file>DMS.xml</file>
+      </systemCodeGroup>
+
+      <systemCodeGroup>
+         <name>Mio R4 Codes</name>
+         <file>MioR4.xml</file>
+      </systemCodeGroup>
+
+      <systemCodeGroup>
+         <name>Mesh Network Codes</name>
+         <file>MeshNet.xml</file>
+      </systemCodeGroup>
+
+      <systemCodeGroup>
+         <name>PosiTrack Pilot Codes</name>
+         <file>PosiTrackPilot.xml</file>
+      </systemCodeGroup>
+
+      <systemCodeGroup>
+         <name>USB Network Interface Codes</name>
+         <file>USBNet.xml</file>
+      </systemCodeGroup>
+
+
+      <systemCodeGroupEx>
+         <name>Native TakeNote Codes</name>
+         <file>NativeTakeNote.xml</file>
+      </systemCodeGroupEx>
+
+      <systemCodeGroupEx>
+         <name>Bluetooth Codes</name>
+         <file>Bluetooth.xml</file>
+      </systemCodeGroupEx>
+
+      <systemCodeGroupEx>
+         <name>Master Scan Codes</name>
+         <file>MasterScan.xml</file>
+      </systemCodeGroupEx>
+
+      <systemCodeGroupEx>
+         <name>Streaming Video Codes</name>
+         <file>streamingVideo.xml</file>
+      </systemCodeGroupEx>
+
+      <systemCodeGroupEx>
+         <name>NFC Codes</name>
+         <file>nfc.xml</file>
+      </systemCodeGroupEx>
+
+      <systemCodeGroupEx>
+         <name>MXA-AVB Codes</name>
+         <file>MXA-AVB.xml</file>
+      </systemCodeGroupEx>
+
+      <systemCodeGroupEx>
+         <name>Smart Card Codes</name>
+         <file>smartCard.xml</file>
+      </systemCodeGroupEx>
+
+      <reservedCodeGroup>
+         <name>PosiTrack Pilot Reserved Codes</name>
+         <file>PosiTrackPilot.xml</file>
+      </reservedCodeGroup>
+   </includes>
+
+   <panelEntry>
+      <type>MVP-5150</type>
+      <description>MVP-5150/5100: 5.2 inch color wireless Touch Panel</description>
+      <deviceID>333</deviceID>
+      <screenSize>52</screenSize>
+      <numVideoWindows>0</numVideoWindows>
+      <numWirelessVideo>0</numWirelessVideo>
+      <isAudioDisabled>1</isAudioDisabled>
+      <hasLightSensor>0</hasLightSensor>
+      <hasMotionSensor>0</hasMotionSensor>
+      <hasBatteryLevel>1</hasBatteryLevel>
+      <hasCradleSensor>1</hasCradleSensor>
+      <hasAMX38IREmit>1</hasAMX38IREmit>
+      <hasAMX455IREmit>1</hasAMX455IREmit>
+      <hasDynamicImages>1</hasDynamicImages>
+      <userIRCount>8</userIRCount>
+      <usbType>RNDIS</usbType>
+      <fdType>2</fdType>
+      <hasVoIP>0</hasVoIP>
+      <textType>advType1</textType>
+      <panelImage>images\MVP-5150_front.jpg</panelImage>
+      <resolution>
+         <resolutionEntry>
+            <width>800</width>
+            <height>480</height>
+            <setupPages>MVP-800x480-5150.TP4</setupPages>
+            <externalButtons>800x480_GestureButtons.xml</externalButtons>
+            <refreshRate>
+               <rate>60 Hertz</rate>
+            </refreshRate>
+         </resolutionEntry>
+      </resolution>
+      <systemCodeGroup>G4 Common Codes v2</systemCodeGroup>
+      <systemCodeGroup>MVP Common</systemCodeGroup>
+      <systemCodeGroup>Modero Common Codes</systemCodeGroup>
+      <systemCodeGroup>MVP 8400 Common</systemCodeGroup>
+      <systemCodeGroup>Wireless G</systemCodeGroup>
+      <systemCodeGroup>Modero Secondary Interface Codes</systemCodeGroup>
+      <systemCodeGroup>USB Network Interface Codes</systemCodeGroup>
+      <systemChannels>
+         <codeEntry>
+            <code>261</code>
+            <adv>1</adv>
+            <text>Primary Network Interface: Setup Primary Network Interface</text>
+         </codeEntry>
+      </systemChannels>
+      <systemChannels>
+         <codeEntry>
+            <code>289</code>
+            <adv>1</adv>
+            <text>Battery Setup: Disable Panel Dim When On Battery Power</text>
+            <description>When active will turn off the panels automatic dimming of the brightness to 80%</description>
+         </codeEntry>
+         <codeEntry>
+            <code>260</code>
+            <adv>1</adv>
+            <text>Secondary Network Interface: Setup Secondary Network Interface</text>
+         </codeEntry>
+         <codeEntry>
+            <code>261</code>
+            <adv>1</adv>
+            <text>Primary Network Interface: Setup Primary Network Interface</text>
+         </codeEntry>
+      </systemChannels>
+      <deviceIDs>
+         <deviceID>333</deviceID>
+         <deviceID>274</deviceID>
+         <deviceID>327</deviceID>
+         <deviceID>329</deviceID>
+         <deviceID>332</deviceID>
+         <deviceID>334</deviceID>
+         <deviceID>378</deviceID>
+         <deviceID>379</deviceID>
+      </deviceIDs>
+   </panelEntry>
+
+   <panelEntry>
+      <type>MVP-5200i</type>
+      <description>5.2 inch color wireless touch panel with intercom</description>
+      <deviceID>329</deviceID>
+      <screenSize>52</screenSize>
+      <numVideoWindows>0</numVideoWindows>
+      <numWirelessVideo>0</numWirelessVideo>
+      <isAudioDisabled>0</isAudioDisabled>
+      <hasLightSensor>0</hasLightSensor>
+      <hasMotionSensor>0</hasMotionSensor>
+      <hasBatteryLevel>1</hasBatteryLevel>
+      <hasCradleSensor>1</hasCradleSensor>
+      <hasAMX38IREmit>1</hasAMX38IREmit>
+      <hasAMX455IREmit>1</hasAMX455IREmit>
+      <hasVoIP>1</hasVoIP>
+      <userIRCount>8</userIRCount>
+      <usbType>RNDIS</usbType>
+      <fdType>2</fdType>
+      <textType>advType1</textType>
+      <panelImage>images\MVP-5200i.jpg</panelImage>
+      <resolution>
+         <resolutionEntry>
+            <width>800</width>
+            <height>480</height>
+            <setupPages>MVP-800x480.TP4</setupPages>
+            <externalButtons>MVP-5200i_ExternalButtons.xml</externalButtons>
+            <refreshRate>
+               <rate>60 Hertz</rate>
+            </refreshRate>
+         </resolutionEntry>
+      </resolution>
+      <systemCodeGroup>G4 Common Codes v2</systemCodeGroup>
+      <systemCodeGroup>MVP Common</systemCodeGroup>
+      <systemCodeGroup>Modero Common Codes</systemCodeGroup>
+      <systemCodeGroup>MVP 8400 Common</systemCodeGroup>
+      <systemCodeGroup>mips Firmware with Sound Common</systemCodeGroup>
+      <systemCodeGroup>Wireless G</systemCodeGroup>
+      <systemCodeGroup>Modero Secondary Interface Codes</systemCodeGroup>
+      <systemCodeGroup>USB Network Interface Codes</systemCodeGroup>
+      <systemCodeGroup>Modero Sensors Codes</systemCodeGroup>
+      <systemChannels>
+         <codeEntry>
+            <code>289</code>
+            <adv>1</adv>
+            <text>Battery Setup: Disable Panel Dim When On Battery Power</text>
+            <description>When active will turn off the panels automatic dimming of the brightness to 80%</description>
+         </codeEntry>
+         <codeEntry>
+            <code>260</code>
+            <adv>1</adv>
+            <text>Secondary Network Interface: Setup Secondary Network Interface</text>
+         </codeEntry>
+         <codeEntry>
+            <code>261</code>
+            <adv>1</adv>
+            <text>Primary Network Interface: Setup Primary Network Interface</text>
+         </codeEntry>
+      </systemChannels>
+      <systemAddresses/>
+      <deviceIDs>
+         <deviceID>329</deviceID>
+         <deviceID>274</deviceID>
+         <deviceID>327</deviceID>
+         <deviceID>332</deviceID>
+         <deviceID>333</deviceID>
+         <deviceID>334</deviceID>
+         <deviceID>343</deviceID>
+         <deviceID>378</deviceID>
+         <deviceID>379</deviceID>
+      </deviceIDs>
+   </panelEntry>
+
+   <panelEntry>
+      <type>MVP-7500</type>
+      <description>7.5 inch color wireless touch panel</description>
+      <deviceID>288</deviceID>
+      <screenSize>75</screenSize>
+      <numVideoWindows>0</numVideoWindows>
+      <numWirelessVideo>0</numWirelessVideo>
+      <isAudioDisabled>1</isAudioDisabled>
+      <hasLightSensor>0</hasLightSensor>
+      <hasMotionSensor>0</hasMotionSensor>
+      <hasBatteryLevel>1</hasBatteryLevel>
+      <hasCradleSensor>1</hasCradleSensor>
+      <hasAMX38IREmit>1</hasAMX38IREmit>
+      <hasAMX455IREmit>1</hasAMX455IREmit>
+      <userIRCount>2</userIRCount>
+      <panelImage>images\MVP-7500.jpg</panelImage>
+      <resolution>
+         <resolutionEntry>
+            <width>640</width>
+            <height>480</height>
+            <setupPages>MVP-640x480.TP4</setupPages>
+            <externalButtons>MVP-7500_ExternalButtons.xml</externalButtons>
+            <refreshRate>
+               <rate>60 Hertz</rate>
+            </refreshRate>
+         </resolutionEntry>
+      </resolution>
+      <systemCodeGroup>G4 Common Codes</systemCodeGroup>
+      <systemCodeGroup>MVP Common</systemCodeGroup>
+      <systemCodeGroup>Wireless G</systemCodeGroup>
+      <systemCodeGroup>Modero Secondary Interface Codes</systemCodeGroup>
+      <systemChannels>
+         <codeEntry>
+            <code>4</code>
+            <adv>1</adv>
+            <text>Panel Setup: Contrast Up</text>
+            <description>Adjusts the contrast up</description>
+         </codeEntry>
+         <codeEntry>
+            <code>5</code>
+            <adv>1</adv>
+            <text>Panel Setup: Contrast Down</text>
+            <description>Adjusts the contrast down</description>
+         </codeEntry>
+         <codeEntry>
+            <code>289</code>
+            <adv>1</adv>
+            <text>Battery Setup: Disable Panel Dim When On Battery Power</text>
+            <description>When active will turn off the panels automatic dimming of the brightness to 80%</description>
+         </codeEntry>
+         <codeEntry>
+            <code>260</code>
+            <adv>1</adv>
+            <text>Secondary Network Interface: Setup Secondary Network Interface</text>
+            <description>Used when entering the Secondary Network Interface page, this lets the firmware know when to retrieve the latest settings</description>
+         </codeEntry>
+         <codeEntry>
+            <code>261</code>
+            <adv>1</adv>
+            <text>Primary Network Interface: Setup Primary Network Interface</text>
+            <description>Used when entering the Primary Network Interface page, this lets the firmware know when to retrieve the latest settings</description>
+         </codeEntry>
+      </systemChannels>
+      <systemAddresses>
+         <codeEntry>
+            <code>34</code>
+            <adv>1</adv>
+            <text>Panel Setup: Contrast</text>
+            <description>Displays the current Contrast Level</description>
+         </codeEntry>
+      </systemAddresses>
+      <systemLevels>
+         <codeEntry>
+            <code>1</code>
+            <adv>0</adv>
+            <text>Panel Setup: Brightness</text>
+            <description>Displays the current Brightness level</description>
+         </codeEntry>
+      </systemLevels>
+      <deviceIDs>
+         <deviceID>288</deviceID>
+         <deviceID>274</deviceID>
+         <deviceID>314</deviceID>
+         <deviceID>327</deviceID>
+         <deviceID>334</deviceID>
+      </deviceIDs>
+   </panelEntry>
+
+   <panelEntry>
+      <type>MVP-8400i</type>
+      <description>8.4 inch color wireless touch panel with intercom</description>
+      <deviceID>323</deviceID>
+      <screenSize>84</screenSize>
+      <numVideoWindows>0</numVideoWindows>
+      <numWirelessVideo>0</numWirelessVideo>
+      <isAudioDisabled>0</isAudioDisabled>
+      <hasLightSensor>0</hasLightSensor>
+      <hasMotionSensor>0</hasMotionSensor>
+      <hasBatteryLevel>1</hasBatteryLevel>
+      <hasCradleSensor>1</hasCradleSensor>
+      <hasAMX38IREmit>1</hasAMX38IREmit>
+      <hasAMX455IREmit>1</hasAMX455IREmit>
+      <hasVoIP>1</hasVoIP>
+      <fdType>1</fdType>
+      <userIRCount>2</userIRCount>
+      <panelImage>images\MVP-8400.jpg</panelImage>
+      <resolution>
+         <resolutionEntry>
+            <width>800</width>
+            <height>600</height>
+            <setupPages>MVP-800x600.TP4</setupPages>
+            <externalButtons>MVP-8400_ExternalButtons.xml</externalButtons>
+            <refreshRate>
+               <rate>60 Hertz</rate>
+            </refreshRate>
+         </resolutionEntry>
+      </resolution>
+      <systemCodeGroup>G4 Common Codes</systemCodeGroup>
+      <systemCodeGroup>MVP Common</systemCodeGroup>
+      <systemCodeGroup>MVP 8400 Common</systemCodeGroup>
+      <systemCodeGroup>mips Firmware with Sound Common</systemCodeGroup>
+      <systemCodeGroup>Wireless G</systemCodeGroup>
+      <systemCodeGroup>Modero Secondary Interface Codes</systemCodeGroup>
+      <systemChannels>
+         <codeEntry>
+            <code>289</code>
+            <adv>1</adv>
+            <text>Battery Setup: Disable Panel Dim When On Battery Power</text>
+            <description>When active will turn off the panels automatic dimming of the brightness to 80%</description>
+         </codeEntry>
+         <codeEntry>
+            <code>260</code>
+            <adv>1</adv>
+            <text>Secondary Network Interface: Setup Secondary Network Interface</text>
+         </codeEntry>
+         <codeEntry>
+            <code>261</code>
+            <adv>1</adv>
+            <text>Primary Network Interface: Setup Primary Network Interface</text>
+         </codeEntry>
+      </systemChannels>
+      <systemAddresses/>
+      <deviceIDs>
+         <deviceID>289</deviceID>
+         <deviceID>274</deviceID>
+         <deviceID>315</deviceID>
+         <deviceID>323</deviceID>
+         <deviceID>327</deviceID>
+         <deviceID>334</deviceID>
+      </deviceIDs>
+   </panelEntry>
+
+   <panelEntry>
+      <type>MVP-8400</type>
+      <description>8.4 inch color wireless touch panel</description>
+      <deviceID>289</deviceID>
+      <screenSize>84</screenSize>
+      <numVideoWindows>0</numVideoWindows>
+      <numWirelessVideo>0</numWirelessVideo>
+      <isAudioDisabled>0</isAudioDisabled>
+      <hasLightSensor>0</hasLightSensor>
+      <hasMotionSensor>0</hasMotionSensor>
+      <hasBatteryLevel>1</hasBatteryLevel>
+      <hasCradleSensor>1</hasCradleSensor>
+      <hasAMX38IREmit>1</hasAMX38IREmit>
+      <hasAMX455IREmit>1</hasAMX455IREmit>
+      <fdType>1</fdType>
+      <userIRCount>2</userIRCount>
+      <panelImage>images\MVP-8400.jpg</panelImage>
+      <resolution>
+         <resolutionEntry>
+            <width>800</width>
+            <height>600</height>
+            <setupPages>MVP-800x600.TP4</setupPages>
+            <externalButtons>MVP-8400_ExternalButtons.xml</externalButtons>
+            <refreshRate>
+               <rate>60 Hertz</rate>
+            </refreshRate>
+         </resolutionEntry>
+      </resolution>
+      <systemCodeGroup>G4 Common Codes</systemCodeGroup>
+      <systemCodeGroup>MVP Common</systemCodeGroup>
+      <systemCodeGroup>MVP 8400 Common</systemCodeGroup>
+      <systemCodeGroup>mips Firmware with Sound Common</systemCodeGroup>
+      <systemCodeGroup>Wireless G</systemCodeGroup>
+      <systemCodeGroup>Modero Secondary Interface Codes</systemCodeGroup>
+      <systemChannels>
+         <codeEntry>
+            <code>289</code>
+            <adv>1</adv>
+            <text>Battery Setup: Disable Panel Dim When On Battery Power</text>
+            <description>When active will turn off the panels automatic dimming of the brightness to 80%</description>
+         </codeEntry>
+         <codeEntry>
+            <code>260</code>
+            <adv>1</adv>
+            <text>Secondary Network Interface: Setup Secondary Network Interface</text>
+         </codeEntry>
+         <codeEntry>
+            <code>261</code>
+            <adv>1</adv>
+            <text>Primary Network Interface: Setup Primary Network Interface</text>
+         </codeEntry>
+      </systemChannels>
+      <systemAddresses/>
+      <deviceIDs>
+         <deviceID>289</deviceID>
+         <deviceID>274</deviceID>
+         <deviceID>315</deviceID>
+         <deviceID>323</deviceID>
+         <deviceID>327</deviceID>
+         <deviceID>334</deviceID>
+      </deviceIDs>
+   </panelEntry>
+
+   <panelEntry>
+      <type>MVP-9000i</type>
+      <description>9 inch color wireless touch panel with intercom (landscape and portrait modes)</description>
+      <deviceID>343</deviceID>
+      <screenSize>90</screenSize>
+      <numVideoWindows>0</numVideoWindows>
+      <numWirelessVideo>0</numWirelessVideo>
+      <isAudioDisabled>0</isAudioDisabled>
+      <hasLightSensor>0</hasLightSensor>
+      <hasMotionSensor>0</hasMotionSensor>
+      <hasBatteryLevel>1</hasBatteryLevel>
+      <hasCradleSensor>1</hasCradleSensor>
+      <hasAMX38IREmit>1</hasAMX38IREmit>
+      <hasAMX455IREmit>1</hasAMX455IREmit>
+      <hasVoIP>1</hasVoIP>
+      <hasFlyouts>1</hasFlyouts>
+      <hasPFAnimations>1</hasPFAnimations>
+      <userIRCount>8</userIRCount>
+      <usbType>RNDIS</usbType>
+      <fdType>2</fdType>
+      <textType>advType1</textType>
+      <panelImage>images\MVP-9000i.jpg</panelImage>
+      <resolution>
+         <resolutionEntry>
+            <width>800</width>
+            <height>480</height>
+            <setupPages>MVP-800x480-9000.TP4</setupPages>
+            <externalButtons>MVP-9000i_ExternalButtons.xml</externalButtons>
+            <refreshRate>
+               <rate>60 Hertz</rate>
+            </refreshRate>
+         </resolutionEntry>
+         <resolutionEntry>
+            <width>480</width>
+            <height>800</height>
+            <setupPages>MVP-480x800-9000.TP4</setupPages>
+            <externalButtons>MVP-9000i_ExtButtons_Portrait.xml</externalButtons>
+            <refreshRate>
+               <rate>60 Hertz</rate>
+            </refreshRate>
+         </resolutionEntry>
+      </resolution>
+      <systemCodeGroup>G4 Common Codes v2</systemCodeGroup>
+      <systemCodeGroup>MVP Common</systemCodeGroup>
+      <systemCodeGroup>Modero Common Codes</systemCodeGroup>
+      <systemCodeGroup>MVP 8400 Common</systemCodeGroup>
+      <systemCodeGroup>mips Firmware with Sound Common</systemCodeGroup>
+      <systemCodeGroup>Wireless G</systemCodeGroup>
+      <systemCodeGroup>Modero Secondary Interface Codes</systemCodeGroup>
+      <systemCodeGroup>USB Network Interface Codes</systemCodeGroup>
+      <systemCodeGroup>Modero Sensors Codes</systemCodeGroup>
+      <systemCodeGroup>Mesh Network Codes</systemCodeGroup>
+      <systemChannels>
+         <codeEntry>
+            <code>289</code>
+            <adv>1</adv>
+            <text>Battery Setup: Disable Panel Dim When On Battery Power</text>
+            <description>When active will turn off the panels automatic dimming of the brightness to 80%</description>
+         </codeEntry>
+         <codeEntry>
+            <code>260</code>
+            <adv>1</adv>
+            <text>Secondary Network Interface: Setup Secondary Network Interface</text>
+         </codeEntry>
+         <codeEntry>
+            <code>261</code>
+            <adv>1</adv>
+            <text>Primary Network Interface: Setup Primary Network Interface</text>
+         </codeEntry>
+      </systemChannels>
+      <systemAddresses/>
+      <deviceIDs>
+         <deviceID>343</deviceID>
+         <deviceID>274</deviceID>
+         <deviceID>327</deviceID>
+         <deviceID>332</deviceID>
+         <deviceID>333</deviceID>
+         <deviceID>334</deviceID>
+         <deviceID>378</deviceID>
+         <deviceID>379</deviceID>
+      </deviceIDs>
+   </panelEntry>
+
+   <panelEntry>
+      <type>NXD-430</type>
+      <description>NXD-430/435: 4.3 inch color wall-mount touch panel</description>
+      <deviceID>342</deviceID>
+      <screenSize>43</screenSize>
+      <numVideoWindows>0</numVideoWindows>
+      <numWirelessVideo>0</numWirelessVideo>
+      <isAudioDisabled>1</isAudioDisabled>
+      <hasLightSensor>0</hasLightSensor>
+      <hasMotionSensor>0</hasMotionSensor>
+      <hasBatteryLevel>0</hasBatteryLevel>
+      <hasAMX38IRRecv>0</hasAMX38IRRecv>
+      <hasAMX455IRRecv>0</hasAMX455IRRecv>
+      <hasDynamicImages>1</hasDynamicImages>
+      <hasComputerCtrl>0</hasComputerCtrl>
+      <hasTakeNote>0</hasTakeNote>
+      <usbType>RNDIS</usbType>
+      <hasVoIP>0</hasVoIP>
+      <textType>advType1</textType>
+      <panelImage>images\NXD-430.jpg</panelImage>
+      <resolution>
+         <resolutionEntry>
+            <width>480</width>
+            <height>272</height>
+            <setupPages>NXD-480x272.TP4</setupPages>
+            <externalButtons>NXD-430_ExternalButtons.xml</externalButtons>
+            <extButtonsEntry>
+               <key>1</key>
+               <description>NXD-435: Five External Buttons</description>
+               <file>NXD-435_Five-Button.xml</file>
+            </extButtonsEntry>
+            <refreshRate>
+               <rate>60 Hertz</rate>
+            </refreshRate>
+         </resolutionEntry>
+         <resolutionEntry>
+            <width>272</width>
+            <height>480</height>
+            <setupPages>NXD-272x480.TP4</setupPages>
+            <externalButtons>NXD-430_ExtButtons_Portrait.xml</externalButtons>
+            <extButtonsEntry>
+               <key>1</key>
+               <description>NXD-435: Five External Buttons (Portrait)</description>
+               <file>NXD-435_ExtButtons_Portrait.xml</file>
+            </extButtonsEntry>
+            <refreshRate>
+               <rate>60 Hertz</rate>
+            </refreshRate>
+         </resolutionEntry>
+      </resolution>
+      <systemCodeGroup>G4 Common Codes v2</systemCodeGroup>
+      <systemCodeGroup>Modero Common Codes</systemCodeGroup>
+      <systemCodeGroup>Modero Secondary Interface Codes</systemCodeGroup>
+      <systemCodeGroup>MVP Common</systemCodeGroup>
+      <systemChannels>
+         <codeEntry>
+            <code>261</code>
+            <adv>1</adv>
+            <text>Primary Network Interface: Setup Primary Network Interface</text>
+         </codeEntry>
+      </systemChannels>
+      <deviceIDs>
+         <deviceID>342</deviceID>
+         <deviceID>274</deviceID>
+         <deviceID>327</deviceID>
+         <deviceID>334</deviceID>
+      </deviceIDs>
+   </panelEntry>
+
+   <panelEntry>
+      <type>NXD-500i</type>
+      <description>5 inch color active matrix wall-mount touch panel with intercom</description>
+      <deviceID>331</deviceID>
+      <screenSize>50</screenSize>
+      <numVideoWindows>0</numVideoWindows>
+      <numWirelessVideo>0</numWirelessVideo>
+      <isAudioDisabled>0</isAudioDisabled>
+      <hasLightSensor>1</hasLightSensor>
+      <hasMotionSensor>1</hasMotionSensor>
+      <hasBatteryLevel>0</hasBatteryLevel>
+      <hasAMX38IRRecv>1</hasAMX38IRRecv>
+      <hasAMX455IRRecv>1</hasAMX455IRRecv>
+      <usbType>RNDIS</usbType>
+      <hasVoIP>1</hasVoIP>
+      <fdType>2</fdType>
+      <textType>advType1</textType>
+      <panelImage>images\NXD-500i.jpg</panelImage>
+      <resolution>
+         <resolutionEntry>
+            <width>800</width>
+            <height>480</height>
+            <setupPages>NXD-800x480.TP4</setupPages>
+            <externalButtons>NXD-500i_ExternalButtons.xml</externalButtons>
+            <refreshRate>
+               <rate>60 Hertz</rate>
+            </refreshRate>
+         </resolutionEntry>
+         <resolutionEntry>
+            <width>480</width>
+            <height>800</height>
+            <setupPages>NXD-480x800.TP4</setupPages>
+            <externalButtons>NXD-500i_ExtButtons_Portrait.xml</externalButtons>
+            <refreshRate>
+               <rate>60 Hertz</rate>
+            </refreshRate>
+         </resolutionEntry>
+      </resolution>
+      <systemCodeGroup>G4 Common Codes v2</systemCodeGroup>
+      <systemCodeGroup>Modero Common Codes</systemCodeGroup>
+      <systemCodeGroup>Modero Sensors Codes</systemCodeGroup>
+      <systemCodeGroup>Modero IR Receiver Codes</systemCodeGroup>
+      <systemCodeGroup>mips Firmware with Sound Common</systemCodeGroup>
+      <systemCodeGroup>Modero Secondary Interface Codes</systemCodeGroup>
+      <systemCodeGroup>MVP Common</systemCodeGroup>
+      <systemChannels>
+         <codeEntry>
+            <code>76</code>
+            <adv>1</adv>
+            <text>Panel Setup: Screen Orientation</text>
+         </codeEntry>
+         <codeEntry>
+            <code>261</code>
+            <adv>1</adv>
+            <text>Primary Network Interface: Setup Primary Network Interface</text>
+         </codeEntry>
+      </systemChannels>
+      <systemLevels>
+         <codeEntry>
+            <code>9</code>
+            <adv>1</adv>
+            <text>Panel Setup: Intercom Speaker Volume</text>
+         </codeEntry>
+         <codeEntry>
+            <code>10</code>
+            <adv>1</adv>
+            <text>Panel Setup: Intercom Mic Gain</text>
+         </codeEntry>
+      </systemLevels>
+      <deviceIDs>
+         <deviceID>331</deviceID>
+         <deviceID>274</deviceID>
+         <deviceID>313</deviceID>
+         <deviceID>327</deviceID>
+         <deviceID>330</deviceID>
+         <deviceID>334</deviceID>
+      </deviceIDs>
+   </panelEntry>
+
+   <panelEntry>
+      <type>NXD-CV5</type>
+      <description>5 inch color active matrix wall-mount touch panel with video input</description>
+      <deviceID>313</deviceID>
+      <screenSize>50</screenSize>
+      <videoInputs>
+         <input>composite video</input>
+      </videoInputs>
+      <numVideoWindows>1</numVideoWindows>
+      <numWirelessVideo>0</numWirelessVideo>
+      <isAudioDisabled>0</isAudioDisabled>
+      <hasLightSensor>1</hasLightSensor>
+      <hasMotionSensor>1</hasMotionSensor>
+      <hasBatteryLevel>0</hasBatteryLevel>
+      <hasAMX38IRRecv>1</hasAMX38IRRecv>
+      <hasAMX455IRRecv>1</hasAMX455IRRecv>
+      <panelImage>images\NXD-CV5.jpg</panelImage>
+      <resolution>
+         <resolutionEntry>
+            <width>800</width>
+            <height>480</height>
+            <setupPages>Modero-800x480.TP4</setupPages>
+            <externalButtons>NXD-CV5_ExternalButtons.xml</externalButtons>
+            <refreshRate>
+               <rate>60 Hertz</rate>
+            </refreshRate>
+         </resolutionEntry>
+      </resolution>
+      <systemCodeGroup>G4 Common Codes</systemCodeGroup>
+      <systemCodeGroup>Modero Common Codes</systemCodeGroup>
+      <systemCodeGroup>Modero Sensors Codes</systemCodeGroup>
+      <systemCodeGroup>Modero Video Codes</systemCodeGroup>
+      <systemCodeGroup>Modero IR Receiver Codes</systemCodeGroup>
+      <systemCodeGroup>mips Firmware with Sound Common</systemCodeGroup>
+      <systemChannels>
+         <codeEntry>
+            <code>261</code>
+            <adv>1</adv>
+            <text>Primary Network Interface: Setup Primary Network Interface</text>
+         </codeEntry>
+      </systemChannels>
+      <systemLevels>
+         <codeEntry>
+            <code>9</code>
+            <adv>1</adv>
+            <text>Panel Setup: Intercom Speaker Volume</text>
+         </codeEntry>
+         <codeEntry>
+            <code>10</code>
+            <adv>1</adv>
+            <text>Panel Setup: Intercom Mic Gain</text>
+         </codeEntry>
+      </systemLevels>
+      <deviceIDs>
+         <deviceID>313</deviceID>
+         <deviceID>274</deviceID>
+         <deviceID>327</deviceID>
+         <deviceID>330</deviceID>
+         <deviceID>331</deviceID>
+         <deviceID>334</deviceID>
+      </deviceIDs>
+   </panelEntry>
+
+   <panelEntry>
+      <type>NXD-700i</type>
+      <description>7 inch color active matrix wall-mount touch panel with intercom</description>
+      <deviceID>377</deviceID>
+      <screenSize>70</screenSize>
+      <numVideoWindows>0</numVideoWindows>
+      <numWirelessVideo>0</numWirelessVideo>
+      <isAudioDisabled>0</isAudioDisabled>
+      <hasLightSensor>1</hasLightSensor>
+      <hasMotionSensor>1</hasMotionSensor>
+      <hasBatteryLevel>1</hasBatteryLevel>
+      <hasAMX38IRRecv>1</hasAMX38IRRecv>
+      <hasAMX455IRRecv>1</hasAMX455IRRecv>
+      <hasVoIP>1</hasVoIP>
+      <fdType>2</fdType>
+      <panelImage>images\NXD-700Vi.jpg</panelImage>
+      <resolution>
+         <resolutionEntry>
+            <width>800</width>
+            <height>480</height>
+            <setupPages>Modero-800x480.TP4</setupPages>
+            <externalButtons>NXD-700Vi_ExternalButtons.xml</externalButtons>
+            <refreshRate>
+               <rate>60 Hertz</rate>
+            </refreshRate>
+         </resolutionEntry>
+      </resolution>
+      <systemCodeGroup>G4 Common Codes</systemCodeGroup>
+      <systemCodeGroup>Modero Common Codes</systemCodeGroup>
+      <systemCodeGroup>Modero Sensors Codes</systemCodeGroup>
+      <systemCodeGroup>Modero Single Battery Base Codes</systemCodeGroup>
+      <systemCodeGroup>Modero IR Receiver Codes</systemCodeGroup>
+      <systemCodeGroup>mips Firmware with Sound Common</systemCodeGroup>
+      <systemCodeGroup>Wireless G</systemCodeGroup>
+      <systemCodeGroup>Modero Secondary Interface Codes</systemCodeGroup>
+      <systemChannels>
+         <codeEntry>
+            <code>289</code>
+            <adv>1</adv>
+            <text>Battery Base Setup: Disable Panel Dim When On Battery Power</text>
+         </codeEntry>
+      </systemChannels>
+      <systemAddresses/>
+      <systemLevels>
+         <codeEntry>
+            <code>9</code>
+            <adv>1</adv>
+            <text>Panel Setup: Intercom Speaker Volume</text>
+         </codeEntry>
+         <codeEntry>
+            <code>10</code>
+            <adv>1</adv>
+            <text>Panel Setup: Intercom Mic Gain</text>
+         </codeEntry>
+      </systemLevels>
+      <deviceIDs>
+         <deviceID>377</deviceID>
+         <deviceID>324</deviceID>
+         <deviceID>274</deviceID>
+         <deviceID>291</deviceID>
+         <deviceID>376</deviceID>
+         <deviceID>316</deviceID>
+         <deviceID>327</deviceID>
+         <deviceID>334</deviceID>
+      </deviceIDs>
+   </panelEntry>
+
+   <panelEntry>
+      <type>NXD-700Vi</type>
+      <description>7 inch color active matrix wall-mount touch panel with video input/intercom</description>
+      <deviceID>324</deviceID>
+      <screenSize>70</screenSize>
+      <videoInputs>
+         <input>composite video</input>
+      </videoInputs>
+      <numVideoWindows>1</numVideoWindows>
+      <numWirelessVideo>0</numWirelessVideo>
+      <isAudioDisabled>0</isAudioDisabled>
+      <hasLightSensor>1</hasLightSensor>
+      <hasMotionSensor>1</hasMotionSensor>
+      <hasBatteryLevel>1</hasBatteryLevel>
+      <hasAMX38IRRecv>1</hasAMX38IRRecv>
+      <hasAMX455IRRecv>1</hasAMX455IRRecv>
+      <hasVoIP>1</hasVoIP>
+      <fdType>1</fdType>
+      <panelImage>images\NXD-700Vi.jpg</panelImage>
+      <resolution>
+         <resolutionEntry>
+            <width>800</width>
+            <height>480</height>
+            <setupPages>Modero-800x480.TP4</setupPages>
+            <externalButtons>NXD-700Vi_ExternalButtons.xml</externalButtons>
+            <refreshRate>
+               <rate>60 Hertz</rate>
+            </refreshRate>
+         </resolutionEntry>
+      </resolution>
+      <systemCodeGroup>G4 Common Codes</systemCodeGroup>
+      <systemCodeGroup>Modero Common Codes</systemCodeGroup>
+      <systemCodeGroup>Modero Sensors Codes</systemCodeGroup>
+      <systemCodeGroup>Modero Video Codes</systemCodeGroup>
+      <systemCodeGroup>Modero Single Battery Base Codes</systemCodeGroup>
+      <systemCodeGroup>Modero IR Receiver Codes</systemCodeGroup>
+      <systemCodeGroup>mips Firmware with Sound Common</systemCodeGroup>
+      <systemCodeGroup>Wireless G</systemCodeGroup>
+      <systemCodeGroup>Modero Secondary Interface Codes</systemCodeGroup>
+      <systemChannels>
+         <codeEntry>
+            <code>289</code>
+            <adv>1</adv>
+            <text>Battery Base Setup: Disable Panel Dim When On Battery Power</text>
+         </codeEntry>
+      </systemChannels>
+      <systemAddresses/>
+      <systemLevels>
+         <codeEntry>
+            <code>9</code>
+            <adv>1</adv>
+            <text>Panel Setup: Intercom Speaker Volume</text>
+         </codeEntry>
+         <codeEntry>
+            <code>10</code>
+            <adv>1</adv>
+            <text>Panel Setup: Intercom Mic Gain</text>
+         </codeEntry>
+      </systemLevels>
+      <deviceIDs>
+         <deviceID>324</deviceID>
+         <deviceID>377</deviceID>
+         <deviceID>274</deviceID>
+         <deviceID>291</deviceID>
+         <deviceID>376</deviceID>
+         <deviceID>316</deviceID>
+         <deviceID>327</deviceID>
+         <deviceID>334</deviceID>
+      </deviceIDs>
+   </panelEntry>
+
+   <panelEntry>
+      <type>NXD-CV7</type>
+      <description>7 inch color active matrix wall-mount touch panel with video input</description>
+      <deviceID>291</deviceID>
+      <screenSize>70</screenSize>
+      <videoInputs>
+         <input>composite video</input>
+      </videoInputs>
+      <numVideoWindows>1</numVideoWindows>
+      <numWirelessVideo>0</numWirelessVideo>
+      <isAudioDisabled>0</isAudioDisabled>
+      <hasLightSensor>1</hasLightSensor>
+      <hasMotionSensor>1</hasMotionSensor>
+      <hasBatteryLevel>1</hasBatteryLevel>
+      <hasAMX38IRRecv>1</hasAMX38IRRecv>
+      <hasAMX455IRRecv>1</hasAMX455IRRecv>
+      <panelImage>images\NXD-CV7.jpg</panelImage>
+      <resolution>
+         <resolutionEntry>
+            <width>800</width>
+            <height>480</height>
+            <setupPages>Modero-800x480.TP4</setupPages>
+            <externalButtons>NXD-CV7_ExternalButtons.xml</externalButtons>
+            <refreshRate>
+               <rate>60 Hertz</rate>
+            </refreshRate>
+         </resolutionEntry>
+      </resolution>
+      <systemCodeGroup>G4 Common Codes</systemCodeGroup>
+      <systemCodeGroup>Modero Common Codes</systemCodeGroup>
+      <systemCodeGroup>Modero Sensors Codes</systemCodeGroup>
+      <systemCodeGroup>Modero Video Codes</systemCodeGroup>
+      <systemCodeGroup>Modero Single Battery Base Codes</systemCodeGroup>
+      <systemCodeGroup>Modero IR Receiver Codes</systemCodeGroup>
+      <systemCodeGroup>mips Firmware with Sound Common</systemCodeGroup>
+      <systemCodeGroup>Wireless G</systemCodeGroup>
+      <systemCodeGroup>Modero Secondary Interface Codes</systemCodeGroup>
+      <systemCodeGroup>PosiTrack Pilot Codes</systemCodeGroup>
+      <systemChannels>
+         <codeEntry>
+            <code>149</code>
+            <adv>1</adv>
+            <text>Panel Setup: Bass Boost</text>
+         </codeEntry>
+         <codeEntry>
+            <code>289</code>
+            <adv>1</adv>
+            <text>Battery Base Setup: Disable Panel Dim When On Battery Power</text>
+         </codeEntry>
+         <codeEntry>
+            <code>260</code>
+            <adv>1</adv>
+            <text>Secondary Network Interface: Setup Secondary Network Interface</text>
+         </codeEntry>
+         <codeEntry>
+            <code>261</code>
+            <adv>1</adv>
+            <text>Primary Network Interface: Setup Primary Network Interface</text>
+         </codeEntry>
+      </systemChannels>
+      <systemAddresses/>
+      <systemLevels>
+         <codeEntry>
+            <code>9</code>
+            <adv>1</adv>
+            <text>Panel Setup: Intercom Speaker Volume</text>
+         </codeEntry>
+         <codeEntry>
+            <code>10</code>
+            <adv>1</adv>
+            <text>Panel Setup: Intercom Mic Gain</text>
+         </codeEntry>
+      </systemLevels>
+      <deviceIDs>
+         <deviceID>291</deviceID>
+         <deviceID>376</deviceID>
+         <deviceID>274</deviceID>
+         <deviceID>316</deviceID>
+         <deviceID>324</deviceID>
+         <deviceID>377</deviceID>
+         <deviceID>327</deviceID>
+         <deviceID>334</deviceID>
+      </deviceIDs>
+   </panelEntry>
+
+   <panelEntry>
+      <type>NXT-CA7</type>
+      <description>7 inch color active matrix tiltscreen touch panel</description>
+      <deviceID>376</deviceID>
+      <screenSize>70</screenSize>
+      <numVideoWindows>0</numVideoWindows>
+      <numWirelessVideo>0</numWirelessVideo>
+      <isAudioDisabled>0</isAudioDisabled>
+      <hasLightSensor>1</hasLightSensor>
+      <hasMotionSensor>1</hasMotionSensor>
+      <hasBatteryLevel>1</hasBatteryLevel>
+      <hasAMX38IRRecv>1</hasAMX38IRRecv>
+      <hasAMX455IRRecv>1</hasAMX455IRRecv>
+      <usbType>RNDIS</usbType>
+      <fdType>2</fdType>
+      <panelImage>images\NXT-CV7.jpg</panelImage>
+      <resolution>
+         <resolutionEntry>
+            <width>800</width>
+            <height>480</height>
+            <setupPages>Modero-800x480.TP4</setupPages>
+            <refreshRate>
+               <rate>60 Hertz</rate>
+            </refreshRate>
+         </resolutionEntry>
+      </resolution>
+      <systemCodeGroup>G4 Common Codes</systemCodeGroup>
+      <systemCodeGroup>Modero Common Codes</systemCodeGroup>
+      <systemCodeGroup>Modero Sensors Codes</systemCodeGroup>
+      <systemCodeGroup>Modero Single Battery Base Codes</systemCodeGroup>
+      <systemCodeGroup>Modero IR Receiver Codes</systemCodeGroup>
+      <systemCodeGroup>mips Firmware with Sound Common</systemCodeGroup>
+      <systemCodeGroup>Wireless G</systemCodeGroup>
+      <systemCodeGroup>PosiTrack Pilot Codes</systemCodeGroup>
+      <systemCodeGroup>Modero Secondary Interface Codes</systemCodeGroup>
+      <systemChannels>
+         <codeEntry>
+            <code>289</code>
+            <adv>1</adv>
+            <text>Battery Base Setup: Disable Panel Dim When On Battery Power</text>
+         </codeEntry>
+      </systemChannels>
+      <systemAddresses/>
+      <deviceIDs>
+         <deviceID>376</deviceID>
+         <deviceID>291</deviceID>
+         <deviceID>274</deviceID>
+         <deviceID>316</deviceID>
+         <deviceID>324</deviceID>
+         <deviceID>377</deviceID>
+         <deviceID>327</deviceID>
+         <deviceID>334</deviceID>
+      </deviceIDs>
+   </panelEntry>
+
+   <panelEntry>
+      <type>NXT-CV7</type>
+      <description>7 inch color active matrix tiltscreen touch panel with video input</description>
+      <deviceID>291</deviceID>
+      <screenSize>70</screenSize>
+      <videoInputs>
+         <input>composite video</input>
+      </videoInputs>
+      <numVideoWindows>1</numVideoWindows>
+      <numWirelessVideo>0</numWirelessVideo>
+      <isAudioDisabled>0</isAudioDisabled>
+      <hasLightSensor>1</hasLightSensor>
+      <hasMotionSensor>1</hasMotionSensor>
+      <hasBatteryLevel>1</hasBatteryLevel>
+      <hasAMX38IRRecv>1</hasAMX38IRRecv>
+      <hasAMX455IRRecv>1</hasAMX455IRRecv>
+      <panelImage>images\NXT-CV7.jpg</panelImage>
+      <resolution>
+         <resolutionEntry>
+            <width>800</width>
+            <height>480</height>
+            <setupPages>Modero-800x480.TP4</setupPages>
+            <refreshRate>
+               <rate>60 Hertz</rate>
+            </refreshRate>
+         </resolutionEntry>
+      </resolution>
+      <systemCodeGroup>G4 Common Codes</systemCodeGroup>
+      <systemCodeGroup>Modero Common Codes</systemCodeGroup>
+      <systemCodeGroup>Modero Sensors Codes</systemCodeGroup>
+      <systemCodeGroup>Modero Video Codes</systemCodeGroup>
+      <systemCodeGroup>Modero Single Battery Base Codes</systemCodeGroup>
+      <systemCodeGroup>Modero IR Receiver Codes</systemCodeGroup>
+      <systemCodeGroup>mips Firmware with Sound Common</systemCodeGroup>
+      <systemCodeGroup>Wireless G</systemCodeGroup>
+      <systemCodeGroup>PosiTrack Pilot Codes</systemCodeGroup>
+      <systemCodeGroup>Modero Secondary Interface Codes</systemCodeGroup>
+      <systemChannels>
+         <codeEntry>
+            <code>289</code>
+            <adv>1</adv>
+            <text>Battery Base Setup: Disable Panel Dim When On Battery Power</text>
+         </codeEntry>
+      </systemChannels>
+      <systemAddresses/>
+      <deviceIDs>
+         <deviceID>291</deviceID>
+         <deviceID>376</deviceID>
+         <deviceID>274</deviceID>
+         <deviceID>316</deviceID>
+         <deviceID>324</deviceID>
+         <deviceID>377</deviceID>
+         <deviceID>327</deviceID>
+         <deviceID>334</deviceID>
+      </deviceIDs>
+   </panelEntry>
+
+   <panelEntry>
+      <type>NXD-1000Vi</type>
+      <description>10 inch color active matrix wall-mount touch panel with video input/intercom</description>
+      <deviceID>325</deviceID>
+      <screenSize>102</screenSize>
+      <videoInputs>
+         <input>composite video</input>
+      </videoInputs>
+      <numVideoWindows>1</numVideoWindows>
+      <numWirelessVideo>0</numWirelessVideo>
+      <isAudioDisabled>0</isAudioDisabled>
+      <hasLightSensor>1</hasLightSensor>
+      <hasMotionSensor>1</hasMotionSensor>
+      <hasBatteryLevel>1</hasBatteryLevel>
+      <hasAMX38IRRecv>1</hasAMX38IRRecv>
+      <hasAMX455IRRecv>1</hasAMX455IRRecv>
+      <hasVoIP>1</hasVoIP>
+      <fdType>1</fdType>
+      <panelImage>images\NXD-1000Vi.jpg</panelImage>
+      <resolution>
+         <resolutionEntry>
+            <width>800</width>
+            <height>480</height>
+            <setupPages>Modero-800x480.TP4</setupPages>
+            <externalButtons>NXD-1000Vi_ExternalButtons.xml</externalButtons>
+            <refreshRate>
+               <rate>60 Hertz</rate>
+            </refreshRate>
+         </resolutionEntry>
+      </resolution>
+      <systemCodeGroup>G4 Common Codes</systemCodeGroup>
+      <systemCodeGroup>Modero Common Codes</systemCodeGroup>
+      <systemCodeGroup>Modero Sensors Codes</systemCodeGroup>
+      <systemCodeGroup>Modero Video Codes</systemCodeGroup>
+      <systemCodeGroup>Modero Single Battery Base</systemCodeGroup>
+      <systemCodeGroup>Modero IR Receiver Codes</systemCodeGroup>
+      <systemCodeGroup>mips Firmware with Sound Common</systemCodeGroup>
+      <systemCodeGroup>Wireless G</systemCodeGroup>
+      <systemCodeGroup>Modero Secondary Interface Codes</systemCodeGroup>
+      <systemChannels>
+         <codeEntry>
+            <code>149</code>
+            <adv>1</adv>
+            <text>Panel Setup: Bass Boost</text>
+         </codeEntry>
+         <codeEntry>
+            <code>289</code>
+            <adv>1</adv>
+            <text>Battery Base Setup: Disable Panel Dim When On Battery Power</text>
+         </codeEntry>
+         <codeEntry>
+            <code>260</code>
+            <adv>1</adv>
+            <text>Secondary Network Interface: Setup Secondary Network Interface</text>
+         </codeEntry>
+         <codeEntry>
+            <code>261</code>
+            <adv>1</adv>
+            <text>Primary Network Interface: Setup Primary Network Interface</text>
+         </codeEntry>
+      </systemChannels>
+      <systemAddresses/>
+      <deviceIDs>
+         <deviceID>325</deviceID>
+         <deviceID>274</deviceID>
+         <deviceID>292</deviceID>
+         <deviceID>317</deviceID>
+         <deviceID>327</deviceID>
+         <deviceID>334</deviceID>
+      </deviceIDs>
+   </panelEntry>
+
+   <panelEntry>
+      <type>NXD-CV10</type>
+      <description>10 inch color active matrix wall-mount touch panel with video input</description>
+      <deviceID>292</deviceID>
+      <screenSize>102</screenSize>
+      <videoInputs>
+         <input>composite video</input>
+      </videoInputs>
+      <numVideoWindows>1</numVideoWindows>
+      <numWirelessVideo>0</numWirelessVideo>
+      <isAudioDisabled>0</isAudioDisabled>
+      <hasLightSensor>1</hasLightSensor>
+      <hasMotionSensor>1</hasMotionSensor>
+      <hasBatteryLevel>1</hasBatteryLevel>
+      <hasAMX38IRRecv>1</hasAMX38IRRecv>
+      <hasAMX455IRRecv>1</hasAMX455IRRecv>
+      <panelImage>images\NXD-CV10.jpg</panelImage>
+      <resolution>
+         <resolutionEntry>
+            <width>800</width>
+            <height>480</height>
+            <setupPages>Modero-800x480.TP4</setupPages>
+            <externalButtons>NXD-CV10_ExternalButtons.xml</externalButtons>
+            <refreshRate>
+               <rate>60 Hertz</rate>
+            </refreshRate>
+         </resolutionEntry>
+      </resolution>
+      <systemCodeGroup>G4 Common Codes</systemCodeGroup>
+      <systemCodeGroup>Modero Common Codes</systemCodeGroup>
+      <systemCodeGroup>Modero Sensors Codes</systemCodeGroup>
+      <systemCodeGroup>Modero Video Codes</systemCodeGroup>
+      <systemCodeGroup>Modero Single Battery Base</systemCodeGroup>
+      <systemCodeGroup>Modero IR Receiver Codes</systemCodeGroup>
+      <systemCodeGroup>mips Firmware with Sound Common</systemCodeGroup>
+      <systemCodeGroup>Wireless G</systemCodeGroup>
+      <systemCodeGroup>Modero Secondary Interface Codes</systemCodeGroup>
+      <systemChannels>
+         <codeEntry>
+            <code>149</code>
+            <adv>1</adv>
+            <text>Panel Setup: Bass Boost</text>
+         </codeEntry>
+         <codeEntry>
+            <code>289</code>
+            <adv>1</adv>
+            <text>Battery Base Setup: Disable Panel Dim When On Battery Power</text>
+         </codeEntry>
+         <codeEntry>
+            <code>260</code>
+            <adv>1</adv>
+            <text>Secondary Network Interface: Setup Secondary Network Interface</text>
+         </codeEntry>
+         <codeEntry>
+            <code>261</code>
+            <adv>1</adv>
+            <text>Primary Network Interface: Setup Primary Network Interface</text>
+         </codeEntry>
+      </systemChannels>
+      <systemAddresses/>
+      <deviceIDs>
+         <deviceID>292</deviceID>
+         <deviceID>274</deviceID>
+         <deviceID>317</deviceID>
+         <deviceID>325</deviceID>
+         <deviceID>327</deviceID>
+         <deviceID>334</deviceID>
+      </deviceIDs>
+   </panelEntry>
+
+   <panelEntry>
+      <type>NXT-CV10</type>
+      <description>10 inch color active matrix tiltscreen touch panel with video input</description>
+      <deviceID>292</deviceID>
+      <screenSize>102</screenSize>
+      <videoInputs>
+         <input>composite video</input>
+      </videoInputs>
+      <numVideoWindows>1</numVideoWindows>
+      <numWirelessVideo>0</numWirelessVideo>
+      <isAudioDisabled>0</isAudioDisabled>
+      <hasLightSensor>1</hasLightSensor>
+      <hasMotionSensor>1</hasMotionSensor>
+      <hasBatteryLevel>1</hasBatteryLevel>
+      <hasAMX38IRRecv>1</hasAMX38IRRecv>
+      <hasAMX455IRRecv>1</hasAMX455IRRecv>
+      <panelImage>images\NXT-CV10.jpg</panelImage>
+      <resolution>
+         <resolutionEntry>
+            <width>800</width>
+            <height>480</height>
+            <setupPages>Modero-800x480.TP4</setupPages>
+            <refreshRate>
+               <rate>60 Hertz</rate>
+            </refreshRate>
+         </resolutionEntry>
+      </resolution>
+      <systemCodeGroup>G4 Common Codes</systemCodeGroup>
+      <systemCodeGroup>Modero Common Codes</systemCodeGroup>
+      <systemCodeGroup>Modero Sensors Codes</systemCodeGroup>
+      <systemCodeGroup>Modero Video Codes</systemCodeGroup>
+      <systemCodeGroup>Modero Single Battery Base</systemCodeGroup>
+      <systemCodeGroup>Modero IR Receiver Codes</systemCodeGroup>
+      <systemCodeGroup>mips Firmware with Sound Common</systemCodeGroup>
+      <systemCodeGroup>Wireless G</systemCodeGroup>
+      <systemCodeGroup>Modero Secondary Interface Codes</systemCodeGroup>
+      <systemChannels>
+         <codeEntry>
+            <code>149</code>
+            <adv>1</adv>
+            <text>Panel Setup: Bass Boost</text>
+         </codeEntry>
+         <codeEntry>
+            <code>289</code>
+            <adv>1</adv>
+            <text>Battery Base Setup: Disable Panel Dim When On Battery Power</text>
+         </codeEntry>
+         <codeEntry>
+            <code>260</code>
+            <adv>1</adv>
+            <text>Secondary Network Interface: Setup Secondary Network Interface</text>
+         </codeEntry>
+         <codeEntry>
+            <code>261</code>
+            <adv>1</adv>
+            <text>Primary Network Interface: Setup Primary Network Interface</text>
+         </codeEntry>
+      </systemChannels>
+      <systemAddresses/>
+      <deviceIDs>
+         <deviceID>292</deviceID>
+         <deviceID>274</deviceID>
+         <deviceID>317</deviceID>
+         <deviceID>325</deviceID>
+         <deviceID>327</deviceID>
+         <deviceID>334</deviceID>
+      </deviceIDs>
+   </panelEntry>
+
+   <panelEntry>
+      <type>NXT-CV10/PB</type>
+      <description>10 inch color active matrix tiltscreen touch panel with video input and external buttons</description>
+      <deviceID>292</deviceID>
+      <screenSize>102</screenSize>
+      <videoInputs>
+         <input>composite video</input>
+      </videoInputs>
+      <numVideoWindows>1</numVideoWindows>
+      <numWirelessVideo>0</numWirelessVideo>
+      <isAudioDisabled>0</isAudioDisabled>
+      <hasLightSensor>1</hasLightSensor>
+      <hasMotionSensor>1</hasMotionSensor>
+      <hasBatteryLevel>1</hasBatteryLevel>
+      <hasAMX38IRRecv>1</hasAMX38IRRecv>
+      <hasAMX455IRRecv>1</hasAMX455IRRecv>
+      <panelImage>images\NXT-CV10PB.jpg</panelImage>
+      <resolution>
+         <resolutionEntry>
+            <width>800</width>
+            <height>480</height>
+            <setupPages>Modero-800x480.TP4</setupPages>
+            <externalButtons>NXD-CV10_ExternalButtons.xml</externalButtons>
+            <refreshRate>
+               <rate>60 Hertz</rate>
+            </refreshRate>
+         </resolutionEntry>
+      </resolution>
+      <systemCodeGroup>G4 Common Codes</systemCodeGroup>
+      <systemCodeGroup>Modero Common Codes</systemCodeGroup>
+      <systemCodeGroup>Modero Sensors Codes</systemCodeGroup>
+      <systemCodeGroup>Modero Video Codes</systemCodeGroup>
+      <systemCodeGroup>Modero Single Battery Base</systemCodeGroup>
+      <systemCodeGroup>Modero IR Receiver Codes</systemCodeGroup>
+      <systemCodeGroup>mips Firmware with Sound Common</systemCodeGroup>
+      <systemCodeGroup>Wireless G</systemCodeGroup>
+      <systemCodeGroup>Modero Secondary Interface Codes</systemCodeGroup>
+      <systemChannels>
+         <codeEntry>
+            <code>149</code>
+            <adv>1</adv>
+            <text>Panel Setup: Bass Boost</text>
+         </codeEntry>
+         <codeEntry>
+            <code>289</code>
+            <adv>1</adv>
+            <text>Battery Base Setup: Disable Panel Dim When On Battery Power</text>
+         </codeEntry>
+         <codeEntry>
+            <code>260</code>
+            <adv>1</adv>
+            <text>Secondary Network Interface: Setup Secondary Network Interface</text>
+         </codeEntry>
+         <codeEntry>
+            <code>261</code>
+            <adv>1</adv>
+            <text>Primary Network Interface: Setup Primary Network Interface</text>
+         </codeEntry>
+      </systemChannels>
+      <systemAddresses/>
+      <deviceIDs>
+         <deviceID>292</deviceID>
+         <deviceID>274</deviceID>
+         <deviceID>317</deviceID>
+         <deviceID>325</deviceID>
+         <deviceID>327</deviceID>
+         <deviceID>334</deviceID>
+      </deviceIDs>
+   </panelEntry>
+
+   <panelEntry>
+      <type>NXD-1200V</type>
+      <description>12.1 inch color active matrix wall-mount with composite video input</description>
+      <deviceID>294</deviceID>
+      <screenSize>121</screenSize>
+      <videoInputs>
+         <input>composite video</input>
+      </videoInputs>
+      <numVideoWindows>1</numVideoWindows>
+      <numWirelessVideo>0</numWirelessVideo>
+      <isAudioDisabled>0</isAudioDisabled>
+      <hasLightSensor>1</hasLightSensor>
+      <hasMotionSensor>1</hasMotionSensor>
+      <hasBatteryLevel>1</hasBatteryLevel>
+      <panelImage>images\NXD-CA12.jpg</panelImage>
+      <resolution>
+         <resolutionEntry>
+            <width>800</width>
+            <height>600</height>
+            <setupPages>Modero-800x600.TP4</setupPages>
+            <refreshRate>
+               <rate>60 Hertz</rate>
+            </refreshRate>
+         </resolutionEntry>
+      </resolution>
+      <systemCodeGroup>G4 Common Codes</systemCodeGroup>
+      <systemCodeGroup>Modero Common Codes</systemCodeGroup>
+      <systemCodeGroup>Modero Battery Base Codes</systemCodeGroup>
+      <systemCodeGroup>Modero Sensors Codes</systemCodeGroup>
+      <systemCodeGroup>Modero Secondary Interface Codes</systemCodeGroup>
+      <systemChannels>
+         <codeEntry>
+            <code>289</code>
+            <adv>1</adv>
+            <text>Battery Base Setup: Disable Panel Dim When On Battery Power</text>
+         </codeEntry>
+      </systemChannels>
+      <deviceIDs>
+         <deviceID>294</deviceID>
+         <deviceID>274</deviceID>
+         <deviceID>318</deviceID>
+         <deviceID>327</deviceID>
+         <deviceID>334</deviceID>
+      </deviceIDs>
+   </panelEntry>
+
+   <panelEntry>
+      <type>NXT-1200V</type>
+      <description>12.1 inch color active matrix tiltscreen touch panel with composite video input</description>
+      <deviceID>294</deviceID>
+      <screenSize>121</screenSize>
+      <videoInputs>
+         <input>composite video</input>
+      </videoInputs>
+      <numVideoWindows>1</numVideoWindows>
+      <numWirelessVideo>0</numWirelessVideo>
+      <isAudioDisabled>0</isAudioDisabled>
+      <hasLightSensor>1</hasLightSensor>
+      <hasMotionSensor>1</hasMotionSensor>
+      <hasBatteryLevel>1</hasBatteryLevel>
+      <panelImage>images\NXT-CA12.jpg</panelImage>
+      <resolution>
+         <resolutionEntry>
+            <width>800</width>
+            <height>600</height>
+            <setupPages>Modero-800x600.TP4</setupPages>
+            <refreshRate>
+               <rate>60 Hertz</rate>
+            </refreshRate>
+         </resolutionEntry>
+      </resolution>
+      <systemCodeGroup>G4 Common Codes</systemCodeGroup>
+      <systemCodeGroup>Modero Common Codes</systemCodeGroup>
+      <systemCodeGroup>Modero Dual Battery Base Codes</systemCodeGroup>
+      <systemCodeGroup>Modero Sensors Codes</systemCodeGroup>
+      <systemCodeGroup>Modero Secondary Interface Codes</systemCodeGroup>
+      <systemChannels>
+         <codeEntry>
+            <code>289</code>
+            <adv>1</adv>
+            <text>Battery Base Setup: Disable Panel Dim When On Battery Power</text>
+         </codeEntry>
+      </systemChannels>
+      <deviceIDs>
+         <deviceID>294</deviceID>
+         <deviceID>274</deviceID>
+         <deviceID>318</deviceID>
+         <deviceID>327</deviceID>
+         <deviceID>334</deviceID>
+      </deviceIDs>
+   </panelEntry>
+
+   <panelEntry>
+      <type>NXD-1200VG</type>
+      <description>12.1 inch color active matrix wall-mount touch panel with video input</description>
+      <deviceID>295</deviceID>
+      <screenSize>121</screenSize>
+      <videoInputs>
+         <input>composite video</input>
+         <input>component/RGB video</input>
+      </videoInputs>
+      <numVideoWindows>2</numVideoWindows>
+      <numWirelessVideo>0</numWirelessVideo>
+      <streamingVideo>1</streamingVideo>
+      <isAudioDisabled>0</isAudioDisabled>
+      <hasLightSensor>1</hasLightSensor>
+      <hasMotionSensor>1</hasMotionSensor>
+      <hasBatteryLevel>1</hasBatteryLevel>
+      <panelImage>images\NXD-CV12.jpg</panelImage>
+      <resolution>
+         <resolutionEntry>
+            <width>800</width>
+            <height>600</height>
+            <setupPages>ModeroVG-800x600.TP4</setupPages>
+            <refreshRate>
+               <rate>60 Hertz</rate>
+            </refreshRate>
+         </resolutionEntry>
+      </resolution>
+      <systemCodeGroup>G4 Common Codes</systemCodeGroup>
+      <systemCodeGroup>Modero Common Codes</systemCodeGroup>
+      <systemCodeGroup>Modero Dual Battery Base Codes</systemCodeGroup>
+      <systemCodeGroup>Modero Sensors Codes</systemCodeGroup>
+      <systemCodeGroup>Modero Secondary Interface Codes</systemCodeGroup>
+      <systemCodeGroup>Modero VG Common</systemCodeGroup>
+      <systemChannels>
+         <codeEntry>
+            <code>289</code>
+            <adv>1</adv>
+            <text>Battery Base Setup: Disable Panel Dim When On Battery Power</text>
+         </codeEntry>
+      </systemChannels>
+      <deviceIDs>
+         <deviceID>295</deviceID>
+         <deviceID>274</deviceID>
+         <deviceID>319</deviceID>
+         <deviceID>327</deviceID>
+         <deviceID>334</deviceID>
+      </deviceIDs>
+   </panelEntry>
+
+   <panelEntry>
+      <type>NXT-1200VG</type>
+      <description>12.1 inch color active matrix tiltscreen touch panel with video input</description>
+      <deviceID>295</deviceID>
+      <screenSize>121</screenSize>
+      <videoInputs>
+         <input>composite video</input>
+         <input>component/RGB video</input>
+      </videoInputs>
+      <numVideoWindows>2</numVideoWindows>
+      <numWirelessVideo>0</numWirelessVideo>
+      <streamingVideo>1</streamingVideo>
+      <isAudioDisabled>0</isAudioDisabled>
+      <hasLightSensor>1</hasLightSensor>
+      <hasMotionSensor>1</hasMotionSensor>
+      <hasBatteryLevel>1</hasBatteryLevel>
+      <panelImage>images\NXT-CV12.jpg</panelImage>
+      <resolution>
+         <resolutionEntry>
+            <width>800</width>
+            <height>600</height>
+            <setupPages>ModeroVG-800x600.TP4</setupPages>
+            <refreshRate>
+               <rate>60 Hertz</rate>
+            </refreshRate>
+         </resolutionEntry>
+      </resolution>
+      <systemCodeGroup>G4 Common Codes</systemCodeGroup>
+      <systemCodeGroup>Modero Common Codes</systemCodeGroup>
+      <systemCodeGroup>Modero Dual Battery Base Codes</systemCodeGroup>
+      <systemCodeGroup>Modero Sensors Codes</systemCodeGroup>
+      <systemCodeGroup>Modero Secondary Interface Codes</systemCodeGroup>
+      <systemCodeGroup>Modero VG Common</systemCodeGroup>
+      <systemChannels>
+         <codeEntry>
+            <code>289</code>
+            <adv>1</adv>
+            <text>Battery Base Setup: Disable Panel Dim When On Battery Power</text>
+         </codeEntry>
+      </systemChannels>
+      <deviceIDs>
+         <deviceID>295</deviceID>
+         <deviceID>274</deviceID>
+         <deviceID>319</deviceID>
+         <deviceID>327</deviceID>
+         <deviceID>334</deviceID>
+      </deviceIDs>
+   </panelEntry>
+
+   <panelEntry>
+      <type>NXD-CA12</type>
+      <description>12.1 inch color active matrix wall-mount</description>
+      <deviceID>277</deviceID>
+      <screenSize>121</screenSize>
+      <numVideoWindows>0</numVideoWindows>
+      <numWirelessVideo>0</numWirelessVideo>
+      <isAudioDisabled>0</isAudioDisabled>
+      <hasLightSensor>1</hasLightSensor>
+      <hasMotionSensor>1</hasMotionSensor>
+      <hasBatteryLevel>1</hasBatteryLevel>
+      <panelImage>images\NXD-CA12.jpg</panelImage>
+      <resolution>
+         <resolutionEntry>
+            <width>800</width>
+            <height>600</height>
+            <setupPages>Modero-800x600.TP4</setupPages>
+            <refreshRate>
+               <rate>60 Hertz</rate>
+            </refreshRate>
+         </resolutionEntry>
+      </resolution>
+      <systemCodeGroup>G4 Common Codes</systemCodeGroup>
+      <systemCodeGroup>Modero Common Codes</systemCodeGroup>
+      <systemCodeGroup>Modero Battery Base Codes</systemCodeGroup>
+      <systemCodeGroup>Modero Sensors Codes</systemCodeGroup>
+      <systemCodeGroup>Modero Secondary Interface Codes</systemCodeGroup>
+      <systemChannels>
+         <codeEntry>
+            <code>149</code>
+            <adv>1</adv>
+            <text>Panel Setup: Bass Boost</text>
+         </codeEntry>
+         <codeEntry>
+            <code>289</code>
+            <adv>1</adv>
+            <text>Battery Base Setup: Disable Panel Dim When On Battery Power</text>
+         </codeEntry>
+      </systemChannels>
+      <deviceIDs>
+         <deviceID>277</deviceID>
+         <deviceID>274</deviceID>
+         <deviceID>327</deviceID>
+         <deviceID>334</deviceID>
+      </deviceIDs>
+   </panelEntry>
+
+   <panelEntry>
+      <type>NXT-CA12</type>
+      <description>12.1 inch color active matrix tiltscreen touch panel</description>
+      <deviceID>277</deviceID>
+      <screenSize>121</screenSize>
+      <numVideoWindows>0</numVideoWindows>
+      <numWirelessVideo>0</numWirelessVideo>
+      <isAudioDisabled>0</isAudioDisabled>
+      <hasLightSensor>1</hasLightSensor>
+      <hasMotionSensor>1</hasMotionSensor>
+      <hasBatteryLevel>1</hasBatteryLevel>
+      <panelImage>images\NXT-CA12.jpg</panelImage>
+      <resolution>
+         <resolutionEntry>
+            <width>800</width>
+            <height>600</height>
+            <setupPages>Modero-800x600.TP4</setupPages>
+            <refreshRate>
+               <rate>60 Hertz</rate>
+            </refreshRate>
+         </resolutionEntry>
+      </resolution>
+      <systemCodeGroup>G4 Common Codes</systemCodeGroup>
+      <systemCodeGroup>Modero Common Codes</systemCodeGroup>
+      <systemCodeGroup>Modero Dual Battery Base Codes</systemCodeGroup>
+      <systemCodeGroup>Modero Sensors Codes</systemCodeGroup>
+      <systemCodeGroup>Modero Secondary Interface Codes</systemCodeGroup>
+      <systemChannels>
+         <codeEntry>
+            <code>149</code>
+            <adv>1</adv>
+            <text>Panel Setup: Bass Boost</text>
+         </codeEntry>
+         <codeEntry>
+            <code>289</code>
+            <adv>1</adv>
+            <text>Battery Base Setup: Disable Panel Dim When On Battery Power</text>
+         </codeEntry>
+      </systemChannels>
+      <deviceIDs>
+         <deviceID>277</deviceID>
+         <deviceID>274</deviceID>
+         <deviceID>327</deviceID>
+         <deviceID>334</deviceID>
+      </deviceIDs>
+   </panelEntry>
+
+   <panelEntry>
+      <type>NXD-CV12</type>
+      <description>12.1 inch color active matrix wall-mount touch panel with video input</description>
+      <deviceID>278</deviceID>
+      <screenSize>121</screenSize>
+      <videoInputs>
+         <input>composite video</input>
+      </videoInputs>
+      <numVideoWindows>1</numVideoWindows>
+      <numWirelessVideo>0</numWirelessVideo>
+      <isAudioDisabled>0</isAudioDisabled>
+      <hasLightSensor>1</hasLightSensor>
+      <hasMotionSensor>1</hasMotionSensor>
+      <hasBatteryLevel>1</hasBatteryLevel>
+      <panelImage>images\NXD-CV12.jpg</panelImage>
+      <resolution>
+         <resolutionEntry>
+            <width>800</width>
+            <height>600</height>
+            <setupPages>Modero-800x600.TP4</setupPages>
+            <refreshRate>
+               <rate>60 Hertz</rate>
+            </refreshRate>
+         </resolutionEntry>
+      </resolution>
+      <systemCodeGroup>G4 Common Codes</systemCodeGroup>
+      <systemCodeGroup>Modero Common Codes</systemCodeGroup>
+      <systemCodeGroup>Modero Dual Battery Base Codes</systemCodeGroup>
+      <systemCodeGroup>Modero Sensors Codes</systemCodeGroup>
+      <systemCodeGroup>Modero Secondary Interface Codes</systemCodeGroup>
+      <systemCodeGroup>Modero Video Codes</systemCodeGroup>
+      <systemChannels>
+         <codeEntry>
+            <code>149</code>
+            <adv>1</adv>
+            <text>Panel Setup: Bass Boost</text>
+         </codeEntry>
+         <codeEntry>
+            <code>289</code>
+            <adv>1</adv>
+            <text>Battery Base Setup: Disable Panel Dim When On Battery Power</text>
+         </codeEntry>
+      </systemChannels>
+      <deviceIDs>
+         <deviceID>278</deviceID>
+         <deviceID>274</deviceID>
+         <deviceID>327</deviceID>
+         <deviceID>334</deviceID>
+      </deviceIDs>
+   </panelEntry>
+
+   <panelEntry>
+      <type>NXT-CV12</type>
+      <description>12.1 inch color active matrix tiltscreen touch panel with video input</description>
+      <deviceID>278</deviceID>
+      <screenSize>121</screenSize>
+      <videoInputs>
+         <input>composite video</input>
+      </videoInputs>
+      <numVideoWindows>1</numVideoWindows>
+      <numWirelessVideo>0</numWirelessVideo>
+      <isAudioDisabled>0</isAudioDisabled>
+      <hasLightSensor>1</hasLightSensor>
+      <hasMotionSensor>1</hasMotionSensor>
+      <hasBatteryLevel>1</hasBatteryLevel>
+      <panelImage>images\NXT-CV12.jpg</panelImage>
+      <resolution>
+         <resolutionEntry>
+            <width>800</width>
+            <height>600</height>
+            <setupPages>Modero-800x600.TP4</setupPages>
+            <refreshRate>
+               <rate>60 Hertz</rate>
+            </refreshRate>
+         </resolutionEntry>
+      </resolution>
+      <systemCodeGroup>G4 Common Codes</systemCodeGroup>
+      <systemCodeGroup>Modero Common Codes</systemCodeGroup>
+      <systemCodeGroup>Modero Dual Battery Base Codes</systemCodeGroup>
+      <systemCodeGroup>Modero Sensors Codes</systemCodeGroup>
+      <systemCodeGroup>Modero Secondary Interface Codes</systemCodeGroup>
+      <systemCodeGroup>Modero Video Codes</systemCodeGroup>
+      <systemChannels>
+         <codeEntry>
+            <code>149</code>
+            <adv>1</adv>
+            <text>Panel Setup: Bass Boost</text>
+         </codeEntry>
+         <codeEntry>
+            <code>289</code>
+            <adv>1</adv>
+            <text>Battery Base Setup: Disable Panel Dim When On Battery Power</text>
+         </codeEntry>
+      </systemChannels>
+      <deviceIDs>
+         <deviceID>278</deviceID>
+         <deviceID>274</deviceID>
+         <deviceID>327</deviceID>
+         <deviceID>334</deviceID>
+      </deviceIDs>
+   </panelEntry>
+
+   <panelEntry>
+      <type>NXD-1500VG</type>
+      <description>15 inch color active matrix wall-mount touch panel with video input</description>
+      <deviceID>296</deviceID>
+      <screenSize>150</screenSize>
+      <videoInputs>
+         <input>composite video</input>
+         <input>component/RGB video</input>
+      </videoInputs>
+      <numVideoWindows>2</numVideoWindows>
+      <numWirelessVideo>0</numWirelessVideo>
+      <streamingVideo>1</streamingVideo>
+      <isAudioDisabled>0</isAudioDisabled>
+      <hasLightSensor>1</hasLightSensor>
+      <hasMotionSensor>1</hasMotionSensor>
+      <hasBatteryLevel>1</hasBatteryLevel>
+      <panelImage>images\NXD-CV15.jpg</panelImage>
+      <resolution>
+         <resolutionEntry>
+            <width>1024</width>
+            <height>768</height>
+            <setupPages>ModeroVG-1024x768.TP4</setupPages>
+            <refreshRate>
+               <rate>60 Hertz</rate>
+            </refreshRate>
+         </resolutionEntry>
+      </resolution>
+      <systemCodeGroup>G4 Common Codes</systemCodeGroup>
+      <systemCodeGroup>Modero Common Codes</systemCodeGroup>
+      <systemCodeGroup>Modero Dual Battery Base Codes</systemCodeGroup>
+      <systemCodeGroup>Modero Sensors Codes</systemCodeGroup>
+      <systemCodeGroup>Modero Secondary Interface Codes</systemCodeGroup>
+      <systemCodeGroup>Modero VG Common</systemCodeGroup>
+      <systemChannels>
+         <codeEntry>
+            <code>289</code>
+            <adv>1</adv>
+            <text>Battery Base Setup: Disable Panel Dim When On Battery Power</text>
+         </codeEntry>
+      </systemChannels>
+      <deviceIDs>
+         <deviceID>296</deviceID>
+         <deviceID>274</deviceID>
+         <deviceID>320</deviceID>
+         <deviceID>327</deviceID>
+         <deviceID>334</deviceID>
+      </deviceIDs>
+   </panelEntry>
+
+   <panelEntry>
+      <type>NXT-1500VG</type>
+      <description>15 inch color active matrix tiltscreen touch panel with video input</description>
+      <deviceID>296</deviceID>
+      <screenSize>150</screenSize>
+      <videoInputs>
+         <input>composite video</input>
+         <input>component/RGB video</input>
+      </videoInputs>
+      <numVideoWindows>2</numVideoWindows>
+      <numWirelessVideo>0</numWirelessVideo>
+      <streamingVideo>1</streamingVideo>
+      <isAudioDisabled>0</isAudioDisabled>
+      <hasLightSensor>1</hasLightSensor>
+      <hasMotionSensor>1</hasMotionSensor>
+      <hasBatteryLevel>1</hasBatteryLevel>
+      <panelImage>images\NXT-CV15.jpg</panelImage>
+      <resolution>
+         <resolutionEntry>
+            <width>1024</width>
+            <height>768</height>
+            <setupPages>ModeroVG-1024x768.TP4</setupPages>
+            <refreshRate>
+               <rate>60 Hertz</rate>
+            </refreshRate>
+         </resolutionEntry>
+      </resolution>
+      <systemCodeGroup>G4 Common Codes</systemCodeGroup>
+      <systemCodeGroup>Modero Common Codes</systemCodeGroup>
+      <systemCodeGroup>Modero Dual Battery Base Codes</systemCodeGroup>
+      <systemCodeGroup>Modero Sensors Codes</systemCodeGroup>
+      <systemCodeGroup>Modero Secondary Interface Codes</systemCodeGroup>
+      <systemCodeGroup>Modero VG Common</systemCodeGroup>
+      <systemChannels>
+         <codeEntry>
+            <code>289</code>
+            <adv>1</adv>
+            <text>Battery Base Setup: Disable Panel Dim When On Battery Power</text>
+         </codeEntry>
+      </systemChannels>
+      <deviceIDs>
+         <deviceID>296</deviceID>
+         <deviceID>274</deviceID>
+         <deviceID>320</deviceID>
+         <deviceID>327</deviceID>
+         <deviceID>334</deviceID>
+      </deviceIDs>
+   </panelEntry>
+
+   <panelEntry>
+      <type>NXD-CA15</type>
+      <description>15 inch color active matrix wall-mount touch panel</description>
+      <deviceID>281</deviceID>
+      <screenSize>150</screenSize>
+      <numVideoWindows>0</numVideoWindows>
+      <numWirelessVideo>0</numWirelessVideo>
+      <isAudioDisabled>0</isAudioDisabled>
+      <hasLightSensor>1</hasLightSensor>
+      <hasMotionSensor>1</hasMotionSensor>
+      <hasBatteryLevel>1</hasBatteryLevel>
+      <panelImage>images\NXD-CA15.jpg</panelImage>
+      <resolution>
+         <resolutionEntry>
+            <width>1024</width>
+            <height>768</height>
+            <setupPages>Modero-1024x768.TP4</setupPages>
+            <refreshRate>
+               <rate>60 Hertz</rate>
+            </refreshRate>
+         </resolutionEntry>
+      </resolution>
+      <systemCodeGroup>G4 Common Codes</systemCodeGroup>
+      <systemCodeGroup>Modero Common Codes</systemCodeGroup>
+      <systemCodeGroup>Modero Dual Battery Base Codes</systemCodeGroup>
+      <systemCodeGroup>Modero Sensors Codes</systemCodeGroup>
+      <systemCodeGroup>Modero Secondary Interface Codes</systemCodeGroup>
+      <systemChannels>
+         <codeEntry>
+            <code>149</code>
+            <adv>1</adv>
+            <text>Panel Setup: Bass Boost</text>
+         </codeEntry>
+         <codeEntry>
+            <code>289</code>
+            <adv>1</adv>
+            <text>Battery Base Setup: Disable Panel Dim When On Battery Power</text>
+         </codeEntry>
+      </systemChannels>
+      <deviceIDs>
+         <deviceID>281</deviceID>
+         <deviceID>274</deviceID>
+         <deviceID>327</deviceID>
+         <deviceID>334</deviceID>
+      </deviceIDs>
+   </panelEntry>
+
+   <panelEntry>
+      <type>NXT-CA15</type>
+      <description>15 inch color active matrix titlscreen touch panel</description>
+      <deviceID>281</deviceID>
+      <screenSize>150</screenSize>
+      <numVideoWindows>0</numVideoWindows>
+      <numWirelessVideo>0</numWirelessVideo>
+      <isAudioDisabled>0</isAudioDisabled>
+      <hasLightSensor>1</hasLightSensor>
+      <hasMotionSensor>1</hasMotionSensor>
+      <hasBatteryLevel>1</hasBatteryLevel>
+      <panelImage>images\NXT-CA15.jpg</panelImage>
+      <resolution>
+         <resolutionEntry>
+            <width>1024</width>
+            <height>768</height>
+            <setupPages>Modero-1024x768.TP4</setupPages>
+            <refreshRate>
+               <rate>60 Hertz</rate>
+            </refreshRate>
+         </resolutionEntry>
+      </resolution>
+      <systemCodeGroup>G4 Common Codes</systemCodeGroup>
+      <systemCodeGroup>Modero Common Codes</systemCodeGroup>
+      <systemCodeGroup>Modero Dual Battery Base Codes</systemCodeGroup>
+      <systemCodeGroup>Modero Sensors Codes</systemCodeGroup>
+      <systemCodeGroup>Modero Secondary Interface Codes</systemCodeGroup>
+      <systemChannels>
+         <codeEntry>
+            <code>149</code>
+            <adv>1</adv>
+            <text>Panel Setup: Bass Boost</text>
+         </codeEntry>
+         <codeEntry>
+            <code>289</code>
+            <adv>1</adv>
+            <text>Battery Base Setup: Disable Panel Dim When On Battery Power</text>
+         </codeEntry>
+      </systemChannels>
+      <deviceIDs>
+         <deviceID>281</deviceID>
+         <deviceID>274</deviceID>
+         <deviceID>327</deviceID>
+         <deviceID>334</deviceID>
+      </deviceIDs>
+   </panelEntry>
+
+   <panelEntry>
+      <type>NXD-CV15</type>
+      <description>15 inch color active matrix wall-mount touch panel with video input</description>
+      <deviceID>282</deviceID>
+      <screenSize>150</screenSize>
+      <videoInputs>
+         <input>composite video</input>
+      </videoInputs>
+      <numVideoWindows>1</numVideoWindows>
+      <numWirelessVideo>0</numWirelessVideo>
+      <isAudioDisabled>0</isAudioDisabled>
+      <hasLightSensor>1</hasLightSensor>
+      <hasMotionSensor>1</hasMotionSensor>
+      <hasBatteryLevel>1</hasBatteryLevel>
+      <panelImage>images\NXD-CV15.jpg</panelImage>
+      <resolution>
+         <resolutionEntry>
+            <width>1024</width>
+            <height>768</height>
+            <setupPages>Modero-1024x768.TP4</setupPages>
+            <refreshRate>
+               <rate>60 Hertz</rate>
+            </refreshRate>
+         </resolutionEntry>
+      </resolution>
+      <systemCodeGroup>G4 Common Codes</systemCodeGroup>
+      <systemCodeGroup>Modero Common Codes</systemCodeGroup>
+      <systemCodeGroup>Modero Dual Battery Base Codes</systemCodeGroup>
+      <systemCodeGroup>Modero Sensors Codes</systemCodeGroup>
+      <systemCodeGroup>Modero Secondary Interface Codes</systemCodeGroup>
+      <systemCodeGroup>Modero Video Codes</systemCodeGroup>
+      <systemChannels>
+         <codeEntry>
+            <code>149</code>
+            <adv>1</adv>
+            <text>Panel Setup: Bass Boost</text>
+         </codeEntry>
+         <codeEntry>
+            <code>289</code>
+            <adv>1</adv>
+            <text>Battery Base Setup: Disable Panel Dim When On Battery Power</text>
+         </codeEntry>
+      </systemChannels>
+      <deviceIDs>
+         <deviceID>282</deviceID>
+         <deviceID>274</deviceID>
+         <deviceID>327</deviceID>
+         <deviceID>334</deviceID>
+      </deviceIDs>
+   </panelEntry>
+
+   <panelEntry>
+      <type>NXT-CV15</type>
+      <description>15 inch color active matrix tiltscreen touch panel with video input</description>
+      <deviceID>282</deviceID>
+      <screenSize>150</screenSize>
+      <videoInputs>
+         <input>composite video</input>
+      </videoInputs>
+      <numVideoWindows>1</numVideoWindows>
+      <numWirelessVideo>0</numWirelessVideo>
+      <isAudioDisabled>0</isAudioDisabled>
+      <hasLightSensor>1</hasLightSensor>
+      <hasMotionSensor>1</hasMotionSensor>
+      <hasBatteryLevel>1</hasBatteryLevel>
+      <panelImage>images\NXT-CV15.jpg</panelImage>
+      <resolution>
+         <resolutionEntry>
+            <width>1024</width>
+            <height>768</height>
+            <setupPages>Modero-1024x768.TP4</setupPages>
+            <refreshRate>
+               <rate>60 Hertz</rate>
+            </refreshRate>
+         </resolutionEntry>
+      </resolution>
+      <systemCodeGroup>G4 Common Codes</systemCodeGroup>
+      <systemCodeGroup>Modero Common Codes</systemCodeGroup>
+      <systemCodeGroup>Modero Dual Battery Base Codes</systemCodeGroup>
+      <systemCodeGroup>Modero Sensors Codes</systemCodeGroup>
+      <systemCodeGroup>Modero Secondary Interface Codes</systemCodeGroup>
+      <systemCodeGroup>Modero Video Codes</systemCodeGroup>
+      <systemChannels>
+         <codeEntry>
+            <code>149</code>
+            <adv>1</adv>
+            <text>Panel Setup: Bass Boost</text>
+         </codeEntry>
+         <codeEntry>
+            <code>289</code>
+            <adv>1</adv>
+            <text>Battery Base Setup: Disable Panel Dim When On Battery Power</text>
+         </codeEntry>
+      </systemChannels>
+      <deviceIDs>
+         <deviceID>282</deviceID>
+         <deviceID>274</deviceID>
+         <deviceID>327</deviceID>
+         <deviceID>334</deviceID>
+      </deviceIDs>
+   </panelEntry>
+
+   <panelEntry>
+      <type>NXD-1700VG</type>
+      <description>17 inch color active matrix wall-mount touch panel with video input</description>
+      <deviceID>297</deviceID>
+      <screenSize>170</screenSize>
+      <videoInputs>
+         <input>composite video</input>
+         <input>component/RGB video</input>
+      </videoInputs>
+      <numVideoWindows>2</numVideoWindows>
+      <numWirelessVideo>0</numWirelessVideo>
+      <streamingVideo>1</streamingVideo>
+      <isAudioDisabled>0</isAudioDisabled>
+      <hasLightSensor>1</hasLightSensor>
+      <hasMotionSensor>1</hasMotionSensor>
+      <hasBatteryLevel>1</hasBatteryLevel>
+      <panelImage>images\NXD-CV17.jpg</panelImage>
+      <resolution>
+         <resolutionEntry>
+            <width>1280</width>
+            <height>768</height>
+            <setupPages>ModeroVG-1280x768.TP4</setupPages>
+            <refreshRate>
+               <rate>60 Hertz</rate>
+            </refreshRate>
+         </resolutionEntry>
+      </resolution>
+      <systemCodeGroup>G4 Common Codes</systemCodeGroup>
+      <systemCodeGroup>Modero Common Codes</systemCodeGroup>
+      <systemCodeGroup>Modero Dual Battery Base Codes</systemCodeGroup>
+      <systemCodeGroup>Modero Sensors Codes</systemCodeGroup>
+      <systemCodeGroup>Modero Secondary Interface Codes</systemCodeGroup>
+      <systemCodeGroup>Modero VG Common</systemCodeGroup>
+      <deviceIDs>
+         <deviceID>297</deviceID>
+         <deviceID>274</deviceID>
+         <deviceID>321</deviceID>
+         <deviceID>327</deviceID>
+         <deviceID>334</deviceID>
+      </deviceIDs>
+   </panelEntry>
+
+   <panelEntry>
+      <type>NXT-1700VG</type>
+      <description>17 inch color active matrix tiltscreen touch panel with video input</description>
+      <deviceID>297</deviceID>
+      <screenSize>170</screenSize>
+      <videoInputs>
+         <input>composite video</input>
+         <input>component/RGB video</input>
+      </videoInputs>
+      <numVideoWindows>2</numVideoWindows>
+      <numWirelessVideo>0</numWirelessVideo>
+      <streamingVideo>1</streamingVideo>
+      <isAudioDisabled>0</isAudioDisabled>
+      <hasLightSensor>1</hasLightSensor>
+      <hasMotionSensor>1</hasMotionSensor>
+      <hasBatteryLevel>1</hasBatteryLevel>
+      <panelImage>images\NXT-CV17.jpg</panelImage>
+      <resolution>
+         <resolutionEntry>
+            <width>1280</width>
+            <height>768</height>
+            <setupPages>ModeroVG-1280x768.TP4</setupPages>
+            <refreshRate>
+               <rate>60 Hertz</rate>
+            </refreshRate>
+         </resolutionEntry>
+      </resolution>
+      <systemCodeGroup>G4 Common Codes</systemCodeGroup>
+      <systemCodeGroup>Modero Common Codes</systemCodeGroup>
+      <systemCodeGroup>Modero Dual Battery Base Codes</systemCodeGroup>
+      <systemCodeGroup>Modero Sensors Codes</systemCodeGroup>
+      <systemCodeGroup>Modero Secondary Interface Codes</systemCodeGroup>
+      <systemCodeGroup>Modero VG Common</systemCodeGroup>
+      <deviceIDs>
+         <deviceID>297</deviceID>
+         <deviceID>274</deviceID>
+         <deviceID>321</deviceID>
+         <deviceID>327</deviceID>
+         <deviceID>334</deviceID>
+      </deviceIDs>
+   </panelEntry>
+
+   <panelEntry>
+      <type>NXD-CV17</type>
+      <description>17 inch color active matrix wall-mount touch panel with video input</description>
+      <deviceID>284</deviceID>
+      <screenSize>170</screenSize>
+      <videoInputs>
+         <input>composite video</input>
+      </videoInputs>
+      <numVideoWindows>1</numVideoWindows>
+      <numWirelessVideo>0</numWirelessVideo>
+      <isAudioDisabled>0</isAudioDisabled>
+      <hasLightSensor>1</hasLightSensor>
+      <hasMotionSensor>1</hasMotionSensor>
+      <hasBatteryLevel>1</hasBatteryLevel>
+      <panelImage>images\NXD-CV17.jpg</panelImage>
+      <resolution>
+         <resolutionEntry>
+            <width>1280</width>
+            <height>768</height>
+            <setupPages>Modero-1280x768.TP4</setupPages>
+            <refreshRate>
+               <rate>60 Hertz</rate>
+            </refreshRate>
+         </resolutionEntry>
+      </resolution>
+      <systemCodeGroup>G4 Common Codes</systemCodeGroup>
+      <systemCodeGroup>Modero Common Codes</systemCodeGroup>
+      <systemCodeGroup>Modero Dual Battery Base Codes</systemCodeGroup>
+      <systemCodeGroup>Modero Sensors Codes</systemCodeGroup>
+      <systemCodeGroup>Modero Secondary Interface Codes</systemCodeGroup>
+      <systemCodeGroup>Modero Video Codes</systemCodeGroup>
+      <systemChannels>
+         <codeEntry>
+            <code>149</code>
+            <adv>1</adv>
+            <text>Panel Setup: Bass Boost</text>
+         </codeEntry>
+      </systemChannels>
+      <deviceIDs>
+         <deviceID>284</deviceID>
+         <deviceID>274</deviceID>
+         <deviceID>327</deviceID>
+         <deviceID>334</deviceID>
+      </deviceIDs>
+   </panelEntry>
+
+   <panelEntry>
+      <type>NXT-CV17</type>
+      <description>17 inch color active matrix tiltscreen touch panel with video input</description>
+      <deviceID>284</deviceID>
+      <screenSize>170</screenSize>
+      <videoInputs>
+         <input>composite video</input>
+      </videoInputs>
+      <numVideoWindows>1</numVideoWindows>
+      <numWirelessVideo>0</numWirelessVideo>
+      <isAudioDisabled>0</isAudioDisabled>
+      <hasLightSensor>1</hasLightSensor>
+      <hasMotionSensor>1</hasMotionSensor>
+      <hasBatteryLevel>1</hasBatteryLevel>
+      <panelImage>images\NXT-CV17.jpg</panelImage>
+      <resolution>
+         <resolutionEntry>
+            <width>1280</width>
+            <height>768</height>
+            <setupPages>Modero-1280x768.TP4</setupPages>
+            <refreshRate>
+               <rate>60 Hertz</rate>
+            </refreshRate>
+         </resolutionEntry>
+      </resolution>
+      <systemCodeGroup>G4 Common Codes</systemCodeGroup>
+      <systemCodeGroup>Modero Common Codes</systemCodeGroup>
+      <systemCodeGroup>Modero Dual Battery Base Codes</systemCodeGroup>
+      <systemCodeGroup>Modero Sensors Codes</systemCodeGroup>
+      <systemCodeGroup>Modero Secondary Interface Codes</systemCodeGroup>
+      <systemCodeGroup>Modero Video Codes</systemCodeGroup>
+      <systemChannels>
+         <codeEntry>
+            <code>149</code>
+            <adv>1</adv>
+            <text>Panel Setup: Bass Boost</text>
+         </codeEntry>
+      </systemChannels>
+      <deviceIDs>
+         <deviceID>284</deviceID>
+         <deviceID>274</deviceID>
+         <deviceID>327</deviceID>
+         <deviceID>334</deviceID>
+      </deviceIDs>
+   </panelEntry>
+
+   <panelEntry>
+      <type>MST-431</type>
+      <description>4.3 inch color tabletop touch panel with intercom</description>
+      <deviceID>398</deviceID>
+      <series>X</series>
+      <screenSize>43</screenSize>
+      <numVideoWindows>1</numVideoWindows>
+      <numWirelessVideo>0</numWirelessVideo>
+      <streamingVideo>1</streamingVideo>
+      <isAudioDisabled>0</isAudioDisabled>
+      <hasLightSensor>0</hasLightSensor>
+      <hasMotionSensor>0</hasMotionSensor>
+      <hasBatteryLevel>0</hasBatteryLevel>
+      <hasVoIP>1</hasVoIP>
+      <hasPFAnimations>1</hasPFAnimations>
+      <hasSPV>1</hasSPV>
+      <fdType>2</fdType>
+      <textType>advType1</textType>
+      <panelImage>images\MST-431_Front-Right.jpg</panelImage>
+      <resolution>
+         <resolutionEntry>
+            <width>480</width>
+            <height>272</height>
+            <setupPages>Modero-X_480x272-Setup-SP.TP4</setupPages>
+            <externalButtons>MSD-430_ExternalButtons.xml</externalButtons>
+            <refreshRate>
+               <rate>60 Hertz</rate>
+            </refreshRate>
+         </resolutionEntry>
+      </resolution>
+      <systemCodeGroup>G4 Common Codes v2</systemCodeGroup>
+      <systemCodeGroup>Modero Common Codes</systemCodeGroup>
+      <systemCodeGroup>mips Firmware with Sound Common</systemCodeGroup>
+      <systemCodeGroup>Modero Secondary Interface Codes</systemCodeGroup>
+      <systemCodeGroup>MVP Common</systemCodeGroup>
+      <systemCodeGroup>Streaming Video Codes</systemCodeGroup>
+      <systemCodeGroup>Bluetooth Codes</systemCodeGroup>
+      <systemCodeGroup>MXA-AVB Codes</systemCodeGroup>
+	  <systemCodeGroup>Smart Card Codes</systemCodeGroup>
+      <deviceIDs>
+         <deviceID>398</deviceID>
+         <deviceID>342</deviceID>
+         <deviceID>399</deviceID>
+      </deviceIDs>
+   </panelEntry>
+   
+   <panelEntry>
+      <type>MSD-431</type>
+      <description>4.3 inch color wall-mount touch panel with intercom</description>
+      <deviceID>399</deviceID>
+      <series>X</series>
+      <screenSize>43</screenSize>
+      <numVideoWindows>1</numVideoWindows>
+      <numWirelessVideo>0</numWirelessVideo>
+      <streamingVideo>1</streamingVideo>
+      <isAudioDisabled>0</isAudioDisabled>
+      <hasLightSensor>0</hasLightSensor>
+      <hasMotionSensor>0</hasMotionSensor>
+      <hasBatteryLevel>0</hasBatteryLevel>
+      <hasVoIP>1</hasVoIP>
+      <hasPFAnimations>1</hasPFAnimations>
+      <hasSPV>1</hasSPV>
+      <fdType>2</fdType>
+      <textType>advType1</textType>
+      <panelImage>images\MSD-431_Front.jpg</panelImage>
+      <resolution>
+         <resolutionEntry>
+            <width>480</width>
+            <height>272</height>
+            <setupPages>Modero-X_480x272-Setup-SP.TP4</setupPages>
+            <externalButtons>MSD-430_ExternalButtons.xml</externalButtons>
+            <extButtonsAlt>MSD_ExtButtonsGesturesHorz.xml</extButtonsAlt>
+            <refreshRate>
+               <rate>60 Hertz</rate>
+            </refreshRate>
+         </resolutionEntry>
+      </resolution>
+      <systemCodeGroup>G4 Common Codes v2</systemCodeGroup>
+      <systemCodeGroup>Modero Common Codes</systemCodeGroup>
+      <systemCodeGroup>mips Firmware with Sound Common</systemCodeGroup>
+      <systemCodeGroup>Modero Secondary Interface Codes</systemCodeGroup>
+      <systemCodeGroup>MVP Common</systemCodeGroup>
+      <systemCodeGroup>Streaming Video Codes</systemCodeGroup>
+      <systemCodeGroup>Bluetooth Codes</systemCodeGroup>
+      <systemCodeGroup>MXA-AVB Codes</systemCodeGroup>
+	  <systemCodeGroup>Smart Card Codes</systemCodeGroup>
+      <deviceIDs>
+         <deviceID>399</deviceID>
+         <deviceID>342</deviceID>
+         <deviceID>398</deviceID>
+      </deviceIDs>
+   </panelEntry>
+   
+   <panelEntry>
+      <type>MST-701</type>
+      <description>7 inch color tabletop touch panel with intercom</description>
+      <deviceID>400</deviceID>
+      <series>X</series>
+      <screenSize>71</screenSize>
+      <numVideoWindows>1</numVideoWindows>
+      <numWirelessVideo>0</numWirelessVideo>
+      <streamingVideo>1</streamingVideo>
+      <isAudioDisabled>0</isAudioDisabled>
+      <hasLightSensor>0</hasLightSensor>
+      <hasMotionSensor>0</hasMotionSensor>
+      <hasBatteryLevel>0</hasBatteryLevel>
+      <hasVoIP>1</hasVoIP>
+      <hasPFAnimations>1</hasPFAnimations>
+      <hasSPV>1</hasSPV>
+      <fdType>2</fdType>
+      <textType>advType1</textType>1024
+      <panelImage>images\MST-701_Front-Right.jpg</panelImage>
+      <resolution>
+         <resolutionEntry>
+            <width>1024</width>
+            <height>600</height>
+            <setupPages>Modero-X_1920x1920-Setup-SP.TP4</setupPages>
+            <externalButtons>MSD-700_ExternalButtons.xml</externalButtons>
+            <extButtonsAlt>MSD_ExtButtonsGesturesHorz.xml</extButtonsAlt>
+            <refreshRate>
+               <rate>60 Hertz</rate>
+            </refreshRate>
+         </resolutionEntry>
+      </resolution>
+      <systemCodeGroup>G4 Common Codes v2</systemCodeGroup>
+      <systemCodeGroup>Modero Common Codes</systemCodeGroup>
+      <systemCodeGroup>mips Firmware with Sound Common</systemCodeGroup>
+      <systemCodeGroup>Modero Secondary Interface Codes</systemCodeGroup>
+      <systemCodeGroup>MVP Common</systemCodeGroup>
+      <systemCodeGroup>Streaming Video Codes</systemCodeGroup>
+      <systemCodeGroup>Bluetooth Codes</systemCodeGroup>
+      <systemCodeGroup>MXA-AVB Codes</systemCodeGroup>
+	  <systemCodeGroup>Smart Card Codes</systemCodeGroup>
+      <deviceIDs>
+         <deviceID>400</deviceID>
+         <deviceID>377</deviceID>
+         <deviceID>291</deviceID>
+         <deviceID>324</deviceID>
+         <deviceID>331</deviceID>
+         <deviceID>376</deviceID>
+         <deviceID>401</deviceID>
+         <deviceID>468</deviceID>
+      </deviceIDs>
+   </panelEntry>
+   
+   <panelEntry>
+      <type>MSD-701</type>
+      <description>7 inch color wall-mount touch panel with intercom</description>
+      <deviceID>401</deviceID>
+      <series>X</series>
+      <screenSize>71</screenSize>
+      <numVideoWindows>1</numVideoWindows>
+      <numWirelessVideo>0</numWirelessVideo>
+      <streamingVideo>1</streamingVideo>
+      <isAudioDisabled>0</isAudioDisabled>
+      <hasLightSensor>0</hasLightSensor>
+      <hasMotionSensor>0</hasMotionSensor>
+      <hasBatteryLevel>0</hasBatteryLevel>
+      <hasVoIP>1</hasVoIP>
+      <hasPFAnimations>1</hasPFAnimations>
+      <hasSPV>1</hasSPV>
+      <fdType>2</fdType>
+      <textType>advType1</textType>
+      <panelImage>images\MSD-701_Front.jpg</panelImage>
+      <resolution>
+         <resolutionEntry>
+            <width>1024</width>
+            <height>600</height>
+            <setupPages>Modero-X_1920x1920-Setup-SP.TP4</setupPages>
+            <externalButtons>MSD-700_ExternalButtons.xml</externalButtons>
+            <extButtonsAlt>MSD_ExtButtonsGesturesHorz.xml</extButtonsAlt>
+            <refreshRate>
+               <rate>60 Hertz</rate>
+            </refreshRate>
+         </resolutionEntry>
+      </resolution>
+      <systemCodeGroup>G4 Common Codes v2</systemCodeGroup>
+      <systemCodeGroup>Modero Common Codes</systemCodeGroup>
+      <systemCodeGroup>mips Firmware with Sound Common</systemCodeGroup>
+      <systemCodeGroup>Modero Secondary Interface Codes</systemCodeGroup>
+      <systemCodeGroup>MVP Common</systemCodeGroup>
+      <systemCodeGroup>Streaming Video Codes</systemCodeGroup>
+      <systemCodeGroup>Bluetooth Codes</systemCodeGroup>
+      <systemCodeGroup>MXA-AVB Codes</systemCodeGroup>
+	  <systemCodeGroup>Smart Card Codes</systemCodeGroup>
+      <deviceIDs>
+         <deviceID>401</deviceID>
+         <deviceID>377</deviceID>
+         <deviceID>291</deviceID>
+         <deviceID>324</deviceID>
+         <deviceID>331</deviceID>
+         <deviceID>376</deviceID>
+         <deviceID>400</deviceID>
+         <deviceID>468</deviceID>
+      </deviceIDs>
+   </panelEntry>
+   
+   <panelEntry>
+      <type>MST-1001</type>
+      <description>10-inch  widescreen color tabletop touch panel with intercom</description>
+      <deviceID>402</deviceID>
+      <series>X</series>
+      <screenSize>71</screenSize>
+      <numVideoWindows>1</numVideoWindows>
+      <numWirelessVideo>0</numWirelessVideo>
+      <streamingVideo>1</streamingVideo>
+      <isAudioDisabled>0</isAudioDisabled>
+      <hasLightSensor>0</hasLightSensor>
+      <hasMotionSensor>0</hasMotionSensor>
+      <hasBatteryLevel>0</hasBatteryLevel>
+      <hasVoIP>1</hasVoIP>
+      <hasPFAnimations>1</hasPFAnimations>
+      <hasSPV>1</hasSPV>
+      <fdType>2</fdType>
+      <textType>advType1</textType>
+      <panelImage>images\MST-1001_Front-Right.jpg</panelImage>
+      <resolution>
+         <resolutionEntry>
+            <width>1280</width>
+            <height>800</height>
+            <setupPages>Modero-X_1920x1920-Setup-SP.TP4</setupPages>
+            <externalButtons>MSD-1000_ExternalButtons.xml</externalButtons>
+            <extButtonsAlt>MSD_ExtButtonsGesturesHorz.xml</extButtonsAlt>
+            <refreshRate>
+               <rate>60 Hertz</rate>
+            </refreshRate>
+         </resolutionEntry>
+      </resolution>
+      <systemCodeGroup>G4 Common Codes v2</systemCodeGroup>
+      <systemCodeGroup>Modero Common Codes</systemCodeGroup>
+      <systemCodeGroup>mips Firmware with Sound Common</systemCodeGroup>
+      <systemCodeGroup>Modero Secondary Interface Codes</systemCodeGroup>
+      <systemCodeGroup>MVP Common</systemCodeGroup>
+      <systemCodeGroup>Streaming Video Codes</systemCodeGroup>
+      <systemCodeGroup>Bluetooth Codes</systemCodeGroup>
+      <systemCodeGroup>MXA-AVB Codes</systemCodeGroup>
+	  <systemCodeGroup>Smart Card Codes</systemCodeGroup>
+      <deviceIDs>
+         <deviceID>402</deviceID>
+         <deviceID>403</deviceID>
+         <deviceID>371</deviceID>
+         <deviceID>372</deviceID>
+         <deviceID>327</deviceID>
+         <deviceID>334</deviceID>
+         <deviceID>469</deviceID>
+      </deviceIDs>
+   </panelEntry>
+   
+   <panelEntry>
+      <type>MSD-1001</type>
+      <description>10-inch widescreen color wall-mount touch panel with intercom</description>
+      <deviceID>403</deviceID>
+      <series>X</series>
+      <screenSize>71</screenSize>
+      <numVideoWindows>1</numVideoWindows>
+      <numWirelessVideo>0</numWirelessVideo>
+      <streamingVideo>1</streamingVideo>
+      <isAudioDisabled>0</isAudioDisabled>
+      <hasLightSensor>0</hasLightSensor>
+      <hasMotionSensor>0</hasMotionSensor>
+      <hasBatteryLevel>0</hasBatteryLevel>
+      <hasVoIP>1</hasVoIP>
+      <hasPFAnimations>1</hasPFAnimations>
+      <hasSPV>1</hasSPV>
+      <fdType>2</fdType>
+      <textType>advType1</textType>
+      <panelImage>images\MSD-1001_Front.jpg</panelImage>
+      <resolution>
+         <resolutionEntry>
+            <width>1280</width>
+            <height>800</height>
+            <setupPages>Modero-X_1920x1920-Setup-SP.TP4</setupPages>
+            <externalButtons>MSD-1000_ExternalButtons.xml</externalButtons>
+            <extButtonsAlt>MSD_ExtButtonsGesturesHorz.xml</extButtonsAlt>
+            <refreshRate>
+               <rate>60 Hertz</rate>
+            </refreshRate>
+         </resolutionEntry>
+      </resolution>
+      <systemCodeGroup>G4 Common Codes v2</systemCodeGroup>
+      <systemCodeGroup>Modero Common Codes</systemCodeGroup>
+      <systemCodeGroup>mips Firmware with Sound Common</systemCodeGroup>
+      <systemCodeGroup>Modero Secondary Interface Codes</systemCodeGroup>
+      <systemCodeGroup>MVP Common</systemCodeGroup>
+      <systemCodeGroup>Streaming Video Codes</systemCodeGroup>
+      <systemCodeGroup>Bluetooth Codes</systemCodeGroup>
+      <systemCodeGroup>MXA-AVB Codes</systemCodeGroup>
+	  <systemCodeGroup>Smart Card Codes</systemCodeGroup>
+      <deviceIDs>
+         <deviceID>403</deviceID>
+         <deviceID>402</deviceID>
+         <deviceID>371</deviceID>
+         <deviceID>372</deviceID>
+         <deviceID>327</deviceID>
+         <deviceID>334</deviceID>
+         <deviceID>469</deviceID>
+      </deviceIDs>
+   </panelEntry>
+   
+   <panelEntry>
+      <type>HPX-MSP-7</type>
+      <description>HydraPort Touch Connection Port with 7" Panel</description>
+      <deviceID>468</deviceID>
+      <series>X</series>
+      <screenSize>71</screenSize>
+      <numVideoWindows>1</numVideoWindows>
+      <numWirelessVideo>0</numWirelessVideo>
+      <streamingVideo>1</streamingVideo>
+      <isAudioDisabled>0</isAudioDisabled>
+      <hasLightSensor>0</hasLightSensor>
+      <hasMotionSensor>0</hasMotionSensor>
+      <hasBatteryLevel>0</hasBatteryLevel>
+      <hasVoIP>1</hasVoIP>
+      <hasPFAnimations>1</hasPFAnimations>
+      <hasSPV>1</hasSPV>
+      <fdType>2</fdType>
+      <textType>advType1</textType>
+      <panelImage>images\HPX-MSP-7_300x200.jpg</panelImage>
+      <resolution>
+         <resolutionEntry>
+            <width>1024</width>
+            <height>600</height>
+            <setupPages>Modero-X_1920x1920-Setup-SP.TP4</setupPages>
+            <externalButtons>MSD-700_ExternalButtons.xml</externalButtons>
+            <extButtonsAlt>MSD_ExtButtonsGesturesHorz.xml</extButtonsAlt>
+            <refreshRate>
+               <rate>60 Hertz</rate>
+            </refreshRate>
+         </resolutionEntry>
+      </resolution>
+      <systemCodeGroup>G4 Common Codes v2</systemCodeGroup>
+      <systemCodeGroup>Modero Common Codes</systemCodeGroup>
+      <systemCodeGroup>mips Firmware with Sound Common</systemCodeGroup>
+      <systemCodeGroup>Modero Secondary Interface Codes</systemCodeGroup>
+      <systemCodeGroup>MVP Common</systemCodeGroup>
+      <systemCodeGroup>Streaming Video Codes</systemCodeGroup>
+      <systemCodeGroup>Bluetooth Codes</systemCodeGroup>
+      <systemCodeGroup>MXA-AVB Codes</systemCodeGroup>
+	  <systemCodeGroup>Smart Card Codes</systemCodeGroup>
+      <systemChannels>
+         <codeEntry>
+            <code>180</code>
+            <adv>1</adv>
+            <text>Panel Setup: Flipped Up Position</text>
+         </codeEntry>
+      </systemChannels>
+      <deviceIDs>
+         <deviceID>468</deviceID>
+         <deviceID>400</deviceID>
+         <deviceID>377</deviceID>
+         <deviceID>291</deviceID>
+         <deviceID>324</deviceID>
+         <deviceID>331</deviceID>
+         <deviceID>376</deviceID>
+         <deviceID>401</deviceID>
+      </deviceIDs>
+   </panelEntry>
+   
+<panelEntry>
+      <type>HPX-MSP-10</type>
+      <description>HydraPort Touch Connection Port with 10.1" Panel</description>
+      <deviceID>469</deviceID>
+      <series>X</series>
+      <screenSize>71</screenSize>
+      <numVideoWindows>1</numVideoWindows>
+      <numWirelessVideo>0</numWirelessVideo>
+      <streamingVideo>1</streamingVideo>
+      <isAudioDisabled>0</isAudioDisabled>
+      <hasLightSensor>0</hasLightSensor>
+      <hasMotionSensor>0</hasMotionSensor>
+      <hasBatteryLevel>0</hasBatteryLevel>
+      <hasVoIP>1</hasVoIP>
+      <hasPFAnimations>1</hasPFAnimations>
+      <hasSPV>1</hasSPV>
+      <fdType>2</fdType>
+      <textType>advType1</textType>
+      <panelImage>images\HPX-MSP-10_300x200.jpg</panelImage>
+      <resolution>
+         <resolutionEntry>
+            <width>1280</width>
+            <height>800</height>
+            <setupPages>Modero-X_1920x1920-Setup-SP.TP4</setupPages>
+            <externalButtons>MSD-1000_ExternalButtons.xml</externalButtons>
+            <extButtonsAlt>MSD_ExtButtonsGesturesHorz.xml</extButtonsAlt>
+            <refreshRate>
+               <rate>60 Hertz</rate>
+            </refreshRate>
+         </resolutionEntry>
+      </resolution>
+      <systemCodeGroup>G4 Common Codes v2</systemCodeGroup>
+      <systemCodeGroup>Modero Common Codes</systemCodeGroup>
+      <systemCodeGroup>mips Firmware with Sound Common</systemCodeGroup>
+      <systemCodeGroup>Modero Secondary Interface Codes</systemCodeGroup>
+      <systemCodeGroup>MVP Common</systemCodeGroup>
+      <systemCodeGroup>Streaming Video Codes</systemCodeGroup>
+      <systemCodeGroup>Bluetooth Codes</systemCodeGroup>
+      <systemCodeGroup>MXA-AVB Codes</systemCodeGroup>
+	  <systemCodeGroup>Smart Card Codes</systemCodeGroup>
+      <systemChannels>
+         <codeEntry>
+            <code>180</code>
+            <adv>1</adv>
+            <text>Panel Setup: Flipped Up Position</text>
+         </codeEntry>
+      </systemChannels>
+      <deviceIDs>
+         <deviceID>469</deviceID>
+         <deviceID>402</deviceID>
+         <deviceID>403</deviceID>
+         <deviceID>371</deviceID>
+         <deviceID>372</deviceID>
+         <deviceID>327</deviceID>
+         <deviceID>334</deviceID>
+      </deviceIDs>
+   </panelEntry>
+   
+   <panelEntry>
+      <type>MXD-430</type>
+      <description>4.3 inch color portrait wall-mount touch panel with intercom</description>
+      <deviceID>375</deviceID>
+      <series>X</series>
+      <screenSize>43</screenSize>
+      <numVideoWindows>1</numVideoWindows>
+      <numWirelessVideo>0</numWirelessVideo>
+      <streamingVideo>1</streamingVideo>
+      <isAudioDisabled>0</isAudioDisabled>
+      <hasLightSensor>1</hasLightSensor>
+      <hasMotionSensor>1</hasMotionSensor>
+      <hasBatteryLevel>0</hasBatteryLevel>
+      <hasVoIP>1</hasVoIP>
+      <hasPFAnimations>1</hasPFAnimations>
+      <hasSPV>1</hasSPV>
+      <fdType>2</fdType>
+      <textType>advType1</textType>
+      <panelImage>images\MXD-430.jpg</panelImage>
+      <resolution>
+         <resolutionEntry>
+            <width>480</width>
+            <height>800</height>
+            <setupPages>Modero-X_1920x1920-Setup-SP.TP4</setupPages>
+            <extButtonsAlt>MXD_ExtButtonsGesturesVert.xml</extButtonsAlt>
+            <externalButtons>MXD-430_ExternalButtons.xml</externalButtons>
+            <refreshRate>
+               <rate>60 Hertz</rate>
+            </refreshRate>
+         </resolutionEntry>
+      </resolution>
+      <systemCodeGroup>G4 Common Codes v2</systemCodeGroup>
+      <systemCodeGroup>Modero Common Codes</systemCodeGroup>
+      <systemCodeGroup>Modero Sensors Codes</systemCodeGroup>
+      <systemCodeGroup>mips Firmware with Sound Common</systemCodeGroup>
+      <systemCodeGroup>Modero Secondary Interface Codes</systemCodeGroup>
+      <systemCodeGroup>MVP Common</systemCodeGroup>
+      <systemCodeGroup>Streaming Video Codes</systemCodeGroup>
+      <systemCodeGroup>NFC Codes</systemCodeGroup>
+      <systemCodeGroup>Bluetooth Codes</systemCodeGroup>
+      <systemCodeGroup>MXA-AVB Codes</systemCodeGroup>
+	  <systemCodeGroup>Smart Card Codes</systemCodeGroup>
+      <deviceIDs>
+         <deviceID>375</deviceID>
+         <deviceID>274</deviceID>
+         <deviceID>327</deviceID>
+         <deviceID>334</deviceID>
+      </deviceIDs>
+   </panelEntry>
+   
+   <panelEntry>
+      <type>MXD-430-L</type>
+      <description>4.3 inch color portrait wall-mount touch panel with intercom</description>
+      <deviceID>375</deviceID>
+      <series>X</series>
+      <screenSize>43</screenSize>
+      <numVideoWindows>1</numVideoWindows>
+      <numWirelessVideo>0</numWirelessVideo>
+      <streamingVideo>1</streamingVideo>
+      <isAudioDisabled>0</isAudioDisabled>
+      <hasLightSensor>1</hasLightSensor>
+      <hasMotionSensor>1</hasMotionSensor>
+      <hasBatteryLevel>0</hasBatteryLevel>
+      <hasVoIP>1</hasVoIP>
+      <hasPFAnimations>1</hasPFAnimations>
+      <hasSPV>1</hasSPV>
+      <fdType>2</fdType>
+      <textType>advType1</textType>
+      <panelImage>images\MXD-430.jpg</panelImage>
+      <resolution>
+         <resolutionEntry>
+            <width>800</width>
+            <height>480</height>
+            <setupPages>Modero-X_1920x1920-Setup-SP.TP4</setupPages>
+            <extButtonsAlt>MXD_ExtButtonsGesturesVert.xml</extButtonsAlt>
+            <externalButtons>MXD-430_ExternalButtons.xml</externalButtons>
+            <refreshRate>
+               <rate>60 Hertz</rate>
+            </refreshRate>
+         </resolutionEntry>
+      </resolution>
+      <systemCodeGroup>G4 Common Codes v2</systemCodeGroup>
+      <systemCodeGroup>Modero Common Codes</systemCodeGroup>
+      <systemCodeGroup>Modero Sensors Codes</systemCodeGroup>
+      <systemCodeGroup>mips Firmware with Sound Common</systemCodeGroup>
+      <systemCodeGroup>Modero Secondary Interface Codes</systemCodeGroup>
+      <systemCodeGroup>MVP Common</systemCodeGroup>
+      <systemCodeGroup>Streaming Video Codes</systemCodeGroup>
+      <systemCodeGroup>NFC Codes</systemCodeGroup>
+      <systemCodeGroup>Bluetooth Codes</systemCodeGroup>
+      <systemCodeGroup>MXA-AVB Codes</systemCodeGroup>
+	  <systemCodeGroup>Smart Card Codes</systemCodeGroup>
+      <deviceIDs>
+         <deviceID>375</deviceID>
+         <deviceID>274</deviceID>
+         <deviceID>327</deviceID>
+         <deviceID>334</deviceID>
+      </deviceIDs>
+   </panelEntry>
+   
+   <panelEntry>
+      <type>MXT-700</type>
+      <description>7 inch color widescreen tabletop touch panel with intercom</description>
+      <deviceID>373</deviceID>
+      <series>X</series>
+      <screenSize>71</screenSize>
+      <numVideoWindows>1</numVideoWindows>
+      <numWirelessVideo>0</numWirelessVideo>
+      <streamingVideo>1</streamingVideo>
+      <isAudioDisabled>0</isAudioDisabled>
+      <hasLightSensor>1</hasLightSensor>
+      <hasMotionSensor>1</hasMotionSensor>
+      <hasBatteryLevel>0</hasBatteryLevel>
+      <hasVoIP>1</hasVoIP>
+      <hasPFAnimations>1</hasPFAnimations>
+      <hasSPV>1</hasSPV>
+      <fdType>2</fdType>
+      <textType>advType1</textType>
+      <panelImage>images\MXT-700.jpg</panelImage>
+      <resolution>
+         <resolutionEntry>
+            <width>1024</width>
+            <height>600</height>
+            <setupPages>Modero-X_1920x1920-Setup-SP.TP4</setupPages>
+            <extButtonsAlt>MXD_ExtButtonsGesturesHorz.xml</extButtonsAlt>
+            <externalButtons>MXD_1024x600_ExternalButtons.xml</externalButtons>
+            <refreshRate>
+               <rate>60 Hertz</rate>
+            </refreshRate>
+         </resolutionEntry>
+      </resolution>
+      <systemCodeGroup>G4 Common Codes v2</systemCodeGroup>
+      <systemCodeGroup>Modero Common Codes</systemCodeGroup>
+      <systemCodeGroup>Modero Sensors Codes</systemCodeGroup>
+      <systemCodeGroup>mips Firmware with Sound Common</systemCodeGroup>
+      <systemCodeGroup>Modero Secondary Interface Codes</systemCodeGroup>
+      <systemCodeGroup>MVP Common</systemCodeGroup>
+      <systemCodeGroup>Streaming Video Codes</systemCodeGroup>
+      <systemCodeGroup>NFC Codes</systemCodeGroup>
+      <systemCodeGroup>Bluetooth Codes</systemCodeGroup>
+      <systemCodeGroup>Master Scan Codes</systemCodeGroup>
+      <systemCodeGroup>MXA-AVB Codes</systemCodeGroup>
+	  <systemCodeGroup>Smart Card Codes</systemCodeGroup>
+      <deviceIDs>
+         <deviceID>373</deviceID>
+         <deviceID>374</deviceID>
+         <deviceID>274</deviceID>
+         <deviceID>327</deviceID>
+         <deviceID>334</deviceID>
+      </deviceIDs>
+   </panelEntry>
+   
+   <panelEntry>
+      <type>MXD-700</type>
+      <description>7 inch color widescreen wall-mount touch panel with intercom</description>
+      <deviceID>374</deviceID>
+      <series>X</series>
+      <screenSize>71</screenSize>
+      <numVideoWindows>1</numVideoWindows>
+      <numWirelessVideo>0</numWirelessVideo>
+      <streamingVideo>1</streamingVideo>
+      <isAudioDisabled>0</isAudioDisabled>
+      <hasLightSensor>1</hasLightSensor>
+      <hasMotionSensor>1</hasMotionSensor>
+      <hasBatteryLevel>0</hasBatteryLevel>
+      <hasVoIP>1</hasVoIP>
+      <hasPFAnimations>1</hasPFAnimations>
+      <hasSPV>1</hasSPV>
+      <fdType>2</fdType>
+      <textType>advType1</textType>
+      <panelImage>images\MXD-700.jpg</panelImage>
+      <resolution>
+         <resolutionEntry>
+            <width>1024</width>
+            <height>600</height>
+            <setupPages>Modero-X_1920x1920-Setup-SP.TP4</setupPages>
+            <extButtonsAlt>MXD_ExtButtonsGesturesHorz.xml</extButtonsAlt>
+            <externalButtons>MXD_1024x600_ExternalButtons.xml</externalButtons>
+            <refreshRate>
+               <rate>60 Hertz</rate>
+            </refreshRate>
+         </resolutionEntry>
+         <resolutionEntry>
+            <width>600</width>
+            <height>1024</height>
+            <setupPages>Modero-X_1920x1920-Setup-SP.TP4</setupPages>
+            <extButtonsAlt>MXD_ExtButtonsGesturesVert.xml</extButtonsAlt>
+            <externalButtons>MXD_600x1024_ExternalButtons.xml</externalButtons>
+            <refreshRate>
+               <rate>60 Hertz</rate>
+            </refreshRate>
+         </resolutionEntry>
+      </resolution>
+      <systemCodeGroup>G4 Common Codes v2</systemCodeGroup>
+      <systemCodeGroup>Modero Common Codes</systemCodeGroup>
+      <systemCodeGroup>Modero Sensors Codes</systemCodeGroup>
+      <systemCodeGroup>mips Firmware with Sound Common</systemCodeGroup>
+      <systemCodeGroup>Modero Secondary Interface Codes</systemCodeGroup>
+      <systemCodeGroup>MVP Common</systemCodeGroup>
+      <systemCodeGroup>Streaming Video Codes</systemCodeGroup>
+      <systemCodeGroup>NFC Codes</systemCodeGroup>
+      <systemCodeGroup>Bluetooth Codes</systemCodeGroup>
+      <systemCodeGroup>Master Scan Codes</systemCodeGroup>
+      <systemCodeGroup>MXA-AVB Codes</systemCodeGroup>
+	  <systemCodeGroup>Smart Card Codes</systemCodeGroup>
+      <systemChannels>
+         <codeEntry>
+            <code>76</code>
+            <adv>1</adv>
+            <text>Panel Setup: Screen Orientation</text>
+         </codeEntry>
+      </systemChannels>
+      <deviceIDs>
+         <deviceID>374</deviceID>
+         <deviceID>373</deviceID>
+         <deviceID>274</deviceID>
+         <deviceID>327</deviceID>
+         <deviceID>334</deviceID>
+      </deviceIDs>
+   </panelEntry>
+   
+   <panelEntry>
+      <type>MXT-1000</type>
+      <description>10 inch color widescreen tabletop touch panel with intercom</description>
+      <deviceID>371</deviceID>
+      <series>X</series>
+      <screenSize>102</screenSize>
+      <numVideoWindows>1</numVideoWindows>
+      <numWirelessVideo>0</numWirelessVideo>
+      <streamingVideo>1</streamingVideo>
+      <isAudioDisabled>0</isAudioDisabled>
+      <hasLightSensor>1</hasLightSensor>
+      <hasMotionSensor>1</hasMotionSensor>
+      <hasBatteryLevel>0</hasBatteryLevel>
+      <hasVoIP>1</hasVoIP>
+      <hasPFAnimations>1</hasPFAnimations>
+      <hasSPV>1</hasSPV>
+      <fdType>2</fdType>
+      <textType>advType1</textType>
+      <panelImage>images\MXT-1000.jpg</panelImage>
+      <resolution>
+         <resolutionEntry>
+            <width>1280</width>
+            <height>800</height>
+            <setupPages>Modero-X_1920x1920-Setup-SP.TP4</setupPages>
+            <extButtonsAlt>MXD_ExtButtonsGesturesHorz.xml</extButtonsAlt>
+            <externalButtons>MXD_1280x800_ExternalButtons.xml</externalButtons>
+            <refreshRate>
+               <rate>60 Hertz</rate>
+            </refreshRate>
+         </resolutionEntry>
+      </resolution>
+      <systemCodeGroup>G4 Common Codes v2</systemCodeGroup>
+      <systemCodeGroup>Modero Common Codes</systemCodeGroup>
+      <systemCodeGroup>Modero Sensors Codes</systemCodeGroup>
+      <systemCodeGroup>mips Firmware with Sound Common</systemCodeGroup>
+      <systemCodeGroup>Modero Secondary Interface Codes</systemCodeGroup>
+      <systemCodeGroup>MVP Common</systemCodeGroup>
+      <systemCodeGroup>Streaming Video Codes</systemCodeGroup>
+      <systemCodeGroup>NFC Codes</systemCodeGroup>
+      <systemCodeGroup>Bluetooth Codes</systemCodeGroup>
+      <systemCodeGroup>Master Scan Codes</systemCodeGroup>
+      <systemCodeGroup>MXA-AVB Codes</systemCodeGroup>
+	  <systemCodeGroup>Smart Card Codes</systemCodeGroup>
+      <deviceIDs>
+         <deviceID>371</deviceID>
+         <deviceID>372</deviceID>
+         <deviceID>274</deviceID>
+         <deviceID>327</deviceID>
+         <deviceID>334</deviceID>
+      </deviceIDs>
+   </panelEntry>
+   
+   <panelEntry>
+      <type>MXD-1000</type>
+      <description>10 inch color widescreen wall-mount touch panel with intercom</description>
+      <deviceID>372</deviceID>
+      <series>X</series>
+      <screenSize>102</screenSize>
+      <numVideoWindows>1</numVideoWindows>
+      <numWirelessVideo>0</numWirelessVideo>
+      <streamingVideo>1</streamingVideo>
+      <isAudioDisabled>0</isAudioDisabled>
+      <hasLightSensor>1</hasLightSensor>
+      <hasMotionSensor>1</hasMotionSensor>
+      <hasBatteryLevel>0</hasBatteryLevel>
+      <hasVoIP>1</hasVoIP>
+      <hasPFAnimations>1</hasPFAnimations>
+      <hasSPV>1</hasSPV>
+      <fdType>2</fdType>
+      <textType>advType1</textType>
+      <panelImage>images\MXD-1000.jpg</panelImage>
+      <resolution>
+         <resolutionEntry>
+            <width>1280</width>
+            <height>800</height>
+            <setupPages>Modero-X_1920x1920-Setup-SP.TP4</setupPages>
+            <extButtonsAlt>MXD_ExtButtonsGesturesHorz.xml</extButtonsAlt>
+            <externalButtons>MXD_1280x800_ExternalButtons.xml</externalButtons>
+            <refreshRate>
+               <rate>60 Hertz</rate>
+            </refreshRate>
+         </resolutionEntry>
+         <resolutionEntry>
+            <width>800</width>
+            <height>1280</height>
+            <setupPages>Modero-X_1920x1920-Setup-SP.TP4</setupPages>
+            <extButtonsAlt>MXD_ExtButtonsGesturesVert.xml</extButtonsAlt>
+            <externalButtons>MXD_800x1280_ExternalButtons.xml</externalButtons>
+            <refreshRate>
+               <rate>60 Hertz</rate>
+            </refreshRate>
+         </resolutionEntry>
+      </resolution>
+      <systemCodeGroup>G4 Common Codes v2</systemCodeGroup>
+      <systemCodeGroup>Modero Common Codes</systemCodeGroup>
+      <systemCodeGroup>Modero Sensors Codes</systemCodeGroup>
+      <systemCodeGroup>mips Firmware with Sound Common</systemCodeGroup>
+      <systemCodeGroup>Modero Secondary Interface Codes</systemCodeGroup>
+      <systemCodeGroup>MVP Common</systemCodeGroup>
+      <systemCodeGroup>Streaming Video Codes</systemCodeGroup>
+      <systemCodeGroup>NFC Codes</systemCodeGroup>
+      <systemCodeGroup>Bluetooth Codes</systemCodeGroup>
+      <systemCodeGroup>Master Scan Codes</systemCodeGroup>
+      <systemCodeGroup>MXA-AVB Codes</systemCodeGroup>
+	  <systemCodeGroup>Smart Card Codes</systemCodeGroup>
+      <systemChannels>
+         <codeEntry>
+            <code>76</code>
+            <adv>1</adv>
+            <text>Panel Setup: Screen Orientation</text>
+         </codeEntry>
+      </systemChannels>
+      <deviceIDs>
+         <deviceID>372</deviceID>
+         <deviceID>371</deviceID>
+         <deviceID>274</deviceID>
+         <deviceID>327</deviceID>
+         <deviceID>334</deviceID>
+      </deviceIDs>
+   </panelEntry>
+   
+<panelEntry>
+      <type>MXT-1900L-PAN</type>
+      <description>19-inch color widescreen tabletop touch panel with intercom</description>
+      <deviceID>369</deviceID>
+      <series>X</series>
+      <screenSize>190</screenSize>
+      <numVideoWindows>1</numVideoWindows>
+      <numWirelessVideo>0</numWirelessVideo>
+      <streamingVideo>1</streamingVideo>
+      <isAudioDisabled>0</isAudioDisabled>
+      <hasLightSensor>1</hasLightSensor>
+      <hasMotionSensor>1</hasMotionSensor>
+      <hasBatteryLevel>0</hasBatteryLevel>
+      <hasVoIP>1</hasVoIP>
+      <hasPFAnimations>1</hasPFAnimations>
+      <hasSPV>1</hasSPV>
+      <fdType>2</fdType>
+      <textType>advType1</textType>
+      <panelImage>images\MXT-1900L.jpg</panelImage>
+      <resolution>
+         <resolutionEntry>
+            <width>1920</width>
+            <height>530</height>
+            <setupPages>Modero-X_1920x1920-Setup-SP.TP4</setupPages>
+            <extButtonsAlt>MXD_ExtButtonsGesturesHorz.xml</extButtonsAlt>
+            <externalButtons>MXD_1920x530_ExternalButtons.xml</externalButtons>
+            <refreshRate>
+               <rate>60 Hertz</rate>
+            </refreshRate>
+         </resolutionEntry>
+      </resolution>
+      <systemCodeGroup>G4 Common Codes v2</systemCodeGroup>
+      <systemCodeGroup>Modero Common Codes</systemCodeGroup>
+      <systemCodeGroup>Modero Sensors Codes</systemCodeGroup>
+      <systemCodeGroup>mips Firmware with Sound Common</systemCodeGroup>
+      <systemCodeGroup>Modero Secondary Interface Codes</systemCodeGroup>
+      <systemCodeGroup>MVP Common</systemCodeGroup>
+      <systemCodeGroup>Streaming Video Codes</systemCodeGroup>
+      <systemCodeGroup>NFC Codes</systemCodeGroup>
+      <systemCodeGroup>Bluetooth Codes</systemCodeGroup>
+      <systemCodeGroup>Master Scan Codes</systemCodeGroup>
+      <systemCodeGroup>MXA-AVB Codes</systemCodeGroup>
+	  <systemCodeGroup>Smart Card Codes</systemCodeGroup>
+      <systemChannels>
+         <codeEntry>
+            <code>76</code>
+            <adv>1</adv>
+            <text>Panel Setup: Screen Orientation</text>
+         </codeEntry>
+      </systemChannels>
+      <deviceIDs>
+         <deviceID>369</deviceID>
+         <deviceID>370</deviceID>
+         <deviceID>274</deviceID>
+         <deviceID>327</deviceID>
+         <deviceID>334</deviceID>
+      </deviceIDs>
+   </panelEntry>
+
+<panelEntry>
+      <type>MXD-1900L-PAN</type>
+      <description>19-inch color widescreen wall-mount touch panel with intercom</description>
+      <deviceID>370</deviceID>
+      <series>X</series>
+      <screenSize>190</screenSize>
+      <numVideoWindows>1</numVideoWindows>
+      <numWirelessVideo>0</numWirelessVideo>
+      <streamingVideo>1</streamingVideo>
+      <isAudioDisabled>0</isAudioDisabled>
+      <hasLightSensor>1</hasLightSensor>
+      <hasMotionSensor>1</hasMotionSensor>
+      <hasBatteryLevel>0</hasBatteryLevel>
+      <hasVoIP>1</hasVoIP>
+      <hasPFAnimations>1</hasPFAnimations>
+      <hasSPV>1</hasSPV>
+      <fdType>2</fdType>
+      <textType>advType1</textType>
+      <panelImage>images\MXD-1900L.jpg</panelImage>
+      <resolution>
+         <resolutionEntry>
+            <width>1920</width>
+            <height>530</height>
+            <setupPages>Modero-X_1920x1920-Setup-SP.TP4</setupPages>
+            <extButtonsAlt>MXD_ExtButtonsGesturesHorz.xml</extButtonsAlt>
+            <externalButtons>MXD_1920x530_ExternalButtons.xml</externalButtons>
+            <refreshRate>
+               <rate>60 Hertz</rate>
+            </refreshRate>
+         </resolutionEntry>
+         <resolutionEntry>
+            <width>530</width>
+            <height>1920</height>
+            <setupPages>Modero-X_1920x1920-Setup-SP.TP4</setupPages>
+            <extButtonsAlt>MXD_ExtButtonsGesturesVert.xml</extButtonsAlt>
+            <externalButtons>MXD_530x1920_ExternalButtons.xml</externalButtons>
+            <refreshRate>
+               <rate>60 Hertz</rate>
+            </refreshRate>
+         </resolutionEntry>
+      </resolution>
+      <systemCodeGroup>G4 Common Codes v2</systemCodeGroup>
+      <systemCodeGroup>Modero Common Codes</systemCodeGroup>
+      <systemCodeGroup>Modero Sensors Codes</systemCodeGroup>
+      <systemCodeGroup>mips Firmware with Sound Common</systemCodeGroup>
+      <systemCodeGroup>Modero Secondary Interface Codes</systemCodeGroup>
+      <systemCodeGroup>MVP Common</systemCodeGroup>
+      <systemCodeGroup>Streaming Video Codes</systemCodeGroup>
+      <systemCodeGroup>NFC Codes</systemCodeGroup>
+      <systemCodeGroup>Bluetooth Codes</systemCodeGroup>
+      <systemCodeGroup>Master Scan Codes</systemCodeGroup>
+      <systemCodeGroup>MXA-AVB Codes</systemCodeGroup>
+	  <systemCodeGroup>Smart Card Codes</systemCodeGroup>      
+      <systemChannels>
+         <codeEntry>
+            <code>76</code>
+            <adv>1</adv>
+            <text>Panel Setup: Screen Orientation</text>
+         </codeEntry>
+      </systemChannels>
+      <deviceIDs>
+         <deviceID>370</deviceID>
+         <deviceID>369</deviceID>
+         <deviceID>274</deviceID>
+         <deviceID>327</deviceID>
+         <deviceID>334</deviceID>
+      </deviceIDs>
+   </panelEntry>
+
+<panelEntry>
+      <type>MXT-2000XL-PAN</type>
+      <description>20-inch color widescreen tabletop touch panel with intercom</description>
+      <deviceID>361</deviceID>
+      <series>X</series>
+      <screenSize>203</screenSize>
+      <numVideoWindows>1</numVideoWindows>
+      <numWirelessVideo>0</numWirelessVideo>
+      <streamingVideo>1</streamingVideo>
+      <isAudioDisabled>0</isAudioDisabled>
+      <hasLightSensor>1</hasLightSensor>
+      <hasMotionSensor>1</hasMotionSensor>
+      <hasBatteryLevel>0</hasBatteryLevel>
+      <hasVoIP>1</hasVoIP>
+      <hasPFAnimations>1</hasPFAnimations>
+      <hasSPV>1</hasSPV>
+      <fdType>2</fdType>
+      <textType>advType1</textType>
+      <panelImage>images\MXT-2000XL.jpg</panelImage>
+      <resolution>
+         <resolutionEntry>
+            <width>1920</width>
+            <height>800</height>
+            <setupPages>Modero-X_1920x1920-Setup-SP.TP4</setupPages>
+            <extButtonsAlt>MXD_ExtButtonsGesturesHorz.xml</extButtonsAlt>
+            <externalButtons>MXD_1920x800_ExternalButtons.xml</externalButtons>
+            <refreshRate>
+               <rate>60 Hertz</rate>
+            </refreshRate>
+         </resolutionEntry>
+         <resolutionEntry>
+            <systemOnly>1</systemOnly>
+            <width>1920</width>
+            <height>1920</height>
+            <setupPages>MOD-800x1920.TP4</setupPages>
+            <refreshRate>
+               <rate>60 Hertz</rate>
+            </refreshRate>
+         </resolutionEntry>
+      </resolution>
+      <systemCodeGroup>G4 Common Codes v2</systemCodeGroup>
+      <systemCodeGroup>Modero Common Codes</systemCodeGroup>
+      <systemCodeGroup>Modero Sensors Codes</systemCodeGroup>
+      <systemCodeGroup>mips Firmware with Sound Common</systemCodeGroup>
+      <systemCodeGroup>Modero Secondary Interface Codes</systemCodeGroup>
+      <systemCodeGroup>MVP Common</systemCodeGroup>
+      <systemCodeGroup>Streaming Video Codes</systemCodeGroup>
+      <systemCodeGroup>NFC Codes</systemCodeGroup>
+      <systemCodeGroup>Bluetooth Codes</systemCodeGroup>
+      <systemCodeGroup>Master Scan Codes</systemCodeGroup>
+      <systemCodeGroup>MXA-AVB Codes</systemCodeGroup>
+   	  <systemCodeGroup>Smart Card Codes</systemCodeGroup>
+      <systemChannels>
+         <codeEntry>
+            <code>76</code>
+            <adv>1</adv>
+            <text>Panel Setup: Screen Orientation</text>
+         </codeEntry>
+      </systemChannels>
+      <deviceIDs>
+         <deviceID>361</deviceID>
+         <deviceID>368</deviceID>
+         <deviceID>274</deviceID>
+         <deviceID>327</deviceID>
+         <deviceID>334</deviceID>
+      </deviceIDs>
+   </panelEntry>
+
+<panelEntry>
+      <type>MXD-2000XL-PAN</type>
+      <description>20-inch color widescreen wall-mount touch panel with intercom</description>
+      <deviceID>368</deviceID>
+      <series>X</series>
+      <screenSize>203</screenSize>
+      <numVideoWindows>1</numVideoWindows>
+      <numWirelessVideo>0</numWirelessVideo>
+      <streamingVideo>1</streamingVideo>
+      <isAudioDisabled>0</isAudioDisabled>
+      <hasLightSensor>1</hasLightSensor>
+      <hasMotionSensor>1</hasMotionSensor>
+      <hasBatteryLevel>0</hasBatteryLevel>
+      <hasVoIP>1</hasVoIP>
+      <hasPFAnimations>1</hasPFAnimations>
+      <hasSPV>1</hasSPV>
+      <fdType>2</fdType>
+      <textType>advType1</textType>
+      <panelImage>images\MXD-2000XL.jpg</panelImage>
+      <resolution>
+         <resolutionEntry>
+            <width>1920</width>
+            <height>800</height>
+            <setupPages>Modero-X_1920x1920-Setup-SP.TP4</setupPages>
+            <extButtonsAlt>MXD_ExtButtonsGesturesHorz.xml</extButtonsAlt>
+            <externalButtons>MXD_1920x800_ExternalButtons.xml</externalButtons>
+            <refreshRate>
+               <rate>60 Hertz</rate>
+            </refreshRate>
+         </resolutionEntry>
+         <resolutionEntry>
+            <width>800</width>
+            <height>1920</height>
+            <setupPages>Modero-X_1920x1920-Setup-SP.TP4</setupPages>
+            <extButtonsAlt>MXD_ExtButtonsGesturesVert.xml</extButtonsAlt>
+            <externalButtons>MXD_800x1920_ExternalButtons.xml</externalButtons>
+            <refreshRate>
+               <rate>60 Hertz</rate>
+            </refreshRate>
+         </resolutionEntry>
+      </resolution>
+      <systemCodeGroup>G4 Common Codes v2</systemCodeGroup>
+      <systemCodeGroup>Modero Common Codes</systemCodeGroup>
+      <systemCodeGroup>Modero Sensors Codes</systemCodeGroup>
+      <systemCodeGroup>mips Firmware with Sound Common</systemCodeGroup>
+      <systemCodeGroup>Modero Secondary Interface Codes</systemCodeGroup>
+      <systemCodeGroup>MVP Common</systemCodeGroup>
+      <systemCodeGroup>Streaming Video Codes</systemCodeGroup>
+      <systemCodeGroup>NFC Codes</systemCodeGroup>
+      <systemCodeGroup>Bluetooth Codes</systemCodeGroup>
+      <systemCodeGroup>Master Scan Codes</systemCodeGroup>
+      <systemCodeGroup>MXA-AVB Codes</systemCodeGroup>
+	  <systemCodeGroup>Smart Card Codes</systemCodeGroup>      
+      <systemChannels>
+         <codeEntry>
+            <code>76</code>
+            <adv>1</adv>
+            <text>Panel Setup: Screen Orientation</text>
+         </codeEntry>
+      </systemChannels>
+      <deviceIDs>
+         <deviceID>368</deviceID>
+         <deviceID>367</deviceID>
+         <deviceID>274</deviceID>
+         <deviceID>327</deviceID>
+         <deviceID>334</deviceID>
+      </deviceIDs>
+   </panelEntry>
+
+   <panelEntry>
+      <type>NXP-PLV</type>
+      <description>PosiTrack Pilot Video Touch Panel</description>
+      <deviceID>326</deviceID>
+      <screenSize>70</screenSize>
+      <videoInputs>
+         <input>composite video</input>
+      </videoInputs>
+      <numVideoWindows>1</numVideoWindows>
+      <numWirelessVideo>0</numWirelessVideo>
+      <isAudioDisabled>0</isAudioDisabled>
+      <hasLightSensor>0</hasLightSensor>
+      <hasMotionSensor>0</hasMotionSensor>
+      <hasBatteryLevel>0</hasBatteryLevel>
+      <hasAMX38IRRecv>0</hasAMX38IRRecv>
+      <hasAMX455IRRecv>0</hasAMX455IRRecv>
+      <panelImage>images\NXP-PLV.jpg</panelImage>
+      <resolution>
+         <resolutionEntry>
+            <width>800</width>
+            <height>480</height>
+            <setupPages>Modero-800x480.TP4</setupPages>
+            <externalButtons>NXP-PLV_ExternalButtons.xml</externalButtons>
+            <refreshRate>
+               <rate>60 Hertz</rate>
+            </refreshRate>
+         </resolutionEntry>
+      </resolution>
+      <systemCodeGroup>G4 Common Codes</systemCodeGroup>
+      <systemCodeGroup>Modero Common Codes</systemCodeGroup>
+      <systemCodeGroup>Modero Video Codes</systemCodeGroup>
+      <systemCodeGroup>mips Firmware with Sound Common</systemCodeGroup>
+      <systemCodeGroup>PosiTrack Pilot Codes</systemCodeGroup>
+      <systemChannels>
+         <codeEntry>
+            <code>149</code>
+            <adv>1</adv>
+            <text>Panel Setup: Bass Boost</text>
+         </codeEntry>
+         <codeEntry>
+            <code>260</code>
+            <adv>1</adv>
+            <text>Secondary Network Interface: Setup Secondary Network Interface</text>
+         </codeEntry>
+         <codeEntry>
+            <code>261</code>
+            <adv>1</adv>
+            <text>Primary Network Interface: Setup Primary Network Interface</text>
+         </codeEntry>
+      </systemChannels>
+      <systemAddresses/>
+      <reservedCodeGroup>PosiTrack Pilot Reserved Codes</reservedCodeGroup>
+      <deviceIDs>
+         <deviceID>326</deviceID>
+      </deviceIDs>
+   </panelEntry>
+
+   <panelEntry>
+      <type>NXP-TPI4</type>
+      <description>NetLinx Touch Panel Interface 4</description>
+      <deviceID>274</deviceID>
+      <videoInputs>
+         <input>video slot 1</input>
+         <input>video slot 2</input>
+         <input>video slot 3</input>
+         <input>video slot 4</input>
+      </videoInputs>
+      <numVideoWindows>4</numVideoWindows>
+      <numWirelessVideo>0</numWirelessVideo>
+      <isAudioDisabled>0</isAudioDisabled>
+      <hasLightSensor>0</hasLightSensor>
+      <hasMotionSensor>0</hasMotionSensor>
+      <hasBatteryLevel>0</hasBatteryLevel>
+      <panelImage>images\NXP-TPI4.jpg</panelImage>
+      <resolution>
+         <resolutionEntry>
+            <width>640</width>
+            <height>480</height>
+            <setupPages>TPI4-640x480.TP4</setupPages>
+            <refreshRate>
+               <rate>60 Hertz</rate>
+               <rate>72 Hertz</rate>
+               <rate>75 Hertz</rate>
+            </refreshRate>
+         </resolutionEntry>
+         <resolutionEntry>
+            <width>800</width>
+            <height>600</height>
+            <setupPages>TPI4-800x600.TP4</setupPages>
+            <refreshRate>
+               <rate>60 Hertz</rate>
+               <rate>72 Hertz</rate>
+               <rate>75 Hertz</rate>
+            </refreshRate>
+         </resolutionEntry>
+         <resolutionEntry>
+            <width>1024</width>
+            <height>768</height>
+            <setupPages>TPI4-1024x768.TP4</setupPages>
+            <refreshRate>
+               <rate>60 Hertz</rate>
+               <rate>70 Hertz</rate>
+               <rate>75 Hertz</rate>
+            </refreshRate>
+         </resolutionEntry>
+         <resolutionEntry>
+            <width>1280</width>
+            <height>1024</height>
+            <setupPages>TPI4-1280x1024.TP4</setupPages>
+            <refreshRate>
+               <rate>60 Hertz</rate>
+            </refreshRate>
+         </resolutionEntry>
+      </resolution>
+      <systemCodeGroup>G4 Common Codes</systemCodeGroup>
+      <systemCodeGroup>TPI-4 Common Codes</systemCodeGroup>
+      <deviceIDs>
+         <deviceID>274</deviceID>
+         <deviceID>327</deviceID>
+         <deviceID>334</deviceID>
+      </deviceIDs>
+   </panelEntry>
+
+   <panelEntry>
+      <type>TPI-PRO</type>
+      <description>Total Presentation Interface - Pro Edition (2/4 Source Input)</description>
+      <deviceID>327</deviceID>
+      <videoInputs>
+         <input>video slot 1</input>
+         <input>video slot 2</input>
+         <input>video slot 3</input>
+         <input>video slot 4</input>
+      </videoInputs>
+      <numVideoWindows>4</numVideoWindows>
+      <numWirelessVideo>0</numWirelessVideo>
+      <isAudioDisabled>0</isAudioDisabled>
+      <hasLightSensor>0</hasLightSensor>
+      <hasMotionSensor>0</hasMotionSensor>
+      <hasBatteryLevel>0</hasBatteryLevel>
+      <dynamicSetupPages>1</dynamicSetupPages>
+      <panelImage>images\TPI-PRO.jpg</panelImage>
+      <resolution>
+         <resolutionEntry>
+            <width>640</width>
+            <height>480</height>
+            <setupPages>Ref_Res_640x480.TP4</setupPages>
+            <refreshRate>
+               <rate>60 Hertz</rate>
+               <rate>72 Hertz</rate>
+               <rate>75 Hertz</rate>
+            </refreshRate>
+         </resolutionEntry>
+         <resolutionEntry>
+            <width>800</width>
+            <height>600</height>
+            <setupPages>Ref_Res_640x480.TP4</setupPages>
+            <refreshRate>
+               <rate>60 Hertz</rate>
+               <rate>72 Hertz</rate>
+               <rate>75 Hertz</rate>
+            </refreshRate>
+         </resolutionEntry>
+         <resolutionEntry>
+            <width>1024</width>
+            <height>768</height>
+            <setupPages>Ref_Res_640x480.TP4</setupPages>
+            <refreshRate>
+               <rate>60 Hertz</rate>
+               <rate>70 Hertz</rate>
+               <rate>75 Hertz</rate>
+            </refreshRate>
+         </resolutionEntry>
+         <resolutionEntry>
+            <width>1280</width>
+            <height>720</height>
+            <setupPages>Ref_Res_640x480.TP4</setupPages>
+            <refreshRate>
+               <rate>60 Hertz</rate>
+            </refreshRate>
+         </resolutionEntry>
+         <resolutionEntry>
+            <width>1280</width>
+            <height>768</height>
+            <setupPages>Ref_Res_640x480.TP4</setupPages>
+            <refreshRate>
+               <rate>60 Hertz</rate>
+            </refreshRate>
+         </resolutionEntry>
+         <resolutionEntry>
+            <width>1280</width>
+            <height>800</height>
+            <setupPages>Ref_Res_640x480.TP4</setupPages>
+            <refreshRate>
+               <rate>60 Hertz</rate>
+            </refreshRate>
+         </resolutionEntry>
+         <resolutionEntry>
+            <width>1280</width>
+            <height>1024</height>
+            <setupPages>Ref_Res_640x480.TP4</setupPages>
+            <refreshRate>
+               <rate>60 Hertz</rate>
+               <rate>75 Hertz</rate>
+            </refreshRate>
+         </resolutionEntry>
+         <resolutionEntry>
+            <width>1360</width>
+            <height>768</height>
+            <setupPages>Ref_Res_640x480.TP4</setupPages>
+            <refreshRate>
+               <rate>60 Hertz</rate>
+            </refreshRate>
+         </resolutionEntry>
+         <resolutionEntry>
+            <width>1440</width>
+            <height>900</height>
+            <setupPages>Ref_Res_640x480.TP4</setupPages>
+            <refreshRate>
+               <rate>60 Hertz</rate>
+            </refreshRate>
+         </resolutionEntry>
+         <resolutionEntry>
+            <width>1600</width>
+            <height>1200</height>
+            <setupPages>Ref_Res_640x480.TP4</setupPages>
+            <refreshRate>
+               <rate>60 Hertz</rate>
+            </refreshRate>
+         </resolutionEntry>
+         <resolutionEntry>
+            <width>1680</width>
+            <height>1050</height>
+            <setupPages>Ref_Res_640x480.TP4</setupPages>
+            <refreshRate>
+               <rate>60 Hertz</rate>
+            </refreshRate>
+         </resolutionEntry>
+         <resolutionEntry>
+            <width>1920</width>
+            <height>1080</height>
+            <setupPages>Ref_Res_640x480.TP4</setupPages>
+            <refreshRate>
+               <rate>60 Hertz</rate>
+            </refreshRate>
+         </resolutionEntry>
+         <resolutionEntry>
+            <width>1920</width>
+            <height>1200</height>
+            <setupPages>Ref_Res_640x480.TP4</setupPages>
+            <refreshRate>
+               <rate>60 Hertz</rate>
+            </refreshRate>
+         </resolutionEntry>
+      </resolution>
+      <systemCodeGroup>G4 Common Codes v2</systemCodeGroup>
+      <systemCodeGroup>Modero Common Codes</systemCodeGroup>
+      <systemCodeGroup>TPI-4 Common Codes</systemCodeGroup>
+      <systemCodeGroup>Native TakeNote Codes</systemCodeGroup>
+      <systemChannels>
+         <codeEntry>
+            <code>188</code>
+            <adv>1</adv>
+            <text>VideoRGB: Input Resolution Up</text>
+         </codeEntry>
+         <codeEntry>
+            <code>189</code>
+            <adv>1</adv>
+            <text>VideoRGB: Input Resolution Down</text>
+         </codeEntry>
+      </systemChannels>
+      <systemAddresses>
+         <codeEntry>
+            <code>209</code>
+            <adv>1</adv>
+            <text>VideoRGB: Input Resolution</text>
+            <description>Displays the current input resolution selection</description>
+         </codeEntry>
+      </systemAddresses>
+      <systemLevels>
+         <codeEntry>
+            <code>50</code>
+            <adv>0</adv>
+            <text>VideoRGB: Input Resolution</text>
+            <description>Sets the input resolution selection</description>
+         </codeEntry>
+      </systemLevels>
+      <deviceIDs>
+         <deviceID>327</deviceID>
+         <deviceID>334</deviceID>
+      </deviceIDs>
+   </panelEntry>
+
+   <panelEntry>
+      <type>TPI-PRO-DVI</type>
+      <description>Total Presentation Interface PRO with DVI (2/4 Source Input)</description>
+      <deviceID>334</deviceID>
+      <videoInputs>
+         <input>video slot 1</input>
+         <input>video slot 2</input>
+         <input>video slot 3</input>
+         <input>video slot 4</input>
+      </videoInputs>
+      <numVideoWindows>4</numVideoWindows>
+      <numWirelessVideo>0</numWirelessVideo>
+      <isAudioDisabled>0</isAudioDisabled>
+      <hasLightSensor>0</hasLightSensor>
+      <hasMotionSensor>0</hasMotionSensor>
+      <hasBatteryLevel>0</hasBatteryLevel>
+      <hasResolutionExt>1</hasResolutionExt>
+      <dynamicSetupPages>1</dynamicSetupPages>
+      <panelImage>images\TPI-PRO.jpg</panelImage>
+      <resolution>
+         <resolutionEntry>
+            <width>640</width>
+            <height>480</height>
+            <setupPages>Ref_Res_640x480.TP4</setupPages>
+            <refreshRate>
+               <rate>60 Hertz</rate>
+               <rate>72 Hertz</rate>
+               <rate>75 Hertz</rate>
+            </refreshRate>
+         </resolutionEntry>
+         <resolutionEntry>
+            <width>720</width>
+            <height>480</height>
+            <extension>CEA</extension>
+            <setupPages>Ref_Res_640x480.TP4</setupPages>
+            <refreshRate>
+               <rate>60 Hertz</rate>
+            </refreshRate>
+         </resolutionEntry>
+         <resolutionEntry>
+            <width>720</width>
+            <height>576</height>
+            <extension>CEA</extension>
+            <setupPages>Ref_Res_640x480.TP4</setupPages>
+            <refreshRate>
+               <rate>50 Hertz</rate>
+            </refreshRate>
+         </resolutionEntry>
+         <resolutionEntry>
+            <width>800</width>
+            <height>600</height>
+            <setupPages>Ref_Res_640x480.TP4</setupPages>
+            <refreshRate>
+               <rate>60 Hertz</rate>
+               <rate>72 Hertz</rate>
+               <rate>75 Hertz</rate>
+            </refreshRate>
+         </resolutionEntry>
+         <resolutionEntry>
+            <width>1024</width>
+            <height>768</height>
+            <setupPages>Ref_Res_640x480.TP4</setupPages>
+            <refreshRate>
+               <rate>60 Hertz</rate>
+               <rate>70 Hertz</rate>
+               <rate>75 Hertz</rate>
+            </refreshRate>
+         </resolutionEntry>
+         <resolutionEntry>
+            <width>1280</width>
+            <height>720</height>
+            <extension>VESA</extension>
+            <setupPages>Ref_Res_640x480.TP4</setupPages>
+            <refreshRate>
+               <rate>60 Hertz</rate>
+            </refreshRate>
+         </resolutionEntry>
+         <resolutionEntry>
+            <width>1280</width>
+            <height>720</height>
+            <extension>CEA</extension>
+            <setupPages>Ref_Res_640x480.TP4</setupPages>
+            <refreshRate>
+               <rate>60 Hertz</rate>
+               <rate>50 Hertz</rate>
+            </refreshRate>
+         </resolutionEntry>
+         <resolutionEntry>
+            <width>1280</width>
+            <height>768</height>
+            <setupPages>Ref_Res_640x480.TP4</setupPages>
+            <refreshRate>
+               <rate>60 Hertz</rate>
+            </refreshRate>
+         </resolutionEntry>
+         <resolutionEntry>
+            <width>1280</width>
+            <height>800</height>
+            <setupPages>Ref_Res_640x480.TP4</setupPages>
+            <refreshRate>
+               <rate>60 Hertz</rate>
+            </refreshRate>
+         </resolutionEntry>
+         <resolutionEntry>
+            <width>1280</width>
+            <height>1024</height>
+            <setupPages>Ref_Res_640x480.TP4</setupPages>
+            <refreshRate>
+               <rate>60 Hertz</rate>
+               <rate>75 Hertz</rate>
+            </refreshRate>
+         </resolutionEntry>
+         <resolutionEntry>
+            <width>1360</width>
+            <height>768</height>
+            <setupPages>Ref_Res_640x480.TP4</setupPages>
+            <refreshRate>
+               <rate>60 Hertz</rate>
+            </refreshRate>
+         </resolutionEntry>
+         <resolutionEntry>
+            <width>1440</width>
+            <height>900</height>
+            <setupPages>Ref_Res_640x480.TP4</setupPages>
+            <refreshRate>
+               <rate>60 Hertz</rate>
+            </refreshRate>
+         </resolutionEntry>
+         <resolutionEntry>
+            <width>1600</width>
+            <height>1200</height>
+            <setupPages>Ref_Res_640x480.TP4</setupPages>
+            <refreshRate>
+               <rate>60 Hertz</rate>
+            </refreshRate>
+         </resolutionEntry>
+         <resolutionEntry>
+            <width>1680</width>
+            <height>1050</height>
+            <setupPages>Ref_Res_640x480.TP4</setupPages>
+            <refreshRate>
+               <rate>60 Hertz</rate>
+            </refreshRate>
+         </resolutionEntry>
+         <resolutionEntry>
+            <width>1920</width>
+            <height>1080</height>
+            <extension>VESA</extension>
+            <setupPages>Ref_Res_640x480.TP4</setupPages>
+            <refreshRate>
+               <rate>60 Hertz</rate>
+            </refreshRate>
+         </resolutionEntry>
+         <resolutionEntry>
+            <width>1920</width>
+            <height>1080</height>
+            <extension>CEA</extension>
+            <setupPages>Ref_Res_640x480.TP4</setupPages>
+            <refreshRate>
+               <rate>60 Hertz</rate>
+               <rate>50 Hertz</rate>
+            </refreshRate>
+         </resolutionEntry>
+         <resolutionEntry>
+            <width>1920</width>
+            <height>1200</height>
+            <setupPages>Ref_Res_640x480.TP4</setupPages>
+            <refreshRate>
+               <rate>60 Hertz</rate>
+            </refreshRate>
+         </resolutionEntry>
+      </resolution>
+      <systemCodeGroup>G4 Common Codes v2</systemCodeGroup>
+      <systemCodeGroup>Modero Common Codes</systemCodeGroup>
+      <systemCodeGroup>TPI-4 Common Codes</systemCodeGroup>
+      <systemCodeGroup>Native TakeNote Codes</systemCodeGroup>
+      <systemChannels>
+         <codeEntry>
+            <code>188</code>
+            <adv>1</adv>
+            <text>VideoRGB: Input Resolution Up</text>
+         </codeEntry>
+         <codeEntry>
+            <code>189</code>
+            <adv>1</adv>
+            <text>VideoRGB: Input Resolution Down</text>
+         </codeEntry>
+      </systemChannels>
+      <systemAddresses>
+         <codeEntry>
+            <code>209</code>
+            <adv>1</adv>
+            <text>VideoRGB: Input Resolution</text>
+            <description>Displays the current input resolution selection</description>
+         </codeEntry>
+      </systemAddresses>
+      <systemLevels>
+         <codeEntry>
+            <code>50</code>
+            <adv>0</adv>
+            <text>VideoRGB: Input Resolution</text>
+            <description>Sets the input resolution selection</description>
+         </codeEntry>
+      </systemLevels>
+      <deviceIDs>
+         <deviceID>334</deviceID>
+         <deviceID>327</deviceID>
+      </deviceIDs>
+   </panelEntry>
+
+   <panelEntry>
+      <type>NXV-300</type>
+      <description>AMX Virtual Touchpanel (3 VNC Sessions)</description>
+      <deviceID>341</deviceID>
+      <numVideoWindows>0</numVideoWindows>
+      <numWirelessVideo>0</numWirelessVideo>
+      <isAudioDisabled>0</isAudioDisabled>
+      <hasLightSensor>0</hasLightSensor>
+      <hasMotionSensor>0</hasMotionSensor>
+      <hasBatteryLevel>0</hasBatteryLevel>
+      <hasComputerCtrl>0</hasComputerCtrl>
+      <hasTakeNote>0</hasTakeNote>
+      <dynamicSetupPages>1</dynamicSetupPages>
+      <hasFilenameLimit>1</hasFilenameLimit>
+      <filenameLimit>95</filenameLimit>
+      <panelImage>images\NXV-300.jpg</panelImage>
+      <resolution>
+         <resolutionEntry>
+            <width>480</width>
+            <height>272</height>
+            <setupPages>Ref_Res_480x272.TP4</setupPages>
+            <refreshRate>
+               <rate>60 Hertz</rate>
+            </refreshRate>
+         </resolutionEntry>
+         <resolutionEntry>
+            <width>800</width>
+            <height>480</height>
+            <setupPages>Ref_Res_480x272.TP4</setupPages>
+            <refreshRate>
+               <rate>60 Hertz</rate>
+            </refreshRate>
+         </resolutionEntry>
+      </resolution>
+      <systemCodeGroup>G4 Common Codes v2</systemCodeGroup>
+      <systemCodeGroup>Modero Common Codes</systemCodeGroup>
+      <deviceIDs>
+         <deviceID>341</deviceID>
+      </deviceIDs>
+   </panelEntry>
+
+   <panelEntry>
+      <type>R-4</type>
+      <description>R-4 ZigBee Remote Control</description>
+      <deviceID>322</deviceID>
+      <deviceClass>remote</deviceClass>
+      <screenSize>24</screenSize>
+      <numVideoWindows>0</numVideoWindows>
+      <numWirelessVideo>0</numWirelessVideo>
+      <isAudioDisabled>1</isAudioDisabled>
+      <hasLightSensor>0</hasLightSensor>
+      <hasMotionSensor>0</hasMotionSensor>
+      <hasBatteryLevel>1</hasBatteryLevel>
+      <hasCradleSensor>1</hasCradleSensor>
+      <hasAMX38IREmit>0</hasAMX38IREmit>
+      <hasAMX455IREmit>0</hasAMX455IREmit>
+      <hasListBoxBtn>1</hasListBoxBtn>
+      <hasDynamicImages>0</hasDynamicImages>
+      <hasComputerCtrl>0</hasComputerCtrl>
+      <hasTakeNote>0</hasTakeNote>
+      <hasTextEntry>1</hasTextEntry>
+      <userIRCount>0</userIRCount>
+      <hasFilenameLimit>1</hasFilenameLimit>
+      <filenameLimit>95</filenameLimit>
+      <panelImage>images\R4-Remote.jpg</panelImage>
+      <resolution>
+         <resolutionEntry>
+            <width>240</width>
+            <height>320</height>
+            <setupPages>R4-240x320.TP4</setupPages>
+            <externalButtons>Mio R-4_ExternalButtons.xml</externalButtons>
+            <extButtonsEntry>
+               <key>1</key>
+               <description>Keypad with Transport Functions</description>
+               <file>Mio R-4_Transports.xml</file>
+            </extButtonsEntry>
+            <extButtonsEntry>
+               <key>2</key>
+               <description>Teletext Keypad</description>
+               <file>Mio R-4_European.xml</file>
+            </extButtonsEntry>
+            <extButtonsEntry>
+               <key>3</key>
+               <description>Teletext Keypad with Transport Functions</description>
+               <file>Mio R-4_EuroTransports.xml</file>
+            </extButtonsEntry>
+            <refreshRate>
+               <rate>60 Hertz</rate>
+            </refreshRate>
+         </resolutionEntry>
+      </resolution>
+      <systemCodeGroup>G4 Common Codes</systemCodeGroup>
+      <systemCodeGroup>Mio R4 Codes</systemCodeGroup>
+      <systemCodeGroup>Mesh Network Codes</systemCodeGroup>
+      <systemChannels>
+         <codeEntry>
+            <code>4</code>
+            <adv>1</adv>
+            <text>Panel Setup: Contrast Up</text>
+            <description>Adjusts the contrast up</description>
+         </codeEntry>
+         <codeEntry>
+            <code>5</code>
+            <adv>1</adv>
+            <text>Panel Setup: Contrast Down</text>
+            <description>Adjusts the contrast down</description>
+         </codeEntry>
+         <codeEntry>
+            <code>289</code>
+            <adv>1</adv>
+            <text>Battery Setup: Disable Panel Dim When On Battery Power</text>
+            <description>When active will turn off the panels automatic dimming of the brightness to 80%</description>
+         </codeEntry>
+         <codeEntry>
+            <code>260</code>
+            <adv>1</adv>
+            <text>Secondary Network Interface: Setup Secondary Network Interface</text>
+            <description>Used when entering the Secondary Network Interface page, this lets the firmware know when to retrieve the latest settings</description>
+         </codeEntry>
+         <codeEntry>
+            <code>261</code>
+            <adv>1</adv>
+            <text>Primary Network Interface: Setup Primary Network Interface</text>
+            <description>Used when entering the Primary Network Interface page, this lets the firmware know when to retrieve the latest settings</description>
+         </codeEntry>
+      </systemChannels>
+      <systemAddresses>
+         <codeEntry>
+            <code>34</code>
+            <adv>1</adv>
+            <text>Panel Setup: Contrast</text>
+            <description>Displays the current Contrast Level</description>
+         </codeEntry>
+      </systemAddresses>
+      <systemLevels>
+         <codeEntry>
+            <code>1</code>
+            <adv>0</adv>
+            <text>Panel Setup: Brightness</text>
+            <description>Displays the current Brightness level</description>
+         </codeEntry>
+      </systemLevels>
+      <deviceIDs>
+         <deviceID>322</deviceID>
+      </deviceIDs>
+   </panelEntry>
+
+   <panelEntry>
+      <type>Mio Modero DMS</type>
+      <description>Mio Modero DMS Keypad</description>
+      <deviceID>304</deviceID>
+      <deviceClass>DMS</deviceClass>
+      <screenSize>75</screenSize>
+      <numVideoWindows>0</numVideoWindows>
+      <numWirelessVideo>0</numWirelessVideo>
+      <isAudioDisabled>0</isAudioDisabled>
+      <hasLightSensor>0</hasLightSensor>
+      <hasMotionSensor>0</hasMotionSensor>
+      <hasBatteryLevel>0</hasBatteryLevel>
+      <hasCradleSensor>0</hasCradleSensor>
+      <hasAMX38IREmit>0</hasAMX38IREmit>
+      <hasAMX455IREmit>0</hasAMX455IREmit>
+      <userIRCount>2</userIRCount>
+      <hasListBoxBtn>1</hasListBoxBtn>
+      <panelImage>images\DMS.jpg</panelImage>
+      <resolution>
+         <resolutionEntry>
+            <width>128</width>
+            <height>240</height>
+            <setupPages>none</setupPages>
+            <refreshRate>
+               <rate>60 Hertz</rate>
+            </refreshRate>
+         </resolutionEntry>
+      </resolution>
+      <systemCodeGroup>DMS Codes</systemCodeGroup>
+      <colorSelections>
+         <colorEntry>
+            <colorData>Black|0,0,0|255,255,255</colorData>
+            <colorImage>images\Mio Modero DMS black.jpg</colorImage>
+            <colorBezel>images\DMS_black.jpg</colorBezel>
+         </colorEntry>
+         <colorEntry>
+            <colorData>White|255,255,255|0,0,0</colorData>
+            <colorImage>images\Mio Modero DMS white.jpg</colorImage>
+            <colorBezel>images\DMS_white.jpg</colorBezel>
+         </colorEntry>
+         <colorEntry>
+            <colorData>Beige|209,207,158|255,255,255</colorData>
+            <colorImage>images\Mio Modero DMS beige.jpg</colorImage>
+            <colorBezel>images\DMS_beige.jpg</colorBezel>
+         </colorEntry>
+         <colorEntry>
+            <colorData>Almond|223,221,189|255,255,255</colorData>
+            <colorImage>images\Mio Modero DMS almond.jpg</colorImage>
+            <colorBezel>images\DMS_almond.jpg</colorBezel>
+         </colorEntry>
+         <colorEntry>
+            <colorData>Ivory|230,234,147|255,255,255</colorData>
+            <colorImage>images\Mio Modero DMS ivory.jpg</colorImage>
+            <colorBezel>images\DMS_ivory.jpg</colorBezel>
+         </colorEntry>
+         <colorEntry>
+            <colorData>Light Almond|223,221,189|255,255,255</colorData>
+            <colorImage>images\Mio Modero DMS light almond.jpg</colorImage>
+            <colorBezel>images\DMS_lightalmond.jpg</colorBezel>
+         </colorEntry>
+         <colorEntry>
+            <colorData>Gray|128,128,128|255,255,255</colorData>
+            <colorImage>images\Mio Modero DMS gray.jpg</colorImage>
+            <colorBezel>images\DMS_gray.jpg</colorBezel>
+         </colorEntry>
+         <colorEntry>
+            <colorData>Brown|137,134,67|255,255,255</colorData>
+            <colorImage>images\Mio Modero DMS brown.jpg</colorImage>
+            <colorBezel>images\DMS_brown.jpg</colorBezel>
+         </colorEntry>
+         <colorEntry>
+            <colorData>Taupe|128,128,128|255,255,255</colorData>
+            <colorImage>images\Mio Modero DMS taupe.jpg</colorImage>
+            <colorBezel>images\DMS_taupe.jpg</colorBezel>
+         </colorEntry>
+         <colorEntry>
+            <colorData>Gold|242,215,106|255,255,255</colorData>
+            <colorImage>images\Mio Modero DMS gold.jpg</colorImage>
+            <colorBezel>images\DMS_gold.jpg</colorBezel>
+         </colorEntry>
+         <colorEntry>
+            <colorData>Silver|216,216,216|255,255,255</colorData>
+            <colorImage>images\Mio Modero DMS silver.jpg</colorImage>
+            <colorBezel>images\DMS_silver.jpg</colorBezel>
+         </colorEntry>
+      </colorSelections>
+   </panelEntry>
+
+   <panelEntry>
+      <type>Mio Modero DMS Pinnacle</type>
+      <description>Mio Modero DMS Pinnacle Keypad</description>
+      <deviceID>305</deviceID>
+      <deviceClass>DMS</deviceClass>
+      <screenSize>75</screenSize>
+      <numVideoWindows>0</numVideoWindows>
+      <numWirelessVideo>0</numWirelessVideo>
+      <isAudioDisabled>0</isAudioDisabled>
+      <hasLightSensor>0</hasLightSensor>
+      <hasMotionSensor>0</hasMotionSensor>
+      <hasBatteryLevel>0</hasBatteryLevel>
+      <hasCradleSensor>0</hasCradleSensor>
+      <hasAMX38IREmit>0</hasAMX38IREmit>
+      <hasAMX455IREmit>0</hasAMX455IREmit>
+      <userIRCount>2</userIRCount>
+      <hasListBoxBtn>1</hasListBoxBtn>
+      <panelImage>images\DMSPinnacle.jpg</panelImage>
+      <resolution>
+         <resolutionEntry>
+            <width>128</width>
+            <height>240</height>
+            <setupPages>none</setupPages>
+            <refreshRate>
+               <rate>60 Hertz</rate>
+            </refreshRate>
+         </resolutionEntry>
+      </resolution>
+      <systemCodeGroup>DMS Codes</systemCodeGroup>
+      <colorSelections>
+         <colorEntry>
+            <colorData>Black|0,0,0|255,255,255</colorData>
+            <colorImage>images\Mio Modero DMS Pinnacle black.jpg</colorImage>
+            <colorBezel>images\DMS_Pinnacle_black.jpg</colorBezel>
+         </colorEntry>
+         <colorEntry>
+            <colorData>White|255,255,255|0,0,0</colorData>
+            <colorImage>images\Mio Modero DMS Pinnacle white.jpg</colorImage>
+            <colorBezel>images\DMS_Pinnacle_white.jpg</colorBezel>
+         </colorEntry>
+         <colorEntry>
+            <colorData>Beige|209,207,158|255,255,255</colorData>
+            <colorImage>images\Mio Modero DMS Pinnacle beige.jpg</colorImage>
+            <colorBezel>images\DMS_Pinnacle_beige.jpg</colorBezel>
+         </colorEntry>
+         <colorEntry>
+            <colorData>Almond|223,221,189|255,255,255</colorData>
+            <colorImage>images\Mio Modero DMS Pinnacle almond.jpg</colorImage>
+            <colorBezel>images\DMS_Pinnacle_almond.jpg</colorBezel>
+         </colorEntry>
+         <colorEntry>
+            <colorData>Ivory|230,234,147|255,255,255</colorData>
+            <colorImage>images\Mio Modero DMS Pinnacle ivory.jpg</colorImage>
+            <colorBezel>images\DMS_Pinnacle_ivory.jpg</colorBezel>
+         </colorEntry>
+         <colorEntry>
+            <colorData>Light Almond|223,221,189|255,255,255</colorData>
+            <colorImage>images\Mio Modero DMS Pinnacle light almond.jpg</colorImage>
+            <colorBezel>images\DMS_Pinnacle_lightalmond.jpg</colorBezel>
+         </colorEntry>
+         <colorEntry>
+            <colorData>Gray|128,128,128|255,255,255</colorData>
+            <colorImage>images\Mio Modero DMS Pinnacle gray.jpg</colorImage>
+            <colorBezel>images\DMS_Pinnacle_gray.jpg</colorBezel>
+         </colorEntry>
+         <colorEntry>
+            <colorData>Brown|137,134,67|255,255,255</colorData>
+            <colorImage>images\Mio Modero DMS Pinnacle brown.jpg</colorImage>
+            <colorBezel>images\DMS_Pinnacle_brown.jpg</colorBezel>
+         </colorEntry>
+         <colorEntry>
+            <colorData>Taupe|128,128,128|255,255,255</colorData>
+            <colorImage>images\Mio Modero DMS Pinnacle taupe.jpg</colorImage>
+            <colorBezel>images\DMS_Pinnacle_taupe.jpg</colorBezel>
+         </colorEntry>
+         <colorEntry>
+            <colorData>Gold|242,215,106|255,255,255</colorData>
+            <colorImage>images\Mio Modero DMS Pinnacle gold.jpg</colorImage>
+            <colorBezel>images\DMS_Pinnacle_gold.jpg</colorBezel>
+         </colorEntry>
+         <colorEntry>
+            <colorData>Silver|216,216,216|255,255,255</colorData>
+            <colorImage>images\Mio Modero DMS Pinnacle silver.jpg</colorImage>
+            <colorBezel>images\DMS_Pinnacle_silver.jpg</colorBezel>
+         </colorEntry>
+      </colorSelections>
+   </panelEntry>
+
+   <panelEntry>
+      <type>G3Conversion</type>
+      <private>1</private>
+      <description>Private type for G3 panel conversions</description>
+      <videoInputs>
+         <input>video slot 1</input>
+         <input>video slot 2</input>
+         <input>video slot 3</input>
+         <input>video slot 4</input>
+      </videoInputs>
+      <numVideoWindows>4</numVideoWindows>
+      <hasLightSensor>1</hasLightSensor>
+      <hasMotionSensor>1</hasMotionSensor>
+      <hasBatteryLevel>0</hasBatteryLevel>
+      <panelImage/>
+      <resolution>
+         <resolutionEntry>
+            <width>320</width>
+            <height>240</height>
+            <refreshRate>
+               <rate>60 Hertz</rate>
+            </refreshRate>
+         </resolutionEntry>
+         <resolutionEntry>
+            <width>640</width>
+            <height>480</height>
+            <refreshRate>
+               <rate>60 Hertz</rate>
+            </refreshRate>
+         </resolutionEntry>
+         <resolutionEntry>
+            <width>800</width>
+            <height>600</height>
+            <refreshRate>
+               <rate>60 Hertz</rate>
+            </refreshRate>
+         </resolutionEntry>
+         <resolutionEntry>
+            <width>1024</width>
+            <height>768</height>
+            <refreshRate>
+               <rate>60 Hertz</rate>
+            </refreshRate>
+         </resolutionEntry>
+         <resolutionEntry>
+            <width>1280</width>
+            <height>1024</height>
+            <refreshRate>
+               <rate>60 Hertz</rate>
+            </refreshRate>
+         </resolutionEntry>
+      </resolution>
+   </panelEntry>
+
+   
+   
+   
+   
+   
+   
+   
+		
+
+
+
+<panelEntry>
+      <type>iPod touch (TPC)</type>
+      <description>Apple iPod Touch (www.touchpanelcontrol.com)</description>
+      <deviceID>349</deviceID>
+      <screenSize>38</screenSize>
+      <screenSize>52</screenSize>
+      <numVideoWindows>1</numVideoWindows>
+      <numWirelessVideo>1</numWirelessVideo>
+      <isAudioDisabled>0</isAudioDisabled>
+      <hasLightSensor>0</hasLightSensor>
+      <hasMotionSensor>0</hasMotionSensor>
+      <hasBatteryLevel>1</hasBatteryLevel>
+      <hasCradleSensor>1</hasCradleSensor>
+      <hasAMX38IREmit>1</hasAMX38IREmit>
+      <hasAMX455IREmit>1</hasAMX455IREmit>
+      <hasVoIP>1</hasVoIP>
+	  <textType>advType1</textType>
+      <hasPFAnimations>1</hasPFAnimations>
+      <userIRCount>0</userIRCount>
+      <hasSPV>1</hasSPV>
+      <streamingVideo>1</streamingVideo>
+	  	<fdType>2</fdType>
+      <panelImage>images\iTouch.jpg</panelImage>
+      <resolution>
+         <resolutionEntry>
+            <width>480</width>
+            <height>320</height>
+            <setupPages>iPhone-480x320.TP4</setupPages>
+            <externalButtons>iPhone_Landscape_ExternalButtons.xml</externalButtons>
+            <refreshRate>
+               <rate>60 Hertz</rate>
+            </refreshRate>
+         </resolutionEntry>
+         <resolutionEntry>
+            <width>320</width>
+            <height>480</height>
+            <setupPages>iPhone-320x480.TP4</setupPages>
+            <externalButtons>iPhone_Portrait_ExternalButtons.xml</externalButtons>
+            <refreshRate>
+               <rate>60 Hertz</rate>
+            </refreshRate>
+         </resolutionEntry>
+         <resolutionEntry>
+            <width>960</width>
+            <height>640</height>
+            <setupPages>iPhone-480x320.TP4</setupPages>
+            <externalButtons>iPhoneRetina1_Landscape_ExternalButtons.xml</externalButtons>
+            <refreshRate>
+               <rate>60 Hertz</rate>
+            </refreshRate>
+         </resolutionEntry>
+         <resolutionEntry>
+            <width>640</width>
+            <height>960</height>
+            <setupPages>iPhone-320x480.TP4</setupPages>
+            <externalButtons>iPhoneRetina1_Portrait_ExternalButtons.xml</externalButtons>
+            <refreshRate>
+               <rate>60 Hertz</rate>
+            </refreshRate>
+         </resolutionEntry>
+         <resolutionEntry>
+            <width>1136</width>
+            <height>640</height>
+            <setupPages>iPhone-480x320.TP4</setupPages>
+            <externalButtons>iPhoneRetina2_Landscape_ExternalButtons.xml</externalButtons>
+            <refreshRate>
+               <rate>60 Hertz</rate>
+            </refreshRate>
+         </resolutionEntry>
+         <resolutionEntry>
+            <width>640</width>
+            <height>1136</height>
+            <setupPages>iPhone-320x480.TP4</setupPages>
+            <externalButtons>iPhoneRetina2_Portrait_ExternalButtons.xml</externalButtons>
+            <refreshRate>
+               <rate>60 Hertz</rate>
+            </refreshRate>
+         </resolutionEntry>
+      </resolution>
+      <systemCodeGroup>G4 Common Codes v2</systemCodeGroup>
+      <systemCodeGroup>MVP Common</systemCodeGroup>
+      <systemCodeGroup>Modero Common Codes</systemCodeGroup>
+      <systemCodeGroup>MVP 8400 Common</systemCodeGroup>
+      <systemCodeGroup>mips Firmware with Sound Common</systemCodeGroup>
+      <systemCodeGroup>Wireless G</systemCodeGroup>
+	  	<systemCodeGroup>Modero Secondary Interface Codes</systemCodeGroup>
+	  	<systemCodeGroup>Streaming Video Codes</systemCodeGroup>
+      <systemChannels>
+         <codeEntry>
+            <code>76</code>
+            <adv>1</adv>
+            <text>Panel Setup: Screen Orientation</text>
+         </codeEntry>
+      </systemChannels>
+      <systemAddresses/>
+      <deviceIDs>
+         <deviceID>349</deviceID>
+         <deviceID>347</deviceID>
+      </deviceIDs>
+   </panelEntry><panelEntry>
+		<type>iPhone (TPC)</type>
+		<description>Apple iPhone4 (www.touchpanelcontrol.com)</description>
+		<deviceID>347</deviceID>
+		<screenSize>38</screenSize>
+		<screenSize>52</screenSize>
+		<numVideoWindows>1</numVideoWindows>
+		<numWirelessVideo>1</numWirelessVideo>
+		<isAudioDisabled>0</isAudioDisabled>
+		<hasLightSensor>0</hasLightSensor>
+		<hasMotionSensor>0</hasMotionSensor>
+		<hasBatteryLevel>1</hasBatteryLevel>
+		<hasCradleSensor>1</hasCradleSensor>
+		<hasAMX38IREmit>1</hasAMX38IREmit>
+		<hasAMX455IREmit>1</hasAMX455IREmit>
+		<hasVoIP>1</hasVoIP>
+		<textType>advType1</textType>
+		<hasPFAnimations>1</hasPFAnimations>
+		<userIRCount>8</userIRCount>
+		<hasSPV>1</hasSPV>
+    <streamingVideo>1</streamingVideo>
+		<usbType>RNDIS</usbType>
+		<fdType>2</fdType>
+		<panelImage>images\iPhone.jpg</panelImage>
+		<resolution>
+			<resolutionEntry>
+				<width>480</width>
+				<height>320</height>
+				<setupPages>iPhone-480x320.TP4</setupPages>
+				<externalButtons>iPhone_Landscape_ExternalButtons.xml</externalButtons>
+				<refreshRate>
+				<rate>60 Hertz</rate>
+				</refreshRate>
+			</resolutionEntry>
+			<resolutionEntry>
+				<width>320</width>
+				<height>480</height>
+				<setupPages>iPhone-320x480.TP4</setupPages>
+				<externalButtons>iPhone_Portrait_ExternalButtons.xml</externalButtons>
+				<refreshRate>
+					<rate>60 Hertz</rate>
+				</refreshRate>
+			</resolutionEntry>
+			<resolutionEntry>
+        <width>960</width>
+        <height>640</height>
+        <setupPages>iPhone-480x320.TP4</setupPages>
+        <externalButtons>iPhoneRetina1_Landscape_ExternalButtons.xml</externalButtons>
+        <refreshRate>
+           <rate>60 Hertz</rate>
+        </refreshRate>
+     </resolutionEntry>
+     <resolutionEntry>
+        <width>640</width>
+        <height>960</height>
+        <setupPages>iPhone-320x480.TP4</setupPages>
+        <externalButtons>iPhoneRetina1_Portrait_ExternalButtons.xml</externalButtons>
+        <refreshRate>
+           <rate>60 Hertz</rate>
+        </refreshRate>
+     </resolutionEntry>
+     <resolutionEntry>
+        <width>1136</width>
+        <height>640</height>
+        <setupPages>iPhone-480x320.TP4</setupPages>
+        <externalButtons>iPhoneRetina2_Landscape_ExternalButtons.xml</externalButtons>
+        <refreshRate>
+           <rate>60 Hertz</rate>
+        </refreshRate>
+     </resolutionEntry>
+     <resolutionEntry>
+        <width>640</width>
+        <height>1136</height>
+        <setupPages>iPhone-320x480.TP4</setupPages>
+        <externalButtons>iPhoneRetina2_Portrait_ExternalButtons.xml</externalButtons>
+        <refreshRate>
+           <rate>60 Hertz</rate>
+        </refreshRate>
+     </resolutionEntry>
+		</resolution>
+		<systemCodeGroup>G4 Common Codes v2</systemCodeGroup>
+		<systemCodeGroup>MVP Common</systemCodeGroup>
+		<systemCodeGroup>Modero Common Codes</systemCodeGroup>
+		<systemCodeGroup>MVP 8400 Common</systemCodeGroup>
+		<systemCodeGroup>mips Firmware with Sound Common</systemCodeGroup>
+		<systemCodeGroup>Wireless G</systemCodeGroup>
+		<systemCodeGroup>Modero Secondary Interface Codes</systemCodeGroup>
+		<systemCodeGroup>Streaming Video Codes</systemCodeGroup>
+		<systemChannels>
+			<codeEntry>
+				<code>76</code>
+				<adv>1</adv>
+				<text>Panel Setup: Screen Orientation</text>
+			</codeEntry>
+		</systemChannels>
+    <systemAddresses/>
+    <deviceIDs>
+		 <deviceID>347</deviceID>
+    </deviceIDs>
+   </panelEntry><panelEntry>
+    <type>iPad (TPC)</type>
+      <description>Apple iPad (www.touchpanelcontrol.com)</description>
+      <deviceID>348</deviceID>
+      <screenSize>281</screenSize>
+      <screenSize>150</screenSize>
+      <numVideoWindows>1</numVideoWindows>
+      <numWirelessVideo>1</numWirelessVideo>
+      <isAudioDisabled>0</isAudioDisabled>
+      <hasLightSensor>0</hasLightSensor>
+      <hasMotionSensor>0</hasMotionSensor>
+      <hasBatteryLevel>1</hasBatteryLevel>
+      <hasCradleSensor>1</hasCradleSensor>
+      <hasAMX38IREmit>1</hasAMX38IREmit>
+      <hasAMX455IREmit>1</hasAMX455IREmit>
+      <hasVoIP>1</hasVoIP>
+	  <textType>advType1</textType>
+	  	<hasPFAnimations>1</hasPFAnimations>
+      <userIRCount>8</userIRCount>
+      <hasSPV>1</hasSPV>
+    	<streamingVideo>1</streamingVideo>
+      <usbType>RNDIS</usbType>
+      <fdType>2</fdType>
+      <panelImage>images\iPad.jpg</panelImage>
+      <resolution>
+      	 <resolutionEntry>
+            <width>1024</width>
+            <height>768</height>
+            <setupPages>iPad-1024x768.TP4</setupPages>
+            <externalButtons>iPad_Landscape_ExternalButtons.xml</externalButtons>
+            <refreshRate>
+               <rate>60 Hertz</rate>
+            </refreshRate>
+         </resolutionEntry>
+         <resolutionEntry>
+            <width>768</width>
+            <height>1024</height>
+            <setupPages>iPad-768x1024.TP4</setupPages>
+            <externalButtons>iPad_Portrait_ExternalButtons.xml</externalButtons>
+            <refreshRate>
+               <rate>60 Hertz</rate>
+            </refreshRate>
+         </resolutionEntry>
+         <resolutionEntry>
+            <width>2048</width>
+            <height>1536</height>
+            <setupPages>iPad-1024x768.TP4</setupPages>
+            <externalButtons>iPadRetina1_Landscape_ExternalButtons.xml</externalButtons>
+            <refreshRate>
+               <rate>60 Hertz</rate>
+            </refreshRate>
+         </resolutionEntry>
+         <resolutionEntry>
+            <width>1536</width>
+            <height>2048</height>
+            <setupPages>iPad-768x1024.TP4</setupPages>
+            <externalButtons>iPadRetina1_Portrait_ExternalButtons.xml</externalButtons>
+            <refreshRate>
+               <rate>60 Hertz</rate>
+            </refreshRate>
+         </resolutionEntry>
+      </resolution>
+      <systemCodeGroup>G4 Common Codes v2</systemCodeGroup>
+      <systemCodeGroup>MVP Common</systemCodeGroup>
+      <systemCodeGroup>Modero Common Codes</systemCodeGroup>
+      <systemCodeGroup>MVP 8400 Common</systemCodeGroup>
+      <systemCodeGroup>mips Firmware with Sound Common</systemCodeGroup>
+      <systemCodeGroup>Wireless G</systemCodeGroup>
+	  	<systemCodeGroup>Modero Secondary Interface Codes</systemCodeGroup>
+	  	<systemCodeGroup>Streaming Video Codes</systemCodeGroup>
+      <systemChannels>
+      	 <codeEntry>
+            <code>76</code>
+            <adv>1</adv>
+            <text>Panel Setup: Screen Orientation</text>
+         </codeEntry>
+      </systemChannels>
+      <systemAddresses/>
+      <deviceIDs>
+      	 	<deviceID>348</deviceID>
+      </deviceIDs>
+   </panelEntry><panelEntry>
+	      <type>Android (TPC)</type>
+	      <description>Android Mobile/Tablet Interface - www.touchpanelcontrol.com</description>
+	      <deviceID>351</deviceID>
+	      <screenSize>38</screenSize>
+	      <screenSize>52</screenSize>
+	      <numVideoWindows>1</numVideoWindows>
+	      <numWirelessVideo>1</numWirelessVideo>
+	      <isAudioDisabled>0</isAudioDisabled>
+	      <hasLightSensor>0</hasLightSensor>
+	      <hasMotionSensor>0</hasMotionSensor>
+	      <hasBatteryLevel>1</hasBatteryLevel>
+	      <hasCradleSensor>1</hasCradleSensor>
+	      <hasAMX38IREmit>1</hasAMX38IREmit>
+	      <hasAMX455IREmit>1</hasAMX455IREmit>
+	      <hasVoIP>1</hasVoIP>
+		  <textType>advType1</textType>
+		  	<hasPFAnimations>1</hasPFAnimations>
+	      <userIRCount>8</userIRCount>
+	      <hasSPV>1</hasSPV>
+	    	<streamingVideo>1</streamingVideo>
+	      <usbType>RNDIS</usbType>
+	      <fdType>2</fdType>
+	      <panelImage>images\AndroidAll.jpg</panelImage>
+	      <resolution>
+	      	<resolutionEntry>
+	            <width>320</width>
+	            <height>240</height>
+	            <setupPages>AndroidMobile_landscape_setup.TP4</setupPages>
+	            <externalButtons>AndroidMobile_320x240_ExternalButtons.xml</externalButtons>
+	            <refreshRate>
+	               <rate>60 Hertz</rate>
+	            </refreshRate>
+	         </resolutionEntry>
+	         <resolutionEntry>
+	            <width>240</width>
+	            <height>320</height>
+	            <setupPages>AndroidMobile_portrait_setup.TP4</setupPages>
+	            <externalButtons>AndroidMobile_240x320_ExternalButtons.xml</externalButtons>
+	            <refreshRate>
+	               <rate>60 Hertz</rate>
+	            </refreshRate>
+	         </resolutionEntry>
+	      	 <resolutionEntry>
+	            <width>480</width>
+	            <height>320</height>
+	            <setupPages>AndroidMobile_landscape_setup.TP4</setupPages>
+	            <externalButtons>AndroidMobile_480x320_ExternalButtons.xml</externalButtons>
+	            <refreshRate>
+	               <rate>60 Hertz</rate>
+	            </refreshRate>
+	         </resolutionEntry>
+	         <resolutionEntry>
+	            <width>320</width>
+	            <height>480</height>
+	            <setupPages>AndroidMobile_portrait_setup.TP4</setupPages>
+	            <externalButtons>AndroidMobile_320x480_ExternalButtons.xml</externalButtons>
+	            <refreshRate>
+	               <rate>60 Hertz</rate>
+	            </refreshRate>
+	         </resolutionEntry>
+	         <resolutionEntry>
+	            <width>640</width>
+	            <height>360</height>
+	            <setupPages>AndroidMobile_landscape_setup.TP4</setupPages>
+	            <externalButtons>AndroidMobile_640x360_ExternalButtons.xml</externalButtons>
+	            <refreshRate>
+	               <rate>60 Hertz</rate>
+	            </refreshRate>
+	         </resolutionEntry>
+	         <resolutionEntry>
+	            <width>360</width>
+	            <height>640</height>
+	            <setupPages>AndroidMobile_portrait_setup.TP4</setupPages>
+	            <externalButtons>AndroidMobile_360x640_ExternalButtons.xml</externalButtons>
+	            <refreshRate>
+	               <rate>60 Hertz</rate>
+	            </refreshRate>
+	         </resolutionEntry>
+	         <resolutionEntry>
+	            <width>800</width>
+	            <height>480</height>
+	            <setupPages>AndroidMobile_landscape_setup.TP4</setupPages>
+	            <externalButtons>AndroidMobile_800x480_ExternalButtons.xml</externalButtons>
+	            <refreshRate>
+	               <rate>60 Hertz</rate>
+	            </refreshRate>
+	         </resolutionEntry>
+	         <resolutionEntry>
+	            <width>480</width>
+	            <height>800</height>
+	            <setupPages>AndroidMobile_portrait_setup.TP4</setupPages>
+	            <externalButtons>AndroidMobile_480x800_ExternalButtons.xml</externalButtons>
+	            <refreshRate>
+	               <rate>60 Hertz</rate>
+	            </refreshRate>
+	         </resolutionEntry>
+	         <resolutionEntry>
+	            <width>854</width>
+	            <height>480</height>
+	            <setupPages>AndroidMobile_landscape_setup.TP4</setupPages>
+	            <externalButtons>AndroidMobile_854x480_ExternalButtons.xml</externalButtons>
+	            <refreshRate>
+	               <rate>60 Hertz</rate>
+	            </refreshRate>
+	         </resolutionEntry>
+	         <resolutionEntry>
+	            <width>480</width>
+	            <height>854</height>
+	            <setupPages>AndroidMobile_portrait_setup.TP4</setupPages>
+	            <externalButtons>AndroidMobile_480x854_ExternalButtons.xml</externalButtons>
+	            <refreshRate>
+	               <rate>60 Hertz</rate>
+	            </refreshRate>
+	         </resolutionEntry>
+	         <resolutionEntry>
+	            <width>960</width>
+	            <height>540</height>
+	            <setupPages>AndroidMobile_landscape_setup.TP4</setupPages>
+	            <externalButtons>AndroidMobile_960x540_ExternalButtons.xml</externalButtons>
+	            <refreshRate>
+	               <rate>60 Hertz</rate>
+	            </refreshRate>
+	         </resolutionEntry>
+	         <resolutionEntry>
+	            <width>540</width>
+	            <height>960</height>
+	            <setupPages>AndroidMobile_portrait_setup.TP4</setupPages>
+	            <externalButtons>AndroidMobile_540x960_ExternalButtons.xml</externalButtons>
+	            <refreshRate>
+	               <rate>60 Hertz</rate>
+	            </refreshRate>
+	         </resolutionEntry>
+	         <resolutionEntry>
+	            <width>1024</width>
+	            <height>600</height>
+	            <setupPages>AndroidMobile_landscape_setup.TP4</setupPages>
+	            <externalButtons>AndroidMobile_1024x600_ExternalButtons.xml</externalButtons>
+	            <refreshRate>
+	               <rate>60 Hertz</rate>
+	            </refreshRate>
+	         </resolutionEntry>
+	         <resolutionEntry>
+	            <width>600</width>
+	            <height>1024</height>
+	            <setupPages>AndroidMobile_portrait_setup.TP4</setupPages>
+	            <externalButtons>AndroidMobile_600x1024_ExternalButtons.xml</externalButtons>
+	            <refreshRate>
+	               <rate>60 Hertz</rate>
+	            </refreshRate>
+	         </resolutionEntry>
+	          <resolutionEntry>
+	            <width>1024</width>
+	            <height>768</height>
+	            <setupPages>AndroidTablet_landscape_setup.TP4</setupPages>
+	            <externalButtons>AndroidTablet_1024x768_ExternalButtons.xml</externalButtons>
+	            <refreshRate>
+	               <rate>60 Hertz</rate>
+	            </refreshRate>
+	         </resolutionEntry>
+	         <resolutionEntry>
+	            <width>768</width>
+	            <height>1024</height>
+	            <setupPages>AndroidTablet_portrait_setup.TP4</setupPages>
+	            <externalButtons>AndroidTablet_768x1024_ExternalButtons.xml</externalButtons>
+	            <refreshRate>
+	               <rate>60 Hertz</rate>
+	            </refreshRate>
+	         </resolutionEntry>
+	         <resolutionEntry>
+	            <width>1200</width>
+	            <height>800</height>
+	            <setupPages>AndroidTablet_landscape_setup.TP4</setupPages>
+	            <externalButtons>AndroidTablet_1280x800_ExternalButtons.xml</externalButtons>
+	            <refreshRate>
+	               <rate>60 Hertz</rate>
+	            </refreshRate>
+	         </resolutionEntry>
+	         <resolutionEntry>
+	            <width>800</width>
+	            <height>1200</height>
+	            <setupPages>AndroidTablet_portrait_setup.TP4</setupPages>
+	            <externalButtons>AndroidTablet_800x1280_ExternalButtons.xml</externalButtons>
+	            <refreshRate>
+	               <rate>60 Hertz</rate>
+	            </refreshRate>
+	         </resolutionEntry>
+	         <resolutionEntry>
+	            <width>1280</width>
+	            <height>752</height>
+	            <setupPages>AndroidTablet_landscape_setup.TP4</setupPages>
+	            <externalButtons>AndroidTablet_1280x752_ExternalButtons.xml</externalButtons>
+	            <refreshRate>
+	               <rate>60 Hertz</rate>
+	            </refreshRate>
+	         </resolutionEntry>
+	         <resolutionEntry>
+	            <width>752</width>
+	            <height>1280</height>
+	            <setupPages>AndroidTablet_portrait_setup.TP4</setupPages>
+	            <externalButtons>AndroidTablet_752x1280_ExternalButtons.xml</externalButtons>
+	            <refreshRate>
+	               <rate>60 Hertz</rate>
+	            </refreshRate>
+	         </resolutionEntry>
+	          <resolutionEntry>
+	            <width>1280</width>
+	            <height>800</height>
+	            <setupPages>AndroidTablet_landscape_setup.TP4</setupPages>
+	            <externalButtons>AndroidTablet_1280x800_ExternalButtons.xml</externalButtons>
+	            <refreshRate>
+	               <rate>60 Hertz</rate>
+	            </refreshRate>
+	         </resolutionEntry>
+	         <resolutionEntry>
+	            <width>800</width>
+	            <height>1280</height>
+	            <setupPages>AndroidTablet_portrait_setup.TP4</setupPages>
+	            <externalButtons>AndroidTablet_800x1280_ExternalButtons.xml</externalButtons>
+	            <refreshRate>
+	               <rate>60 Hertz</rate>
+	            </refreshRate>
+	         </resolutionEntry>
+	      </resolution>
+	      <systemCodeGroup>G4 Common Codes v2</systemCodeGroup>
+	      <systemCodeGroup>MVP Common</systemCodeGroup>
+	      <systemCodeGroup>Modero Common Codes</systemCodeGroup>
+	      <systemCodeGroup>MVP 8400 Common</systemCodeGroup>
+	      <systemCodeGroup>mips Firmware with Sound Common</systemCodeGroup>
+	      <systemCodeGroup>Wireless G</systemCodeGroup>
+		  	<systemCodeGroup>Modero Secondary Interface Codes</systemCodeGroup>
+		  	<systemCodeGroup>Streaming Video Codes</systemCodeGroup>
+	      <systemChannels>
+	      	 <codeEntry>
+	            <code>76</code>
+	            <adv>1</adv>
+	            <text>Panel Setup: Screen Orientation</text>
+	         </codeEntry>
+	      </systemChannels>
+	      <systemAddresses/>
+	      <deviceIDs>
+	      	 <deviceID>351</deviceID>
+	      </deviceIDs>
+  </panelEntry><panelEntry>
+      <type>Android Mobile (TPC)</type>
+      <private>1</private>
+      <description>Android Mobile Interface - www.touchpanelcontrol.com</description>
+      <deviceID>355</deviceID>
+      <screenSize>52</screenSize>
+      <numVideoWindows>0</numVideoWindows>
+      <numWirelessVideo>0</numWirelessVideo>
+      <isAudioDisabled>0</isAudioDisabled>
+      <hasLightSensor>0</hasLightSensor>
+      <hasMotionSensor>0</hasMotionSensor>
+      <hasBatteryLevel>1</hasBatteryLevel>
+      <hasCradleSensor>1</hasCradleSensor>
+      <hasAMX38IREmit>0</hasAMX38IREmit>
+      <hasAMX455IREmit>0</hasAMX455IREmit>
+	  <hasVoIP>1</hasVoIP>
+	  <textType>advType1</textType>
+	  <hasPFAnimations>1</hasPFAnimations>
+      <userIRCount>0</userIRCount>
+      <usbType>RNDIS</usbType>
+      <fdType>2</fdType>
+      <panelImage>images\androidMobile.jpg</panelImage>
+      <resolution>
+      	<resolutionEntry>
+            <width>320</width>
+            <height>240</height>
+            <setupPages>AndroidMobile_landscape_setup.TP4</setupPages>
+            <externalButtons>AndroidMobile_320x240_ExternalButtons.xml</externalButtons>
+            <refreshRate>
+               <rate>60 Hertz</rate>
+            </refreshRate>
+         </resolutionEntry>
+         <resolutionEntry>
+            <width>240</width>
+            <height>320</height>
+            <setupPages>AndroidMobile_portrait_setup.TP4</setupPages>
+            <externalButtons>AndroidMobile_240x320_ExternalButtons.xml</externalButtons>
+            <refreshRate>
+               <rate>60 Hertz</rate>
+            </refreshRate>
+         </resolutionEntry>
+      	 <resolutionEntry>
+            <width>480</width>
+            <height>320</height>
+            <setupPages>AndroidMobile_landscape_setup.TP4</setupPages>
+            <externalButtons>AndroidMobile_480x320_ExternalButtons.xml</externalButtons>
+            <refreshRate>
+               <rate>60 Hertz</rate>
+            </refreshRate>
+         </resolutionEntry>
+         <resolutionEntry>
+            <width>320</width>
+            <height>480</height>
+            <setupPages>AndroidMobile_portrait_setup.TP4</setupPages>
+            <externalButtons>AndroidMobile_320x480_ExternalButtons.xml</externalButtons>
+            <refreshRate>
+               <rate>60 Hertz</rate>
+            </refreshRate>
+         </resolutionEntry>
+         <resolutionEntry>
+            <width>640</width>
+            <height>360</height>
+            <setupPages>AndroidMobile_landscape_setup.TP4</setupPages>
+            <externalButtons>AndroidMobile_640x360_ExternalButtons.xml</externalButtons>
+            <refreshRate>
+               <rate>60 Hertz</rate>
+            </refreshRate>
+         </resolutionEntry>
+         <resolutionEntry>
+            <width>360</width>
+            <height>640</height>
+            <setupPages>AndroidMobile_portrait_setup.TP4</setupPages>
+            <externalButtons>AndroidMobile_360x640_ExternalButtons.xml</externalButtons>
+            <refreshRate>
+               <rate>60 Hertz</rate>
+            </refreshRate>
+         </resolutionEntry>
+		   <resolutionEntry>
+            <width>800</width>
+            <height>480</height>
+            <setupPages>AndroidMobile_landscape_setup.TP4</setupPages>
+            <externalButtons>AndroidMobile_800x480_ExternalButtons.xml</externalButtons>
+            <refreshRate>
+               <rate>60 Hertz</rate>
+            </refreshRate>
+         </resolutionEntry>
+         <resolutionEntry>
+            <width>480</width>
+            <height>800</height>
+            <setupPages>AndroidMobile_portrait_setup.TP4</setupPages>
+            <externalButtons>AndroidMobile_480x800_ExternalButtons.xml</externalButtons>
+            <refreshRate>
+               <rate>60 Hertz</rate>
+            </refreshRate>
+         </resolutionEntry>
+         <resolutionEntry>
+            <width>854</width>
+            <height>480</height>
+            <setupPages>AndroidMobile_landscape_setup.TP4</setupPages>
+            <externalButtons>AndroidMobile_854x480_ExternalButtons.xml</externalButtons>
+            <refreshRate>
+               <rate>60 Hertz</rate>
+            </refreshRate>
+         </resolutionEntry>
+         <resolutionEntry>
+            <width>480</width>
+            <height>854</height>
+            <setupPages>AndroidMobile_portrait_setup.TP4</setupPages>
+            <externalButtons>AndroidMobile_480x854_ExternalButtons.xml</externalButtons>
+            <refreshRate>
+               <rate>60 Hertz</rate>
+            </refreshRate>
+         </resolutionEntry>       
+         <resolutionEntry>
+            <width>1024</width>
+            <height>600</height>
+            <setupPages>AndroidMobile_landscape_setup.TP4</setupPages>
+            <externalButtons>AndroidMobile_1024x600_ExternalButtons.xml</externalButtons>
+            <refreshRate>
+               <rate>60 Hertz</rate>
+            </refreshRate>
+         </resolutionEntry>
+         <resolutionEntry>
+            <width>600</width>
+            <height>1024</height>
+            <setupPages>AndroidMobile_portrait_setup.TP4</setupPages>
+            <externalButtons>AndroidMobile_600x1024_ExternalButtons.xml</externalButtons>
+            <refreshRate>
+               <rate>60 Hertz</rate>
+            </refreshRate>
+         </resolutionEntry>
+      </resolution>
+      <systemCodeGroup>G4 Common Codes v2</systemCodeGroup>
+      <systemCodeGroup>MVP Common</systemCodeGroup>
+      <systemCodeGroup>Modero Common Codes</systemCodeGroup>
+      <systemCodeGroup>MVP 8400 Common</systemCodeGroup>
+      <systemCodeGroup>mips Firmware with Sound Common</systemCodeGroup>
+      <systemCodeGroup>Wireless G</systemCodeGroup>
+      <systemChannels>
+      	 <codeEntry>
+            <code>76</code>
+            <adv>1</adv>
+            <text>Panel Setup: Screen Orientation</text>
+         </codeEntry>
+      </systemChannels>
+      <systemAddresses/>
+      <deviceIDs>
+      	 <deviceID>355</deviceID>
+      </deviceIDs>
+   </panelEntry><panelEntry>
+    <type>Android Tablet (TPC)</type>
+    <private>1</private>
+      <description>Android Tablet Interface - www.touchpanelcontrol.com</description>
+      <deviceID>356</deviceID>
+      <screenSize>281</screenSize>
+      <screenSize>150</screenSize>
+      <numVideoWindows>0</numVideoWindows>
+      <numWirelessVideo>0</numWirelessVideo>
+      <isAudioDisabled>0</isAudioDisabled>
+      <hasLightSensor>0</hasLightSensor>
+      <hasMotionSensor>0</hasMotionSensor>
+      <hasBatteryLevel>1</hasBatteryLevel>
+      <hasCradleSensor>1</hasCradleSensor>
+      <hasAMX38IREmit>0</hasAMX38IREmit>
+      <hasAMX455IREmit>0</hasAMX455IREmit>
+      <hasVoIP>1</hasVoIP>
+	  <textType>advType1</textType>
+      <userIRCount>0</userIRCount>
+      <usbType>RNDIS</usbType>
+      <fdType>2</fdType>
+      <panelImage>images\AndroidTablet.jpg</panelImage>
+      <resolution>
+      	<resolutionEntry>
+            <width>800</width>
+            <height>480</height>
+            <setupPages>AndroidTablet_landscape_setup.TP4</setupPages>
+            <externalButtons>AndroidTablet_800x480_ExternalButtons.xml</externalButtons>
+            <refreshRate>
+               <rate>60 Hertz</rate>
+            </refreshRate>
+         </resolutionEntry>
+         <resolutionEntry>
+            <width>480</width>
+            <height>800</height>
+            <setupPages>AndroidTablet_portrait_setup.TP4</setupPages>
+            <externalButtons>AndroidTablet_480x800_ExternalButtons.xml</externalButtons>
+            <refreshRate>
+               <rate>60 Hertz</rate>
+            </refreshRate>
+         </resolutionEntry>
+      	 <resolutionEntry>
+            <width>1024</width>
+            <height>768</height>
+            <setupPages>AndroidTablet_landscape_setup.TP4</setupPages>
+            <externalButtons>AndroidTablet_1024x768_ExternalButtons.xml</externalButtons>
+            <refreshRate>
+               <rate>60 Hertz</rate>
+            </refreshRate>
+         </resolutionEntry>
+         <resolutionEntry>
+            <width>768</width>
+            <height>1024</height>
+            <setupPages>AndroidTablet_portrait_setup.TP4</setupPages>
+            <externalButtons>AndroidTablet_768x1024_ExternalButtons.xml</externalButtons>
+            <refreshRate>
+               <rate>60 Hertz</rate>
+            </refreshRate>
+         </resolutionEntry>
+         <resolutionEntry>
+            <width>1280</width>
+            <height>800</height>
+            <setupPages>AndroidTablet_landscape_setup.TP4</setupPages>
+            <externalButtons>AndroidTablet_1280x800_ExternalButtons.xml</externalButtons>
+            <refreshRate>
+               <rate>60 Hertz</rate>
+            </refreshRate>
+         </resolutionEntry>
+         <resolutionEntry>
+            <width>800</width>
+            <height>1280</height>
+            <setupPages>AndroidTablet_portrait_setup.TP4</setupPages>
+            <externalButtons>AndroidTablet_800x1280_ExternalButtons.xml</externalButtons>
+            <refreshRate>
+               <rate>60 Hertz</rate>
+            </refreshRate>
+         </resolutionEntry>
+      </resolution>
+      <systemCodeGroup>G4 Common Codes v2</systemCodeGroup>
+      <systemCodeGroup>MVP Common</systemCodeGroup>
+      <systemCodeGroup>Modero Common Codes</systemCodeGroup>
+      <systemCodeGroup>MVP 8400 Common</systemCodeGroup>
+      <systemCodeGroup>mips Firmware with Sound Common</systemCodeGroup>
+      <systemCodeGroup>Wireless G</systemCodeGroup>
+      <systemChannels>
+      	 <codeEntry>
+            <code>76</code>
+            <adv>1</adv>
+            <text>Panel Setup: Screen Orientation</text>
+         </codeEntry>
+      </systemChannels>
+      <systemAddresses/>
+      <deviceIDs>
+      	 	<deviceID>356</deviceID></deviceIDs>
+		</panelEntry><panelEntry>
+      <type>iPhone4 (TPC)</type>
+      <private>1</private>
+      <description>iPhone Interface - www.touchpanelcontrol.com</description>
+      <deviceID>350</deviceID>
+      <screenSize>38</screenSize>
+      <screenSize>52</screenSize>
+      <numVideoWindows>0</numVideoWindows>
+      <numWirelessVideo>0</numWirelessVideo>
+      <isAudioDisabled>0</isAudioDisabled>
+      <hasLightSensor>0</hasLightSensor>
+      <hasMotionSensor>0</hasMotionSensor>
+      <hasBatteryLevel>1</hasBatteryLevel>
+      <hasCradleSensor>1</hasCradleSensor>
+      <hasAMX38IREmit>1</hasAMX38IREmit>
+      <hasAMX455IREmit>1</hasAMX455IREmit>
+      <hasVoIP>1</hasVoIP>
+	  <textType>advType1</textType>
+	  <hasPFAnimations>1</hasPFAnimations>
+      <userIRCount>8</userIRCount>
+      <usbType>RNDIS</usbType>
+      <fdType>2</fdType>
+      <panelImage>images\iPhone.jpg</panelImage>
+      <resolution>
+      <resolutionEntry>
+            <width>480</width>
+            <height>320</height>
+            <setupPages>iPhone-480x320.TP4</setupPages>
+            <externalButtons>iPhone_Landscape_ExternalButtons.xml</externalButtons>
+            <refreshRate>
+               <rate>60 Hertz</rate>
+            </refreshRate>
+         </resolutionEntry>
+         <resolutionEntry>
+            <width>320</width>
+            <height>480</height>
+            <setupPages>iPhone-320x480.TP4</setupPages>
+            <externalButtons>iPhone_Portrait_ExternalButtons.xml</externalButtons>
+            <refreshRate>
+               <rate>60 Hertz</rate>
+            </refreshRate>
+         </resolutionEntry>
+      </resolution>
+      <systemCodeGroup>G4 Common Codes v2</systemCodeGroup>
+      <systemCodeGroup>MVP Common</systemCodeGroup>
+      <systemCodeGroup>Modero Common Codes</systemCodeGroup>
+      <systemCodeGroup>MVP 8400 Common</systemCodeGroup>
+      <systemCodeGroup>mips Firmware with Sound Common</systemCodeGroup>
+      <systemCodeGroup>Wireless G</systemCodeGroup>
+			<systemCodeGroup>Modero Secondary Interface Codes</systemCodeGroup>
+      <systemChannels>
+      <codeEntry>
+            <code>76</code>
+            <adv>1</adv>
+            <text>Panel Setup: Screen Orientation</text>
+         </codeEntry>
+      </systemChannels>
+      <systemAddresses/>
+      <deviceIDs>
+      <deviceID>350</deviceID> 
+      </deviceIDs>
+   </panelEntry><panelEntry>
+    <type>Windows (TPC)</type>
+      <description>Windows Interface - www.touchpanelcontrol.com</description>
+      <deviceID>358</deviceID>
+      <screenSize>281</screenSize>
+      <screenSize>150</screenSize>
+      <numVideoWindows>1</numVideoWindows>
+      <numWirelessVideo>1</numWirelessVideo>
+      <isAudioDisabled>0</isAudioDisabled>
+      <hasLightSensor>0</hasLightSensor>
+      <hasMotionSensor>0</hasMotionSensor>
+      <hasBatteryLevel>1</hasBatteryLevel>
+      <hasCradleSensor>1</hasCradleSensor>
+      <hasAMX38IREmit>1</hasAMX38IREmit>
+      <hasAMX455IREmit>1</hasAMX455IREmit>
+      <hasVoIP>1</hasVoIP>
+	  <textType>advType1</textType>
+	  <hasPFAnimations>1</hasPFAnimations>
+      <userIRCount>8</userIRCount>
+      <hasSPV>1</hasSPV>
+    	<streamingVideo>1</streamingVideo>
+      <usbType>RNDIS</usbType>
+      <fdType>2</fdType>
+      <panelImage>images\win.jpg</panelImage>
+      <resolution>
+      	 <resolutionEntry>
+            <width>1280</width>
+            <height>720</height>
+            <setupPages>WinTablet_Landscape_setup.TP4</setupPages>
+            <externalButtons>Win_1280x720_ExternalButtons.xml</externalButtons>
+            <refreshRate>
+               <rate>60 Hertz</rate>
+            </refreshRate>
+         </resolutionEntry>
+         <resolutionEntry>
+            <width>720</width>
+            <height>1280</height>
+            <setupPages>WinTablet_Portrait_setup.TP4</setupPages>
+            <externalButtons>Win_720x1280_ExternalButtons.xml</externalButtons>
+            <refreshRate>
+               <rate>60 Hertz</rate>
+            </refreshRate>
+         </resolutionEntry>
+         <resolutionEntry>
+            <width>1280</width>
+            <height>768</height>
+            <setupPages>WinTablet_Landscape_setup.TP4</setupPages>
+            <externalButtons>Win_1280x768_ExternalButtons.xml</externalButtons>
+            <refreshRate>
+               <rate>60 Hertz</rate>
+            </refreshRate>
+         </resolutionEntry>
+         <resolutionEntry>
+            <width>768</width>
+            <height>1280</height>
+            <setupPages>WinTablet_Portrait_setup.TP4</setupPages>
+            <externalButtons>Win_768x1280_ExternalButtons.xml</externalButtons>
+            <refreshRate>
+               <rate>60 Hertz</rate>
+            </refreshRate>
+         </resolutionEntry>
+      	 <resolutionEntry>
+            <width>1366</width>
+            <height>768</height>
+            <setupPages>WinTablet_Landscape_setup.TP4</setupPages>
+            <externalButtons>Win_1366x768_ExternalButtons.xml</externalButtons>
+            <refreshRate>
+               <rate>60 Hertz</rate>
+            </refreshRate>
+         </resolutionEntry>
+         <resolutionEntry>
+            <width>768</width>
+            <height>1366</height>
+            <setupPages>WinTablet_Portrait_setup.TP4</setupPages>
+            <externalButtons>Win_768x1366_ExternalButtons.xml</externalButtons>
+            <refreshRate>
+               <rate>60 Hertz</rate>
+            </refreshRate>
+         </resolutionEntry>
+         <resolutionEntry>
+            <width>1920</width>
+            <height>1080</height>
+            <setupPages>WinTablet_Landscape_setup.TP4</setupPages>
+            <externalButtons>Win_1920x1080_ExternalButtons.xml</externalButtons>
+            <refreshRate>
+               <rate>60 Hertz</rate>
+            </refreshRate>
+         </resolutionEntry>
+         <resolutionEntry>
+            <width>1080</width>
+            <height>1920</height>
+            <setupPages>WinTablet_Portrait_setup.TP4</setupPages>
+            <externalButtons>Win_1080x1920_ExternalButtons.xml</externalButtons>
+            <refreshRate>
+               <rate>60 Hertz</rate>
+            </refreshRate>
+         </resolutionEntry>
+      </resolution>
+      <systemCodeGroup>G4 Common Codes v2</systemCodeGroup>
+      <systemCodeGroup>MVP Common</systemCodeGroup>
+      <systemCodeGroup>Modero Common Codes</systemCodeGroup>
+      <systemCodeGroup>MVP 8400 Common</systemCodeGroup>
+      <systemCodeGroup>mips Firmware with Sound Common</systemCodeGroup>
+      <systemCodeGroup>Wireless G</systemCodeGroup>
+	  	<systemCodeGroup>Modero Secondary Interface Codes</systemCodeGroup>
+	  	<systemCodeGroup>Streaming Video Codes</systemCodeGroup>
+      <systemChannels>
+      	 <codeEntry>
+            <code>76</code>
+            <adv>1</adv>
+            <text>Panel Setup: Screen Orientation</text>
+         </codeEntry>
+      </systemChannels>
+      <systemAddresses/>
+      <deviceIDs>
+      	 	<deviceID>358</deviceID>
+      </deviceIDs>
+   </panelEntry></ppfRoot>
