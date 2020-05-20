@@ -25,7 +25,7 @@ namespace ICSP.Manager.DeviceManager
       FirmwareId = 0x0001;
       
       Version = ProgramProperties.Version.ToString();
-      Name = ProgramProperties.Title; ;
+      Name = ProgramProperties.Title;
       Manufacture = ProgramProperties.Company;
 
       ExtAddressType = ExtAddressType.IPv4Address;

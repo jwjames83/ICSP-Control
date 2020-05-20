@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
+using System.Runtime.Caching;
 
 using ICSP.Client;
 using ICSP.IO;
@@ -10,16 +12,13 @@ using ICSP.Manager.ConfigurationManager;
 using ICSP.Manager.ConnectionManager;
 using ICSP.Manager.DeviceManager;
 using ICSP.Manager.DiagnosticManager;
-using ICSP.Reflection;
+
 using Serilog.Events;
 
 namespace ICSP
 {
   public class ICSPManager
   {
-    private readonly Dictionary<ushort, Type> mMessages;
-    private readonly Dictionary<ushort, ICSPMsg> mTypes;
-
     private readonly Dictionary<ushort, DeviceInfoData> mDevices;
 
     public event EventHandler<ClientOnlineOfflineEventArgs> ClientOnlineStatusChanged;
@@ -45,16 +44,17 @@ namespace ICSP
     public event EventHandler<EventArgs> RequestDevicesOnlineEOT;
     public event EventHandler<DiscoveryInfoEventArgs> DiscoveryInfo;
 
-    private readonly FileManager mFileManager;
+    public event EventHandler<DeviceInfoData> DeviceOnline;
+    public event EventHandler<DeviceInfoData> DeviceOffline;
+
     private ICSPClient mClient;
+
+    private readonly FileManager mFileManager;
 
     private readonly StateManager mStateManager;
 
     public ICSPManager()
     {
-      mMessages = new Dictionary<ushort, Type>();
-      mTypes = new Dictionary<ushort, ICSPMsg>();
-
       mDevices = new Dictionary<ushort, DeviceInfoData>();
 
       mStateManager = new StateManager(this);
@@ -63,37 +63,6 @@ namespace ICSP
       Console.WriteLine(mStateManager);
 
       mFileManager = new FileManager(this);
-
-      var lTypes = TypeHelper.GetSublassesOfType(typeof(ICSPMsg));
-
-      foreach(var type in lTypes)
-      {
-        if(type.IsAssignableFrom(typeof(ICSPMsg)))
-          throw new ArgumentException("MessageType is not assignable from ICSPMsg", nameof(type));
-
-        var lAttributes = AttributeHelper.GetList<MsgCmdAttribute>(type);
-
-        foreach(var attribute in lAttributes)
-        {
-          if(!mMessages.ContainsKey(attribute.MsgCmd))
-            mMessages.Add(attribute.MsgCmd, type);
-
-          try
-          {
-            // Type type = typeof(Foo);
-
-            var lType = (ICSPMsg)Activator.CreateInstance(type, true);
-
-            // var lType = (ICSPMsg)TypeHelper.CreateInstance(type, ICSPMsgData.Empty);
-
-            mTypes.Add(attribute.MsgCmd, lType);
-          }
-          catch(Exception ex)
-          {
-            Console.WriteLine(ex.Message);
-          }
-        }
-      }
     }
 
     public void Connect(string host)
@@ -135,9 +104,7 @@ namespace ICSP
     {
       if(e.ClientOnline)
       {
-        var lRequest = MsgCmdDynamicDeviceAddressRequest.CreateRequest(mClient.LocalIpAddress);
-
-        Send(lRequest);
+        Send(MsgCmdDynamicDeviceAddressRequest.CreateRequest(mClient.LocalIpAddress));
       }
       else
       {
@@ -146,6 +113,11 @@ namespace ICSP
         DynamicDevice = AmxDevice.Empty;
 
         mDevices.Clear();
+
+        var lKeys = MemoryCache.Default.Select(s => s.Key).ToList();
+
+        foreach(var key in lKeys)
+          MemoryCache.Default.Remove(key);
       }
 
       ClientOnlineStatusChanged?.Invoke(this, e);
@@ -170,6 +142,24 @@ namespace ICSP
 
         switch(e.Message)
         {
+          case MsgCmdAck m:
+          {
+            if(MemoryCache.Default.Get(m.ID.ToString()) is DeviceInfoData deviceInfo)
+            {
+              MemoryCache.Default.Remove(m.ID.ToString());
+
+              if(!mDevices.ContainsKey(deviceInfo.Device))
+                mDevices.Add(deviceInfo.Device, deviceInfo);
+
+              Logger.LogDebug(false, "-----------------------------------------------------------------------------------------------------");
+              Logger.LogDebug(false, "Device Online: Device={0}, Name={1:l}, IPv4Address={2:l}", deviceInfo.Device, deviceInfo.Name, deviceInfo.IPv4Address);
+              Logger.LogDebug(false, "-----------------------------------------------------------------------------------------------------");
+
+              DeviceOnline?.Invoke(this, deviceInfo);
+            }
+
+            break;
+          }
           case MsgCmdFileTransfer m:
           {
             mFileManager.ProcessMessage(m);
@@ -184,17 +174,18 @@ namespace ICSP
           }
           case MsgCmdPingRequest m:
           {
-            if(mDevices.ContainsKey(m.Device))
+            if(mDevices.TryGetValue(m.Device, out var lDeviceInfo))
             {
-              var lDeviceInfo = mDevices[m.Device];
+              var lKey = "Device:" + lDeviceInfo.Device;
 
-              if(lDeviceInfo != null)
-              {
-                var lResponse = MsgCmdPingResponse.CreateRequest(
-                  lDeviceInfo.Device, lDeviceInfo.System, lDeviceInfo.ManufactureId, lDeviceInfo.DeviceId, mClient.LocalIpAddress);
+              var lPolicy = new CacheItemPolicy { SlidingExpiration = TimeSpan.FromSeconds(6), RemovedCallback = OnCacheEntryRemovedCallback };
 
-                Send(lResponse);
-              }
+              MemoryCache.Default.AddOrGetExisting(lKey, lDeviceInfo, lPolicy);
+
+              var lResponse = MsgCmdPingResponse.CreateRequest(
+                lDeviceInfo.Device, lDeviceInfo.System, lDeviceInfo.ManufactureId, lDeviceInfo.DeviceId, mClient.LocalIpAddress);
+
+              Send(lResponse);
 
               PingEvent?.Invoke(this, new PingEventArgs(m));
             }
@@ -207,14 +198,7 @@ namespace ICSP
 
             DynamicDevice = new AmxDevice(m.Device, 1, m.System);
 
-            var lDeviceInfo = new DeviceInfoData(m.Device, m.System, mClient.LocalIpAddress);
-
-            if(!mDevices.ContainsKey(lDeviceInfo.Device))
-              mDevices.Add(lDeviceInfo.Device, lDeviceInfo);
-
-            var lRequest = MsgCmdDeviceInfo.CreateRequest(lDeviceInfo);
-
-            Send(lRequest);
+            CreateDeviceInfo(new DeviceInfoData(m.Device, m.System, mClient.LocalIpAddress));
 
             DynamicDeviceCreated?.Invoke(this, new DynamicDeviceCreatedEventArgs(m));
 
@@ -386,6 +370,47 @@ namespace ICSP
       }
     }
 
+    private void OnCacheEntryRemovedCallback(CacheEntryRemovedArguments arguments)
+    {
+      if(arguments.RemovedReason != CacheEntryRemovedReason.Removed)
+      {
+        if(arguments.CacheItem.Value is DeviceInfoData deviceInfo)
+        {
+          Logger.LogDebug(false, "-----------------------------------------------------------------------------------------------------");
+          Logger.LogDebug(false, "Device Offline: Device={0}, Name={1:l}, IPv4Address={2:l}", deviceInfo.Device, deviceInfo.Name, deviceInfo.IPv4Address);
+          Logger.LogDebug(false, "-----------------------------------------------------------------------------------------------------");
+
+          mDevices.Remove(deviceInfo.Device);
+
+          DeviceOffline?.Invoke(this, deviceInfo);
+        }
+      }
+    }
+
+    // =====================================================================
+    // FileManager-Events (Redirect)
+    // =====================================================================
+
+    public event EventHandler<TransferFileDataEventArgs> OnTransferFileData { add { mFileManager.OnTransferFileData += value; } remove { mFileManager.OnTransferFileData -= value; } }
+    public event EventHandler<EventArgs> OnTransferFileDataComplete { add { mFileManager.OnTransferFileDataComplete += value; } remove { mFileManager.OnTransferFileDataComplete -= value; } }
+    public event EventHandler<EventArgs> OnTransferFileDataCompleteAck { add { mFileManager.OnTransferFileDataCompleteAck += value; } remove { mFileManager.OnTransferFileDataCompleteAck -= value; } }
+    public event EventHandler<TransferFilesInitializeEventArgs> OnTransferFilesInitialize { add { mFileManager.OnTransferFilesInitialize += value; } remove { mFileManager.OnTransferFilesInitialize -= value; } }
+    public event EventHandler<EventArgs> OnTransferFilesComplete { add { mFileManager.OnTransferFilesComplete += value; } remove { mFileManager.OnTransferFilesComplete -= value; } }
+
+    public event EventHandler<GetDirectoryInfoEventArgs> OnGetDirectoryInfo { add { mFileManager.OnGetDirectoryInfo += value; } remove { mFileManager.OnGetDirectoryInfo -= value; } }
+    public event EventHandler<DirectoryInfoEventArgs> OnDirectoryInfo { add { mFileManager.OnDirectoryInfo += value; } remove { mFileManager.OnDirectoryInfo -= value; } }
+    public event EventHandler<DirectoryItemEventArgs> OnDirectoryItem { add { mFileManager.OnDirectoryItem += value; } remove { mFileManager.OnDirectoryItem -= value; } }
+    public event EventHandler<DeleteFileEventArgs> OnDeleteFile { add { mFileManager.OnDeleteFile += value; } remove { mFileManager.OnDeleteFile -= value; } }
+    public event EventHandler<CreatDirectoryEventArgs> OnCreateDirectory { add { mFileManager.OnCreateDirectory += value; } remove { mFileManager.OnCreateDirectory -= value; } }
+
+    public event EventHandler<EventArgs> OnTransferSingleFile { add { mFileManager.OnTransferSingleFile += value; } remove { mFileManager.OnTransferSingleFile -= value; } }
+    public event EventHandler<EventArgs> OnTransferSingleFileAck { add { mFileManager.OnTransferSingleFileAck += value; } remove { mFileManager.OnTransferSingleFileAck -= value; } }
+    public event EventHandler<TransferSingleFileInfoEventArgs> OnTransferSingleFileInfo { add { mFileManager.OnTransferSingleFileInfo += value; } remove { mFileManager.OnTransferSingleFileInfo -= value; } }
+    public event EventHandler<EventArgs> OnTransferSingleFileInfoAck { add { mFileManager.OnTransferSingleFileInfoAck += value; } remove { mFileManager.OnTransferSingleFileInfoAck -= value; } }
+    public event EventHandler<TransferGetFileAccessTokenEventArgs> OnTransferGetFileAccessToken { add { mFileManager.OnTransferGetFileAccessToken += value; } remove { mFileManager.OnTransferGetFileAccessToken -= value; } }
+    public event EventHandler<EventArgs> OnTransferGetFileAccessTokenAck { add { mFileManager.OnTransferGetFileAccessTokenAck += value; } remove { mFileManager.OnTransferGetFileAccessTokenAck -= value; } }
+    public event EventHandler<EventArgs> OnTransferGetFile { add { mFileManager.OnTransferGetFile += value; } remove { mFileManager.OnTransferGetFile -= value; } }
+
     public void SendString(AmxDevice device, string text)
     {
       var lRequest = MsgCmdStringMasterDev.CreateRequest(DynamicDevice, device, text);
@@ -430,10 +455,11 @@ namespace ICSP
 
     public void CreateDeviceInfo(DeviceInfoData deviceInfo, ushort portCount)
     {
-      if(!mDevices.ContainsKey(deviceInfo.Device))
-        mDevices.Add(deviceInfo.Device, deviceInfo);
-
       var lDeviceRequest = MsgCmdDeviceInfo.CreateRequest(deviceInfo);
+
+      var lPolicy = new CacheItemPolicy { AbsoluteExpiration = DateTime.Now.AddSeconds(2), RemovedCallback = OnCacheEntryRemovedCallback };
+
+      MemoryCache.Default.Set(lDeviceRequest.ID.ToString(), deviceInfo, lPolicy);
 
       Send(lDeviceRequest);
 

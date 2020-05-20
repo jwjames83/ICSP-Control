@@ -162,7 +162,9 @@ namespace ICSP.Manager.DeviceManager
         SerialNumber = deviceInfo.SerialNumber
       };
 
+      Logger.LogDebug(false, "-----------------------------------------------------------------------------------------------------");
       Logger.LogDebug(false, "MsgCmdDeviceInfo.CreateRequest: Dest={0:l}, Source={1:l}, IPv4Address={2:l}", lDest, lSource, lRequest.IPv4Address);
+      Logger.LogDebug(false, "-----------------------------------------------------------------------------------------------------");
 
       // SerialNumber => 16 bytes of data
       if(string.IsNullOrWhiteSpace(lRequest.SerialNumber))

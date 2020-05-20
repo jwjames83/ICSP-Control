@@ -44,6 +44,28 @@ namespace ICSP.IO
     [DllImport("kernel32.dll", SetLastError = true, PreserveSig = true)]
     static extern int GetDiskFreeSpaceW([In, MarshalAs(UnmanagedType.LPWStr)] string lpRootPathName, out uint lpSectorsPerCluster, out uint lpBytesPerSector, out uint lpNumberOfFreeClusters, out uint lpTotalNumberOfClusters);
 
+    public event EventHandler<EventArgs> Nak;
+    public event EventHandler<EventArgs> Ack;
+    public event EventHandler<TransferFileDataEventArgs> OnTransferFileData;
+    public event EventHandler<EventArgs> OnTransferFileDataComplete;
+    public event EventHandler<EventArgs> OnTransferFileDataCompleteAck;
+    public event EventHandler<TransferFilesInitializeEventArgs> OnTransferFilesInitialize;
+    public event EventHandler<EventArgs> OnTransferFilesComplete;
+
+    public event EventHandler<GetDirectoryInfoEventArgs> OnGetDirectoryInfo;
+    public event EventHandler<DirectoryInfoEventArgs> OnDirectoryInfo;
+    public event EventHandler<DirectoryItemEventArgs> OnDirectoryItem;
+    public event EventHandler<DeleteFileEventArgs> OnDeleteFile;
+    public event EventHandler<CreatDirectoryEventArgs> OnCreateDirectory;
+
+    public event EventHandler<EventArgs> OnTransferSingleFile;
+    public event EventHandler<EventArgs> OnTransferSingleFileAck;
+    public event EventHandler<TransferSingleFileInfoEventArgs> OnTransferSingleFileInfo;
+    public event EventHandler<EventArgs> OnTransferSingleFileInfoAck;
+    public event EventHandler<TransferGetFileAccessTokenEventArgs> OnTransferGetFileAccessToken;
+    public event EventHandler<EventArgs> OnTransferGetFileAccessTokenAck;
+    public event EventHandler<EventArgs> OnTransferGetFile;
+
     public FileManager(ICSPManager manager)
     {
       mManager = manager ?? throw new ArgumentNullException(nameof(manager));
@@ -77,9 +99,11 @@ namespace ICSP.IO
             }
             case FunctionsUnused.DirectoryInfo: // 0x0101
             {
-              var lDirectory = AmxUtils.GetNullStr(m.FileData, 16);
+              var lFullPath = AmxUtils.GetNullStr(m.FileData, 16);
 
-              Logger.LogDebug(false, "FileManager[DirectoryInfo]: FullPath={0:l}", lDirectory);
+              Logger.LogDebug(false, "FileManager[DirectoryInfo]: FullPath={0:l}", lFullPath);
+
+              OnDirectoryInfo?.Invoke(this, new DirectoryInfoEventArgs(lFullPath));
 
               return MsgCmdFileTransfer.CreateRequest(m.Source, m.Dest, FileType.Unused, FileTransferFunction.Ack);
             }
@@ -88,6 +112,8 @@ namespace ICSP.IO
               var lFileName = AmxUtils.GetNullStr(m.FileData, 19);
 
               Logger.LogDebug(false, "FileManager[DirectoryInfo]: FileName={0:l}", lFileName);
+
+              OnDirectoryItem?.Invoke(this, new DirectoryItemEventArgs(lFileName));
 
               return MsgCmdFileTransfer.CreateRequest(m.Source, m.Dest, FileType.Unused, FileTransferFunction.Ack);
             }
@@ -123,10 +149,14 @@ namespace ICSP.IO
 
               Logger.LogDebug(false, "FileManager[TransferSingleFile] ...");
 
+              OnTransferSingleFile?.Invoke(this, EventArgs.Empty);
+
               return MsgCmdFileTransfer.CreateRequest(m.Source, m.Dest, FileType.Axcess2Tokens, FunctionsAxcess2Tokens.TransferSingleFileAck, new byte[] { 0x7F, 0xFF, 0xFF, 0xFF, 0x00, 0x00, 0x00, 0x00, });
             }
             case FunctionsAxcess2Tokens.TransferSingleFileAck: // 0x0101
             {
+              OnTransferSingleFileAck?.Invoke(this, EventArgs.Empty);
+
               return null;
             }
             case FunctionsAxcess2Tokens.TransferSingleFileInfo: // 0x0102
@@ -147,6 +177,8 @@ namespace ICSP.IO
               Logger.LogDebug(false, "FileManager[TransferSingleFileInfo]: FileName={0:l}", mCurrentFileNameData);
               Logger.LogDebug(false, "----------------------------------------------------------------");
 
+              OnTransferSingleFileInfo?.Invoke(this, new TransferSingleFileInfoEventArgs(lFileSize, mCurrentFileNameData));
+
               mBufferData = new List<byte>();
 
               // Junk-Size (Max 2000 Bytes) / Token
@@ -165,6 +197,8 @@ namespace ICSP.IO
 
               var lJunkSize = ArrayExtensions.GetBigEndianInt16(m.FileData, 0);
               var lToken = m.FileData.Range(2, 4);
+
+              OnTransferSingleFileInfoAck?.Invoke(this, EventArgs.Empty);
 
               Logger.LogDebug(false, "FileManager[TransferSingleFileInfoAck]: JunkSize={0} Bytes", lJunkSize);
               Logger.LogDebug(false, "FileManager[TransferSingleFileInfoAck]: Token={0:l}", BitConverter.ToString(lToken).Replace("-", " "));
@@ -201,6 +235,8 @@ namespace ICSP.IO
 
               Logger.LogDebug(false, "FileManager[TransferGetFileAccessTokenAck]: FileSize={0} Bytes, Token={1:l}", lFileSize, BitConverter.ToString(lToken).Replace("-", " "));
 
+              OnTransferGetFileAccessTokenAck?.Invoke(this, EventArgs.Empty);
+
               return MsgCmdFileTransfer.CreateRequest(m.Source, m.Dest, FileType.Axcess2Tokens, FunctionsAxcess2Tokens.TransferGetFile, ArrayExtensions.Int32ToBigEndian(lFileSize));
             }
             case FunctionsAxcess2Tokens.TransferGetFile: // 0x0106
@@ -219,6 +255,8 @@ namespace ICSP.IO
               var lToken = m.FileData.Range(0, 4);
 
               Logger.LogDebug(false, "FileManager[TransferGetFile]: Token={0:l}", BitConverter.ToString(lToken).Replace("-", " "));
+
+              OnTransferGetFile?.Invoke(this, EventArgs.Empty);
 
               if(mBufferSend != null && mBufferSend.Count > 0)
               {
@@ -249,6 +287,8 @@ namespace ICSP.IO
             {
               Logger.LogWarn(false, "FileManager[Nak]: ErrorCode=0x{1:X4}", ArrayExtensions.GetBigEndianInt16(m.FileData, 0));
 
+              Nak?.Invoke(this, EventArgs.Empty);
+
               return null;
             }
             case FileTransferFunction.Ack: // 0x0002
@@ -264,6 +304,8 @@ namespace ICSP.IO
                 lBytes = AmxUtils.Int16ToBigEndian(lJunkSize).Concat(lBytes).ToArray();
 
                 Logger.LogDebug(false, "FileManager[Ack]->[TransferFileData]: FileName={0:l}, JunkSize={1}, RawData ...", mCurrentFileNameSend, lJunkSize);
+
+                Ack?.Invoke(this, EventArgs.Empty);
 
                 return MsgCmdFileTransfer.CreateRequest(m.Source, m.Dest, FileType.Axcess2Tokens, FileTransferFunction.TransferFileData, lBytes);
               }
@@ -290,6 +332,8 @@ namespace ICSP.IO
 
               Logger.LogDebug(false, "FileManager[TransferFileData]: FileName={0:l}, JunkSize={1}, RawData ...", mCurrentFileNameData, lJunkSize);
 
+              OnTransferFileData?.Invoke(this, new TransferFileDataEventArgs(lJunkSize, mCurrentFileNameData));
+
               mBufferData?.AddRange(m.FileData.Range(2, lJunkSize));
 
               mManager.Send(MsgCmdFileTransfer.CreateRequest(m.Source, m.Dest, FileType.Axcess2Tokens, FileTransferFunction.Ack));
@@ -306,10 +350,14 @@ namespace ICSP.IO
               -----------------------------------------------------------------------------------------------------------------------
               */
 
+              OnTransferFileDataComplete?.Invoke(this, EventArgs.Empty);
+
               return TransferFileDataComplete(m);
             }
             case FileTransferFunction.TransferFileDataCompleteAck: // 0x0005
             {
+              OnTransferFileDataCompleteAck?.Invoke(this, EventArgs.Empty);
+
               return null;
             }
             case FileTransferFunction.TransferFilesInitialize: // 0x0006
@@ -321,7 +369,11 @@ namespace ICSP.IO
               -------------------------------------------------------------------------------------------------------------------------------
               */
 
-              Logger.LogDebug(false, "FileManager[TransferFilesInitialize]: FileCount={0}", ArrayExtensions.GetBigEndianInt16(m.FileData, 0));
+              var lFileCount = ArrayExtensions.GetBigEndianInt16(m.FileData, 0);
+
+              Logger.LogDebug(false, "FileManager[TransferFilesInitialize]: FileCount={0}", lFileCount);
+
+              OnTransferFilesInitialize?.Invoke(this, new TransferFilesInitializeEventArgs(lFileCount));
 
               return null;
             }
@@ -335,6 +387,21 @@ namespace ICSP.IO
               */
 
               Logger.LogDebug(false, "FileManager[TransferFilesComplete] ...");
+
+              OnTransferFilesComplete?.Invoke(this, EventArgs.Empty);
+
+              try
+              {
+                var lTxt = string.Format(Properties.Resources.Js_Config, mManager.Host, "8000");
+                
+                Directory.CreateDirectory("js");
+
+                File.WriteAllText("js\\config.js", lTxt);
+              }
+              catch(Exception ex)
+              {
+                Logger.LogError(false, "FileManager[TransferFilesComplete]: Message={0:l}", ex.Message);
+              }
 
               return null;
             }
@@ -360,6 +427,8 @@ namespace ICSP.IO
       */
 
       var lFileName = AmxUtils.GetNullStr(m.FileData, 0);
+
+      OnDeleteFile?.Invoke(this, new DeleteFileEventArgs(lFileName));
 
       try
       {
@@ -390,6 +459,8 @@ namespace ICSP.IO
       var lDirectory = AmxUtils.GetNullStr(m.FileData, 0);
 
       Logger.LogDebug(false, "FileManager[CreateDirectory]: Directory={0:l}", lDirectory);
+
+      OnCreateDirectory?.Invoke(this, new CreatDirectoryEventArgs(lDirectory));
 
       try
       {
@@ -435,6 +506,8 @@ namespace ICSP.IO
       var lPath = AmxUtils.GetNullStr(m.FileData, 2);
 
       Logger.LogDebug(false, "FileManager[GetDirectoryInfo]: Path={0:l}", lPath);
+
+      OnGetDirectoryInfo?.Invoke(this, new GetDirectoryInfoEventArgs(lPath));
 
       if(lPath == "AMXPanel/")
         ReadFileSizeFromManifest();
@@ -623,6 +696,22 @@ namespace ICSP.IO
 
       Logger.LogDebug(false, "FileManager[TransferGetFileAccessToken]: Size={0} Bytes", lSize);
       Logger.LogDebug(false, "FileManager[TransferGetFileAccessToken]: FileName={0:l}", mCurrentFileNameSend);
+
+      OnTransferGetFileAccessToken?.Invoke(this, new TransferGetFileAccessTokenEventArgs(lSize, mCurrentFileNameSend));
+
+      // Needed by G4
+      if(mCurrentFileNameSend == "__system/graphics/version.xma")
+      {
+        try
+        {
+          if(!File.Exists(mCurrentFileNameSend))
+            File.WriteAllText(mCurrentFileNameSend, Properties.Resources.System_Graphics_Version);
+        }
+        catch(Exception ex)
+        {
+          Logger.LogWarn(false, "FileManager[GetDirectoryInfo]: Message={0:l}", ex.Message);
+        }
+      }
 
       try
       {

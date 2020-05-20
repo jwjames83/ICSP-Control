@@ -2,7 +2,7 @@
 using System.Globalization;
 using System.Net;
 using System.Net.NetworkInformation;
-using ICSP.Manager;
+
 using ICSP.Manager.ConnectionManager;
 using ICSP.Manager.DeviceManager;
 using ICSP.Manager.DiagnosticManager;

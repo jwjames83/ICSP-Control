@@ -29,6 +29,9 @@ namespace ICSPControl.Dialogs
     private DlgDiagnostic mDlgDiagnostic;
     private DlgTrace mDlgTrace;
 
+    private bool mDynamicDeviceOnline;
+    private bool mPhysicalDeviceOnline;
+
     public DlgMain()
     {
       InitializeComponent();
@@ -67,7 +70,7 @@ namespace ICSPControl.Dialogs
 
       // Physical Device
       tssl_Device.Text = string.Format("Device: {0}", Settings.Default.PhysicalDeviceNumber);
-      
+
       // Add the event handler for handling UI thread exceptions to the event.
       Application.ThreadException += OnThreadException;
 
@@ -75,6 +78,10 @@ namespace ICSPControl.Dialogs
 
       mICSPManager.ClientOnlineStatusChanged += OnClientOnlineStatusChanged;
       mICSPManager.DynamicDeviceCreated += OnDynamicDeviceCreated;
+
+      mICSPManager.DeviceOnline += OnDeviceOnline;
+      mICSPManager.DeviceOffline += OnDeviceOffline;
+
       mICSPManager.DiscoveryInfo += OnDiscoveryInfo;
       mICSPManager.BlinkMessage += OnBlinkMessage;
 
@@ -190,6 +197,12 @@ namespace ICSPControl.Dialogs
 
         tssl_ProgramName.Text = "Program Name: ";
         tssl_MainFile.Text = "Main File: ";
+
+        mDynamicDeviceOnline = false;
+        mPhysicalDeviceOnline = false;
+
+        tssl_DynamicDevice.BackColor = SystemColors.Control;
+        tssl_Device.BackColor = SystemColors.Control;
       }
     }
 
@@ -206,6 +219,36 @@ namespace ICSPControl.Dialogs
 
       // Request ProgramInfo ...
       mICSPManager.Send(MsgCmdRequestDiscoveryInfo.CreateRequest(mICSPManager.DynamicDevice, 0x1F));
+    }
+
+    private void OnDeviceOnline(object sender, DeviceInfoData e)
+    {
+      if(e.Device == mICSPManager.DynamicDevice.Device)
+      {
+        mDynamicDeviceOnline = true;
+        tssl_DynamicDevice.BackColor = Color.Green;
+      }
+
+      if(e.Device == Settings.Default.PhysicalDeviceNumber)
+      {
+        mPhysicalDeviceOnline = true;
+        tssl_Device.BackColor = Color.Green;
+      }
+    }
+
+    private void OnDeviceOffline(object sender, DeviceInfoData e)
+    {
+      if(e.Device == mICSPManager.DynamicDevice.Device)
+      {
+        mDynamicDeviceOnline = false;
+        tssl_DynamicDevice.BackColor = SystemColors.Control;
+      }
+
+      if(e.Device == Settings.Default.PhysicalDeviceNumber)
+      {
+        mPhysicalDeviceOnline = false;
+        tssl_Device.BackColor = SystemColors.Control;
+      }
     }
 
     private void OnDiscoveryInfo(object sender, DiscoveryInfoEventArgs e)
@@ -231,7 +274,7 @@ namespace ICSPControl.Dialogs
 
       mBlinkTimer.Start();
     }
-    
+
     private void OnThreadException(object sender, ThreadExceptionEventArgs e)
     {
       ErrorMessageBox.Show(this, e.Exception.Message);
