@@ -235,5 +235,77 @@ namespace ICSPControl.Properties {
                 return ((global::Serilog.Events.LogEventLevel)(this["LogLevel"]));
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("./Panel")]
+        public string FileTransferPanelDirectory {
+            get {
+                return ((string)(this["FileTransferPanelDirectory"]));
+            }
+            set {
+                this["FileTransferPanelDirectory"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool FileTransferCreateJson {
+            get {
+                return ((bool)(this["FileTransferCreateJson"]));
+            }
+            set {
+                this["FileTransferCreateJson"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("project.json")]
+        public string FileTransferFileNameJson {
+            get {
+                return ((string)(this["FileTransferFileNameJson"]));
+            }
+            set {
+                this["FileTransferFileNameJson"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool FileTransferCreateJs {
+            get {
+                return ((bool)(this["FileTransferCreateJs"]));
+            }
+            set {
+                this["FileTransferCreateJs"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("project.js")]
+        public string FileTransferFileNameJs {
+            get {
+                return ((string)(this["FileTransferFileNameJs"]));
+            }
+            set {
+                this["FileTransferFileNameJs"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("Proj")]
+        public string FileTransferVariableNameJs {
+            get {
+                return ((string)(this["FileTransferVariableNameJs"]));
+            }
+            set {
+                this["FileTransferVariableNameJs"] = value;
+            }
+        }
     }
 }

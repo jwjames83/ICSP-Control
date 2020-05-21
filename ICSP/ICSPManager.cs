@@ -49,21 +49,46 @@ namespace ICSP
 
     private ICSPClient mClient;
 
-    private readonly FileManager mFileManager;
-
-    private readonly StateManager mStateManager;
-
     public ICSPManager()
     {
       mDevices = new Dictionary<ushort, DeviceInfoData>();
 
-      mStateManager = new StateManager(this);
-
-      // Suppress Warnings IDE0052, under development ...
-      Console.WriteLine(mStateManager);
-
-      mFileManager = new FileManager(this);
+      FileManager = new FileManager(this);
     }
+
+    public ushort CurrentSystem { get; private set; }
+
+    public AmxDevice DynamicDevice { get; private set; }
+
+    public bool IsConnected
+    {
+      get
+      {
+        return mClient?.Connected ?? false;
+      }
+    }
+
+    public IPAddress CurrentRemoteIpAddress
+    {
+      get
+      {
+        return mClient?.RemoteIpAddress;
+      }
+    }
+
+    public IPAddress CurrentLocalIpAddress
+    {
+      get
+      {
+        return mClient?.LocalIpAddress;
+      }
+    }
+
+    public string Host { get; private set; }
+
+    public int Port { get; private set; }
+
+    public FileManager FileManager { get; }
 
     public void Connect(string host)
     {
@@ -162,7 +187,7 @@ namespace ICSP
           }
           case MsgCmdFileTransfer m:
           {
-            mFileManager.ProcessMessage(m);
+            FileManager.ProcessMessage(m);
 
             break;
           }
@@ -387,30 +412,6 @@ namespace ICSP
       }
     }
 
-    // =====================================================================
-    // FileManager-Events (Redirect)
-    // =====================================================================
-
-    public event EventHandler<TransferFileDataEventArgs> OnTransferFileData { add { mFileManager.OnTransferFileData += value; } remove { mFileManager.OnTransferFileData -= value; } }
-    public event EventHandler<EventArgs> OnTransferFileDataComplete { add { mFileManager.OnTransferFileDataComplete += value; } remove { mFileManager.OnTransferFileDataComplete -= value; } }
-    public event EventHandler<EventArgs> OnTransferFileDataCompleteAck { add { mFileManager.OnTransferFileDataCompleteAck += value; } remove { mFileManager.OnTransferFileDataCompleteAck -= value; } }
-    public event EventHandler<TransferFilesInitializeEventArgs> OnTransferFilesInitialize { add { mFileManager.OnTransferFilesInitialize += value; } remove { mFileManager.OnTransferFilesInitialize -= value; } }
-    public event EventHandler<EventArgs> OnTransferFilesComplete { add { mFileManager.OnTransferFilesComplete += value; } remove { mFileManager.OnTransferFilesComplete -= value; } }
-
-    public event EventHandler<GetDirectoryInfoEventArgs> OnGetDirectoryInfo { add { mFileManager.OnGetDirectoryInfo += value; } remove { mFileManager.OnGetDirectoryInfo -= value; } }
-    public event EventHandler<DirectoryInfoEventArgs> OnDirectoryInfo { add { mFileManager.OnDirectoryInfo += value; } remove { mFileManager.OnDirectoryInfo -= value; } }
-    public event EventHandler<DirectoryItemEventArgs> OnDirectoryItem { add { mFileManager.OnDirectoryItem += value; } remove { mFileManager.OnDirectoryItem -= value; } }
-    public event EventHandler<DeleteFileEventArgs> OnDeleteFile { add { mFileManager.OnDeleteFile += value; } remove { mFileManager.OnDeleteFile -= value; } }
-    public event EventHandler<CreatDirectoryEventArgs> OnCreateDirectory { add { mFileManager.OnCreateDirectory += value; } remove { mFileManager.OnCreateDirectory -= value; } }
-
-    public event EventHandler<EventArgs> OnTransferSingleFile { add { mFileManager.OnTransferSingleFile += value; } remove { mFileManager.OnTransferSingleFile -= value; } }
-    public event EventHandler<EventArgs> OnTransferSingleFileAck { add { mFileManager.OnTransferSingleFileAck += value; } remove { mFileManager.OnTransferSingleFileAck -= value; } }
-    public event EventHandler<TransferSingleFileInfoEventArgs> OnTransferSingleFileInfo { add { mFileManager.OnTransferSingleFileInfo += value; } remove { mFileManager.OnTransferSingleFileInfo -= value; } }
-    public event EventHandler<EventArgs> OnTransferSingleFileInfoAck { add { mFileManager.OnTransferSingleFileInfoAck += value; } remove { mFileManager.OnTransferSingleFileInfoAck -= value; } }
-    public event EventHandler<TransferGetFileAccessTokenEventArgs> OnTransferGetFileAccessToken { add { mFileManager.OnTransferGetFileAccessToken += value; } remove { mFileManager.OnTransferGetFileAccessToken -= value; } }
-    public event EventHandler<EventArgs> OnTransferGetFileAccessTokenAck { add { mFileManager.OnTransferGetFileAccessTokenAck += value; } remove { mFileManager.OnTransferGetFileAccessTokenAck -= value; } }
-    public event EventHandler<EventArgs> OnTransferGetFile { add { mFileManager.OnTransferGetFile += value; } remove { mFileManager.OnTransferGetFile -= value; } }
-
     public void SendString(AmxDevice device, string text)
     {
       var lRequest = MsgCmdStringMasterDev.CreateRequest(DynamicDevice, device, text);
@@ -505,37 +506,5 @@ namespace ICSP
         Logger.LogError(false, "ICSPManager.Send[3]: Client is offline");
       }
     }
-
-    public ushort CurrentSystem { get; private set; }
-
-    public AmxDevice DynamicDevice { get; private set; }
-
-    public bool IsConnected
-    {
-      get
-      {
-        return mClient?.Connected ?? false;
-      }
-    }
-
-    public IPAddress CurrentRemoteIpAddress
-    {
-      get
-      {
-        return mClient?.RemoteIpAddress;
-      }
-    }
-
-    public IPAddress CurrentLocalIpAddress
-    {
-      get
-      {
-        return mClient?.LocalIpAddress;
-      }
-    }
-
-    public string Host { get; private set; }
-
-    public int Port { get; private set; }
   }
 }

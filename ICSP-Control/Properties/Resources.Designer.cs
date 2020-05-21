@@ -91,6 +91,28 @@ namespace ICSPControl.Properties {
         }
         
         /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die /*
+        ///__          __  _      _____            _             _
+        ///\ \        / / | |    / ____|          | |           | |
+        /// \ \  /\  / /__| |__ | |     ___  _ __ | |_ _ __ ___ | |
+        ///  \ \/  \/ / _ \ &apos;_ \| |    / _ \| &apos;_ \| __| &apos;__/ _ \| |
+        ///   \  /\  /  __/ |_) | |___| (_) | | | | |_| | | (_) | |
+        ///    \/  \/ \___|_.__/ \_____\___/|_| |_|\__|_|  \___/|_|
+        ///
+        ///@Description: Global Configuration
+        ///*/
+        ///
+        ///// Config
+        ///// ==============================================================================================
+        ///var _we [Rest der Zeichenfolge wurde abgeschnitten]&quot;; ähnelt.
+        /// </summary>
+        internal static string Js_Config {
+            get {
+                return ResourceManager.GetString("Js_Config", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
         /// </summary>
         internal static System.Drawing.Bitmap Misc {
@@ -197,6 +219,31 @@ namespace ICSPControl.Properties {
             get {
                 object obj = ResourceManager.GetObject("OpenFolder", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die &lt;?xml version=&quot;1.0&quot;?&gt;
+        ///&lt;root&gt;
+        ///    &lt;fontList&gt;
+        ///        &lt;font number=&quot;1&quot;&gt;
+        ///            &lt;file&gt;cour.ttf&lt;/file&gt;
+        ///            &lt;name&gt;Courier New&lt;/name&gt;
+        ///            &lt;subFamily&gt;Regular&lt;/subFamily&gt;
+        ///            &lt;fullName&gt;Courier New&lt;/fullName&gt;
+        ///            &lt;size&gt;9&lt;/size&gt;
+        ///            &lt;usageCount&gt;4012&lt;/usageCount&gt;
+        ///        &lt;/font&gt;
+        ///        &lt;font number=&quot;2&quot;&gt;
+        ///            &lt;file&gt;cour.ttf&lt;/file&gt;
+        ///            &lt;name&gt;Courier New&lt;/name&gt;
+        ///            &lt;subFamily&gt;Regular&lt;/subFamily&gt;
+        ///            &lt;fullName&gt;Courier New&lt;/fullName&gt;
+        ///            &lt; [Rest der Zeichenfolge wurde abgeschnitten]&quot;; ähnelt.
+        /// </summary>
+        internal static string SysFonts {
+            get {
+                return ResourceManager.GetString("SysFonts", resourceCulture);
             }
         }
         

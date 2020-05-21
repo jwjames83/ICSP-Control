@@ -75,9 +75,26 @@ namespace ICSP.IO
       BaseDirectory = AppDomain.CurrentDomain.BaseDirectory;
     }
 
-    public string BaseDirectory { get; set; }
+    public string BaseDirectory { get; private set; }
 
-    public void ProcessMessage(MsgCmdFileTransfer m)
+    public void SetBaseDirectory(string path)
+    {
+      try
+      {
+        var lBaseDirectory = path?.Trim();
+
+        if(string.IsNullOrWhiteSpace(lBaseDirectory))
+          lBaseDirectory = AppDomain.CurrentDomain.BaseDirectory;
+
+        BaseDirectory = lBaseDirectory;
+      }
+      catch(Exception ex)
+      {
+        Logger.LogError(ex);
+      }
+    }
+
+    internal void ProcessMessage(MsgCmdFileTransfer m)
     {
       var lResponse = GetResponse(m);
 
@@ -85,7 +102,7 @@ namespace ICSP.IO
         mManager.Send(lResponse);
     }
 
-    public ICSPMsg GetResponse(MsgCmdFileTransfer m)
+    private ICSPMsg GetResponse(MsgCmdFileTransfer m)
     {
       switch(m.FileType)
       {
@@ -390,19 +407,6 @@ namespace ICSP.IO
 
               OnTransferFilesComplete?.Invoke(this, EventArgs.Empty);
 
-              try
-              {
-                var lTxt = string.Format(Properties.Resources.Js_Config, mManager.Host, "8000");
-                
-                Directory.CreateDirectory("js");
-
-                File.WriteAllText("js\\config.js", lTxt);
-              }
-              catch(Exception ex)
-              {
-                Logger.LogError(false, "FileManager[TransferFilesComplete]: Message={0:l}", ex.Message);
-              }
-
               return null;
             }
           }
@@ -434,7 +438,7 @@ namespace ICSP.IO
       {
         Logger.LogDebug(false, "FileManager[DeleteFile]: FileName={0:l}", lFileName);
 
-        // File.Delete(lFileName);
+        // File.Delete(Path.Combine(BaseDirectory, lFileName));
 
         return MsgCmdFileTransfer.CreateRequest(m.Source, m.Dest, FileType.Unused, FileTransferFunction.Ack);
       }
@@ -646,7 +650,7 @@ namespace ICSP.IO
       }
     }
 
-    public static long GetDirectorySize(DirectoryInfo d)
+    private static long GetDirectorySize(DirectoryInfo d)
     {
       var lSize = 0L;
 
@@ -661,7 +665,7 @@ namespace ICSP.IO
       return lSize;
     }
 
-    public static long GetFileSizeOnDisk(FileInfo info)
+    private static long GetFileSizeOnDisk(FileInfo info)
     {
       var lResult = GetDiskFreeSpaceW(info.Directory.Root.FullName, out var lSectorsPerCluster, out var lBytesPerSector, out _, out _);
 
@@ -699,24 +703,28 @@ namespace ICSP.IO
 
       OnTransferGetFileAccessToken?.Invoke(this, new TransferGetFileAccessTokenEventArgs(lSize, mCurrentFileNameSend));
 
-      // Needed by G4
-      if(mCurrentFileNameSend == "__system/graphics/version.xma")
-      {
-        try
-        {
-          if(!File.Exists(mCurrentFileNameSend))
-            File.WriteAllText(mCurrentFileNameSend, Properties.Resources.System_Graphics_Version);
-        }
-        catch(Exception ex)
-        {
-          Logger.LogWarn(false, "FileManager[GetDirectoryInfo]: Message={0:l}", ex.Message);
-        }
-      }
-
       try
       {
-        if(File.Exists(mCurrentFileNameSend))
-          mBufferSend = File.ReadAllBytes(mCurrentFileNameSend).ToList();
+        var lFileName = Path.Combine(BaseDirectory, mCurrentFileNameSend);
+
+        // Needed by G4
+        if(mCurrentFileNameSend == "__system/graphics/version.xma")
+        {
+          try
+          {
+            if(!File.Exists(lFileName))
+              File.WriteAllText(lFileName, Properties.Resources.System_Graphics_Version);
+          }
+          catch(Exception ex)
+          {
+            Logger.LogWarn(false, "FileManager[GetDirectoryInfo]: Message={0:l}", ex.Message);
+          }
+        }
+
+        if(!File.Exists(lFileName))
+          return MsgCmdFileTransfer.CreateErrorRequest(m.Source, m.Dest, FileType.Axcess2Tokens, FileTransferStatusCode.ErrorOpeningFile);
+
+        mBufferSend = File.ReadAllBytes(lFileName).ToList();
 
         var lBytes = ArrayExtensions.Int32ToBigEndian(mBufferSend?.Count ?? 0).Concat(AccessToken).ToArray();
 
@@ -742,6 +750,8 @@ namespace ICSP.IO
         var lExt = Path.GetExtension(mCurrentFileNameData);
 
         var lIsManifest = mCurrentFileNameData.Equals("AMXPanel/manifest.xma", StringComparison.OrdinalIgnoreCase);
+
+        var lFileName = Path.Combine(BaseDirectory, mCurrentFileNameData);
 
         if(!lIsManifest && (lExt == ".xma" || lExt == ".xml"))
         {
@@ -804,7 +814,7 @@ namespace ICSP.IO
             // bc 06 cb 95 a4 45 73 29 11 b8 4a 0a 80 b2 06 fc 82 da 4a 8d 8a 40 10 d8 55 25 ed ea 8b 26 c2 54 b4 ac 3c 62 ca af 73 4a 9a e5 0e 88 d2 eb 10 d1 c3 93 dc e7 32 36 22 a3 7e 0c 15 5e fb e1 98 1c | df 18 26 da 17 63 80 84 0a 95 94 82 90 94 27 93 b0 b1 d7 6b df f0 62 46 6c ff 38 e9 9d aa e9 ba  
 
             // Write Raw ...
-            File.WriteAllBytes(mCurrentFileNameData, mBufferData.ToArray());
+            File.WriteAllBytes(lFileName, mBufferData.ToArray());
 
             return MsgCmdFileTransfer.CreateRequest(m.Source, m.Dest, FileType.Axcess2Tokens, FileTransferFunction.TransferFileDataCompleteAck);
           }
@@ -836,20 +846,20 @@ namespace ICSP.IO
           {
             lXmlDoc.LoadXml(lXml);
 
-            lXmlDoc.Save(mCurrentFileNameData);
+            lXmlDoc.Save(lFileName);
           }
           catch(Exception ex)
           {
             Logger.LogError(false, "FileManager[TransferFileDataComplete]: FileName={0}, XmlDocument.LoadXml => {1}", mCurrentFileNameData, ex.Message);
             Logger.LogError(false, "FileManager[TransferFileDataComplete]: FileName={0}, RawData={1}", mCurrentFileNameData, BitConverter.ToString(lRawData).Replace("-", " "));
 
-            File.WriteAllBytes(mCurrentFileNameData, mBufferData.ToArray());
+            File.WriteAllBytes(lFileName, mBufferData.ToArray());
           }
         }
         else
         {
           // Write Raw ...
-          File.WriteAllBytes(mCurrentFileNameData, mBufferData.ToArray());
+          File.WriteAllBytes(lFileName, mBufferData.ToArray());
         }
       }
       catch(Exception ex)

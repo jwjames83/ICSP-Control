@@ -508,7 +508,6 @@
       this.Controls.Add(this.cmd_SendString);
       this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
       this.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-      this.MinimumSize = new System.Drawing.Size(1534, 624);
       this.Name = "DlgDiagnostic";
       this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
       this.Text = "Control a Device";

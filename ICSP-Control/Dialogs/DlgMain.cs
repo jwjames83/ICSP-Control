@@ -76,6 +76,8 @@ namespace ICSPControl.Dialogs
 
       mICSPManager = new ICSPManager();
 
+      mICSPManager.FileManager.SetBaseDirectory(Settings.Default.FileTransferPanelDirectory);
+
       mICSPManager.ClientOnlineStatusChanged += OnClientOnlineStatusChanged;
       mICSPManager.DynamicDeviceCreated += OnDynamicDeviceCreated;
 
@@ -84,6 +86,8 @@ namespace ICSPControl.Dialogs
 
       mICSPManager.DiscoveryInfo += OnDiscoveryInfo;
       mICSPManager.BlinkMessage += OnBlinkMessage;
+
+      DockPanel.Theme = new WeifenLuo.WinFormsUI.Docking.VS2015BlueTheme();
 
       if(Settings.Default.AutoConnect)
       {
@@ -223,7 +227,9 @@ namespace ICSPControl.Dialogs
 
     private void OnDeviceOnline(object sender, DeviceInfoData e)
     {
-      if(e.Device == mICSPManager.DynamicDevice.Device)
+      this.InvokeIfRequired(a =>
+      {
+        if(e.Device == mICSPManager.DynamicDevice.Device)
       {
         mDynamicDeviceOnline = true;
         tssl_DynamicDevice.BackColor = Color.Green;
@@ -233,22 +239,26 @@ namespace ICSPControl.Dialogs
       {
         mPhysicalDeviceOnline = true;
         tssl_Device.BackColor = Color.Green;
-      }
+        }
+      });
     }
 
     private void OnDeviceOffline(object sender, DeviceInfoData e)
     {
-      if(e.Device == mICSPManager.DynamicDevice.Device)
+      this.InvokeIfRequired(a =>
       {
-        mDynamicDeviceOnline = false;
-        tssl_DynamicDevice.BackColor = SystemColors.Control;
-      }
+        if(e.Device == mICSPManager.DynamicDevice.Device)
+        {
+          mDynamicDeviceOnline = false;
+          tssl_DynamicDevice.BackColor = SystemColors.Control;
+        }
 
-      if(e.Device == Settings.Default.PhysicalDeviceNumber)
-      {
-        mPhysicalDeviceOnline = false;
-        tssl_Device.BackColor = SystemColors.Control;
-      }
+        if(e.Device == Settings.Default.PhysicalDeviceNumber)
+        {
+          mPhysicalDeviceOnline = false;
+          tssl_Device.BackColor = SystemColors.Control;
+        }
+      });
     }
 
     private void OnDiscoveryInfo(object sender, DiscoveryInfoEventArgs e)

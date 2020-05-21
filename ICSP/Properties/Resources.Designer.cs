@@ -61,28 +61,6 @@ namespace ICSP.Properties {
         }
         
         /// <summary>
-        ///   Sucht eine lokalisierte Zeichenfolge, die /*
-        ///__          __  _      _____            _             _
-        ///\ \        / / | |    / ____|          | |           | |
-        /// \ \  /\  / /__| |__ | |     ___  _ __ | |_ _ __ ___ | |
-        ///  \ \/  \/ / _ \ &apos;_ \| |    / _ \| &apos;_ \| __| &apos;__/ _ \| |
-        ///   \  /\  /  __/ |_) | |___| (_) | | | | |_| | | (_) | |
-        ///    \/  \/ \___|_.__/ \_____\___/|_| |_|\__|_|  \___/|_|
-        ///
-        ///@Description: Global Configuration
-        ///*/
-        ///
-        ///// Config
-        ///// ==============================================================================================
-        ///var _we [Rest der Zeichenfolge wurde abgeschnitten]&quot;; ähnelt.
-        /// </summary>
-        internal static string Js_Config {
-            get {
-                return ResourceManager.GetString("Js_Config", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die &lt;version&gt;9&lt;/version&gt;
         /// ähnelt.
         /// </summary>

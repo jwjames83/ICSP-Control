@@ -56,5 +56,23 @@
     <Setting Name="LogLevel" Type="Serilog.Events.LogEventLevel" Scope="Application">
       <Value Profile="(Default)">Debug</Value>
     </Setting>
+    <Setting Name="FileTransferPanelDirectory" Type="System.String" Scope="User">
+      <Value Profile="(Default)">./Panel</Value>
+    </Setting>
+    <Setting Name="FileTransferCreateJson" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="FileTransferFileNameJson" Type="System.String" Scope="User">
+      <Value Profile="(Default)">project.json</Value>
+    </Setting>
+    <Setting Name="FileTransferCreateJs" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="FileTransferFileNameJs" Type="System.String" Scope="User">
+      <Value Profile="(Default)">project.js</Value>
+    </Setting>
+    <Setting Name="FileTransferVariableNameJs" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Proj</Value>
+    </Setting>
   </Settings>
 </SettingsFile>
