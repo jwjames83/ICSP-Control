@@ -1,0 +1,92 @@
+﻿using System.Linq;
+
+using ICSP.Core.Constants;
+using ICSP.Core.Extensions;
+using ICSP.Core.Logging;
+
+namespace ICSP.Core.Manager.DeviceManager
+{
+  /// <summary>
+  /// This message is used to force a level value change from the master.
+  /// </summary>
+  [MsgCmd(DeviceManagerCmd.LevelValueMasterDev)]
+  public class MsgCmdLevelValueMasterDev : ICSPMsg
+  {
+    public const int MsgCmd = DeviceManagerCmd.LevelValueMasterDev;
+
+    private MsgCmdLevelValueMasterDev()
+    {
+    }
+
+    public MsgCmdLevelValueMasterDev(byte[] buffer) : base(buffer)
+    {
+      if(Data.Length > 0)
+      {
+        Device = AmxDevice.FromDPS(Data.Range(0, 6));
+
+        Level = Data.GetBigEndianInt16(6);
+
+        ValueType = (LevelValueType)Data[8];
+
+        switch(ValueType)
+        {
+          // 1 Data
+          case LevelValueType.Byte: Value = Data[9]; break;
+          case LevelValueType.Char: Value = Data[9]; break;
+
+          // 2 Data
+          case LevelValueType.Integer: Value = Data.GetBigEndianInt16(9); break;
+          case LevelValueType.SInteger: Value = Data.GetBigEndianInt16(9); break;
+
+          // 4 Data
+          case LevelValueType.ULong: Value = Data.GetBigEndianInt32(9); break;
+          case LevelValueType.Long: Value = Data.GetBigEndianInt32(9); break;
+          case LevelValueType.Float: Value = Data.GetBigEndianInt32(9); break;
+
+          // 8 Data
+          case LevelValueType.Double: break;
+        }
+      }
+    }
+
+    public override ICSPMsg FromData(byte[] bytes)
+    {
+      return new MsgCmdLevelValueMasterDev(bytes);
+    }
+
+    public static ICSPMsg CreateRequest(AmxDevice source, AmxDevice device, ushort level, ushort value)
+    {
+      var lRequest = new MsgCmdLevelValueMasterDev
+      {
+        Device = device,
+        Level = level,
+        ValueType = LevelValueType.Integer,
+        Value = value
+      };
+
+      var lData = device.GetBytesDPS().
+        Concat(ArrayExtensions.Int16ToBigEndian(level)).
+        Concat(ArrayExtensions.Int16To8Bit((byte)lRequest.ValueType)).
+        Concat(ArrayExtensions.Int16ToBigEndian((ushort)lRequest.Value)).
+        ToArray();
+
+      return lRequest.Serialize(device, source, MsgCmd, lData);
+    }
+
+    public AmxDevice Device { get; set; }
+
+    public ushort Level { get; set; }
+
+    public LevelValueType ValueType { get; set; }
+    
+    public int Value { get; set; }
+
+    protected override void WriteLogExtended()
+    {
+      Logger.LogDebug(false, "{0:l} Device   : {1:l}", GetType().Name, Device);
+      Logger.LogDebug(false, "{0:l} Level    : {1}", GetType().Name, Level);
+      Logger.LogDebug(false, "{0:l} ValueType: {1:l}", GetType().Name, ValueType);
+      Logger.LogDebug(false, "{0:l} Value    : {1}", GetType().Name, Value);
+    }
+  }
+}
