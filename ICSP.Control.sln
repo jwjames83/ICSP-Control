@@ -34,8 +34,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ICSP.WebProxy", "ICSP.WebPr
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ICSP.WebClientTest", "ICSP.WebClientTest\ICSP.WebClientTest.csproj", "{75AB19D5-710C-4297-832A-A11525EAA06C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ICSP.WsProxy", "ICSP.WsProxy\ICSP.WsProxy.csproj", "{15C9E815-E99A-4FDF-958A-5D5B9AF34B85}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -66,10 +64,6 @@ Global
 		{75AB19D5-710C-4297-832A-A11525EAA06C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{75AB19D5-710C-4297-832A-A11525EAA06C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{75AB19D5-710C-4297-832A-A11525EAA06C}.Release|Any CPU.Build.0 = Release|Any CPU
-		{15C9E815-E99A-4FDF-958A-5D5B9AF34B85}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{15C9E815-E99A-4FDF-958A-5D5B9AF34B85}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{15C9E815-E99A-4FDF-958A-5D5B9AF34B85}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{15C9E815-E99A-4FDF-958A-5D5B9AF34B85}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

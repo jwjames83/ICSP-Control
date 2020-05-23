@@ -2,8 +2,9 @@
 using System.Net.WebSockets;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Web;
+
 using ICSP.Core;
-using ICSP.Core.Manager.DeviceManager;
 
 namespace ICSP.WsProxy
 {
@@ -12,7 +13,7 @@ namespace ICSP.WsProxy
     public event EventHandler<string> OnMessage;
 
     private CancellationTokenSource SocketLoopTokenSource;
-
+    
     public ConnectedClient(int socketId, WebSocketContext context)
     {
       SocketId = socketId;
@@ -22,6 +23,17 @@ namespace ICSP.WsProxy
       ICSPManager = new ICSPManager();
 
       // TODO: ...
+      // file:///C:/Tmp/WebControl/index.html?ip=172.16.126.250&device=8002
+      
+      var lParam = HttpUtility.ParseQueryString(Context.RequestUri.Query);
+
+      IP = lParam["IP"];
+      
+      if(int.TryParse(lParam["Device"], out int lDevice))
+      {
+        Device = lDevice;
+      }
+
       // var lDevInfo = new DeviceInfoData(11011, 0, ICSPManager.CurrentRemoteIpAddress);
 
       ICSPManager.BlinkMessage += ICSPManager_BlinkMessage;
@@ -35,6 +47,10 @@ namespace ICSP.WsProxy
     {
       Console.WriteLine(e.DateTime);
     }
+
+    public string IP { get; private set; }
+
+    public int Device { get; private set; }
 
     public int SocketId { get; private set; }
 

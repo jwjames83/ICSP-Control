@@ -67,7 +67,7 @@
       this.txt_Url1.Name = "txt_Url1";
       this.txt_Url1.Size = new System.Drawing.Size(683, 26);
       this.txt_Url1.TabIndex = 1;
-      this.txt_Url1.Text = "ws://localhost:8080/a";
+      this.txt_Url1.Text = "ws://localhost:8080/AnyPath?AnyParameter=AnyValue";
       // 
       // cmd_Send1
       // 
@@ -233,7 +233,7 @@
       this.txt_Url2.Name = "txt_Url2";
       this.txt_Url2.Size = new System.Drawing.Size(683, 26);
       this.txt_Url2.TabIndex = 1;
-      this.txt_Url2.Text = "ws://localhost:8080/b";
+      this.txt_Url2.Text = "ws://localhost:8080/Test?IP=169.254.0.1";
       // 
       // cmd_Send2
       // 
