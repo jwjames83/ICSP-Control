@@ -1,8 +1,12 @@
 using System.Text;
+
+using ICSP.Core.Logging;
 using ICSP.WebProxy.Configuration;
 
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
+
+using Serilog.Events;
 
 namespace ICSP.WebProxy
 {
@@ -18,7 +22,16 @@ namespace ICSP.WebProxy
       // PM: Install-Package System.Text.Encoding.CodePages
       Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
 
-      CreateHostBuilder(args).Build().Run();
+      // CreateHostBuilder(args).Build().Run();
+
+      var lHostBuilder = CreateHostBuilder(args);
+
+      // Initializes the Log system
+      LoggingConfigurator.Configure(lHostBuilder, new LoggingConfiguration() { LogLevel = LogEventLevel.Information });
+
+      Logger.LogLevel = LogEventLevel.Information;
+
+      lHostBuilder.Build().Run();
     }
 
     public static IHostBuilder CreateHostBuilder(string[] args)

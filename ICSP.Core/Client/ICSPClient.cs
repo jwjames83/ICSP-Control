@@ -23,19 +23,16 @@ namespace ICSP.Core.Client
 
     private NetworkStream mStream;
 
-    private Socket mSocket;
+    private TcpClient mSocket;
 
     private bool mHasShutdown;
+
+    private int mTaskConnectAsyncRunning = 0;
 
     private bool mIsDisposed;
 
     public ICSPClient()
     {
-    }
-
-    ~ICSPClient()
-    {
-      Dispose(false);
     }
 
     public static MsgFactory Factory { get; } = new MsgFactory();
@@ -78,7 +75,7 @@ namespace ICSP.Core.Client
     {
       Dispose(true);
 
-      GC.SuppressFinalize(this);
+      // GC.SuppressFinalize(this);
     }
 
     protected virtual void Dispose(bool disposing)
@@ -99,82 +96,95 @@ namespace ICSP.Core.Client
       }
     }
 
-    public void Connect(string host, int port)
+    public async Task ConnectAsync(string host, int port)
     {
-      if(Connected)
-      {
-        Logger.LogInfo("StartClient: Host={0:l}, Port={1} => Client already connected", host, port);
+      // Ensure that method would be called only once
+      if(Interlocked.Exchange(ref mTaskConnectAsyncRunning, 1) != 0)
         return;
-      }
-
-      mHasShutdown = false;
-
-      // Disposing all Clients that's pending or connected
-      mSocket?.Close();
-
-      // Establish the remote endpoint for the socket
-      var lIpAddress = Dns.GetHostAddresses(host)[0];
-
-      Logger.LogInfo("StartClient: Host={0:l}, Port={1}", lIpAddress, port);
-
-      mSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp)
-      {
-        ReceiveBufferSize = 8192,
-        SendBufferSize = 8192
-      };
 
       try
       {
-        var result = mSocket.BeginConnect(lIpAddress, port, null, null);
-
-        if(mConnectionTimeout > 0)
+        if(Connected)
         {
-          var lSuccess = result.AsyncWaitHandle.WaitOne(mConnectionTimeout * 1000, true);
+          Logger.LogInfo("StartClient: Host={0:l}, Port={1} => Client already connected", host, port);
+          return;
+        }
 
-          if(!lSuccess)
+        mHasShutdown = false;
+
+        // Disposing all Clients that's pending or connected
+        mSocket?.Close();
+
+        // Establish the remote endpoint for the socket
+        var lIpAddress = Dns.GetHostAddresses(host)[0];
+
+        Logger.LogInfo("StartClient: Host={0:l}, Port={1}", lIpAddress, port);
+
+        mSocket = new TcpClient(AddressFamily.InterNetwork)
+        {
+          ReceiveBufferSize = 8192,
+          SendBufferSize = 8192
+        };
+
+        try
+        {
+          var lTask = mSocket.ConnectAsync(lIpAddress, port);
+
+          if(mConnectionTimeout > 0)
           {
-            mSocket.Close();
+            var lSuccess = lTask.Wait(TimeSpan.FromSeconds(mConnectionTimeout));
 
-            // WSAETIMEDOUT: 10060(0x274C)
-            // A connection attempt failed because the connected party did not properly respond after a period of time, 
-            // or established connection failed because connected host has failed to respond
-            // throw new SocketException(0x0000274c); // Timeout
+            if(!lSuccess)
+            {
+              mSocket.Close();
 
-            var lMsg = string.Format(
-              "Failed to connect to the specified master controller.\r\n" +
-              "Your current connection configuration is: {0}:{1}", lIpAddress, port);
+              // WSAETIMEDOUT: 10060(0x274C)
+              // A connection attempt failed because the connected party did not properly respond after a period of time, 
+              // or established connection failed because connected host has failed to respond
+              // throw new SocketException(0x0000274c); // Timeout
 
-            throw new ApplicationException(lMsg); // Timeout
+              var lMsg = string.Format(
+                "Failed to connect to the specified master controller.\r\n" +
+                "Your current connection configuration is: {0}:{1}", lIpAddress, port);
+
+              throw new ApplicationException(lMsg); // Timeout
+            }
+          }
+          else
+          {
+            await lTask;
           }
         }
+        catch(Exception ex)
+        {
+          Logger.LogError(ex.Message);
+
+          throw;
+        }
+
+        if(mSocket.Connected)
+        {
+          Logger.LogInfo("Client connected: {0:l}:{1}", lIpAddress, port);
+
+          RemoteIpAddress = ((IPEndPoint)mSocket.Client.RemoteEndPoint).Address;
+          LocalIpAddress = ((IPEndPoint)mSocket.Client.LocalEndPoint).Address;
+
+          mStream = new NetworkStream(mSocket.Client, true);
+
+          var mCts = new CancellationTokenSource();
+
+          ReadAsync(mCts.Token);
+
+          ClientOnlineStatusChanged?.Invoke(this, new ClientOnlineOfflineEventArgs(0, true, RemoteIpAddress?.ToString()));
+        }
         else
-          result.AsyncWaitHandle.WaitOne();
+        {
+          Logger.LogError("Client connect failed: {0:l}:{1}", lIpAddress, port);
+        }
       }
-      catch(Exception ex)
+      finally
       {
-        Logger.LogError(ex.Message);
-
-        throw;
-      }
-
-      if(mSocket.Connected)
-      {
-        Logger.LogInfo("Client connected: {0:l}:{1}", lIpAddress, port);
-
-        RemoteIpAddress = ((IPEndPoint)mSocket.RemoteEndPoint).Address;
-        LocalIpAddress = ((IPEndPoint)mSocket.LocalEndPoint).Address;
-
-        mStream = new NetworkStream(mSocket, true);
-
-        var mCts = new CancellationTokenSource();
-
-        ReadAsync(mCts.Token);
-
-        ClientOnlineStatusChanged?.Invoke(this, new ClientOnlineOfflineEventArgs(0, true, RemoteIpAddress?.ToString()));
-      }
-      else
-      {
-        Logger.LogError("Client connect failed: {0:l}:{1}", lIpAddress, port);
+        Interlocked.Exchange(ref mTaskConnectAsyncRunning, 0);
       }
     }
 
@@ -189,7 +199,7 @@ namespace ICSP.Core.Client
           // Shutdown generate a IOException in ReadAsync
           mHasShutdown = true;
 
-          mSocket.Shutdown(SocketShutdown.Both);
+          mSocket.Client.Shutdown(SocketShutdown.Both);
         }
         catch(Exception ex)
         {
@@ -272,7 +282,7 @@ namespace ICSP.Core.Client
               var lMsg = Factory.FromData(lBytes.GetRange(0, lSize).ToArray());
 
               lBytes.RemoveRange(0, lSize);
-              
+
               OnDataReceived(new ICSPMsgDataEventArgs(lMsg));
 
               // mManager.OnDataReceived(this, lMsg);

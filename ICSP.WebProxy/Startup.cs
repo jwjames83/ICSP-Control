@@ -28,6 +28,7 @@ namespace ICSP.WebProxy
     public void ConfigureServices(IServiceCollection services)
     {
       services.AddWebSocketManager();
+      services.AddProxyClient();
     }
 
     // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -35,7 +36,7 @@ namespace ICSP.WebProxy
     {
       var lFactory = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>();
       var lProvider = lFactory.CreateScope().ServiceProvider;
-
+      
       if(env.IsDevelopment())
         app.UseDeveloperExceptionPage();
 
@@ -53,7 +54,7 @@ namespace ICSP.WebProxy
 
       app.UseStaticFiles();
 
-      app.MapWebSocketManager("", lProvider.GetService<ConnectedClient>());
+      app.MapWebSocketManager("", lProvider.GetService<WebSocketProxyClient>());
     }
   }
 }

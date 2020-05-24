@@ -45,7 +45,7 @@ namespace ICSP.Core.Reflection
     {
       T local = Activator.CreateInstance(t, args) as T;
 
-      if (local == null)
+      if(local == null)
       {
         throw new Exception(string.Format("{0} ist nicht vom Typ {1}", t.ToString(), typeof(T).ToString()));
       }
@@ -66,7 +66,7 @@ namespace ICSP.Core.Reflection
     public static Type FromDbType(DbType dbType)
     {
       Type type = typeof(string);
-      switch (dbType)
+      switch(dbType)
       {
         case DbType.AnsiString:
         case DbType.String:
@@ -133,36 +133,46 @@ namespace ICSP.Core.Reflection
       return type;
     }
 
+    public static List<Type> GetImplementedClassesForInterface(Type interfaceType)
+    {
+      return GetImplementedClassesForInterface(Assembly.GetCallingAssembly(), interfaceType);
+    }
+
     public static List<Type> GetImplementedClassesForInterface(Assembly searchAssembly, Type interfaceType)
     {
-      List<Type> list = new List<Type>();
-      Type[] types = searchAssembly.GetTypes();
-      for (int i = 0; i < types.Length; i++)
+
+      var lList = new List<Type>();
+
+      var lTypes = searchAssembly.GetTypes();
+
+      for(int i = 0; i < lTypes.Length; i++)
       {
-        Type[] interfaces = types[i].GetInterfaces();
-        for (int j = 0; j < interfaces.Length; j++)
+        var lInterfaces = lTypes[i].GetInterfaces();
+
+        for(int j = 0; j < lInterfaces.Length; j++)
         {
-          if (interfaces[j].Equals(interfaceType))
+          if(lInterfaces[j].Equals(interfaceType))
           {
-            list.Add(types[i]);
+            lList.Add(lTypes[i]);
             break;
           }
         }
       }
-      return list;
+
+      return lList;
     }
 
     public static object GetObjectValue(object o, string fieldOrPropertyName)
     {
-      if (o != null)
+      if(o != null)
       {
         PropertyInfo property = o.GetType().GetProperty(fieldOrPropertyName);
-        if (property != null)
+        if(property != null)
         {
           return property.GetValue(o, null);
         }
         FieldInfo field = o.GetType().GetField(fieldOrPropertyName);
-        if (field != null)
+        if(field != null)
         {
           return field.GetValue(o);
         }
@@ -177,14 +187,14 @@ namespace ICSP.Core.Reflection
 
     public static List<Type> GetSublassesOfType(Type baseClassType, Assembly asm)
     {
-      if ((baseClassType == null) || (asm == null))
+      if((baseClassType == null) || (asm == null))
         throw new ArgumentException("BaseClassType oder Assembly ist null");
 
       var lTypes = new List<Type>();
 
-      foreach (Type type in asm.GetTypes())
+      foreach(Type type in asm.GetTypes())
       {
-        if (type.IsSubclassOf(baseClassType))
+        if(type.IsSubclassOf(baseClassType))
           lTypes.Add(type);
       }
 
@@ -195,15 +205,15 @@ namespace ICSP.Core.Reflection
     {
       Type type = null;
 
-      if (!mTypeCache.TryGetValue(typeName, out type))
+      if(!mTypeCache.TryGetValue(typeName, out type))
       {
         TypeInfo info = new TypeInfo(typeName);
-        if (info.AssemblyName == null)
+        if(info.AssemblyName == null)
         {
-          foreach (Assembly assembly in AppDomain.CurrentDomain.GetAssemblies())
+          foreach(Assembly assembly in AppDomain.CurrentDomain.GetAssemblies())
           {
             type = assembly.GetType(info.ClassName);
-            if (null != type)
+            if(null != type)
             {
               break;
             }
@@ -223,20 +233,20 @@ namespace ICSP.Core.Reflection
     public static Type GetType(string sTypeName, Assembly[] assemblies)
     {
       TypeInfo info = new TypeInfo(sTypeName);
-      foreach (Assembly assembly in assemblies)
+      foreach(Assembly assembly in assemblies)
       {
         Type type = assembly.GetType(info.ClassName);
-        if (null != type)
+        if(null != type)
         {
           return type;
         }
       }
       return null;
     }
-    
+
     public static bool IsNumber(Type type)
     {
-      if (((!IsTypeOrNullable<short>(type) && !IsTypeOrNullable<int>(type)) && (!IsTypeOrNullable<long>(type) && !IsTypeOrNullable<ushort>(type))) && ((!IsTypeOrNullable<uint>(type) && !IsTypeOrNullable<ulong>(type)) && (!IsTypeOrNullable<float>(type) && !IsTypeOrNullable<double>(type))))
+      if(((!IsTypeOrNullable<short>(type) && !IsTypeOrNullable<int>(type)) && (!IsTypeOrNullable<long>(type) && !IsTypeOrNullable<ushort>(type))) && ((!IsTypeOrNullable<uint>(type) && !IsTypeOrNullable<ulong>(type)) && (!IsTypeOrNullable<float>(type) && !IsTypeOrNullable<double>(type))))
       {
         return false;
       }
@@ -245,7 +255,7 @@ namespace ICSP.Core.Reflection
 
     public static bool IsReal(Type type)
     {
-      if (!IsTypeOrNullable<float>(type) && !IsTypeOrNullable<double>(type))
+      if(!IsTypeOrNullable<float>(type) && !IsTypeOrNullable<double>(type))
       {
         return false;
       }
@@ -254,7 +264,7 @@ namespace ICSP.Core.Reflection
 
     public static bool IsRightAligned(Type type)
     {
-      if (((!IsTypeOrNullable<short>(type) && !IsTypeOrNullable<int>(type)) && (!IsTypeOrNullable<long>(type) && !IsTypeOrNullable<ushort>(type))) && (((!IsTypeOrNullable<uint>(type) && !IsTypeOrNullable<ulong>(type)) && (!IsTypeOrNullable<float>(type) && !IsTypeOrNullable<double>(type))) && (!IsTypeOrNullable<DateTime>(type) && !IsTypeOrNullable<TimeSpan>(type))))
+      if(((!IsTypeOrNullable<short>(type) && !IsTypeOrNullable<int>(type)) && (!IsTypeOrNullable<long>(type) && !IsTypeOrNullable<ushort>(type))) && (((!IsTypeOrNullable<uint>(type) && !IsTypeOrNullable<ulong>(type)) && (!IsTypeOrNullable<float>(type) && !IsTypeOrNullable<double>(type))) && (!IsTypeOrNullable<DateTime>(type) && !IsTypeOrNullable<TimeSpan>(type))))
       {
         return false;
       }
@@ -263,7 +273,7 @@ namespace ICSP.Core.Reflection
 
     public static bool IsTypeOrNullable<T>(Type type) where T : struct
     {
-      if (!(typeof(T) == type))
+      if(!(typeof(T) == type))
       {
         return (typeof(T?) == type);
       }

@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Runtime.Caching;
-
+using System.Threading;
+using System.Threading.Tasks;
 using ICSP.Core.Client;
 using ICSP.Core.IO;
 using ICSP.Core.Logging;
@@ -17,7 +18,7 @@ using Serilog.Events;
 
 namespace ICSP.Core
 {
-  public class ICSPManager
+  public class ICSPManager : IDisposable
   {
     private readonly Dictionary<ushort, DeviceInfoData> mDevices;
 
@@ -48,6 +49,12 @@ namespace ICSP.Core
     public event EventHandler<DeviceInfoData> DeviceOffline;
 
     private ICSPClient mClient;
+
+    private int mConnectionTimeout = 1;
+
+    private int mTaskConnectAsyncRunning = 0;
+
+    private bool mIsDisposed;
 
     public ICSPManager()
     {
@@ -88,35 +95,93 @@ namespace ICSP.Core
 
     public int Port { get; private set; }
 
-    public FileManager FileManager { get; }
-
-    public void Connect(string host)
+    /// <summary>
+    /// Gets the time to wait while trying to establish a connection
+    /// before terminating the attempt and generating an error.
+    /// </summary>
+    /// <remarks>
+    /// You can set the amount of time a connection waits to time out by 
+    /// using the ConnectTimeout or Connection Timeout keywords in the connection string.
+    /// A value of 0 indicates no limit, and should be avoided in a ConnectionString 
+    /// because an attempt to connect waits indefinitely.
+    /// </remarks>
+    public int ConnectionTimeout
     {
-      Connect(host, ICSPClient.DefaultPort);
+      get
+      {
+        return mConnectionTimeout;
+      }
+      set
+      {
+        if(value < 0)
+          throw new ArgumentOutOfRangeException(nameof(ConnectionTimeout));
+
+        mConnectionTimeout = value;
+      }
     }
 
-    public void Connect(string host, int port)
+    public FileManager FileManager { get; }
+
+    public void Dispose()
     {
-      if(string.IsNullOrWhiteSpace(host))
-        throw new ArgumentNullException(nameof(host));
+      Dispose(true);
 
-      Host = host;
+      // GC.SuppressFinalize(this);
+    }
 
-      Port = port;
-
-      if(mClient != null)
+    protected virtual void Dispose(bool disposing)
+    {
+      if(!mIsDisposed)
       {
-        mClient.ClientOnlineStatusChanged -= OnClientOnlineStatusChanged;
-        mClient.DataReceived -= OnDataReceived;
-        mClient.Dispose();
+        if(disposing)
+        {
+          // Verwalteten Zustand (verwaltete Objekte) entsorgen
+          if(mClient != null)
+          {
+            mClient.Dispose();
+            mClient = null;
+          }
+        }
+
+        mIsDisposed = true;
       }
+    }
 
-      mClient = new ICSPClient();
+    public async Task ConnectAsync(string host)
+    {
+      await ConnectAsync(host, ICSPClient.DefaultPort);
+    }
 
-      mClient.ClientOnlineStatusChanged += OnClientOnlineStatusChanged;
-      mClient.DataReceived += OnDataReceived;
+    public async Task ConnectAsync(string host, int port)
+    {
+      // Ensure that method would be called only once
+      if(Interlocked.Exchange(ref mTaskConnectAsyncRunning, 1) != 0)
+        return;
 
-      mClient.Connect(Host, Port);
+      try
+      {
+        Host = host ?? throw new ArgumentNullException(nameof(host));
+
+        Port = port;
+
+        if(mClient != null)
+        {
+          mClient.ClientOnlineStatusChanged -= OnClientOnlineStatusChanged;
+          mClient.DataReceived -= OnDataReceived;
+          mClient.Dispose();
+        }
+
+        mClient = new ICSPClient() { ConnectionTimeout = mConnectionTimeout };
+
+        mClient.ClientOnlineStatusChanged += OnClientOnlineStatusChanged;
+        mClient.DataReceived += OnDataReceived;
+
+        await mClient.ConnectAsync(Host, Port);
+      }
+      finally
+      {
+        Interlocked.Exchange(ref mTaskConnectAsyncRunning, 0);
+      }
     }
 
     public void Disconnect()

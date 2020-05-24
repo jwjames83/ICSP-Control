@@ -1,4 +1,6 @@
-﻿namespace ICSP.WebProxy.Configuration
+﻿using ICSP.Core.Client;
+
+namespace ICSP.WebProxy.Configuration
 {
   public class ProxyDefaultConfig
   {
@@ -6,6 +8,8 @@
 
     public string RemoteHost { get; set; } = "localhost";
 
-    public ushort RemotePort { get; set; } = 1319;
+    public ushort RemotePort { get; set; } = ICSPClient.DefaultPort;
+
+    public ushort Device { get; set; }    
   }
 }

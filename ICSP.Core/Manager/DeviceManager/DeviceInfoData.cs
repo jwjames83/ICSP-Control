@@ -2,6 +2,7 @@
 using System.Net;
 using System.Net.NetworkInformation;
 
+using ICSP.Core.Client;
 using ICSP.Core.Environment;
 
 namespace ICSP.Core.Manager.DeviceManager
@@ -30,7 +31,7 @@ namespace ICSP.Core.Manager.DeviceManager
 
       ExtAddressType = ExtAddressType.IPv4Address;
       IPv4Address = ipAddress;
-      IpPort = 1319;
+      IpPort = ICSPClient.DefaultPort;
       MacAddress = PhysicalAddress.None;
       IPv6Address = IPv4Address;
     }

@@ -1,10 +1,11 @@
 ﻿using System.Reflection;
 
+using ICSP.WebProxy;
+
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.DependencyInjection;
 
-namespace ICSP.WebProxy
+namespace Microsoft.Extensions.DependencyInjection
 {
   public static class WebSocketManagerExtensions
   {

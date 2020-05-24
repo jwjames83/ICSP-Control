@@ -92,7 +92,7 @@ namespace ICSPControl.Dialogs
       {
         try
         {
-          mICSPManager.Connect(Settings.Default.AmxHost, Settings.Default.AmxPort);
+          mICSPManager.ConnectAsync(Settings.Default.AmxHost, Settings.Default.AmxPort);
         }
         catch(Exception ex)
         {

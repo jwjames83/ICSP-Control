@@ -9,5 +9,7 @@
     public ushort RemotePort { get; set; }
 
     public ushort Device { get; set; }
+
+    public ushort PortCount { get; set; } = 1;
   }
 }

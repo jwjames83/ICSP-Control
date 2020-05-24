@@ -17,7 +17,7 @@ namespace ICSP.WebProxy
 
     private WebSocketHandler mWebSocketHandler { get; set; }
 
-    public async Task Invoke(HttpContext context)
+    public async Task InvokeAsync(HttpContext context)
     {
       if(!context.WebSockets.IsWebSocketRequest)
         return;
