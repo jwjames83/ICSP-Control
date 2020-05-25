@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Net.WebSockets;
+using System.Text.RegularExpressions;
 
 using ICSP.Core.Client;
 
@@ -10,57 +11,54 @@ namespace ICSP.WebProxy.Configuration
 {
   public static class ProxyConfigManager
   {
+    private static Regex RegexUrl = new Regex(@"^((?<scheme>[^:/?#]+):(?=//))?(//)?(((?<login>[^:]+)(?::(?<password>[^@]+)?)?@)?(?<host>[^@/?#:]*)(?::(?<port>\d+)?)?)?(?<path>[^?#]*)(\?(?<query>[^#]*))?(#(?<fragment>.*))?", RegexOptions.None);
+
     public static void Configure(this ProxyConfig config)
     {
       if(config == null)
         throw new ArgumentNullException(nameof(config));
 
-      if(config.Default == null)
-        config.Default = new List<ProxyDefaultConfig>();
+      if(config.Connections == null)
+        config.Connections = new List<ProxyConnectionConfig>();
 
-      if(config.Default.Count == 0)
+      if(config.Connections.Count == 0)
       {
-        var lDefaultConfig = new ProxyDefaultConfig()
+        var lDefaultConfig = new ProxyConnectionConfig()
         {
-          LocalPort = 8000,
           RemoteHost = "localhost",
           RemotePort = ICSPClient.DefaultPort
         };
 
-        config.Default.Add(lDefaultConfig);      
+        config.Connections.Add(lDefaultConfig);
       }
-      
-      if(config.Devices == null)
-        config.Devices = new List<ProxyDeviceConfig>();
     }
 
-    public static ProxyDeviceConfig GetConfig(HttpContext context, WebSocket socket)
+    public static ProxyConnectionConfig GetConfig(HttpContext context, WebSocket socket)
     {
-      foreach(var item in Program.ProxyConfig.Devices)
-      {
-        if(item.LocalPort == context.Connection.LocalPort)
-        {
-          return item;
-        }
-      }
+      var lLocalScheme = context.Request.Scheme;
+      var lLocalPort = context.Connection.LocalPort;
 
-      foreach(var item in Program.ProxyConfig.Default)
+      foreach(var item in Program.ProxyConfig.Connections)
       {
-        if(item.LocalPort == context.Connection.LocalPort)
+        var lMatch = RegexUrl.Match(item.LocalHost);
+
+        if(lMatch.Success)
         {
-          return new Configuration.ProxyDeviceConfig()
-          {
-            Device = item.Device,
-            RemoteHost = item.RemoteHost,
-            RemotePort = item.RemotePort
-          };
+          var lScheme = lMatch.Groups["scheme"].Value;
+          ushort.TryParse(lMatch.Groups["port"].Value, out var lPort);
+
+          if(lPort == 0)
+            lPort = 80;
+
+          if(lLocalScheme.Equals(lScheme, StringComparison.OrdinalIgnoreCase) && lLocalPort == lPort)
+            return item;
         }
       }
 
       // First Default ...
-      var lDefault = Program.ProxyConfig.Default[0];
+      var lDefault = Program.ProxyConfig.Connections[0];
 
-      return new Configuration.ProxyDeviceConfig()
+      return new Configuration.ProxyConnectionConfig()
       {
         Device = 0,
         RemoteHost = lDefault.RemoteHost,

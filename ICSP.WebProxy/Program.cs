@@ -1,9 +1,11 @@
+using System.Linq;
 using System.Text;
 
 using ICSP.Core.Logging;
 using ICSP.WebProxy.Configuration;
 
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 
 using Serilog.Events;
@@ -38,9 +40,24 @@ namespace ICSP.WebProxy
     {
       var lBuilder = Host.CreateDefaultBuilder(args);
 
+      var config = new ConfigurationBuilder()
+       .AddJsonFile("appsettings.json")
+       .Build();
+
+      var lConfig = config.GetSection(nameof(ProxyConfig)).Get<ProxyConfig>() ?? new ProxyConfig();
+
+      lConfig.Configure();
+
+      var lUrls = lConfig.Connections.Where(p => p.Enabled).Select(s => s.LocalHost).ToArray();
+
       lBuilder.ConfigureWebHostDefaults(webBuilder =>
       {
+        // webBuilder.UseUrls("http://*:5000;http://localhost:5001;https://hostname:5002");
+
+        webBuilder.UseUrls(lUrls.ToArray());        
+
         webBuilder.UseStartup<Startup>();
+
       });
 
       return lBuilder;

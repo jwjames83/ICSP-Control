@@ -44,7 +44,7 @@ namespace ICSP.WebProxy.Proxy
 
     public ICSPManager Manager { get; private set; }
 
-    public ProxyDeviceConfig DeviceConfig { get; private set; }
+    public ProxyConnectionConfig DeviceConfig { get; private set; }
 
     public IMessageConverter Converter { get; private set; }
 
