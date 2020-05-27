@@ -386,10 +386,7 @@ namespace ICSPControl.Dialogs
       if(Settings.Default.PhysicalDeviceUseCustomDeviceId)
         lDeviceId = Settings.Default.PhysicalDeviceCustomDeviceId;
 
-      var lDeviceInfo = new DeviceInfoData(
-        Settings.Default.PhysicalDeviceNumber,
-        mICSPManager.CurrentSystem,
-        mICSPManager.CurrentLocalIpAddress)
+      var lDeviceInfo = new DeviceInfoData(Settings.Default.PhysicalDeviceNumber, mICSPManager.CurrentLocalIpAddress)
       {
         Version = Settings.Default.PhysicalDeviceVersion,
         Name = Settings.Default.PhysicalDeviceName,
@@ -542,15 +539,16 @@ namespace ICSPControl.Dialogs
 
         try
         {
-          var lJsonProject = new JObject();
-
-          // Main-Properties order:
-          // -------------------------------------------------------
-          lJsonProject.Add(new JProperty("project"));
-          lJsonProject.Add(new JProperty("pages", new JArray()));
-          lJsonProject.Add(new JProperty("map"));
-          lJsonProject.Add(new JProperty("palettes", new JArray()));
-          lJsonProject.Add(new JProperty("fontList", new JArray()));
+          var lJsonProject = new JObject
+          {
+            // Main-Properties order:
+            // -------------------------------------------------------
+            new JProperty("project"),
+            new JProperty("pages", new JArray()),
+            new JProperty("map"),
+            new JProperty("palettes", new JArray()),
+            new JProperty("fontList", new JArray())
+          };
 
           foreach(var keyValue in mJsonList)
           {

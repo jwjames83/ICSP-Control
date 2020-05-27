@@ -9,14 +9,14 @@ namespace ICSP.Core.Manager.DeviceManager
 {
   public class DeviceInfoData
   {
-    public DeviceInfoData(ushort device, ushort system, IPAddress ipAddress)
+    public DeviceInfoData(ushort device, IPAddress ipAddress)
     {
       // >= 65535 => NI-700 Crash!
       if(device == 0 || device >= 65535)
         throw new ArgumentOutOfRangeException(nameof(device), "NetLinx allows device numbers in the range 1 - 65534");
 
       Device = device;
-      System = system;
+      System = 0;
       DataFlag = 0x0020;
       ObjectId = 0;
       ParentId = 0;
@@ -46,7 +46,7 @@ namespace ICSP.Core.Manager.DeviceManager
     /// <summary>
     /// Unsigned 16-bit value.
     /// </summary>
-    public ushort System { get; private set; }
+    public ushort System { get; set; }
 
     /// <summary>
     /// 16-bit bit field. 

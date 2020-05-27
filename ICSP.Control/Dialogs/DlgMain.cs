@@ -93,7 +93,7 @@ namespace ICSPControl.Dialogs
       {
         try
         {
-          mICSPManager.ConnectAsync(Settings.Default.AmxHost, Settings.Default.AmxPort);
+          _ = mICSPManager.ConnectAsync(Settings.Default.AmxHost, Settings.Default.AmxPort);
         }
         catch(Exception ex)
         {
@@ -106,7 +106,7 @@ namespace ICSPControl.Dialogs
     {
       try
       {
-        mICSPManager.ConnectAsync(Settings.Default.AmxHost, Settings.Default.AmxPort);
+        _ = mICSPManager.ConnectAsync(Settings.Default.AmxHost, Settings.Default.AmxPort);
       }
       catch(Exception ex)
       {
@@ -190,6 +190,9 @@ namespace ICSPControl.Dialogs
       {
         tssl_ClientState.Text = "Connected";
         tssl_ClientState.BackColor = Color.Green;
+
+        if(Settings.Default.PhysicalDeviceAutoCreate)
+          CreatePhysicalDevice();
       }
       else
       {
@@ -311,10 +314,7 @@ namespace ICSPControl.Dialogs
       if(Settings.Default.PhysicalDeviceUseCustomDeviceId)
         lDeviceId = Settings.Default.PhysicalDeviceCustomDeviceId;
 
-      var lDeviceInfo = new DeviceInfoData(
-        Settings.Default.PhysicalDeviceNumber,
-        mICSPManager.CurrentSystem,
-        mICSPManager.CurrentLocalIpAddress)
+      var lDeviceInfo = new DeviceInfoData(Settings.Default.PhysicalDeviceNumber, mICSPManager.CurrentLocalIpAddress)
       {
         Version = Settings.Default.PhysicalDeviceVersion,
         Name = Settings.Default.PhysicalDeviceName,

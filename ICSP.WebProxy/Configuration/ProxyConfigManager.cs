@@ -56,14 +56,7 @@ namespace ICSP.WebProxy.Configuration
       }
 
       // First Default ...
-      var lDefault = Program.ProxyConfig.Connections[0];
-
-      return new Configuration.ProxyConnectionConfig()
-      {
-        Device = 0,
-        RemoteHost = lDefault.RemoteHost,
-        RemotePort = lDefault.RemotePort
-      };
+      return Program.ProxyConfig.Connections[0];
     }
   }
 }

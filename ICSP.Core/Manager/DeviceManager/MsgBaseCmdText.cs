@@ -45,24 +45,24 @@ namespace ICSP.Core.Manager.DeviceManager
       throw new ApplicationException("Command need an empty constructor");
     }
 
-    public static ICSPMsg CreateRequest(AmxDevice source, AmxDevice device, string text)
+    public static ICSPMsg CreateRequest(AmxDevice source, AmxDevice dest, string text)
     {
       var lRequest = CreateType();
 
-      lRequest.Device = device;
+      lRequest.Device = dest;
       lRequest.ValueType = EncodingType.Default;
       lRequest.Length = (ushort)text?.Length;
       lRequest.Text = text;
 
       var lBytes = Encoding.Default.GetBytes(lRequest.Text);
 
-      var lData = device.GetBytesDPS().
+      var lData = dest.GetBytesDPS().
         Concat(ArrayExtensions.Int16To8Bit((byte)lRequest.ValueType)).
         Concat(ArrayExtensions.Int16ToBigEndian(lRequest.Length)).
         Concat(lBytes).
         ToArray();
 
-      return lRequest.Serialize(device, source, lRequest.MsgCmd, lData);
+      return lRequest.Serialize(dest, source, lRequest.MsgCmd, lData);
     }
 
     protected abstract ushort MsgCmd { get; }

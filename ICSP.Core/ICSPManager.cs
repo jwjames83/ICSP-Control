@@ -5,6 +5,7 @@ using System.Net;
 using System.Runtime.Caching;
 using System.Threading;
 using System.Threading.Tasks;
+
 using ICSP.Core.Client;
 using ICSP.Core.IO;
 using ICSP.Core.Logging;
@@ -194,7 +195,7 @@ namespace ICSP.Core
     {
       if(e.ClientOnline)
       {
-        Send(MsgCmdDynamicDeviceAddressRequest.CreateRequest(mClient.LocalIpAddress));
+        // Send(MsgCmdDynamicDeviceAddressRequest.CreateRequest(mClient.LocalIpAddress));
       }
       else
       {
@@ -237,6 +238,8 @@ namespace ICSP.Core
             if(MemoryCache.Default.Get(m.ID.ToString()) is DeviceInfoData deviceInfo)
             {
               MemoryCache.Default.Remove(m.ID.ToString());
+
+              deviceInfo.System = m.Source.System;
 
               if(!mDevices.ContainsKey(deviceInfo.Device))
                 mDevices.Add(deviceInfo.Device, deviceInfo);
@@ -288,64 +291,9 @@ namespace ICSP.Core
 
             DynamicDevice = new AmxDevice(m.Device, 1, m.System);
 
-            CreateDeviceInfo(new DeviceInfoData(m.Device, m.System, mClient.LocalIpAddress));
+            CreateDeviceInfo(new DeviceInfoData(m.Device, mClient.LocalIpAddress) { System = m.System });
 
             DynamicDeviceCreated?.Invoke(this, new DynamicDeviceCreatedEventArgs(m));
-
-            // =======================================================================================
-            // Test-Stuff ...
-            // =======================================================================================
-
-            /*
-            var lDest = new AmxDevice(10001, 0, 1);
-
-            var lDirectory = "/"; // Get Root-Directory
-
-            Logger.LogDebug(false, "----------------------------------------------------------------");
-            Logger.LogDebug(false, "GetDirectoryInfo: Directory={0:l}", lDirectory);
-            Logger.LogDebug(false, "----------------------------------------------------------------");
-
-            var lBytes = new byte[] { 0x00, 0x00, }.Concat(Encoding.Default.GetBytes(lDirectory + "\0")).ToArray();
-
-            lRequest = MsgCmdFileTransfer.CreateRequest(lDest, DynamicDevice, FileType.Unused, FunctionsUnused.GetDirectoryInfo, lBytes);
-
-            Send(lRequest);
-
-            // doc:/user
-            // .
-            // ..
-            // images
-
-            lDirectory = "AMXPanel/"; // Get doc:/user ...
-
-            Logger.LogDebug(false, "----------------------------------------------------------------");
-            Logger.LogDebug(false, "GetDirectoryInfo: Directory={0:l}", lDirectory);
-            Logger.LogDebug(false, "----------------------------------------------------------------");
-
-            var lBytes = new byte[] { 0x00, 0x00, }.Concat(Encoding.Default.GetBytes(lDirectory + "\0")).ToArray();
-
-            lRequest = MsgCmdFileTransfer.CreateRequest(lDest, DynamicDevice, FileType.Unused, FunctionsUnused.GetDirectoryInfo, lBytes);
-
-            Send(lRequest);
-
-            // doc:/user
-            // .
-            // ..
-            // images
-            
-            Logger.LogDebug(false, "----------------------------------------------------------------");
-            Logger.LogDebug(false, "TransferGetFileAccessToken: FileName=AMXPanel/Page.xml");
-            Logger.LogDebug(false, "----------------------------------------------------------------");
-
-            //  d0 07 | AMXPanel/Page.xml
-            var lBytes = new byte[] { 0xd0, 0x07, 0x41, 0x4d, 0x58, 0x50, 0x61, 0x6e, 0x65, 0x6c, 0x2f, 0x50, 0x61, 0x67, 0x65, 0x2e, 0x78, 0x6d, 0x6c, 0x00, };
-
-            // Read File (AMXPanel/Page.xml)
-            lRequest = MsgCmdFileTransfer.CreateRequest(lDest, DynamicDevice, FileType.Axcess2Tokens, FunctionsAxcess2Tokens.TransferGetFileAccessToken, lBytes);
-
-            Send(lRequest);
-            
-            */
 
             break;
           }
@@ -364,9 +312,13 @@ namespace ICSP.Core
           {
             if(m.Device == DynamicDevice.Device && m.System == DynamicDevice.System)
             {
-              var lDeviceInfo = new DeviceInfoData(m.Device, m.System, mClient.LocalIpAddress);
+              var lDeviceInfo = new DeviceInfoData(m.Device, mClient.LocalIpAddress) { System = m.System };
 
-              var lResponse = MsgCmdDeviceInfo.CreateRequest(lDeviceInfo);
+              var lDest = m.Source;
+
+              var lSource = DynamicDevice;
+
+              var lResponse = MsgCmdDeviceInfo.CreateRequest(lDest, lSource, lDeviceInfo);
 
               Send(lResponse);
             }
@@ -395,6 +347,9 @@ namespace ICSP.Core
           }
           case MsgCmdDeviceInfo m:
           {
+            if(m.Device == 0 && m.ObjectId == 0)
+              CurrentSystem = m.System;
+
             if(CurrentSystem > 0)
               DeviceInfo?.Invoke(this, new DeviceInfoEventArgs(m));
 
@@ -495,13 +450,13 @@ namespace ICSP.Core
     {
       if(enabled)
       {
-        var lRequest = MsgCmdOutputChannelOn.CreateRequest(DynamicDevice, device, channel);
+        var lRequest = MsgCmdOutputChannelOn.CreateRequest(device, DynamicDevice, channel);
 
         Send(lRequest);
       }
       else
       {
-        var lRequest = MsgCmdOutputChannelOff.CreateRequest(DynamicDevice, device, channel);
+        var lRequest = MsgCmdOutputChannelOff.CreateRequest(device, DynamicDevice, channel);
 
         Send(lRequest);
       }
@@ -521,7 +476,23 @@ namespace ICSP.Core
 
     public void CreateDeviceInfo(DeviceInfoData deviceInfo, ushort portCount)
     {
-      var lDeviceRequest = MsgCmdDeviceInfo.CreateRequest(deviceInfo);
+      /*
+      P  | Len   | Flag  | Dest              | Source            | H  | ID    | CMD   | N-Data      | CS
+      -------------------------------------------------------------------------------------------------------------------------------------------------
+      Response to RequestDeviceInfo.
+      02 | 00 59 | 02 12 | 00 00 00 00 00 01 | 00 00 27 12 00 01 | 0f | 00 48 | 00 97 | 27 12 00 00 00 00 00 00 00 01 01 71 35 39 36 38 30 32 70 31 30 63 30 31 30 35 00 00 03 8a 76 32 2e 31 30 34 2e 31 33 34 00 4d 58 54 2d 31 39 30 30 4c 2d 50 41 4e 69 00 41 4d 58 20 4c 4c 43 00 02 04 ac 10 7e a8 b4
+                           SDP: 0:0:1        | SDP 0:10002:1
+      02 | 00 13 | 02 08 | 00 00 00 00 00 00 | 00 01 00 00 00 01 | ff | 00 48 | 00 01 | 69
+      
+      02 | 00 13 | 02 08 | 00 01 27 12 00 01 | 00 01 00 00 00 01 | 0F | 00 48 | 00 01 | B4
+                           SDP: 1:10002:1    | SDP 1:0:1
+      */
+
+      var lDest = new AmxDevice(0, 1, 0);
+
+      var lSource = new AmxDevice(deviceInfo.Device, 1, deviceInfo.System);
+
+      var lDeviceRequest = MsgCmdDeviceInfo.CreateRequest(lDest, lSource, deviceInfo);
 
       var lPolicy = new CacheItemPolicy { AbsoluteExpiration = DateTime.Now.AddSeconds(2), RemovedCallback = OnCacheEntryRemovedCallback };
 
@@ -531,10 +502,6 @@ namespace ICSP.Core
 
       if(portCount > 1)
       {
-        var lSource = DynamicDevice;
-
-        // lSource = new AmxDevice(deviceInfo.Device, 0, deviceInfo.System);
-
         // It is sent by a device upon reporting if the device has more than one port.
         var lPortCountRequest = MsgCmdPortCountBy.CreateRequest(lSource, deviceInfo.Device, deviceInfo.System, portCount);
 

@@ -2,13 +2,13 @@
 
 namespace ICSP.Core.Manager.DeviceManager
 {
+  /// <summary>
+  /// The Input Channel OFF message is generated when a button is Released or 
+  /// Input channel is turned OFF from a device/port or a master.
+  /// </summary>
   [MsgCmd(DeviceManagerCmd.InputChannelOffStatus)]
   public class MsgCmdInputChannelOffStatus : MsgBaseCmdChannel<MsgCmdInputChannelOffStatus>
   {
-    /// <summary>
-    /// The Input Channel OFF message is generated when a button is Released or 
-    /// Input channel is turned OFF from a device/port or a master.
-    /// </summary>
     private MsgCmdInputChannelOffStatus()
     {
     }

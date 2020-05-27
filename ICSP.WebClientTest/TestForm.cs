@@ -1,19 +1,16 @@
 ﻿using System;
-using System.Net.WebSockets;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Windows.Forms;
+
 using ICSP.WebClientTest.Extensions;
 
 namespace ICSP.WebClientTest
 {
-  public partial class Form1 : Form
+  public partial class TestForm : Form
   {
     private WebSocketClient _WebSocket1;
     private WebSocketClient _WebSocket2;
 
-    public Form1()
+    public TestForm()
     {
       InitializeComponent();
 
@@ -31,6 +28,27 @@ namespace ICSP.WebClientTest
 
       cmd_Send1.Click += Cmd_Send1_Click;
       cmd_Send2.Click += Cmd_Send2_Click;
+
+      cmd_Push1.MouseDown += Cmd_Push1_MouseDown;
+      cmd_Push1.MouseUp += Cmd_Push1_MouseUp;
+    }
+
+    private void Cmd_Push1_MouseDown(object sender, MouseEventArgs e)
+    {
+      cmd_Push1.Text = "Release";
+
+      var lStr = string.Format("PUSH:{0}:{1};", num_ChannelPort1.Value, num_ChannelChannel1.Value);
+
+      _ = _WebSocket1.SendAsync(lStr);
+    }
+
+    private void Cmd_Push1_MouseUp(object sender, MouseEventArgs e)
+    {
+      cmd_Push1.Text = "Push";
+
+      var lStr = string.Format("RELEASE:{0}:{1};", num_ChannelPort1.Value, num_ChannelChannel1.Value);
+
+      _ = _WebSocket1.SendAsync(lStr);
     }
 
     private void Cmd_Open1_Click(object sender, EventArgs e)

@@ -12,10 +12,10 @@
 
     public ushort PortCount { get; set; } = 1;
 
-    public string ConfigName { get; set; }
-
     public string DeviceName { get; set; }
 
     public bool Enabled { get; set; } = true;
+
+    public string Converter { get; set; }    
   }
 }

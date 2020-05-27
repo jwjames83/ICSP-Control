@@ -27,6 +27,16 @@ namespace ICSP.WebProxy.Converter
       }
     }
 
+    public static IMessageConverter GetConverter(string typeName)
+    {
+      if(string.IsNullOrWhiteSpace(typeName))
+        return GetConverter<ModuleWebControlConverter>();
+
+      var lType = Type.GetType(typeName, true);
+      
+      return (IMessageConverter)Activator.CreateInstance(lType);
+    }
+
     public static IMessageConverter GetConverter<T>()
     {
       return mTranslators.Single(p => p.Key == typeof(T)).Value;

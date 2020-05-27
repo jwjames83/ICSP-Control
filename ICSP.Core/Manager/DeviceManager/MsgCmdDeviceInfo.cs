@@ -122,32 +122,13 @@ namespace ICSP.Core.Manager.DeviceManager
       return new MsgCmdDeviceInfo(bytes);
     }
 
-    public static ICSPMsg CreateRequest(ushort device, ushort system, string version, string name, string manufacture, IPAddress ipAddress)
+    public static ICSPMsg CreateRequest(AmxDevice dest, AmxDevice source, DeviceInfoData deviceInfo)
     {
-      // Device 0 refers to the Master
-      // NetLinx allows device numbers in the range 0 - 32767
-      // numbers above 32767 are reserved for internal use
-      //     1 - 32000: Physical devices range
-      // 32768 - 36863: Virtual devices range
+      var lDest = new AmxDevice(0, 1, 0);
 
-      // >= 65535 => NI-700 Crash!
-      if(device == 0 || device >= 65535)
-        throw new ArgumentOutOfRangeException(nameof(device), "NetLinx allows device numbers in the range 1 - 65534");
-
-      var lDeviceInfo = new DeviceInfoData(device, system, ipAddress)
-      {
-        Version = version,
-        Name = name,
-        Manufacture = manufacture
-      };
-
-      return CreateRequest(lDeviceInfo);
-    }
-
-    public static ICSPMsg CreateRequest(DeviceInfoData deviceInfo)
-    {
-      var lDest = new AmxDevice(0, 1, deviceInfo.System);
       var lSource = new AmxDevice(deviceInfo.Device, 0, deviceInfo.System);
+
+      // AmxDevice dest, AmxDevice source
 
       var lRequest = new MsgCmdDeviceInfo
       {

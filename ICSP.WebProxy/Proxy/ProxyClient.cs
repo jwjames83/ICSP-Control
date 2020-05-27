@@ -90,7 +90,12 @@ namespace ICSP.WebProxy.Proxy
       DeviceConfig = ProxyConfigManager.GetConfig(context, socket);
 
       // TODO: Get type of Translator from ProxyConfig ...
-      Converter = MessageConverterFactory.GetConverter<ModuleWebControlConverter>();
+      Converter = MessageConverterFactory.GetConverter(DeviceConfig.Converter);
+
+      Converter.Device = DeviceConfig.Device;
+      Converter.System = DeviceConfig.Device;
+
+      Converter.Dest = new AmxDevice(0, 1, 0);
 
       // Specific parameters by QueryString ...
       // file:///C:/Tmp/WebControl/index.html?ip=172.16.126.250&device=8002
@@ -120,7 +125,8 @@ namespace ICSP.WebProxy.Proxy
 
       Manager.BlinkMessage += OnBlinkMessageAsync;
       Manager.ClientOnlineStatusChanged += OnClientOnlineStatusChanged;
-      Manager.DynamicDeviceCreated += OnManagerDynamicDeviceCreated;
+      Manager.DeviceOnline += OnManagerDeviceOnline;
+      Manager.DeviceOffline += OnManagerDeviceOffline;
 
       Manager.ChannelEvent += OnManagerChannelEvent;
       Manager.StringEvent += OnManagerStringEvent;
@@ -169,6 +175,18 @@ namespace ICSP.WebProxy.Proxy
       if(e.ClientOnline)
       {
         StopConnectionTimer();
+
+        if(Manager != null && DeviceConfig.Device > 0)
+        {
+          var lDeviceInfo = new DeviceInfoData(DeviceConfig.Device, Manager.CurrentLocalIpAddress);
+
+          if(!string.IsNullOrWhiteSpace(DeviceConfig.DeviceName))
+            lDeviceInfo.Name = DeviceConfig.DeviceName;
+
+          Manager?.CreateDeviceInfo(lDeviceInfo, DeviceConfig.PortCount);
+
+          Converter.Dest = new AmxDevice(0, 1, Manager.CurrentSystem);
+        }
       }
       else
       {
@@ -180,15 +198,18 @@ namespace ICSP.WebProxy.Proxy
       await SendAsync($"ClientOnline={ e.ClientOnline}");
     }
 
-    private void OnManagerDynamicDeviceCreated(object sender, DynamicDeviceCreatedEventArgs e)
+    private void OnManagerDeviceOnline(object sender, DeviceInfoData e)
     {
-      // TODO: CurrentSystem not available in online event
-      if(Manager != null && DeviceConfig.Device > 0)
-      {
-        var lDeviceInfo = new DeviceInfoData(DeviceConfig.Device, Manager.CurrentSystem, Manager.CurrentLocalIpAddress);
+      LogInformation($"Device={e.Device}, System={e.System}, Name={e.Name}");
 
-        Manager?.CreateDeviceInfo(lDeviceInfo, DeviceConfig.PortCount);
-      }
+      Converter.System = e.System;
+
+      Converter.Dest = new AmxDevice(0, 1, e.System);
+    }
+
+    private void OnManagerDeviceOffline(object sender, DeviceInfoData e)
+    {
+      LogInformation($"Device={e.Device}, System={e.System}, Name={e.Name}");
     }
 
     private async void OnManagerChannelEvent(object sender, ChannelEventArgs e)
@@ -225,9 +246,11 @@ namespace ICSP.WebProxy.Proxy
 
     private async void OnBlinkMessageAsync(object sender, BlinkEventArgs e)
     {
-      LogInformation($"DateText={e.DateText}");
+      // LogInformation($"DateText={e.DateText}");
 
-      await SendAsync(e.DateText);
+      // await SendAsync(e.DateText);
+
+      await Task.CompletedTask;
     }
 
     #endregion

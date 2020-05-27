@@ -17,7 +17,7 @@ namespace ICSP.WebClientTest
     {
       Application.EnableVisualStyles();
       Application.SetCompatibleTextRenderingDefault(false);
-      Application.Run(new Form1());
+      Application.Run(new TestForm());
     }
 
     public static void ReportException(Exception ex, [CallerMemberName]string location = "(Caller name not set)")

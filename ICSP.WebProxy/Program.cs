@@ -54,7 +54,7 @@ namespace ICSP.WebProxy
       {
         // webBuilder.UseUrls("http://*:5000;http://localhost:5001;https://hostname:5002");
 
-        webBuilder.UseUrls(lUrls.ToArray());        
+        webBuilder.UseUrls(lUrls.ToArray());
 
         webBuilder.UseStartup<Startup>();
 
