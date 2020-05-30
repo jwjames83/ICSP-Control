@@ -74,8 +74,6 @@ namespace ICSP.Core.Client
     public void Dispose()
     {
       Dispose(true);
-
-      // GC.SuppressFinalize(this);
     }
 
     protected virtual void Dispose(bool disposing)
@@ -144,8 +142,7 @@ namespace ICSP.Core.Client
               // throw new SocketException(0x0000274c); // Timeout
 
               var lMsg = string.Format(
-                "Failed to connect to the specified master controller.\r\n" +
-                "Your current connection configuration is: {0}:{1}", lIpAddress, port);
+                "Failed to connect to the specified master controller. Your current connection configuration is: {0}:{1}", lIpAddress, port);
 
               throw new ApplicationException(lMsg); // Timeout
             }
@@ -154,6 +151,10 @@ namespace ICSP.Core.Client
           {
             await lTask;
           }
+        }
+        catch(ApplicationException)
+        {
+          throw;
         }
         catch(Exception ex)
         {
@@ -199,7 +200,7 @@ namespace ICSP.Core.Client
           // Shutdown generate a IOException in ReadAsync
           mHasShutdown = true;
 
-          mSocket.Client.Shutdown(SocketShutdown.Both);
+          mSocket?.Client?.Shutdown(SocketShutdown.Both);
         }
         catch(Exception ex)
         {
@@ -216,7 +217,7 @@ namespace ICSP.Core.Client
         {
           Logger.LogVerbose("{0} Bytes", bytes.Length);
 
-          await mStream.WriteAsync(bytes, 0, bytes.Length);
+          await mStream?.WriteAsync(bytes, 0, bytes.Length);
         }
       }
       catch(Exception ex)
@@ -238,7 +239,7 @@ namespace ICSP.Core.Client
           Logger.LogVerbose(false, "ICSPClient.Send[1]: MessageId=0x{0:X4}, Source={1:l}, Dest={2:l}, Type={3:l}", request.ID, request.Source, request.Dest, request.GetType().Name);
           Logger.LogVerbose(false, "ICSPClient.Send[2]: Data={0:l}", BitConverter.ToString(request.RawData).Replace("-", " "));
 
-          await mStream.WriteAsync(request.RawData, 0, request.RawData.Length);
+          await mStream?.WriteAsync(request.RawData, 0, request.RawData.Length);
         }
       }
       catch(Exception ex)
@@ -297,15 +298,22 @@ namespace ICSP.Core.Client
       }
       catch(IOException ex)
       {
-        var lException = ex.InnerException as SocketException;
-
-        if(lException?.SocketErrorCode == SocketError.ConnectionReset)
+        // Shutdown generate a IOException in ReadAsync
+        if(ex.InnerException is SocketException socketEx)
         {
-          if(!mHasShutdown)
-            Logger.LogError(lException.Message);
+          if(socketEx.SocketErrorCode == SocketError.ConnectionReset || socketEx.SocketErrorCode == SocketError.OperationAborted)
+          {
+            if(!mHasShutdown)
+              Logger.LogError(socketEx.Message);
+          }
+          else
+            Logger.LogError(socketEx.Message);
         }
         else
-          Logger.LogError(ex.Message);
+        {
+          if(!mHasShutdown)
+            Logger.LogError(ex.Message);
+        }
 
         OnClientDisconnected();
       }

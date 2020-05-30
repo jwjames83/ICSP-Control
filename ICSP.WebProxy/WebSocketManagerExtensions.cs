@@ -26,7 +26,10 @@ namespace Microsoft.Extensions.DependencyInjection
 
     public static IApplicationBuilder MapWebSocketManager(this IApplicationBuilder app, PathString path, WebSocketHandler handler)
     {
-      return app.Map(path, app => app.UseMiddleware<WebSocketManagerMiddleware>(handler));
+      return app.UseWhen(context => context.WebSockets.IsWebSocketRequest, appBuilder =>
+      {
+        appBuilder.Map(path, app => app.UseMiddleware<WebSocketManagerMiddleware>(handler));
+      });
     }
   }
 }

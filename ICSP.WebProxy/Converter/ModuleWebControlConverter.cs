@@ -27,7 +27,8 @@ namespace ICSP.WebProxy.Converter
     private const string CaptureGroup_Arg1 = "arg1";
     private const string CaptureGroup_Arg2 = "arg2";
 
-    private static Regex RegexMsg = new Regex($"^(?<{CaptureGroup_Type}>[^:]+):(?<{CaptureGroup_Port}>[^:]+):(?<{CaptureGroup_Arg1}>[^:]+):?(?<{CaptureGroup_Arg2}>[^;])?");
+    // http://regexstorm.net/tester
+    private static Regex RegexMsg = new Regex($"^(?<{CaptureGroup_Type}>[^:]+):(?<{CaptureGroup_Port}>[^:]+):(?<{CaptureGroup_Arg1}>[^:]+):?(?<{CaptureGroup_Arg2}>[^;]+)?");
 
     /*
     --------------------------------------
@@ -100,9 +101,9 @@ namespace ICSP.WebProxy.Converter
       // SendToWebSocket(WS_OpCode_TextFrame, "'OFF', SSX, itoa(nPort), SSX, itoa(nChannel)")
 
       if(e.Enabled)
-        return string.Concat("ON", SSX, e.Device.Port, SSX, e.Channel);
+        return string.Concat(STX, "ON", SSX, e.Device.Port, SSX, e.Channel, ETX);
       else
-        return string.Concat("OFF", SSX, e.Device.Port, SSX, e.Channel);
+        return string.Concat(STX, "OFF", SSX, e.Device.Port, SSX, e.Channel, ETX);
     }
 
     public string FromLevelEvent(LevelEventArgs e)
@@ -110,7 +111,7 @@ namespace ICSP.WebProxy.Converter
       // NetLinx:
       // SendToWebSocket(WS_OpCode_TextFrame, "'LEVEL', SSX, itoa(nPort), SSX, itoa(level.input.level), SSX, format('%d', level.value)")
 
-      return string.Concat("LEVEL", SSX, e.Device.Port, SSX, e.Level, SSX, e.Level);
+      return string.Concat(STX, "LEVEL", SSX, e.Device.Port, SSX, e.Level, SSX, e.Level, ETX);
     }
 
     public string FromCommandEvent(CommandEventArgs e)
@@ -129,7 +130,7 @@ namespace ICSP.WebProxy.Converter
       if(lStr.Contains("@ICO", StringComparison.OrdinalIgnoreCase))
         lStr = ConvertToIcoCommand(lStr);
 
-      return string.Concat("COMMAND", SSX, e.Device.Port, SSX, lStr);
+      return string.Concat(STX, "COMMAND", SSX, e.Device.Port, SSX, lStr, ETX);
     }
 
     public string FromStringEvent(StringEventArgs e)
@@ -137,7 +138,7 @@ namespace ICSP.WebProxy.Converter
       // NetLinx:
       // Not implemented ...
 
-      return string.Concat("STRING", SSX, e.Device.Port, SSX, e.Text);
+      return string.Concat(STX, "STRING", SSX, e.Device.Port, SSX, e.Text, ETX);
     }
 
     public ICSPMsg ToDevMessage(string msg)

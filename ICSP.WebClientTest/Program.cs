@@ -7,7 +7,7 @@ namespace ICSP.WebClientTest
   static class Program
   {
     public const int KEYSTROKE_TRANSMIT_INTERVAL_MS = 100;
-    public const int CLOSE_SOCKET_TIMEOUT_MS = 10000;
+    public const int CLOSE_SOCKET_TIMEOUT_MS = 1000;
 
     /// <summary>
     /// Der Haupteinstiegspunkt für die Anwendung.

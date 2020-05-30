@@ -31,11 +31,11 @@ namespace ICSP.WebProxy
     {
       try
       {
-        var lSocketId = ConnectionManager.GetId(socket);
-
         using var lServiceScope = mServiceProvider.CreateScope();
 
-        var lManager = lServiceScope.ServiceProvider.GetService<ProxyClient>();
+        using var lManager = lServiceScope.ServiceProvider.GetService<ProxyClient>();
+
+        var lSocketId = ConnectionManager.GetId(socket);
 
         await lManager.InvokeAsync(context, socket, lSocketId);
 
@@ -58,7 +58,6 @@ namespace ICSP.WebProxy
               // The socket state changes to closed at this point
             }
 
-            // Echo text or binary data to the broadcast queue
             if(socket.State == WebSocketState.Open)
             {
               var lMsg = Encoding.Default.GetString(lBuffer.Array, 0, lReceiveResult.Count);
@@ -77,6 +76,13 @@ namespace ICSP.WebProxy
       catch(Exception ex)
       {
         mLogger.LogError(ex.Message);
+
+        if(socket.State == WebSocketState.Open)
+        {
+          var lMsg = $"Error: {ex.Message}";
+
+          await socket.SendAsync(new ArraySegment<byte>(Encoding.ASCII.GetBytes(lMsg)), WebSocketMessageType.Text, true, CancellationToken.None);
+        }
       }
       finally
       {

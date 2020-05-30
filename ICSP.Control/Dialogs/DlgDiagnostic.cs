@@ -90,7 +90,7 @@ namespace ICSPControl.Dialogs
       OnlineTree.Nodes.Clear();
       OnlineTree.Nodes.Add("<Empty Device Tree>");
 
-      mICSPManager?.RequestDevicesOnline();
+      mICSPManager?.RequestDevicesOnlineAsync();
     }
 
     private void OnShowDevicePropertiesClick(object sender, EventArgs e)
@@ -258,33 +258,33 @@ namespace ICSPControl.Dialogs
 
     private void OnCmdChannelOn(object sender, EventArgs e)
     {
-      mICSPManager?.SetChannel(GetDevice(), (ushort)num_Channel.Value, true);
+      mICSPManager?.SetChannelAsync(GetDevice(), (ushort)num_Channel.Value, true);
     }
 
     private void OnCmdChannelOff(object sender, EventArgs e)
     {
-      mICSPManager?.SetChannel(GetDevice(), (ushort)num_Channel.Value, false);
+      mICSPManager?.SetChannelAsync(GetDevice(), (ushort)num_Channel.Value, false);
     }
 
     private void OnCmdSendLevel(object sender, EventArgs e)
     {
-      mICSPManager?.SendLevel(GetDevice(), (ushort)num_LevelInput.Value, (ushort)num_LevelValue.Value);
+      mICSPManager?.SendLevelAsync(GetDevice(), (ushort)num_LevelInput.Value, (ushort)num_LevelValue.Value);
     }
 
     private void OnCmdSendString(object sender, EventArgs e)
     {
       if(txt_Text.SelectedText.Length > 0)
-        mICSPManager?.SendString(GetDevice(), txt_Text.SelectedText);
+        mICSPManager?.SendStringAsync(GetDevice(), txt_Text.SelectedText);
       else
-        mICSPManager?.SendString(GetDevice(), txt_Text.Text);
+        mICSPManager?.SendStringAsync(GetDevice(), txt_Text.Text);
     }
 
     private void OnCmdSendCmd(object sender, EventArgs e)
     {
       if(txt_Text.SelectedText.Length > 0)
-        mICSPManager?.SendCommand(GetDevice(), txt_Text.SelectedText);
+        mICSPManager?.SendCommandAsync(GetDevice(), txt_Text.SelectedText);
       else
-        mICSPManager?.SendCommand(GetDevice(), txt_Text.Text);
+        mICSPManager?.SendCommandAsync(GetDevice(), txt_Text.Text);
     }
 
     private void OnCreateDeviceInfo(object sender, EventArgs e)
@@ -300,7 +300,7 @@ namespace ICSPControl.Dialogs
 
     private void OnCmdRequestDeviceStatus(object sender, EventArgs e)
     {
-      mICSPManager?.RequestDeviceStatus(GetDevice());
+      mICSPManager?.RequestDeviceStatusAsync(GetDevice());
     }
 
     private void CreatePhysicalDevice()
@@ -324,7 +324,7 @@ namespace ICSPControl.Dialogs
         FirmwareId = Settings.Default.PhysicalDeviceFirmwareId
       };
 
-      mICSPManager?.CreateDeviceInfo(lDeviceInfo, Settings.Default.PhysicalDevicePortCount);
+      mICSPManager?.CreateDeviceInfoAsync(lDeviceInfo, Settings.Default.PhysicalDevicePortCount);
     }
 
     private AmxDevice GetDevice()

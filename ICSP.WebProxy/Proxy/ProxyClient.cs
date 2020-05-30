@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Net.WebSockets;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -7,7 +8,6 @@ using System.Threading.Tasks;
 
 using ICSP.Core;
 using ICSP.Core.Client;
-using ICSP.Core.Environment;
 using ICSP.Core.Manager.DeviceManager;
 using ICSP.WebProxy.Configuration;
 using ICSP.WebProxy.Converter;
@@ -23,13 +23,17 @@ namespace ICSP.WebProxy.Proxy
 
     private WebSocketProxyClient mConnectedClient;
 
+    private readonly ICSPConnectionManager mConnectionManager;
+
     private bool mIsDisposed;
 
     private Timer mConnectionTimer;
 
-    public ProxyClient(ILogger<ProxyClient> logger, WebSocketProxyClient connectedClient)
+    public ProxyClient(ILogger<ProxyClient> logger, ICSPConnectionManager connectionManager, WebSocketProxyClient connectedClient)
     {
       mLogger = logger;
+
+      mConnectionManager = connectionManager;
 
       mConnectedClient = connectedClient;
 
@@ -51,8 +55,6 @@ namespace ICSP.WebProxy.Proxy
     public void Dispose()
     {
       Dispose(true);
-
-      // GC.SuppressFinalize(this);
     }
 
     protected virtual void Dispose(bool disposing)
@@ -64,8 +66,14 @@ namespace ICSP.WebProxy.Proxy
           // Verwalteten Zustand (verwaltete Objekte) entsorgen
           StopConnectionTimer();
 
+          ManagerRemoveEventHandlers();
+
           Manager?.Disconnect();
           Manager?.Dispose();
+
+          if(Manager?.IsDisposed ?? false)
+            mConnectionManager.Remove(Manager);
+
           Manager = null;
 
           if(mConnectedClient != null)
@@ -89,7 +97,6 @@ namespace ICSP.WebProxy.Proxy
       // localhost:8001 -> Device Mapping 10002
       DeviceConfig = ProxyConfigManager.GetConfig(context, socket);
 
-      // TODO: Get type of Translator from ProxyConfig ...
       Converter = MessageConverterFactory.GetConverter(DeviceConfig.Converter);
 
       Converter.Device = DeviceConfig.Device;
@@ -121,35 +128,32 @@ namespace ICSP.WebProxy.Proxy
           DeviceConfig.Device = lDevice;
       }
 
-      Manager = new ICSPManager();
+      Manager = mConnectionManager.GetOrCreate(DeviceConfig.RemoteHost, DeviceConfig.RemotePort);
 
-      Manager.BlinkMessage += OnBlinkMessageAsync;
-      Manager.ClientOnlineStatusChanged += OnClientOnlineStatusChanged;
-      Manager.DeviceOnline += OnManagerDeviceOnline;
-      Manager.DeviceOffline += OnManagerDeviceOffline;
+      ManagerAddEventHandlers();
 
-      Manager.ChannelEvent += OnManagerChannelEvent;
-      Manager.StringEvent += OnManagerStringEvent;
-      Manager.CommandEvent += OnManagerCommandEvent;
-      Manager.LevelEvent += OnManagerLevelEvent;
-
-      // Start monitoring auto reconnect
-      StartConnectionTimer();
-
-      try
+      if(Manager.IsConnected)
       {
-        LogInformation($"Try connect, Host={DeviceConfig.RemoteHost}, Port={DeviceConfig.RemotePort}");
-
-        await Manager.ConnectAsync(DeviceConfig.RemoteHost, DeviceConfig.RemotePort);
+        await CreateDeviceInfoAsync();
       }
-      catch(Exception ex)
+      else
       {
-        LogError(ex.Message);
+        // Start monitoring auto reconnect
+        StartConnectionTimer();
 
-        await SendAsync(ex.Message);
+        try
+        {
+          LogInformation($"Try connect, Host={DeviceConfig.RemoteHost}, Port={DeviceConfig.RemotePort}");
+
+          await Manager.ConnectAsync(DeviceConfig.RemoteHost, DeviceConfig.RemotePort);
+        }
+        catch(Exception ex)
+        {
+          LogError(ex.Message);
+
+          await SendAsync(ex.Message);
+        }
       }
-
-      await Task.CompletedTask;
     }
 
     private async void OnWebMessage(object sender, MessageEventArgs e)
@@ -162,40 +166,110 @@ namespace ICSP.WebProxy.Proxy
       var lMsg = Converter.ToDevMessage(e.Message);
 
       if(lMsg != null)
-        Manager.Send(lMsg);
+        await Manager.SendAsync(lMsg);
+    }
 
-      // Echo ...
-      await SendAsync("Echo: " + e.Message);
+    public async Task SendAsync(string message)
+    {
+      if(Socket?.State != WebSocketState.Open)
+        return;
+
+      LogDebug($"Send: {message}");
+
+      await Socket?.SendAsync(new ArraySegment<byte>(Encoding.ASCII.GetBytes(message)), WebSocketMessageType.Text, true, CancellationToken.None);
     }
 
     #region Manager events
 
-    private async void OnClientOnlineStatusChanged(object sender, ClientOnlineOfflineEventArgs e)
+    private void ManagerAddEventHandlers()
     {
-      if(e.ClientOnline)
+      if(Manager != null)
       {
-        StopConnectionTimer();
+        Manager.Disposing += OnManagerDisposing;
+        Manager.Disconnecting += OnManagerDisconnecting;
 
-        if(Manager != null && DeviceConfig.Device > 0)
+        Manager.ClientOnlineStatusChanged += OnManagerClientOnlineStatusChanged;
+        Manager.DeviceOnline += OnManagerDeviceOnline;
+        Manager.DeviceOffline += OnManagerDeviceOffline;
+
+        Manager.ChannelEvent += OnManagerChannelEvent;
+        Manager.StringEvent += OnManagerStringEvent;
+        Manager.CommandEvent += OnManagerCommandEvent;
+        Manager.LevelEvent += OnManagerLevelEvent;
+      }
+    }
+
+    private void ManagerRemoveEventHandlers()
+    {
+      if(Manager != null)
+      {
+        Manager.Disposing -= OnManagerDisposing;
+        Manager.Disconnecting -= OnManagerDisconnecting;
+
+        Manager.Disconnecting -= OnManagerDisconnecting;
+        Manager.ClientOnlineStatusChanged -= OnManagerClientOnlineStatusChanged;
+        Manager.DeviceOnline -= OnManagerDeviceOnline;
+        Manager.DeviceOffline -= OnManagerDeviceOffline;
+
+        Manager.ChannelEvent -= OnManagerChannelEvent;
+        Manager.StringEvent -= OnManagerStringEvent;
+        Manager.CommandEvent -= OnManagerCommandEvent;
+        Manager.LevelEvent -= OnManagerLevelEvent;
+      }
+    }
+
+    private async Task CreateDeviceInfoAsync()
+    {
+      if(Manager != null && DeviceConfig.Device > 0)
+      {
+        if(Manager.Devices.TryGetValue(DeviceConfig.Device, out var lDeviceInfo))
         {
-          var lDeviceInfo = new DeviceInfoData(DeviceConfig.Device, Manager.CurrentLocalIpAddress);
+          Converter.System = lDeviceInfo.System;
+
+          Converter.Dest = new AmxDevice(0, 1, lDeviceInfo.System);
+        }
+        else
+        {
+          lDeviceInfo = new DeviceInfoData(DeviceConfig.Device, Manager.CurrentLocalIpAddress);
 
           if(!string.IsNullOrWhiteSpace(DeviceConfig.DeviceName))
             lDeviceInfo.Name = DeviceConfig.DeviceName;
 
-          Manager?.CreateDeviceInfo(lDeviceInfo, DeviceConfig.PortCount);
-
           Converter.Dest = new AmxDevice(0, 1, Manager.CurrentSystem);
+
+          await Manager?.CreateDeviceInfoAsync(lDeviceInfo, DeviceConfig.PortCount);
         }
+      }
+    }
+
+    private void OnManagerDisposing(object sender, CancelEventArgs e)
+    {
+      // Closing or Disposing calls by other ProxyClient-instances
+      // Prevent Closing or disposing
+      e.Cancel = true;
+    }
+
+    private void OnManagerDisconnecting(object sender, CancelEventArgs e)
+    {
+      // Closing or Disposing calls by other ProxyClient-instances
+      // Prevent Closing or disposing
+      e.Cancel = true;
+    }
+
+    private async void OnManagerClientOnlineStatusChanged(object sender, ClientOnlineOfflineEventArgs e)
+    {
+      LogInformation($"ClientOnline={e.ClientOnline}");
+
+      if(e.ClientOnline)
+      {
+        StopConnectionTimer();
+
+        await CreateDeviceInfoAsync();
       }
       else
       {
         StartConnectionTimer();
       }
-
-      LogInformation($"ClientOnline={e.ClientOnline}");
-
-      await SendAsync($"ClientOnline={ e.ClientOnline}");
     }
 
     private void OnManagerDeviceOnline(object sender, DeviceInfoData e)
@@ -214,54 +288,33 @@ namespace ICSP.WebProxy.Proxy
 
     private async void OnManagerChannelEvent(object sender, ChannelEventArgs e)
     {
-      LogInformation($"Data: Port={e.Device.Port}, Channel={e.Channel}, Enabled={e.Enabled}");
-      LogInformation($"Send: {Converter.FromChannelEvent(e)}");
+      LogDebug($"Data: Type=ChannelEvent, Port={e.Device.Port}, Channel={e.Channel}, Enabled={e.Enabled}");
 
       await SendAsync(Converter.FromChannelEvent(e));
     }
 
     private async void OnManagerLevelEvent(object sender, LevelEventArgs e)
     {
-      LogInformation($"Data: Port={e.Device.Port}, Level={e.Level}");
-      LogInformation($"Send: {Converter.FromLevelEvent(e)}");
+      LogDebug($"Data: Type=LevelEvent, Port={e.Device.Port}, Level={e.Level}");
 
       await SendAsync(Converter.FromLevelEvent(e));
     }
 
     private async void OnManagerCommandEvent(object sender, CommandEventArgs e)
     {
-      LogInformation($"Data: {e.Text}");
-      LogInformation($"Send: {Converter.FromCommandEvent(e)}");
+      LogDebug($"Data: Type=Command, Port={e.Device.Port}, Text={e.Text}");
 
       await SendAsync(Converter.FromCommandEvent(e));
     }
 
     private async void OnManagerStringEvent(object sender, StringEventArgs e)
     {
-      LogInformation($"Data: {e.Text}");
-      LogInformation($"Send: {Converter.FromStringEvent(e)}");
+      LogDebug($"Data: Type=String, Port={e.Device.Port}, Text={e.Text}");
 
       await SendAsync(Converter.FromStringEvent(e));
     }
 
-    private async void OnBlinkMessageAsync(object sender, BlinkEventArgs e)
-    {
-      // LogInformation($"DateText={e.DateText}");
-
-      // await SendAsync(e.DateText);
-
-      await Task.CompletedTask;
-    }
-
     #endregion
-
-    public async Task SendAsync(string message)
-    {
-      if(Socket?.State != WebSocketState.Open)
-        return;
-
-      await Socket?.SendAsync(new ArraySegment<byte>(Encoding.ASCII.GetBytes(message)), WebSocketMessageType.Text, true, CancellationToken.None);
-    }
 
     #region Log & Connection stuff
 
@@ -272,7 +325,12 @@ namespace ICSP.WebProxy.Proxy
 
     private void LogInformation(string message, [CallerMemberName]string callerName = "(Caller name not set)")
     {
-      mLogger.LogInformation($"[{nameof(ProxyClient)}][{SocketId:00}][{callerName}]: {message}");
+      mLogger.LogInformation($"[{nameof(ProxyClient)}][{SocketId:00}][{callerName}]: {message}".Replace("\u0002", "[$02]").Replace("\u0003", "[$03]"));
+    }
+
+    private void LogDebug(string message, [CallerMemberName]string callerName = "(Caller name not set)")
+    {
+      mLogger.LogDebug($"[{nameof(ProxyClient)}][{SocketId:00}][{callerName}]: {message}".Replace("\u0002", "[$02]").Replace("\u0003", "[$03]"));
     }
 
     private void StartConnectionTimer()

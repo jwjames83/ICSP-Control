@@ -6,6 +6,8 @@ namespace Microsoft.Extensions.DependencyInjection
   {
     public static IServiceCollection AddProxyClient(this IServiceCollection services)
     {
+      services.AddSingleton<ICSPConnectionManager>();
+
       services.AddScoped<ProxyClient>();
 
       return services;

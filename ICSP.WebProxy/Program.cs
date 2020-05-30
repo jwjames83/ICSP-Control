@@ -1,3 +1,5 @@
+using System;
+using System.IO;
 using System.Linq;
 using System.Text;
 
@@ -24,14 +26,35 @@ namespace ICSP.WebProxy
       // PM: Install-Package System.Text.Encoding.CodePages
       Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
 
+      // Remove old LogFiles ...
+      bool lIsDevelopment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Development";
+
+      if(lIsDevelopment)
+      {
+        try
+        {
+          var lDirectory = new DirectoryInfo(AppDomain.CurrentDomain.BaseDirectory);
+
+          foreach(var file in lDirectory.EnumerateFiles("*.log"))
+          {
+            try
+            {
+              file.Delete();
+            }
+            catch { }
+          }
+        }
+        catch { }
+      }
+
       // CreateHostBuilder(args).Build().Run();
 
       var lHostBuilder = CreateHostBuilder(args);
 
-      // Initializes the Log system
-      LoggingConfigurator.Configure(lHostBuilder, new LoggingConfiguration() { LogLevel = LogEventLevel.Information });
+      var lLoggingConfig = GetLoggingConfiguration(args);
 
-      Logger.LogLevel = LogEventLevel.Information;
+      // Initializes the Log system
+      LoggingConfigurator.Configure(lHostBuilder, lLoggingConfig);
 
       lHostBuilder.Build().Run();
     }
@@ -52,8 +75,6 @@ namespace ICSP.WebProxy
 
       lBuilder.ConfigureWebHostDefaults(webBuilder =>
       {
-        // webBuilder.UseUrls("http://*:5000;http://localhost:5001;https://hostname:5002");
-
         webBuilder.UseUrls(lUrls.ToArray());
 
         webBuilder.UseStartup<Startup>();
@@ -61,6 +82,31 @@ namespace ICSP.WebProxy
       });
 
       return lBuilder;
+    }
+
+    private static LoggingConfiguration GetLoggingConfiguration(string[] args)
+    {
+      var lConfig = new LoggingConfiguration();
+
+      var config = new ConfigurationBuilder()
+       .AddJsonFile("appsettings.json")
+       .Build();
+
+      var lConfigx = config["Logging:LogLevel:Default"];
+
+      switch(lConfigx?.ToLower())
+      {
+        case "none"        /**/: lConfig.LogLevel = (LogEventLevel)6; break;
+        case "critical"    /**/: lConfig.LogLevel = LogEventLevel.Fatal; break;
+        case "error"       /**/: lConfig.LogLevel = LogEventLevel.Error; break;
+        case "warning"     /**/: lConfig.LogLevel = LogEventLevel.Warning; break;
+        case "information" /**/: lConfig.LogLevel = LogEventLevel.Information; break;
+        case "debug"       /**/: lConfig.LogLevel = LogEventLevel.Debug; break;
+        case "trace"       /**/: lConfig.LogLevel = LogEventLevel.Verbose; break;
+        case "verbose"     /**/: lConfig.LogLevel = LogEventLevel.Verbose; break;
+      }
+
+      return lConfig;
     }
 
     public static ProxyConfig ProxyConfig { get; set; }

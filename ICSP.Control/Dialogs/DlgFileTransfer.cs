@@ -397,7 +397,7 @@ namespace ICSPControl.Dialogs
         FirmwareId = Settings.Default.PhysicalDeviceFirmwareId
       };
 
-      mICSPManager?.CreateDeviceInfo(lDeviceInfo, Settings.Default.PhysicalDevicePortCount);
+      mICSPManager?.CreateDeviceInfoAsync(lDeviceInfo, Settings.Default.PhysicalDevicePortCount);
     }
 
     private void AppendLog(string format, params object[] args)

@@ -1,5 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Collections.Concurrent;
+using System.ComponentModel;
 using System.Linq;
 using System.Net;
 using System.Runtime.Caching;
@@ -21,7 +22,7 @@ namespace ICSP.Core
 {
   public class ICSPManager : IDisposable
   {
-    private readonly Dictionary<ushort, DeviceInfoData> mDevices;
+    private readonly ConcurrentDictionary<ushort, DeviceInfoData> mDevices;
 
     public event EventHandler<ClientOnlineOfflineEventArgs> ClientOnlineStatusChanged;
 
@@ -49,22 +50,33 @@ namespace ICSP.Core
     public event EventHandler<DeviceInfoData> DeviceOnline;
     public event EventHandler<DeviceInfoData> DeviceOffline;
 
+    public event EventHandler<CancelEventArgs> Disconnecting;
+    public event EventHandler<CancelEventArgs> Disposing;
+
     private ICSPClient mClient;
 
     private int mConnectionTimeout = 1;
 
     private int mTaskConnectAsyncRunning = 0;
 
-    private bool mIsDisposed;
-
     public ICSPManager()
     {
-      mDevices = new Dictionary<ushort, DeviceInfoData>();
+      mDevices = new ConcurrentDictionary<ushort, DeviceInfoData>();
 
       FileManager = new FileManager(this);
     }
 
+    public bool IsDisposed { get; private set; }
+
     public ushort CurrentSystem { get; private set; }
+
+    public ConcurrentDictionary<ushort, DeviceInfoData> Devices
+    {
+      get
+      {
+        return mDevices;
+      }
+    }
 
     public AmxDevice DynamicDevice { get; private set; }
 
@@ -126,25 +138,33 @@ namespace ICSP.Core
     public void Dispose()
     {
       Dispose(true);
-
-      // GC.SuppressFinalize(this);
     }
 
     protected virtual void Dispose(bool disposing)
     {
-      if(!mIsDisposed)
+      if(!IsDisposed)
       {
         if(disposing)
         {
+          var lEventArgs = new CancelEventArgs();
+
+          Disposing?.Invoke(this, lEventArgs);
+
+          if(lEventArgs.Cancel)
+            return;
+
           // Verwalteten Zustand (verwaltete Objekte) entsorgen
           if(mClient != null)
           {
+            mClient.ClientOnlineStatusChanged -= OnClientOnlineStatusChanged;
+            mClient.DataReceived -= OnDataReceived;
+
             mClient.Dispose();
             mClient = null;
           }
         }
 
-        mIsDisposed = true;
+        IsDisposed = true;
       }
     }
 
@@ -155,6 +175,9 @@ namespace ICSP.Core
 
     public async Task ConnectAsync(string host, int port)
     {
+      if(IsDisposed)
+        throw new ObjectDisposedException("The current instance has been disposed!");
+
       // Ensure that method would be called only once
       if(Interlocked.Exchange(ref mTaskConnectAsyncRunning, 1) != 0)
         return;
@@ -165,17 +188,13 @@ namespace ICSP.Core
 
         Port = port;
 
-        if(mClient != null)
+        if(mClient == null)
         {
-          mClient.ClientOnlineStatusChanged -= OnClientOnlineStatusChanged;
-          mClient.DataReceived -= OnDataReceived;
-          mClient.Dispose();
+          mClient = new ICSPClient() { ConnectionTimeout = mConnectionTimeout };
+
+          mClient.ClientOnlineStatusChanged += OnClientOnlineStatusChanged;
+          mClient.DataReceived += OnDataReceived;
         }
-
-        mClient = new ICSPClient() { ConnectionTimeout = mConnectionTimeout };
-
-        mClient.ClientOnlineStatusChanged += OnClientOnlineStatusChanged;
-        mClient.DataReceived += OnDataReceived;
 
         await mClient.ConnectAsync(Host, Port);
       }
@@ -187,6 +206,16 @@ namespace ICSP.Core
 
     public void Disconnect()
     {
+      if(IsDisposed)
+        return;
+
+      var lEventArgs = new CancelEventArgs();
+
+      Disconnecting?.Invoke(this, lEventArgs);
+
+      if(lEventArgs.Cancel)
+        return;
+
       if(mClient != null)
         mClient.Disconnect();
     }
@@ -214,7 +243,7 @@ namespace ICSP.Core
       ClientOnlineStatusChanged?.Invoke(this, e);
     }
 
-    private void OnDataReceived(object sender, ICSPMsgDataEventArgs e)
+    private async void OnDataReceived(object sender, ICSPMsgDataEventArgs e)
     {
       try
       {
@@ -241,8 +270,7 @@ namespace ICSP.Core
 
               deviceInfo.System = m.Source.System;
 
-              if(!mDevices.ContainsKey(deviceInfo.Device))
-                mDevices.Add(deviceInfo.Device, deviceInfo);
+              var lResult = mDevices.TryAdd(deviceInfo.Device, deviceInfo);
 
               Logger.LogDebug(false, "-----------------------------------------------------------------------------------------------------");
               Logger.LogDebug(false, "Device Online: Device={0}, Name={1:l}, IPv4Address={2:l}", deviceInfo.Device, deviceInfo.Name, deviceInfo.IPv4Address);
@@ -278,7 +306,7 @@ namespace ICSP.Core
               var lResponse = MsgCmdPingResponse.CreateRequest(
                 lDeviceInfo.Device, lDeviceInfo.System, lDeviceInfo.ManufactureId, lDeviceInfo.DeviceId, mClient.LocalIpAddress);
 
-              Send(lResponse);
+              await SendAsync(lResponse);
 
               PingEvent?.Invoke(this, new PingEventArgs(m));
             }
@@ -291,7 +319,7 @@ namespace ICSP.Core
 
             DynamicDevice = new AmxDevice(m.Device, 1, m.System);
 
-            CreateDeviceInfo(new DeviceInfoData(m.Device, mClient.LocalIpAddress) { System = m.System });
+            await CreateDeviceInfoAsync(new DeviceInfoData(m.Device, mClient.LocalIpAddress) { System = m.System });
 
             DynamicDeviceCreated?.Invoke(this, new DynamicDeviceCreatedEventArgs(m));
 
@@ -303,7 +331,7 @@ namespace ICSP.Core
             {
               var lRequest = MsgCmdGetEthernetIpAddress.CreateRequest(m.Source, m.Dest, mClient.LocalIpAddress);
 
-              Send(lRequest);
+              await SendAsync(lRequest);
             }
 
             break;
@@ -320,7 +348,7 @@ namespace ICSP.Core
 
               var lResponse = MsgCmdDeviceInfo.CreateRequest(lDest, lSource, lDeviceInfo);
 
-              Send(lResponse);
+              await SendAsync(lResponse);
             }
 
             break;
@@ -329,7 +357,7 @@ namespace ICSP.Core
           {
             var lResponse = MsgCmdStatus.CreateRequest(e.Message.Source, e.Message.Dest, e.Message.Dest, StatusType.Normal, 1, "Normal");
 
-            Send(lResponse);
+            await SendAsync(lResponse);
 
             break;
           }
@@ -425,56 +453,56 @@ namespace ICSP.Core
           Logger.LogDebug(false, "Device Offline: Device={0}, Name={1:l}, IPv4Address={2:l}", deviceInfo.Device, deviceInfo.Name, deviceInfo.IPv4Address);
           Logger.LogDebug(false, "-----------------------------------------------------------------------------------------------------");
 
-          mDevices.Remove(deviceInfo.Device);
+          var lResult = mDevices.TryRemove(deviceInfo.Device, out _);
 
           DeviceOffline?.Invoke(this, deviceInfo);
         }
       }
     }
 
-    public void SendString(AmxDevice device, string text)
+    public async Task SendStringAsync(AmxDevice device, string text)
     {
       var lRequest = MsgCmdStringMasterDev.CreateRequest(DynamicDevice, device, text);
 
-      Send(lRequest);
+      await SendAsync(lRequest);
     }
 
-    public void SendCommand(AmxDevice device, string text)
+    public async Task SendCommandAsync(AmxDevice device, string text)
     {
       var lRequest = MsgCmdCommandMasterDev.CreateRequest(DynamicDevice, device, text);
 
-      Send(lRequest);
+      await SendAsync(lRequest);
     }
 
-    public void SetChannel(AmxDevice device, ushort channel, bool enabled)
+    public async Task SetChannelAsync(AmxDevice device, ushort channel, bool enabled)
     {
       if(enabled)
       {
         var lRequest = MsgCmdOutputChannelOn.CreateRequest(device, DynamicDevice, channel);
 
-        Send(lRequest);
+        await SendAsync(lRequest);
       }
       else
       {
         var lRequest = MsgCmdOutputChannelOff.CreateRequest(device, DynamicDevice, channel);
 
-        Send(lRequest);
+        await SendAsync(lRequest);
       }
     }
 
-    public void SendLevel(AmxDevice device, ushort level, ushort value)
+    public async Task SendLevelAsync(AmxDevice device, ushort level, ushort value)
     {
       var lRequest = MsgCmdLevelValueMasterDev.CreateRequest(DynamicDevice, device, level, value);
 
-      Send(lRequest);
+      await SendAsync(lRequest);
     }
 
-    public void CreateDeviceInfo(DeviceInfoData deviceInfo)
+    public async Task CreateDeviceInfoAsync(DeviceInfoData deviceInfo)
     {
-      CreateDeviceInfo(deviceInfo, 1);
+      await CreateDeviceInfoAsync(deviceInfo, 1);
     }
 
-    public void CreateDeviceInfo(DeviceInfoData deviceInfo, ushort portCount)
+    public async Task CreateDeviceInfoAsync(DeviceInfoData deviceInfo, ushort portCount)
     {
       /*
       P  | Len   | Flag  | Dest              | Source            | H  | ID    | CMD   | N-Data      | CS
@@ -498,25 +526,25 @@ namespace ICSP.Core
 
       MemoryCache.Default.Set(lDeviceRequest.ID.ToString(), deviceInfo, lPolicy);
 
-      Send(lDeviceRequest);
+      await SendAsync(lDeviceRequest);
 
       if(portCount > 1)
       {
         // It is sent by a device upon reporting if the device has more than one port.
         var lPortCountRequest = MsgCmdPortCountBy.CreateRequest(lSource, deviceInfo.Device, deviceInfo.System, portCount);
 
-        Send(lPortCountRequest);
+        await SendAsync(lPortCountRequest);
       }
     }
 
-    public void RequestDevicesOnline()
+    public async Task RequestDevicesOnlineAsync()
     {
       var lRequest = MsgCmdRequestDevicesOnline.CreateRequest(DynamicDevice);
 
-      Send(lRequest);
+      await SendAsync(lRequest);
     }
 
-    public void RequestDeviceStatus(AmxDevice device)
+    public async Task RequestDeviceStatusAsync(AmxDevice device)
     {
       // System 0 does not works!
       if(device.System == 0)
@@ -524,13 +552,16 @@ namespace ICSP.Core
 
       var lRequest = MsgCmdRequestDeviceStatus.CreateRequest(DynamicDevice, device);
 
-      Send(lRequest);
+      await SendAsync(lRequest);
     }
 
-    public void Send(ICSPMsg request)
+    public async Task SendAsync(ICSPMsg request)
     {
+      if(IsDisposed)
+        throw new ObjectDisposedException("The current instance has been disposed!");
+
       if(mClient?.Connected ?? false)
-        mClient?.SendAsync(request);
+        await mClient?.SendAsync(request);
       else
       {
         Logger.LogDebug(false, "ICSPManager.Send[1]: MessageId=0x{0:X4}, Type={1:l}", request.ID, request.GetType().Name);

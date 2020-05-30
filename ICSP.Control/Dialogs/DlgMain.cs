@@ -225,7 +225,7 @@ namespace ICSPControl.Dialogs
         CreatePhysicalDevice();
 
       // Request ProgramInfo ...
-      mICSPManager.Send(MsgCmdRequestDiscoveryInfo.CreateRequest(mICSPManager.DynamicDevice, 0x1F));
+      mICSPManager.SendAsync(MsgCmdRequestDiscoveryInfo.CreateRequest(mICSPManager.DynamicDevice, 0x1F));
     }
 
     private void OnDeviceOnline(object sender, DeviceInfoData e)
@@ -325,7 +325,7 @@ namespace ICSPControl.Dialogs
         FirmwareId = Settings.Default.PhysicalDeviceFirmwareId
       };
 
-      mICSPManager?.CreateDeviceInfo(lDeviceInfo, Settings.Default.PhysicalDevicePortCount);
+      mICSPManager?.CreateDeviceInfoAsync(lDeviceInfo, Settings.Default.PhysicalDevicePortCount);
     }
 
     private void OpenTmpFolder()

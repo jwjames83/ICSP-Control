@@ -10,10 +10,13 @@ namespace ICSP.WebClientTest
   {
     private ClientWebSocket Socket;
     private CancellationTokenSource SocketLoopTokenSource;
-    
+
     public int ID;
 
     public event EventHandler<string> OnMessage;
+
+    private int mTaskConnectAsyncRunning = 0;
+    private int mTaskStopAsyncRunning = 0;
 
     public async Task StartAsync(string wsUri)
     {
@@ -22,51 +25,74 @@ namespace ICSP.WebClientTest
 
     public async Task StartAsync(Uri wsUri)
     {
-      Console.WriteLine($"Connecting to server {wsUri.ToString()}");
-
-      SocketLoopTokenSource = new CancellationTokenSource();
+      // Ensure that method would be called only once
+      if(Interlocked.Exchange(ref mTaskConnectAsyncRunning, 1) != 0)
+        return;
 
       try
       {
-        Socket = new ClientWebSocket();
+        Console.WriteLine($"Connecting to server {wsUri.ToString()}");
 
-        await Socket.ConnectAsync(wsUri, CancellationToken.None);
+        SocketLoopTokenSource = new CancellationTokenSource();
 
-        _ = Task.Run(() => SocketProcessingLoopAsync().ConfigureAwait(false));
+        try
+        {
+          Socket = new ClientWebSocket();
+
+          await Socket?.ConnectAsync(wsUri, CancellationToken.None);
+
+          if(Socket?.State == WebSocketState.Open)
+            await SocketProcessingLoopAsync();
+        }
+        catch(OperationCanceledException)
+        {
+          // Normal upon task/token cancellation, disregard
+        }
       }
-      catch(OperationCanceledException)
+      finally
       {
-        // Normal upon task/token cancellation, disregard
+        Interlocked.Exchange(ref mTaskConnectAsyncRunning, 0);
       }
     }
 
     public async Task StopAsync()
     {
-      Console.WriteLine($"\nClosing connection");
-
-      if(Socket == null || Socket.State != WebSocketState.Open)
+      // Ensure that method would be called only once
+      if(Interlocked.Exchange(ref mTaskStopAsyncRunning, 1) != 0)
         return;
-
-      // close the socket first, because ReceiveAsync leaves an invalid socket (state = aborted) when the token is cancelled
-      var lTimeout = new CancellationTokenSource(Program.CLOSE_SOCKET_TIMEOUT_MS);
 
       try
       {
-        // after this, the socket state which change to CloseSent
-        await Socket.CloseOutputAsync(WebSocketCloseStatus.NormalClosure, "Closing", lTimeout.Token);
+        Console.WriteLine($"Closing connection");
 
-        // now we wait for the server response, which will close the socket
-        while(Socket.State != WebSocketState.Closed && !lTimeout.Token.IsCancellationRequested) ;
+        if(Socket == null || Socket.State != WebSocketState.Open)
+          return;
+
+        // close the socket first, because ReceiveAsync leaves an invalid socket (state = aborted) when the token is cancelled
+        var lTimeout = new CancellationTokenSource(Program.CLOSE_SOCKET_TIMEOUT_MS);
+
+        try
+        {
+          // after this, the socket state which change to CloseSent
+          await Socket.CloseOutputAsync(WebSocketCloseStatus.NormalClosure, "Closing", lTimeout.Token);
+
+          // now we wait for the server response, which will close the socket
+          while(Socket.State != WebSocketState.Closed && !lTimeout.Token.IsCancellationRequested) ;
+        }
+        catch(OperationCanceledException)
+        {
+          // Normal upon task/token cancellation, disregard
+        }
+
+        // Whether we closed the socket or timed out, we cancel the token causing RecieveAsync to abort the socket
+        SocketLoopTokenSource.Cancel();
+
+        // The finally block at the end of the processing loop will dispose and null the Socket object
       }
-      catch(OperationCanceledException)
+      finally
       {
-        // Normal upon task/token cancellation, disregard
+        Interlocked.Exchange(ref mTaskStopAsyncRunning, 0);
       }
-
-      // Whether we closed the socket or timed out, we cancel the token causing RecieveAsync to abort the socket
-      SocketLoopTokenSource.Cancel();
-
-      // The finally block at the end of the processing loop will dispose and null the Socket object
     }
 
     public WebSocketState State

@@ -99,7 +99,7 @@ namespace ICSP.Core.IO
       var lResponse = GetResponse(m);
 
       if(lResponse != null)
-        mManager.Send(lResponse);
+        mManager.SendAsync(lResponse);
     }
 
     private ICSPMsg GetResponse(MsgCmdFileTransfer m)
@@ -353,7 +353,7 @@ namespace ICSP.Core.IO
 
               mBufferData?.AddRange(m.FileData.Range(2, lJunkSize));
 
-              mManager.Send(MsgCmdFileTransfer.CreateRequest(m.Source, m.Dest, FileType.Axcess2Tokens, FileTransferFunction.Ack));
+              mManager.SendAsync(MsgCmdFileTransfer.CreateRequest(m.Source, m.Dest, FileType.Axcess2Tokens, FileTransferFunction.Ack));
 
               return null;
             }
@@ -527,7 +527,7 @@ namespace ICSP.Core.IO
 
         lBytes = lBytes.Concat(Encoding.Default.GetBytes(lBaseDirectory.FullName + "\0")).ToArray();
 
-        mManager.Send(MsgCmdFileTransfer.CreateRequest(m.Source, m.Dest, FileType.Unused, FunctionsUnused.DirectoryInfo, lBytes));
+        mManager.SendAsync(MsgCmdFileTransfer.CreateRequest(m.Source, m.Dest, FileType.Unused, FunctionsUnused.DirectoryInfo, lBytes));
 
         var lItems = new List<DirectoryItem>();
 
@@ -606,7 +606,7 @@ namespace ICSP.Core.IO
 
           Logger.LogDebug(false, "FileManager[GetDirectoryInfo]: {0:l}", item);
 
-          mManager.Send(MsgCmdFileTransfer.CreateRequest(m.Source, m.Dest, FileType.Unused, FunctionsUnused.DirectoryItem, lData));
+          mManager.SendAsync(MsgCmdFileTransfer.CreateRequest(m.Source, m.Dest, FileType.Unused, FunctionsUnused.DirectoryItem, lData));
         }
       }
       catch(Exception ex)
