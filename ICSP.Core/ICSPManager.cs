@@ -70,6 +70,8 @@ namespace ICSP.Core
 
     public ushort CurrentSystem { get; private set; }
 
+    public AmxDevice SystemDevice { get; private set; }
+
     public ConcurrentDictionary<ushort, DeviceInfoData> Devices
     {
       get
@@ -77,8 +79,6 @@ namespace ICSP.Core
         return mDevices;
       }
     }
-
-    public AmxDevice DynamicDevice { get; private set; }
 
     public bool IsConnected
     {
@@ -224,13 +224,12 @@ namespace ICSP.Core
     {
       if(e.ClientOnline)
       {
-        // Send(MsgCmdDynamicDeviceAddressRequest.CreateRequest(mClient.LocalIpAddress));
       }
       else
       {
         CurrentSystem = 0;
 
-        DynamicDevice = AmxDevice.Empty;
+        SystemDevice = AmxDevice.Empty;
 
         mDevices.Clear();
 
@@ -303,7 +302,7 @@ namespace ICSP.Core
 
               MemoryCache.Default.AddOrGetExisting(lKey, lDeviceInfo, lPolicy);
 
-              var lResponse = MsgCmdPingResponse.CreateRequest(
+              var lResponse = MsgCmdPingResponse.CreateRequest(m.Source, m.Dest,
                 lDeviceInfo.Device, lDeviceInfo.System, lDeviceInfo.ManufactureId, lDeviceInfo.DeviceId, mClient.LocalIpAddress);
 
               await SendAsync(lResponse);
@@ -315,12 +314,6 @@ namespace ICSP.Core
           }
           case MsgCmdDynamicDeviceAddressResponse m:
           {
-            CurrentSystem = m.System;
-
-            DynamicDevice = new AmxDevice(m.Device, 1, m.System);
-
-            await CreateDeviceInfoAsync(new DeviceInfoData(m.Device, mClient.LocalIpAddress) { System = m.System });
-
             DynamicDeviceCreated?.Invoke(this, new DynamicDeviceCreatedEventArgs(m));
 
             break;
@@ -338,18 +331,11 @@ namespace ICSP.Core
           }
           case MsgCmdRequestDeviceInfo m:
           {
-            if(m.Device == DynamicDevice.Device && m.System == DynamicDevice.System)
-            {
-              var lDeviceInfo = new DeviceInfoData(m.Device, mClient.LocalIpAddress) { System = m.System };
+            var lDeviceInfo = new DeviceInfoData(m.Device, mClient.LocalIpAddress) { System = m.System };
 
-              var lDest = m.Source;
+            var lResponse = MsgCmdDeviceInfo.CreateRequest(m.Source, m.Dest, lDeviceInfo);
 
-              var lSource = DynamicDevice;
-
-              var lResponse = MsgCmdDeviceInfo.CreateRequest(lDest, lSource, lDeviceInfo);
-
-              await SendAsync(lResponse);
-            }
+            await SendAsync(lResponse);
 
             break;
           }
@@ -376,7 +362,11 @@ namespace ICSP.Core
           case MsgCmdDeviceInfo m:
           {
             if(m.Device == 0 && m.ObjectId == 0)
+            {
               CurrentSystem = m.System;
+
+              SystemDevice = new AmxDevice(0, 1, m.System);
+            }
 
             if(CurrentSystem > 0)
               DeviceInfo?.Invoke(this, new DeviceInfoEventArgs(m));
@@ -460,39 +450,55 @@ namespace ICSP.Core
       }
     }
 
-    public async Task SendStringAsync(AmxDevice device, string text)
+    public async Task SendStringAsync(AmxDevice dest, AmxDevice source, string text)
     {
-      var lRequest = MsgCmdStringMasterDev.CreateRequest(DynamicDevice, device, text);
+      var lRequest = MsgCmdStringDevMaster.CreateRequest(dest, source, text);
 
       await SendAsync(lRequest);
     }
 
-    public async Task SendCommandAsync(AmxDevice device, string text)
+    public async Task SendCommandAsync(AmxDevice dest, AmxDevice source, string text)
     {
-      var lRequest = MsgCmdCommandMasterDev.CreateRequest(DynamicDevice, device, text);
+      var lRequest = MsgCmdCommandDevMaster.CreateRequest(dest, source, text);
 
       await SendAsync(lRequest);
     }
 
-    public async Task SetChannelAsync(AmxDevice device, ushort channel, bool enabled)
+    public async Task SetOutputChannelAsync(AmxDevice dest, AmxDevice source, ushort channel, bool enabled)
     {
       if(enabled)
       {
-        var lRequest = MsgCmdOutputChannelOn.CreateRequest(device, DynamicDevice, channel);
+        var lRequest = MsgCmdOutputChannelOn.CreateRequest(dest, source, channel);
 
         await SendAsync(lRequest);
       }
       else
       {
-        var lRequest = MsgCmdOutputChannelOff.CreateRequest(device, DynamicDevice, channel);
+        var lRequest = MsgCmdOutputChannelOff.CreateRequest(dest, source, channel);
 
         await SendAsync(lRequest);
       }
     }
 
-    public async Task SendLevelAsync(AmxDevice device, ushort level, ushort value)
+    public async Task SetInputChannelAsync(AmxDevice dest, AmxDevice source, ushort channel, bool enabled)
     {
-      var lRequest = MsgCmdLevelValueMasterDev.CreateRequest(DynamicDevice, device, level, value);
+      if(enabled)
+      {
+        var lRequest = MsgCmdInputChannelOnStatus.CreateRequest(dest, source, channel);
+
+        await SendAsync(lRequest);
+      }
+      else
+      {
+        var lRequest = MsgCmdInputChannelOffStatus.CreateRequest(dest, source, channel);
+
+        await SendAsync(lRequest);
+      }
+    }
+
+    public async Task SendLevelAsync(AmxDevice dest, AmxDevice source, ushort level, ushort value)
+    {
+      var lRequest = MsgCmdLevelValueDevMaster.CreateRequest(dest, source, level, value);
 
       await SendAsync(lRequest);
     }
@@ -531,26 +537,28 @@ namespace ICSP.Core
       if(portCount > 1)
       {
         // It is sent by a device upon reporting if the device has more than one port.
-        var lPortCountRequest = MsgCmdPortCountBy.CreateRequest(lSource, deviceInfo.Device, deviceInfo.System, portCount);
+        var lPortCountRequest = MsgCmdPortCountBy.CreateRequest(lDest, lSource, deviceInfo.Device, deviceInfo.System, portCount);
 
         await SendAsync(lPortCountRequest);
       }
     }
 
-    public async Task RequestDevicesOnlineAsync()
+    public async Task RequestDevicesOnlineAsync(AmxDevice source)
     {
-      var lRequest = MsgCmdRequestDevicesOnline.CreateRequest(DynamicDevice);
+      var lDest = new AmxDevice(0, 0, CurrentSystem);
+
+      var lRequest = MsgCmdRequestDevicesOnline.CreateRequest(lDest, source);
 
       await SendAsync(lRequest);
     }
 
-    public async Task RequestDeviceStatusAsync(AmxDevice device)
+    public async Task RequestDeviceStatusAsync(AmxDevice dest, AmxDevice source)
     {
       // System 0 does not works!
-      if(device.System == 0)
-        device = new AmxDevice(device.Device, device.Port, DynamicDevice.System);
+      if(dest.System == 0)
+        dest = new AmxDevice(dest.Device, dest.Port, CurrentSystem);
 
-      var lRequest = MsgCmdRequestDeviceStatus.CreateRequest(DynamicDevice, device);
+      var lRequest = MsgCmdRequestDeviceStatus.CreateRequest(dest, source);
 
       await SendAsync(lRequest);
     }

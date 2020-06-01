@@ -33,7 +33,7 @@ namespace ICSP.Core.Manager.DiagnosticManager
       return new MsgCmdInternalDiagnosticString(bytes);
     }
 
-    public static ICSPMsg CreateRequest(AmxDevice source, AmxDevice device, ushort objectId, ushort severity, string text)
+    public static ICSPMsg CreateRequest(AmxDevice dest, AmxDevice source, ushort objectId, ushort severity, string text)
     {
       var lRequest = new MsgCmdInternalDiagnosticString
       {
@@ -42,14 +42,14 @@ namespace ICSP.Core.Manager.DiagnosticManager
         Text = text
       };
 
-      var lBytes = Encoding.Default.GetBytes(lRequest.Text + "\0");
+      var lBytes = Encoding.GetEncoding(1252).GetBytes(lRequest.Text + "\0");
       
       var lData = ArrayExtensions.Int16ToBigEndian(lRequest.ObjectId).
         Concat(ArrayExtensions.Int16ToBigEndian(lRequest.Severity)).
         Concat(lBytes).
         ToArray();
 
-      return lRequest.Serialize(device, source, MsgCmd, lData);
+      return lRequest.Serialize(dest, source, MsgCmd, lData);
     }
 
     /// <summary>

@@ -36,10 +36,8 @@ namespace ICSP.Core.Manager.DeviceManager
       return new MsgCmdPortCountBy(bytes);
     }
 
-    public static ICSPMsg CreateRequest(AmxDevice source, ushort device, ushort system, ushort portCount)
+    public static ICSPMsg CreateRequest(AmxDevice dest, AmxDevice source, ushort device, ushort system, ushort portCount)
     {
-      var lDest = new AmxDevice(0, 0, source.System);
-
       var lRequest = new MsgCmdPortCountBy
       {
         Device = device,
@@ -53,7 +51,7 @@ namespace ICSP.Core.Manager.DeviceManager
         .Concat(ArrayExtensions.Int16ToBigEndian(system))
         .Concat(ArrayExtensions.Int16ToBigEndian(portCount)).ToArray();
 
-      return lRequest.Serialize(lDest, source, MsgCmd, lData);
+      return lRequest.Serialize(dest, source, MsgCmd, lData);
     }
 
     /// <summary>

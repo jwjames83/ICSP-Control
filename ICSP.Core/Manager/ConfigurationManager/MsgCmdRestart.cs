@@ -30,14 +30,14 @@ namespace ICSP.Core.Manager.ConfigurationManager
       return new MsgCmdRestart(bytes);
     }
 
-    public static ICSPMsg CreateRequest(AmxDevice source, AmxDevice device, RestartType flag)
+    public static ICSPMsg CreateRequest(AmxDevice dest, AmxDevice source, RestartType flag)
     {
       var lRequest = new MsgCmdRestart
       {
         DataFlag = flag
       };
 
-      return lRequest.Serialize(device, source, MsgCmd, AmxUtils.Int16ToBigEndian((ushort)lRequest.DataFlag));
+      return lRequest.Serialize(dest, source, MsgCmd, AmxUtils.Int16ToBigEndian((ushort)lRequest.DataFlag));
     }
 
     /// <summary>

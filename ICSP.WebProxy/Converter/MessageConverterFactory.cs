@@ -8,11 +8,11 @@ namespace ICSP.WebProxy.Converter
 {
   public static class MessageConverterFactory
   {
-    private static readonly Dictionary<Type, IMessageConverter> mTranslators;
+    private static readonly Dictionary<Type, IMessageConverter> mConverters;
 
     static MessageConverterFactory()
     {
-      mTranslators = new Dictionary<Type, IMessageConverter>();
+      mConverters = new Dictionary<Type, IMessageConverter>();
 
       var lTypes = TypeHelper.GetImplementedClassesForInterface(typeof(IMessageConverter));
 
@@ -23,7 +23,7 @@ namespace ICSP.WebProxy.Converter
 
         var lType = (IMessageConverter)Activator.CreateInstance(type, true);
 
-        mTranslators.Add(type, lType);
+        mConverters.Add(type, lType);
       }
     }
 
@@ -39,7 +39,7 @@ namespace ICSP.WebProxy.Converter
 
     public static IMessageConverter GetConverter<T>()
     {
-      return mTranslators.Single(p => p.Key == typeof(T)).Value;
+      return mConverters.Single(p => p.Key == typeof(T)).Value;
     }
   }
 }

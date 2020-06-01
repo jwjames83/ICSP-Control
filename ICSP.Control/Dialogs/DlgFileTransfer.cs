@@ -26,7 +26,7 @@ namespace ICSPControl.Dialogs
   {
     private const int MaxLogEntries = 1001;
 
-    private readonly ICSPManager mICSPManager;
+    private readonly ICSPManager mManager;
 
     private Dictionary<string, string> mJsonList;
 
@@ -40,7 +40,7 @@ namespace ICSPControl.Dialogs
     {
       InitializeComponent();
 
-      mICSPManager = manager ?? throw new ArgumentNullException(nameof(manager));
+      mManager = manager ?? throw new ArgumentNullException(nameof(manager));
 
       cmd_CreatePhysicalDevice.Click += OnCreateDeviceInfo;
 
@@ -51,35 +51,35 @@ namespace ICSPControl.Dialogs
       cmd_CreateJson.Click += OnCreateJsonClick;
       cmd_CreateJs.Click += OnCreateJsClick;
 
-      mICSPManager.ClientOnlineStatusChanged += OnClientOnlineStatusChanged;
-      mICSPManager.DynamicDeviceCreated += OnDynamicDeviceCreated;
+      mManager.ClientOnlineStatusChanged += OnClientOnlineStatusChanged;
+      mManager.DynamicDeviceCreated += OnDynamicDeviceCreated;
 
       // =====================================================================
       // FileManager-Events
       // =====================================================================
 
-      mICSPManager.FileManager.OnTransferFileData += OnTransferFileData;
+      mManager.FileManager.OnTransferFileData += OnTransferFileData;
 
       //mICSPManager.FileManager.OnTransferFileDataComplete += OnTransferFileDataComplete;
       //mICSPManager.FileManager.OnTransferFileDataCompleteAck += OnTransferFileDataCompleteAck;
-      mICSPManager.FileManager.OnTransferFilesInitialize += OnTransferFilesInitialize;
-      mICSPManager.FileManager.OnTransferFilesComplete += OnTransferFilesComplete;
+      mManager.FileManager.OnTransferFilesInitialize += OnTransferFilesInitialize;
+      mManager.FileManager.OnTransferFilesComplete += OnTransferFilesComplete;
 
-      mICSPManager.FileManager.OnGetDirectoryInfo += OnGetDirectoryInfo;
-      mICSPManager.FileManager.OnDirectoryInfo += OnDirectoryInfo;
-      mICSPManager.FileManager.OnDirectoryItem += OnDirectoryItem;
-      mICSPManager.FileManager.OnDeleteFile += OnDeleteFile;
-      mICSPManager.FileManager.OnCreateDirectory += OnCreateDirectory;
+      mManager.FileManager.OnGetDirectoryInfo += OnGetDirectoryInfo;
+      mManager.FileManager.OnDirectoryInfo += OnDirectoryInfo;
+      mManager.FileManager.OnDirectoryItem += OnDirectoryItem;
+      mManager.FileManager.OnDeleteFile += OnDeleteFile;
+      mManager.FileManager.OnCreateDirectory += OnCreateDirectory;
 
       // mICSPManager.FileManager.OnTransferSingleFile += OnTransferSingleFile;
       // mICSPManager.FileManager.OnTransferSingleFileAck += OnTransferSingleFileAck;
-      mICSPManager.FileManager.OnTransferSingleFileInfo += OnTransferSingleFileInfo;
+      mManager.FileManager.OnTransferSingleFileInfo += OnTransferSingleFileInfo;
       // mICSPManager.FileManager.OnTransferSingleFileInfoAck += OnTransferSingleFileInfoAck;
-      mICSPManager.FileManager.OnTransferGetFileAccessToken += OnTransferGetFileAccessToken;
-      mICSPManager.FileManager.OnTransferGetFileAccessTokenAck += OnTransferGetFileAccessTokenAck;
-      mICSPManager.FileManager.OnTransferGetFile += OnTransferGetFile;
+      mManager.FileManager.OnTransferGetFileAccessToken += OnTransferGetFileAccessToken;
+      mManager.FileManager.OnTransferGetFileAccessTokenAck += OnTransferGetFileAccessTokenAck;
+      mManager.FileManager.OnTransferGetFile += OnTransferGetFile;
 
-      txt_PanelDirectory.Text = mICSPManager.FileManager.BaseDirectory;
+      txt_PanelDirectory.Text = mManager.FileManager.BaseDirectory;
 
       ckb_CreateJson.Checked = Settings.Default.FileTransferCreateJson;
       txt_FileNameJson.Text = Settings.Default.FileTransferFileNameJson;
@@ -87,18 +87,6 @@ namespace ICSPControl.Dialogs
       ckb_CreateJs.Checked = Settings.Default.FileTransferCreateJs;
       txt_FileNameJs.Text = Settings.Default.FileTransferFileNameJs;
       txt_VariableNameJs.Text = Settings.Default.FileTransferVariableNameJs;
-
-      if(Settings.Default.AutoConnect)
-      {
-        try
-        {
-          mICSPManager.ConnectAsync(Settings.Default.AmxHost, Settings.Default.AmxPort);
-        }
-        catch(Exception ex)
-        {
-          ErrorMessageBox.Show(this, ex.Message);
-        }
-      }
     }
 
     #region FileManager-Events
@@ -148,11 +136,11 @@ namespace ICSPControl.Dialogs
 
       try
       {
-        var lTxt = string.Format(Resources.Js_Config, mICSPManager.Host, "8000");
+        var lTxt = string.Format(Resources.Js_Config, mManager.Host, "8000");
 
-        var lPath = Path.Combine(mICSPManager.FileManager.BaseDirectory, "js");
+        var lPath = Path.Combine(mManager.FileManager.BaseDirectory, "js");
 
-        Directory.CreateDirectory(Path.Combine(mICSPManager.FileManager.BaseDirectory, "js"));
+        Directory.CreateDirectory(Path.Combine(mManager.FileManager.BaseDirectory, "js"));
 
         File.WriteAllText(Path.Combine(lPath, "config.js"), lTxt);
       }
@@ -260,7 +248,7 @@ namespace ICSPControl.Dialogs
     {
       try
       {
-        mICSPManager.FileManager.SetBaseDirectory(txt_PanelDirectory.Text);
+        mManager.FileManager.SetBaseDirectory(txt_PanelDirectory.Text);
       }
       catch(Exception ex)
       {
@@ -270,7 +258,7 @@ namespace ICSPControl.Dialogs
 
     private void OnCreateDeviceInfo(object sender, EventArgs e)
     {
-      if(!mICSPManager.IsConnected)
+      if(!mManager.IsConnected)
       {
         InfoMessageBox.Show(this, "Not connected");
         return;
@@ -378,7 +366,7 @@ namespace ICSPControl.Dialogs
 
     private void CreatePhysicalDevice()
     {
-      if(!mICSPManager.IsConnected)
+      if(!mManager.IsConnected)
         return;
 
       var lDeviceId = Settings.Default.PhysicalDeviceDeviceId;
@@ -386,7 +374,7 @@ namespace ICSPControl.Dialogs
       if(Settings.Default.PhysicalDeviceUseCustomDeviceId)
         lDeviceId = Settings.Default.PhysicalDeviceCustomDeviceId;
 
-      var lDeviceInfo = new DeviceInfoData(Settings.Default.PhysicalDeviceNumber, mICSPManager.CurrentLocalIpAddress)
+      var lDeviceInfo = new DeviceInfoData(Settings.Default.PhysicalDeviceNumber, mManager.CurrentLocalIpAddress)
       {
         Version = Settings.Default.PhysicalDeviceVersion,
         Name = Settings.Default.PhysicalDeviceName,
@@ -397,7 +385,7 @@ namespace ICSPControl.Dialogs
         FirmwareId = Settings.Default.PhysicalDeviceFirmwareId
       };
 
-      mICSPManager?.CreateDeviceInfoAsync(lDeviceInfo, Settings.Default.PhysicalDevicePortCount);
+      mManager?.CreateDeviceInfoAsync(lDeviceInfo, Settings.Default.PhysicalDevicePortCount);
     }
 
     private void AppendLog(string format, params object[] args)
@@ -432,7 +420,7 @@ namespace ICSPControl.Dialogs
     {
       try
       {
-        var lDir = new DirectoryInfo(Path.Combine(mICSPManager.FileManager.BaseDirectory, "AMXPanel"));
+        var lDir = new DirectoryInfo(Path.Combine(mManager.FileManager.BaseDirectory, "AMXPanel"));
 
         AppendLog("CreateJsonList: Directory={0}", lDir.FullName);
 
@@ -530,7 +518,7 @@ namespace ICSPControl.Dialogs
     {
       try
       {
-        var lDir = new DirectoryInfo(Path.Combine(mICSPManager.FileManager.BaseDirectory, "AMXPanel"));
+        var lDir = new DirectoryInfo(Path.Combine(mManager.FileManager.BaseDirectory, "AMXPanel"));
 
         AppendLog("ProccessJsonList: Directory={0}", lDir.FullName);
 

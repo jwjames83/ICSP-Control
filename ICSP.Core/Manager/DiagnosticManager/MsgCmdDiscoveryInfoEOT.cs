@@ -24,13 +24,11 @@ namespace ICSP.Core.Manager.DiagnosticManager
       return new MsgCmdDiscoveryInfoEOT(bytes);
     }
 
-    public static ICSPMsg CreateRequest(AmxDevice source)
+    public static ICSPMsg CreateRequest(AmxDevice dest, AmxDevice source)
     {
-      var lDest = new AmxDevice(0, 1, source.System);
-
       var lRequest = new MsgCmdDiscoveryInfoEOT();
       
-      return lRequest.Serialize(lDest, source, MsgCmd, null);
+      return lRequest.Serialize(dest, source, MsgCmd, null);
     }
     
     protected override void WriteLogExtended()

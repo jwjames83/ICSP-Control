@@ -45,20 +45,27 @@ namespace ICSP.Core.Manager.DeviceManager
       throw new ApplicationException("Command need an empty constructor");
     }
 
-    public static ICSPMsg CreateRequest(AmxDevice source, AmxDevice dest, string text)
+    public static ICSPMsg CreateRequest(AmxDevice dest, AmxDevice source, string text)
     {
+      return CreateRequest(dest, source, text, Encoding.GetEncoding(1252));
+    }
+
+    public static ICSPMsg CreateRequest(AmxDevice dest, AmxDevice source, string text, Encoding encoding)
+    {
+      var lEncoding = encoding ??= Encoding.GetEncoding(1252);
+
       var lRequest = CreateType();
 
-      lRequest.Device = dest;
+      lRequest.Device = source;
       lRequest.ValueType = EncodingType.Default;
-      lRequest.Length = (ushort)text?.Length;
-      lRequest.Text = text;
+      lRequest.Length = (ushort)text?.Length; // (i.e.number of elements, this is not the number of bytes)
+      lRequest.Text = text ?? string.Empty;
+      
+      var lBytes = lEncoding.GetBytes(lRequest.Text);
 
-      var lBytes = Encoding.Default.GetBytes(lRequest.Text);
-
-      var lData = dest.GetBytesDPS().
+      var lData = source.GetBytesDPS().
         Concat(ArrayExtensions.Int16To8Bit((byte)lRequest.ValueType)).
-        Concat(ArrayExtensions.Int16ToBigEndian(lRequest.Length)).
+        Concat(ArrayExtensions.Int16ToBigEndian((ushort)lBytes.Length)). // lBytes.Length
         Concat(lBytes).
         ToArray();
 

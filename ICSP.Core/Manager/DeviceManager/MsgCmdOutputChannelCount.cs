@@ -34,19 +34,17 @@ namespace ICSP.Core.Manager.DeviceManager
       return new MsgCmdOutputChannelCount(bytes);
     }
 
-    public static ICSPMsg CreateRequest(AmxDevice device, ushort count)
+    public static ICSPMsg CreateRequest(AmxDevice dest, AmxDevice source, ushort count)
     {
-      var lDest = new AmxDevice(0, 0, device.System);
-
       var lRequest = new MsgCmdOutputChannelCount
       {
-        Device = device,
+        Device = source,
         Count = count
       };
 
-      var lData = device.GetBytesDPS().Concat(ArrayExtensions.Int16ToBigEndian(count)).ToArray();
+      var lData = source.GetBytesDPS().Concat(ArrayExtensions.Int16ToBigEndian(count)).ToArray();
 
-      return lRequest.Serialize(lDest, device, MsgCmd, lData);
+      return lRequest.Serialize(dest, source, MsgCmd, lData);
     }
 
     public AmxDevice Device { get; set; }

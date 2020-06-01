@@ -52,7 +52,7 @@ namespace ICSP.WebProxy
       if(socket.State != WebSocketState.Open)
         return;
 
-      await socket.SendAsync(new ArraySegment<byte>(Encoding.ASCII.GetBytes(message)), WebSocketMessageType.Text, true, CancellationToken.None);
+      await socket.SendAsync(new ArraySegment<byte>(Encoding.Default.GetBytes(message)), WebSocketMessageType.Text, true, CancellationToken.None);
     }
 
     public async Task SendAsync(int socketId, string message)

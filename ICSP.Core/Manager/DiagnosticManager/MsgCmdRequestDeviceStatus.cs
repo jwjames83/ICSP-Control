@@ -32,14 +32,14 @@ namespace ICSP.Core.Manager.DiagnosticManager
       return new MsgCmdRequestDeviceStatus(bytes);
     }
 
-    public static ICSPMsg CreateRequest(AmxDevice source, AmxDevice device)
+    public static ICSPMsg CreateRequest(AmxDevice dest, AmxDevice source)
     {
       var lRequest = new MsgCmdRequestDeviceStatus
       {
-        Device = device
+        Device = dest
       };
 
-      var lData = device.GetBytesDPS().ToArray();
+      var lData = dest.GetBytesDPS().ToArray();
 
       return lRequest.Serialize(AmxDevice.Empty, source, MsgCmd, lData);
     }

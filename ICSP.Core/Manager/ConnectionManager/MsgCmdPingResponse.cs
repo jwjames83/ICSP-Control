@@ -97,10 +97,8 @@ namespace ICSP.Core.Manager.ConnectionManager
       return new MsgCmdPingResponse(bytes);
     }
 
-    public static ICSPMsg CreateRequest(ushort device, ushort system, ushort mfgID, ushort deviceId, IPAddress ipAddress)
+    public static ICSPMsg CreateRequest(AmxDevice dest, AmxDevice source, ushort device, ushort system, ushort mfgID, ushort deviceId, IPAddress ipAddress)
     {
-      var lSource = new AmxDevice(device, 0, system);
-
       var lRequest = new MsgCmdPingResponse
       {
         Device = device,
@@ -143,7 +141,7 @@ namespace ICSP.Core.Manager.ConnectionManager
         lData = lStream.ToArray();
       }
 
-      return lRequest.Serialize(AmxDevice.Empty, lSource, MsgCmd, lData);
+      return lRequest.Serialize(dest, source, MsgCmd, lData);
     }
 
     /// <summary>

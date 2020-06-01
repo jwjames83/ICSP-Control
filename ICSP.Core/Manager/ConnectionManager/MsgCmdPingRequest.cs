@@ -33,7 +33,7 @@ namespace ICSP.Core.Manager.ConnectionManager
       return new MsgCmdPingRequest(bytes);
     }
 
-    public static ICSPMsg CreateRequest(AmxDevice source, ushort device, ushort system)
+    public static ICSPMsg CreateRequest(AmxDevice dest, AmxDevice source, ushort device, ushort system)
     {
       var lRequest = new MsgCmdPingRequest
       {
@@ -44,7 +44,7 @@ namespace ICSP.Core.Manager.ConnectionManager
       var lData = ArrayExtensions.Int16ToBigEndian(device)
         .Concat(ArrayExtensions.Int16ToBigEndian(system)).ToArray();
 
-      return lRequest.Serialize(AmxDevice.Empty, source, MsgCmd, lData);
+      return lRequest.Serialize(dest, source, MsgCmd, lData);
     }
 
     /// <summary>

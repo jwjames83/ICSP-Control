@@ -30,14 +30,14 @@ namespace ICSP.Core.Manager.ConfigurationManager
       return new MsgCmdRequestMasterStatus(bytes);
     }
 
-    public static ICSPMsg CreateRequest(AmxDevice source, ushort system)
+    public static ICSPMsg CreateRequest(AmxDevice dest, AmxDevice source, ushort system)
     {
       var lRequest = new MsgCmdRequestMasterStatus
       {
         System = system
       };
 
-      return lRequest.Serialize(AmxDevice.Empty, source, MsgCmd, AmxUtils.Int16ToBigEndian(lRequest.System));
+      return lRequest.Serialize(dest, source, MsgCmd, AmxUtils.Int16ToBigEndian(lRequest.System));
     }
     
     public ushort System { get; set; }

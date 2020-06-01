@@ -47,9 +47,7 @@ namespace ICSP.Core.Manager.DeviceManager
 
     public static ICSPMsg CreateRequest(AmxDevice dest, AmxDevice source, AmxDevice device, StatusType statusCode, byte valueType, string statusString)
     {
-      var lStatusString = statusString ?? string.Empty;
-
-      var lBytes = Encoding.Default.GetBytes(lStatusString);
+      var lBytes = Encoding.GetEncoding(1252).GetBytes(statusString ?? string.Empty);
 
       var lRequest = new MsgCmdStatus
       {
@@ -57,7 +55,7 @@ namespace ICSP.Core.Manager.DeviceManager
         StatusCode = statusCode,
         ValueType = valueType,
         Length = (ushort)(lBytes.Length),
-        StatusString = statusString
+        StatusString = statusString ?? string.Empty
       };
 
       byte[] lData;

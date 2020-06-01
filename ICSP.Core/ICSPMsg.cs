@@ -26,7 +26,7 @@ namespace ICSP.Core
 
     public const int DefaultFlag = 0x0200;
 
-    public const int FlagFileTransfer = 0x0208; // Not Documented: Found by Wireshark
+    public const int FlagFileTransfer = 0x0208;
 
     /// <summary>
     /// If set then messag is a broadcast message

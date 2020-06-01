@@ -31,16 +31,16 @@ namespace ICSP.Core.Manager.DeviceManager
       return new MsgCmdRequestCommandSize(bytes);
     }
 
-    public static ICSPMsg CreateRequest(AmxDevice source, AmxDevice device)
+    public static ICSPMsg CreateRequest(AmxDevice dest, AmxDevice source)
     {
       var lRequest = new MsgCmdRequestCommandSize
       {
-        Device = device
+        Device = dest
       };
 
-      var lData = device.GetBytesDPS().ToArray();
+      var lData = dest.GetBytesDPS().ToArray();
 
-      return lRequest.Serialize(device, source, MsgCmd, lData);
+      return lRequest.Serialize(dest, source, MsgCmd, lData);
     }
 
     public AmxDevice Device { get; set; }

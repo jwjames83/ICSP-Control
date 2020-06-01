@@ -28,10 +28,8 @@ namespace ICSP.Core.Manager.DiagnosticManager
       return new MsgCmdRequestDiscoveryInfo(bytes);
     }
 
-    public static ICSPMsg CreateRequest(AmxDevice source, ushort unknown)
+    public static ICSPMsg CreateRequest(AmxDevice dest, AmxDevice source, ushort unknown)
     {
-      var lDest = new AmxDevice(0, 1, source.System);
-
       var lRequest = new MsgCmdRequestDiscoveryInfo
       {
         Unknown = unknown
@@ -39,7 +37,7 @@ namespace ICSP.Core.Manager.DiagnosticManager
 
       var lData = ArrayExtensions.Int16ToBigEndian(unknown);
 
-      return lRequest.Serialize(lDest, source, MsgCmd, lData);
+      return lRequest.Serialize(dest, source, MsgCmd, lData);
     }
     
     public ushort Unknown { get; set; }

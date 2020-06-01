@@ -6,59 +6,44 @@ using System.Windows.Forms;
 
 using ICSP.Control.Properties;
 using ICSP.Core;
-using ICSP.Core.Manager.DeviceManager;
 
 using ICSPControl.Controls;
 using ICSPControl.Extensions;
 
 namespace ICSPControl.Dialogs
 {
-  public partial class DlgDiagnostic : WeifenLuo.WinFormsUI.Docking.DockContent
+  public partial class DlgEmulateDevice : WeifenLuo.WinFormsUI.Docking.DockContent
   {
-    private readonly ICSPManager mICSPManager;
+    private readonly ICSPManager mManager;
 
-    public DlgDiagnostic(ICSPManager manager)
+    public DlgEmulateDevice(ICSPManager manager)
     {
       InitializeComponent();
 
-      mICSPManager = manager ?? throw new ArgumentNullException(nameof(manager));
+      mManager = manager ?? throw new ArgumentNullException(nameof(manager));
 
       OnlineTree.Nodes.Clear();
       OnlineTree.Nodes.Add("<Empty Device Tree>");
 
       txt_Text.Text = Settings.Default.LastSendText;
 
-      cmd_CreatePhysicalDevice.Click += OnCreateDeviceInfo;
-
       // ContextMenu
       cmd_RefreshSystemOnlineTree.Click += OnRefreshSystemOnlineTreeClick;
       cmd_ShowDeviceProperties.Click += OnShowDevicePropertiesClick;
 
-      mICSPManager.DynamicDeviceCreated += OnDynamicDeviceCreated;
-      mICSPManager.RequestDevicesOnlineEOT += OnManagerRequestDevicesOnlineEOT;
+      mManager.RequestDevicesOnlineEOT += OnManagerRequestDevicesOnlineEOT;
+      mManager.DeviceInfo += OnManagerDeviceInfo;
+      mManager.PortCount += OnManagerPortCount;
 
-      mICSPManager.DeviceInfo += OnDeviceInfo;
-      mICSPManager.PortCount += OnPortCount;
+      cmd_ChannelOn.Click += OnCmdChannelOnClick;
+      cmd_ChannelOff.Click += OnCmdChannelOffClick;
+      cmd_ChannelPush.MouseDown += OnCmdChannelPushMouseDown;
+      cmd_ChannelPush.MouseUp += OnCmdChannelPushMouseUp;
+      cmd_SendLevel.Click += OnCmdSendLevelClick;
+      cmd_SendString.Click += OnCmdSendStringClick;
+      cmd_SendCommand.Click += OnCmdSendCommandClick;
 
       OnlineTree.MouseUp += OnlineTreeOnMouseUp;
-
-      if(Settings.Default.AutoConnect)
-      {
-        try
-        {
-          mICSPManager.ConnectAsync(Settings.Default.AmxHost, Settings.Default.AmxPort);
-        }
-        catch(Exception ex)
-        {
-          ErrorMessageBox.Show(this, ex.Message);
-        }
-      }
-    }
-
-    private void OnDynamicDeviceCreated(object sender, DynamicDeviceCreatedEventArgs e)
-    {
-      if(Settings.Default.PhysicalDeviceAutoCreate)
-        CreatePhysicalDevice();
     }
 
     protected override void OnClosing(CancelEventArgs e)
@@ -85,12 +70,12 @@ namespace ICSPControl.Dialogs
       }
     }
 
-    private void OnRefreshSystemOnlineTreeClick(object sender, EventArgs e)
+    private async void OnRefreshSystemOnlineTreeClick(object sender, EventArgs e)
     {
       OnlineTree.Nodes.Clear();
       OnlineTree.Nodes.Add("<Empty Device Tree>");
 
-      mICSPManager?.RequestDevicesOnlineAsync();
+      await mManager?.RequestDevicesOnlineAsync(DlgMain.DynamicDevice);
     }
 
     private void OnShowDevicePropertiesClick(object sender, EventArgs e)
@@ -177,7 +162,7 @@ namespace ICSPControl.Dialogs
       });
     }
 
-    private void OnDeviceInfo(object sender, DeviceInfoEventArgs e)
+    private void OnManagerDeviceInfo(object sender, DeviceInfoEventArgs e)
     {
       var lImageKey = "AMXDeviceDefault";
       var lSelectedImageKey = "AMXDeviceSelected";
@@ -230,7 +215,7 @@ namespace ICSPControl.Dialogs
       });
     }
 
-    private void OnPortCount(object sender, PortCountEventArgs e)
+    private void OnManagerPortCount(object sender, PortCountEventArgs e)
     {
       var lImageKey = "IODeviceDefault";
       var lSelectedImageKey = "IODeviceSelected";
@@ -256,75 +241,101 @@ namespace ICSPControl.Dialogs
       });
     }
 
-    private void OnCmdChannelOn(object sender, EventArgs e)
+    private async void OnCmdChannelOnClick(object sender, EventArgs e)
     {
-      mICSPManager?.SetChannelAsync(GetDevice(), (ushort)num_Channel.Value, true);
-    }
-
-    private void OnCmdChannelOff(object sender, EventArgs e)
-    {
-      mICSPManager?.SetChannelAsync(GetDevice(), (ushort)num_Channel.Value, false);
-    }
-
-    private void OnCmdSendLevel(object sender, EventArgs e)
-    {
-      mICSPManager?.SendLevelAsync(GetDevice(), (ushort)num_LevelInput.Value, (ushort)num_LevelValue.Value);
-    }
-
-    private void OnCmdSendString(object sender, EventArgs e)
-    {
-      if(txt_Text.SelectedText.Length > 0)
-        mICSPManager?.SendStringAsync(GetDevice(), txt_Text.SelectedText);
-      else
-        mICSPManager?.SendStringAsync(GetDevice(), txt_Text.Text);
-    }
-
-    private void OnCmdSendCmd(object sender, EventArgs e)
-    {
-      if(txt_Text.SelectedText.Length > 0)
-        mICSPManager?.SendCommandAsync(GetDevice(), txt_Text.SelectedText);
-      else
-        mICSPManager?.SendCommandAsync(GetDevice(), txt_Text.Text);
-    }
-
-    private void OnCreateDeviceInfo(object sender, EventArgs e)
-    {
-      if(!mICSPManager.IsConnected)
+      if(!mManager.IsConnected)
       {
         InfoMessageBox.Show(this, "Not connected");
         return;
       }
 
-      CreatePhysicalDevice();
+      await mManager?.SetInputChannelAsync(mManager.SystemDevice, GetDevice(), (ushort)num_Channel.Value, true);
     }
 
-    private void OnCmdRequestDeviceStatus(object sender, EventArgs e)
+    private async void OnCmdChannelOffClick(object sender, EventArgs e)
     {
-      mICSPManager?.RequestDeviceStatusAsync(GetDevice());
-    }
-
-    private void CreatePhysicalDevice()
-    {
-      if(!mICSPManager.IsConnected)
-        return;
-
-      var lDeviceId = Settings.Default.PhysicalDeviceDeviceId;
-
-      if(Settings.Default.PhysicalDeviceUseCustomDeviceId)
-        lDeviceId = Settings.Default.PhysicalDeviceCustomDeviceId;
-
-      var lDeviceInfo = new DeviceInfoData(Settings.Default.PhysicalDeviceNumber, mICSPManager.CurrentLocalIpAddress)
+      if(!mManager.IsConnected)
       {
-        Version = Settings.Default.PhysicalDeviceVersion,
-        Name = Settings.Default.PhysicalDeviceName,
-        Manufacture = Settings.Default.PhysicalDeviceManufacturer,
-        SerialNumber = Settings.Default.PhysicalDeviceSerialNumber,
-        ManufactureId = Settings.Default.PhysicalDeviceManufactureId,
-        DeviceId = lDeviceId,
-        FirmwareId = Settings.Default.PhysicalDeviceFirmwareId
-      };
+        InfoMessageBox.Show(this, "Not connected");
+        return;
+      }
 
-      mICSPManager?.CreateDeviceInfoAsync(lDeviceInfo, Settings.Default.PhysicalDevicePortCount);
+      await mManager?.SetInputChannelAsync(mManager.SystemDevice, GetDevice(), (ushort)num_Channel.Value, false);
+    }
+
+    private async void OnCmdChannelPushMouseDown(object sender, MouseEventArgs e)
+    {
+      if(!mManager.IsConnected)
+      {
+        InfoMessageBox.Show(this, "Not connected");
+        return;
+      }
+
+      cmd_ChannelPush.Text = "Release";
+
+      await mManager?.SetInputChannelAsync(mManager.SystemDevice, GetDevice(), (ushort)num_Channel.Value, true);
+    }
+
+    private async void OnCmdChannelPushMouseUp(object sender, MouseEventArgs e)
+    {
+      if(!mManager.IsConnected)
+      {
+        return;
+      }
+
+      cmd_ChannelPush.Text = "Push";
+
+      await mManager?.SetInputChannelAsync(mManager.SystemDevice, GetDevice(), (ushort)num_Channel.Value, false);
+    }
+
+    private async void OnCmdSendLevelClick(object sender, EventArgs e)
+    {
+      if(!mManager.IsConnected)
+      {
+        InfoMessageBox.Show(this, "Not connected");
+        return;
+      }
+
+      await mManager?.SendLevelAsync(mManager.SystemDevice, GetDevice(), (ushort)num_LevelInput.Value, (ushort)num_LevelValue.Value);
+    }
+
+    private async void OnCmdSendStringClick(object sender, EventArgs e)
+    {
+      if(!mManager.IsConnected)
+      {
+        InfoMessageBox.Show(this, "Not connected");
+        return;
+      }
+
+      if(txt_Text.SelectedText.Length > 0)
+        await mManager?.SendStringAsync(mManager.SystemDevice, GetDevice(), txt_Text.SelectedText);
+      else
+        await mManager?.SendStringAsync(mManager.SystemDevice, GetDevice(), txt_Text.Text);
+    }
+
+    private async void OnCmdSendCommandClick(object sender, EventArgs e)
+    {
+      if(!mManager.IsConnected)
+      {
+        InfoMessageBox.Show(this, "Not connected");
+        return;
+      }
+
+      if(txt_Text.SelectedText.Length > 0)
+        await mManager?.SendCommandAsync(mManager.SystemDevice, GetDevice(), txt_Text.SelectedText);
+      else
+        await mManager?.SendCommandAsync(mManager.SystemDevice, GetDevice(), txt_Text.Text);
+    }
+
+    private async void OnCmdRequestDeviceStatus(object sender, EventArgs e)
+    {
+      if(!mManager.IsConnected)
+      {
+        InfoMessageBox.Show(this, "Not connected");
+        return;
+      }
+
+      await mManager?.RequestDeviceStatusAsync(GetDevice(), DlgMain.DynamicDevice);
     }
 
     private AmxDevice GetDevice()

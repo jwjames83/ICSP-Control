@@ -81,7 +81,7 @@ namespace ICSP.WebProxy
         {
           var lMsg = $"Error: {ex.Message}";
 
-          await socket.SendAsync(new ArraySegment<byte>(Encoding.ASCII.GetBytes(lMsg)), WebSocketMessageType.Text, true, CancellationToken.None);
+          await socket.SendAsync(new ArraySegment<byte>(Encoding.Default.GetBytes(lMsg)), WebSocketMessageType.Text, true, CancellationToken.None);
         }
       }
       finally

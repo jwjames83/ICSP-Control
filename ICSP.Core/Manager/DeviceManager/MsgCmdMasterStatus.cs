@@ -37,13 +37,11 @@ namespace ICSP.Core.Manager.DeviceManager
       return new MsgCmdMasterStatus(bytes);
     }
 
-    public static ICSPMsg CreateRequest(AmxDevice source, ushort system, StatusType status, string statusString)
+    public static ICSPMsg CreateRequest(AmxDevice dest, AmxDevice source, ushort system, StatusType status, string statusString)
     {
       var lStatusString = statusString ?? string.Empty;
 
-      var lBytes = Encoding.Default.GetBytes(lStatusString + '\0');
-
-      var lDest = new AmxDevice(0, 0, source.System);
+      var lBytes = Encoding.GetEncoding(1252).GetBytes(lStatusString + '\0');
 
       var lRequest = new MsgCmdMasterStatus
       {
@@ -56,7 +54,7 @@ namespace ICSP.Core.Manager.DeviceManager
         .Concat(ArrayExtensions.Int16ToBigEndian((ushort)status))
         .Concat(lBytes).ToArray();
 
-      return lRequest.Serialize(lDest, source, MsgCmd, lData);
+      return lRequest.Serialize(dest, source, MsgCmd, lData);
     }
 
     public ushort System { get; set; }

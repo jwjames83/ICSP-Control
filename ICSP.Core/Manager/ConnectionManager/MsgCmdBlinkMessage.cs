@@ -105,7 +105,7 @@ namespace ICSP.Core.Manager.ConnectionManager
         DateText = dateTime.ToString("dddd, MMM dd, yyyy", new CultureInfo("en-US"))
       };
 
-      var lBytes = Encoding.Default.GetBytes(lRequest.DateText + '\0');
+      var lBytes = Encoding.GetEncoding(1252).GetBytes(lRequest.DateText + '\0');
 
       var lData = new byte[] {
         lRequest.HeartbeatTiming,

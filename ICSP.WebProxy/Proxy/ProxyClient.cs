@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Linq;
 using System.Net.WebSockets;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -13,6 +14,7 @@ using ICSP.WebProxy.Configuration;
 using ICSP.WebProxy.Converter;
 
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 namespace ICSP.WebProxy.Proxy
@@ -20,6 +22,8 @@ namespace ICSP.WebProxy.Proxy
   public class ProxyClient : IDisposable
   {
     private readonly ILogger mLogger;
+
+    private readonly IServiceProvider mServiceProvider;
 
     private WebSocketProxyClient mConnectedClient;
 
@@ -29,9 +33,11 @@ namespace ICSP.WebProxy.Proxy
 
     private Timer mConnectionTimer;
 
-    public ProxyClient(ILogger<ProxyClient> logger, ICSPConnectionManager connectionManager, WebSocketProxyClient connectedClient)
+    public ProxyClient(ILogger<ProxyClient> logger, IServiceProvider provider, ICSPConnectionManager connectionManager, WebSocketProxyClient connectedClient)
     {
       mLogger = logger;
+
+      mServiceProvider = provider;
 
       mConnectionManager = connectionManager;
 
@@ -97,7 +103,9 @@ namespace ICSP.WebProxy.Proxy
       // localhost:8001 -> Device Mapping 10002
       DeviceConfig = ProxyConfigManager.GetConfig(context, socket);
 
-      Converter = MessageConverterFactory.GetConverter(DeviceConfig.Converter);
+      var lType = string.IsNullOrWhiteSpace(DeviceConfig.Converter) ? typeof(ModuleWebControlConverter) : Type.GetType(DeviceConfig.Converter, true);
+
+      Converter = mServiceProvider.GetServices<IMessageConverter>().FirstOrDefault(p => p.GetType() == lType);
 
       Converter.Device = DeviceConfig.Device;
       Converter.System = DeviceConfig.Device;
@@ -171,12 +179,12 @@ namespace ICSP.WebProxy.Proxy
 
     public async Task SendAsync(string message)
     {
-      if(Socket?.State != WebSocketState.Open)
+      if(Socket?.State != WebSocketState.Open || string.IsNullOrWhiteSpace(message))
         return;
 
       LogDebug($"Send: {message}");
 
-      await Socket?.SendAsync(new ArraySegment<byte>(Encoding.ASCII.GetBytes(message)), WebSocketMessageType.Text, true, CancellationToken.None);
+      await Socket?.SendAsync(new ArraySegment<byte>(Encoding.Default.GetBytes(message)), WebSocketMessageType.Text, true, CancellationToken.None);
     }
 
     #region Manager events
@@ -235,7 +243,7 @@ namespace ICSP.WebProxy.Proxy
           if(!string.IsNullOrWhiteSpace(DeviceConfig.DeviceName))
             lDeviceInfo.Name = DeviceConfig.DeviceName;
 
-          Converter.Dest = new AmxDevice(0, 1, Manager.CurrentSystem);
+          Converter.Dest = Manager.SystemDevice;
 
           await Manager?.CreateDeviceInfoAsync(lDeviceInfo, DeviceConfig.PortCount);
         }
@@ -272,18 +280,25 @@ namespace ICSP.WebProxy.Proxy
       }
     }
 
-    private void OnManagerDeviceOnline(object sender, DeviceInfoData e)
+    private async void OnManagerDeviceOnline(object sender, DeviceInfoData e)
     {
       LogInformation($"Device={e.Device}, System={e.System}, Name={e.Name}");
 
       Converter.System = e.System;
 
       Converter.Dest = new AmxDevice(0, 1, e.System);
+
+      var lMsg = Converter.DeviceOnline();
+
+      if(lMsg != null)
+        await Manager.SendAsync(lMsg);
     }
 
-    private void OnManagerDeviceOffline(object sender, DeviceInfoData e)
+    private async void OnManagerDeviceOffline(object sender, DeviceInfoData e)
     {
       LogInformation($"Device={e.Device}, System={e.System}, Name={e.Name}");
+
+      await SendAsync(Converter.DeviceOffline());
     }
 
     private async void OnManagerChannelEvent(object sender, ChannelEventArgs e)

@@ -81,7 +81,7 @@ namespace ICSP.Core.Manager.ConfigurationManager
         lStream.Write(AmxUtils.Int16To8Bit(lFlags), 0, 1);
 
         // HostName: Null terminated host name string. (e.g. "NetLinx")
-        var lBytes = Encoding.Default.GetBytes(global::System.Environment.MachineName + "\0");
+        var lBytes = Encoding.GetEncoding(1252).GetBytes(global::System.Environment.MachineName + "\0");
         lStream.Write(lBytes, 0, lBytes.Length);
 
         // IP Address: Null terminated address string. Must be the IP address in dot notation form (e.g. "192.168.25.5")

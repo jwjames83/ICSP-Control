@@ -1,4 +1,6 @@
-﻿namespace ICSP.Core
+﻿using System;
+
+namespace ICSP.Core
 {
   public struct AmxDevice
   {
@@ -52,6 +54,26 @@
     public override string ToString()
     {
       return string.Format("{0:00000}:{1:000}:{2:000}", Device, Port, System);
+    }
+
+    public override bool Equals(Object obj)
+    {
+      return obj is AmxDevice && this == (AmxDevice)obj;
+    }
+
+    public override int GetHashCode()
+    {
+      return Device.GetHashCode() ^ Port.GetHashCode() ^ System.GetHashCode();
+    }
+
+    public static bool operator ==(AmxDevice device1, AmxDevice device2)
+    {
+      return device1.Device == device2.Device && device1.Port == device2.Port && device1.System == device2.System;
+    }
+
+    public static bool operator !=(AmxDevice device1, AmxDevice device2)
+    {
+      return !(device1 == device2);
     }
   }
 }

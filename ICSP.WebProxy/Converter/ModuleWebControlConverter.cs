@@ -4,11 +4,14 @@ using System.Text.RegularExpressions;
 
 using ICSP.Core;
 using ICSP.Core.Manager.DeviceManager;
+using ICSP.WebProxy.Configuration;
+
+using Microsoft.Extensions.Configuration;
 
 namespace ICSP.WebProxy.Converter
 {
   /// <summary>
-  /// Implementation for AMX Module WebControl Version 2.7.1
+  /// Implementation for Module WebControl Version 2.7.1
   /// </summary>
   public class ModuleWebControlConverter : IMessageConverter
   {
@@ -28,7 +31,8 @@ namespace ICSP.WebProxy.Converter
     private const string CaptureGroup_Arg2 = "arg2";
 
     // http://regexstorm.net/tester
-    private static Regex RegexMsg = new Regex($"^(?<{CaptureGroup_Type}>[^:]+):(?<{CaptureGroup_Port}>[^:]+):(?<{CaptureGroup_Arg1}>[^:]+):?(?<{CaptureGroup_Arg2}>[^;]+)?");
+    // ^(?<type>[^:]+):(?<port>[^:]+):(?<arg1>[^:]+):?(?<arg2>[^;]+)?
+    private static readonly Regex RegexMsg = new Regex($"^(?<{CaptureGroup_Type}>[^:]+):(?<{CaptureGroup_Port}>[^:]+):(?<{CaptureGroup_Arg1}>[^:]+):?(?<{CaptureGroup_Arg2}>[^;]+)?");
 
     /*
     --------------------------------------
@@ -82,11 +86,18 @@ namespace ICSP.WebProxy.Converter
     - Regex for commands! > COMMAND:1:^TXT-1,0,//TECHNIK/SZENEN SPEICHERN; --> fixed [^\S{1,}:\d{1,}:.{1,};$]
     */
 
+    public ModuleWebControlConverter(IConfiguration configuration)
+    {
+      var lConfig = configuration.GetSection(nameof(WebControlConfig)).Get<WebControlConfig>() ?? new WebControlConfig();
+
+      SupportUTF8 = lConfig.SupportUTF8;
+    }
+
     /// <summary>
-    ///  AMX Module WebControl Version 2.5.5 does not encode UTF8<br/>
-    ///  AMX Module WebControl Version 2.6.0 does encode UTF8 by default self
+    /// Module WebControl.axs Version 2.5.5 does not encode UTF8.<br/>
+    /// Module WebControl.axs Version 2.6.0 does encode UTF8 by default self.
     /// </summary>
-    public bool EncodeUTF8 { get; set; } = true;
+    public bool SupportUTF8 { get; set; }
 
     public ushort Device { get; set; }
 
@@ -120,7 +131,7 @@ namespace ICSP.WebProxy.Converter
       // SendToWebSocket(WS_OpCode_TextFrame, "'COMMAND', SSX, itoa(Data.Device.Port), SSX, cStr")
 
       // Convert from UTF8 to default ...
-      var lStr = EncodeUTF8 ? Encoding.Default.GetString(Encoding.UTF8.GetBytes(e.Text)) : e.Text;
+      var lStr = SupportUTF8 ? Encoding.Default.GetString(Encoding.UTF8.GetBytes(e.Text)) : e.Text;
 
       // Workaround for "!T"
       if(lStr.Contains("!T", StringComparison.OrdinalIgnoreCase))
@@ -135,36 +146,42 @@ namespace ICSP.WebProxy.Converter
 
     public string FromStringEvent(StringEventArgs e)
     {
-      // NetLinx:
-      // Not implemented ...
-
+      // NetLinx: Not implemented ...
       return string.Concat(STX, "STRING", SSX, e.Device.Port, SSX, e.Text, ETX);
+    }
+
+    public ICSPMsg DeviceOnline()
+    {
+      // File    : js/comm.js
+      // Function: function onOpen (evt) { ...}
+      // Line 165: sendCommand('UPDATE', 1, 0);
+
+      return MsgCmdStringDevMaster.CreateRequest(Dest, new AmxDevice(Device, 1, System), "UPDATE");
+    }
+
+    public string DeviceOffline()
+    {
+      // WebControl: Not Implemented
+      return null;
     }
 
     public ICSPMsg ToDevMessage(string msg)
     {
-      // TODO (Parsing) ...
       /*
-      send_string vdDevice[1], "itoa(vdDevice[1].Number), ':OFFLINE:', cClientIp"
-      send_string vdDevice[1], "itoa(vdDevice[1].number), ':ONLINE:', cClientIp"
-      
-      http://regexstorm.net/tester
-      ^(?<type>[^:]+):(?<port>[^:]+):(?<arg1>[^:;]+):?(?<arg2>[^;])?
+      WebSocket: PUSH:[Port]:[Channel];
+      NetLinx  : do_push_timed(vdDevice[1].number:nPort:vdDevice[1].system, nChannel, DO_PUSH_TIMED_INFINITE)
 
-      PUSH:[Port]:[Channel];
-      do_push_timed(vdDevice[1].number:nPort:vdDevice[1].system, nChannel, DO_PUSH_TIMED_INFINITE)
+      WebSocket: RELEASE:[Port]:[Channel];
+      NetLinx  : do_release(vdDevice[1].number:nPort:vdDevice[1].system, nChannel)
 
-      RELEASE:[Port]:[Channel];
-      do_release(vdDevice[1].number:nPort:vdDevice[1].system, nChannel)
+      WebSocket: COMMAND:[Port]:[Command]
+      NetLinx  : send_command vdDevice[1].number:nPort:vdDevice[1].system, cResponse
 
-      COMMAND:[Port]:[Command]
-      send_command vdDevice[1].number:nPort:vdDevice[1].system,"cResponse"
+      WebSocket: STRING:[Port]:[String]
+      NetLinx  : send_string vdDevice[1].number:nPort:vdDevice[1].system, cResponse
 
-      STRING:[Port]:[String]
-      send_string vdDevice[1].number:nPort:vdDevice[1].system,"cResponse"
-
-      LEVEL:[Port]:[Level]:[Value];
-      send_level vdDevice[1].number:nPort:vdDevice[1].system, nLevel, nValue
+      WebSocket: LEVEL:[Port]:[Level]:[Value];
+      NetLinx  : send_level vdDevice[1].number:nPort:vdDevice[1].system, nLevel, nValue
       */
 
       var lMatch = RegexMsg.Match(msg);
@@ -181,8 +198,6 @@ namespace ICSP.WebProxy.Converter
           {
             if(ushort.TryParse(lMatch.Groups[CaptureGroup_Arg1].Value.TrimEnd(';'), out var lChnl))
             {
-              Console.WriteLine("[Push]: Port={0}, Channel={1}", lPort, lChnl);
-              
               return MsgCmdInputChannelOnStatus.CreateRequest(Dest, lSource, lChnl);
             }
             break;
@@ -191,23 +206,17 @@ namespace ICSP.WebProxy.Converter
           {
             if(ushort.TryParse(lMatch.Groups[CaptureGroup_Arg1].Value.TrimEnd(';'), out var lChnl))
             {
-              Console.WriteLine("[Release]: Port={0}, Channel={1}", lPort, lChnl);
-
               return MsgCmdInputChannelOffStatus.CreateRequest(Dest, lSource, lChnl);
             }
             break;
           }
           case WsEvtType_Command:
-          {
-            Console.WriteLine("[Command]: Port={0}, Command={1}", lPort, lMatch.Groups[CaptureGroup_Arg1].Value);
-
-            return MsgCmdCommandDevMaster.CreateRequest(lSource, Dest, lMatch.Groups[CaptureGroup_Arg1].Value);
+          { 
+            return MsgCmdCommandDevMaster.CreateRequest(Dest, lSource, lMatch.Groups[CaptureGroup_Arg1].Value);
           }
           case WsEvtType_String:
           {
-            Console.WriteLine("[String]: Port={0}, String={1}", lPort, lMatch.Groups[CaptureGroup_Arg1].Value);
-
-            return MsgCmdStringDevMaster.CreateRequest(lSource, Dest, lMatch.Groups[CaptureGroup_Arg1].Value);
+            return MsgCmdStringDevMaster.CreateRequest(Dest, lSource, lMatch.Groups[CaptureGroup_Arg1].Value);
           }
           case WsEvtType_Level:
           {
@@ -215,9 +224,7 @@ namespace ICSP.WebProxy.Converter
             {
               if(float.TryParse(lMatch.Groups[CaptureGroup_Arg2].Value.TrimEnd(';'), out var lValue))
               {
-                Console.WriteLine("[Level]: Port={0}, Level={1}, Value={2}", lPort, lLevel, lValue);
-
-                return MsgCmdLevelValueDevMaster.CreateRequest(lSource, Dest, lLevel, (ushort)lValue);
+                return MsgCmdLevelValueDevMaster.CreateRequest(Dest, lSource, lLevel, (ushort)lValue);
               }
             }
 

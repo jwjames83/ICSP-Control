@@ -41,21 +41,21 @@ namespace ICSP.Core.Manager.DeviceManager
       return new MsgCmdCommandSize(bytes);
     }
 
-    public static ICSPMsg CreateRequest(AmxDevice source, AmxDevice device, EncodingType valueType, ushort length)
+    public static ICSPMsg CreateRequest(AmxDevice dest, AmxDevice source, EncodingType valueType, ushort length)
     {
       var lRequest = new MsgCmdCommandSize
       {
-        Device = device,
+        Device = source,
         ValueType = valueType,
         Length = length
       };
 
-      var lData = device.GetBytesDPS().
+      var lData = source.GetBytesDPS().
         Concat(ArrayExtensions.Int16To8Bit((byte)lRequest.ValueType)).
         Concat(ArrayExtensions.Int16ToBigEndian(lRequest.Length)).
         ToArray();
 
-      return lRequest.Serialize(device, source, MsgCmd, lData);
+      return lRequest.Serialize(dest, source, MsgCmd, lData);
     }
 
     public AmxDevice Device { get; set; }

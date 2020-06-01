@@ -107,6 +107,12 @@
     <Compile Include="DevStuff\Singleton.cs" />
     <Compile Include="DevStuff\TimeConverter.cs" />
     <Compile Include="Controls\BalloonTip.cs" />
+    <Compile Include="Dialogs\DlgEmulateDevice.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Dialogs\DlgEmulateDevice.Designer.cs">
+      <DependentUpon>DlgEmulateDevice.cs</DependentUpon>
+    </Compile>
     <Compile Include="Dialogs\DlgInfoFileTransfer.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -119,11 +125,11 @@
     <Compile Include="Dialogs\DlgFileTransfer.Designer.cs">
       <DependentUpon>DlgFileTransfer.cs</DependentUpon>
     </Compile>
-    <Compile Include="Dialogs\DlgDiagnostic.cs">
+    <Compile Include="Dialogs\DlgControlDevice.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Dialogs\DlgDiagnostic.Designer.cs">
-      <DependentUpon>DlgDiagnostic.cs</DependentUpon>
+    <Compile Include="Dialogs\DlgControlDevice.Designer.cs">
+      <DependentUpon>DlgControlDevice.cs</DependentUpon>
     </Compile>
     <Compile Include="Dialogs\DlgTrace.cs">
       <SubType>Form</SubType>
@@ -175,6 +181,10 @@
     <Compile Include="ShellApplication.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="User32Wrappers.cs" />
+    <EmbeddedResource Include="Dialogs\DlgEmulateDevice.resx">
+      <DependentUpon>DlgEmulateDevice.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
     <EmbeddedResource Include="Dialogs\DlgInfoFileTransfer.resx">
       <DependentUpon>DlgInfoFileTransfer.cs</DependentUpon>
     </EmbeddedResource>
@@ -182,8 +192,8 @@
       <DependentUpon>DlgFileTransfer.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="Dialogs\DlgDiagnostic.resx">
-      <DependentUpon>DlgDiagnostic.cs</DependentUpon>
+    <EmbeddedResource Include="Dialogs\DlgControlDevice.resx">
+      <DependentUpon>DlgControlDevice.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Dialogs\DlgTrace.resx">

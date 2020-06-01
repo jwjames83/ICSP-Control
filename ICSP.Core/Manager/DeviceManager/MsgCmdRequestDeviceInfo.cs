@@ -36,7 +36,7 @@ namespace ICSP.Core.Manager.DeviceManager
       return new MsgCmdRequestDeviceInfo(bytes);
     }
     
-    public static ICSPMsg CreateRequest(AmxDevice source, ushort device, ushort system)
+    public static ICSPMsg CreateRequest(AmxDevice dest, AmxDevice source, ushort device, ushort system)
     {
       var lRequest = new MsgCmdRequestDeviceInfo
       {
@@ -47,7 +47,7 @@ namespace ICSP.Core.Manager.DeviceManager
       var lData = ArrayExtensions.Int16ToBigEndian(device)
         .Concat(ArrayExtensions.Int16ToBigEndian(system)).ToArray();
 
-      return lRequest.Serialize(AmxDevice.Empty, source, MsgCmd, lData);
+      return lRequest.Serialize(dest, source, MsgCmd, lData);
     }
 
     /// <summary>

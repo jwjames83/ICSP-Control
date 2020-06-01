@@ -3,11 +3,13 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 using ICSP.Control.Properties;
 using ICSP.Core;
 using ICSP.Core.Client;
+using ICSP.Core.Manager.ConnectionManager;
 using ICSP.Core.Manager.DeviceManager;
 using ICSP.Core.Manager.DiagnosticManager;
 
@@ -23,10 +25,11 @@ namespace ICSPControl.Dialogs
   {
     private readonly System.Windows.Forms.Timer mBlinkTimer;
 
-    private readonly ICSPManager mICSPManager;
+    private readonly static ICSPManager Manager = new ICSPManager();
 
     private DlgFileTransfer mDlgFileTransfer;
-    private DlgDiagnostic mDlgDiagnostic;
+    private DlgEmulateDevice mDlgEmulateDevice;
+    private DlgControlDevice mDlgControlDevice;
     private DlgTrace mDlgTrace;
 
     private bool mDynamicDeviceOnline;
@@ -58,10 +61,12 @@ namespace ICSPControl.Dialogs
       tsmi_Tools_OpenTmpFolder.Click += (s, e) => { OpenTmpFolder(); };
 
       tsmi_Tools_FileTransfer.Click += OnFileTransferClick;
+      tsmi_Tools_EmulateDevice.Click += OnEmulateDeviceClick;
       tsmi_Tools_ControlDevice.Click += OnControlDeviceClick;
       tsmi_Tools_DeviceNotifications.Click += OnDeviceNotificationsClick;
 
       tsb_FileTransfer.Click += OnFileTransferClick;
+      tsb_EmulateDevice.Click += OnEmulateDeviceClick;
       tsb_ControlDevice.Click += OnControlDeviceClick;
       tsb_DeviceNotifications.Click += OnDeviceNotificationsClick;
 
@@ -74,18 +79,16 @@ namespace ICSPControl.Dialogs
       // Add the event handler for handling UI thread exceptions to the event.
       Application.ThreadException += OnThreadException;
 
-      mICSPManager = new ICSPManager();
+      Manager.FileManager.SetBaseDirectory(Settings.Default.FileTransferPanelDirectory);
 
-      mICSPManager.FileManager.SetBaseDirectory(Settings.Default.FileTransferPanelDirectory);
+      Manager.ClientOnlineStatusChanged += OnClientOnlineStatusChanged;
+      Manager.DynamicDeviceCreated += OnDynamicDeviceCreated;
 
-      mICSPManager.ClientOnlineStatusChanged += OnClientOnlineStatusChanged;
-      mICSPManager.DynamicDeviceCreated += OnDynamicDeviceCreated;
+      Manager.DeviceOnline += OnDeviceOnline;
+      Manager.DeviceOffline += OnDeviceOffline;
 
-      mICSPManager.DeviceOnline += OnDeviceOnline;
-      mICSPManager.DeviceOffline += OnDeviceOffline;
-
-      mICSPManager.DiscoveryInfo += OnDiscoveryInfo;
-      mICSPManager.BlinkMessage += OnBlinkMessage;
+      Manager.DiscoveryInfo += OnDiscoveryInfo;
+      Manager.BlinkMessage += OnBlinkMessage;
 
       DockPanel.Theme = new WeifenLuo.WinFormsUI.Docking.VS2015BlueTheme();
 
@@ -93,7 +96,7 @@ namespace ICSPControl.Dialogs
       {
         try
         {
-          _ = mICSPManager.ConnectAsync(Settings.Default.AmxHost, Settings.Default.AmxPort);
+          _ = Manager.ConnectAsync(Settings.Default.AmxHost, Settings.Default.AmxPort);
         }
         catch(Exception ex)
         {
@@ -102,11 +105,13 @@ namespace ICSPControl.Dialogs
       }
     }
 
+    public static AmxDevice DynamicDevice { get; private set; }
+
     private void OnConnectClick(object sender, EventArgs e)
     {
       try
       {
-        _ = mICSPManager.ConnectAsync(Settings.Default.AmxHost, Settings.Default.AmxPort);
+        _ = Manager.ConnectAsync(Settings.Default.AmxHost, Settings.Default.AmxPort);
       }
       catch(Exception ex)
       {
@@ -118,7 +123,7 @@ namespace ICSPControl.Dialogs
     {
       try
       {
-        mICSPManager.Disconnect();
+        Manager.Disconnect();
       }
       catch(Exception ex)
       {
@@ -144,7 +149,7 @@ namespace ICSPControl.Dialogs
     {
       if(mDlgTrace == null || mDlgTrace.Disposing || mDlgTrace.IsDisposed)
       {
-        mDlgTrace = new DlgTrace(mICSPManager);
+        mDlgTrace = new DlgTrace(Manager);
       }
 
       mDlgTrace.Show(DockPanel, DockState.Document);
@@ -155,22 +160,33 @@ namespace ICSPControl.Dialogs
     {
       if(mDlgFileTransfer == null || mDlgFileTransfer.Disposing || mDlgFileTransfer.IsDisposed)
       {
-        mDlgFileTransfer = new DlgFileTransfer(mICSPManager);
+        mDlgFileTransfer = new DlgFileTransfer(Manager);
       }
 
       mDlgFileTransfer.Show(DockPanel, DockState.Document);
       mDlgFileTransfer.BringToFront();
     }
 
-    private void OnControlDeviceClick(object sender, EventArgs e)
+    private void OnEmulateDeviceClick(object sender, EventArgs e)
     {
-      if(mDlgDiagnostic == null || mDlgDiagnostic.Disposing || mDlgDiagnostic.IsDisposed)
+      if(mDlgEmulateDevice == null || mDlgEmulateDevice.Disposing || mDlgEmulateDevice.IsDisposed)
       {
-        mDlgDiagnostic = new DlgDiagnostic(mICSPManager);
+        mDlgEmulateDevice = new DlgEmulateDevice(Manager);
       }
 
-      mDlgDiagnostic.Show(DockPanel, DockState.Document);
-      mDlgDiagnostic.BringToFront();
+      mDlgEmulateDevice.Show(DockPanel, DockState.Document);
+      mDlgEmulateDevice.BringToFront();
+    }
+
+    private void OnControlDeviceClick(object sender, EventArgs e)
+    {
+      if(mDlgControlDevice == null || mDlgControlDevice.Disposing || mDlgControlDevice.IsDisposed)
+      {
+        mDlgControlDevice = new DlgControlDevice(Manager);
+      }
+
+      mDlgControlDevice.Show(DockPanel, DockState.Document);
+      mDlgControlDevice.BringToFront();
     }
 
     protected override void OnClosing(CancelEventArgs e)
@@ -178,7 +194,7 @@ namespace ICSPControl.Dialogs
       Settings.Default.Save();
     }
 
-    private void OnClientOnlineStatusChanged(object sender, ClientOnlineOfflineEventArgs e)
+    private async void OnClientOnlineStatusChanged(object sender, ClientOnlineOfflineEventArgs e)
     {
       tsmi_File_Connect.Enabled = !e.ClientOnline;
       tsmi_File_Disconnect.Enabled = e.ClientOnline;
@@ -191,12 +207,14 @@ namespace ICSPControl.Dialogs
         tssl_ClientState.Text = "Connected";
         tssl_ClientState.BackColor = Color.Green;
 
+        await Manager.SendAsync(MsgCmdDynamicDeviceAddressRequest.CreateRequest(Manager.CurrentLocalIpAddress));
+
         if(Settings.Default.PhysicalDeviceAutoCreate)
           CreatePhysicalDevice();
       }
       else
       {
-        tssl_ClientState.Text = "Not Connected";
+        tssl_ClientState.Text = "Not connected";
         tssl_ClientState.BackColor = Color.Red;
 
         tssl_CurrentSystem.Text = "Current System: 0";
@@ -210,10 +228,12 @@ namespace ICSPControl.Dialogs
 
         tssl_DynamicDevice.BackColor = SystemColors.Control;
         tssl_Device.BackColor = SystemColors.Control;
+
+        DynamicDevice = AmxDevice.Empty;
       }
     }
 
-    private void OnDynamicDeviceCreated(object sender, DynamicDeviceCreatedEventArgs e)
+    private async void OnDynamicDeviceCreated(object sender, DynamicDeviceCreatedEventArgs e)
     {
       this.InvokeIfRequired(a =>
       {
@@ -221,27 +241,28 @@ namespace ICSPControl.Dialogs
         tssl_DynamicDevice.Text = string.Format("Dynamic Device: {0:00000}", e.Device);
       });
 
-      if(Settings.Default.PhysicalDeviceAutoCreate)
-        CreatePhysicalDevice();
+      DynamicDevice = new AmxDevice(e.Device, 1, e.System);
+
+      await Manager.CreateDeviceInfoAsync(new DeviceInfoData(e.Device, Manager.CurrentLocalIpAddress) { System = e.System });
 
       // Request ProgramInfo ...
-      mICSPManager.SendAsync(MsgCmdRequestDiscoveryInfo.CreateRequest(mICSPManager.DynamicDevice, 0x1F));
+      await Manager.SendAsync(MsgCmdRequestDiscoveryInfo.CreateRequest(Manager.SystemDevice, DynamicDevice, 0x1F));
     }
 
     private void OnDeviceOnline(object sender, DeviceInfoData e)
     {
       this.InvokeIfRequired(a =>
       {
-        if(e.Device == mICSPManager.DynamicDevice.Device)
-      {
-        mDynamicDeviceOnline = true;
-        tssl_DynamicDevice.BackColor = Color.Green;
-      }
+        if(e.Device == DynamicDevice.Device)
+        {
+          mDynamicDeviceOnline = true;
+          tssl_DynamicDevice.BackColor = Color.Green;
+        }
 
-      if(e.Device == Settings.Default.PhysicalDeviceNumber)
-      {
-        mPhysicalDeviceOnline = true;
-        tssl_Device.BackColor = Color.Green;
+        if(e.Device == Settings.Default.PhysicalDeviceNumber)
+        {
+          mPhysicalDeviceOnline = true;
+          tssl_Device.BackColor = Color.Green;
         }
       });
     }
@@ -250,7 +271,7 @@ namespace ICSPControl.Dialogs
     {
       this.InvokeIfRequired(a =>
       {
-        if(e.Device == mICSPManager.DynamicDevice.Device)
+        if(e.Device == DynamicDevice.Device)
         {
           mDynamicDeviceOnline = false;
           tssl_DynamicDevice.BackColor = SystemColors.Control;
@@ -266,7 +287,7 @@ namespace ICSPControl.Dialogs
 
     private void OnDiscoveryInfo(object sender, DiscoveryInfoEventArgs e)
     {
-      if(e.IPv4Address.Equals(mICSPManager.CurrentRemoteIpAddress))
+      if(e.IPv4Address.Equals(Manager.CurrentRemoteIpAddress))
       {
         this.InvokeIfRequired(a =>
         {
@@ -295,7 +316,7 @@ namespace ICSPControl.Dialogs
 
     private void OnCreateDeviceInfo(object sender, EventArgs e)
     {
-      if(!mICSPManager.IsConnected)
+      if(!Manager.IsConnected)
       {
         InfoMessageBox.Show(this, "Not connected");
         return;
@@ -304,9 +325,9 @@ namespace ICSPControl.Dialogs
       CreatePhysicalDevice();
     }
 
-    private void CreatePhysicalDevice()
+    public static void CreatePhysicalDevice()
     {
-      if(!mICSPManager.IsConnected)
+      if(!Manager.IsConnected)
         return;
 
       var lDeviceId = Settings.Default.PhysicalDeviceDeviceId;
@@ -314,7 +335,7 @@ namespace ICSPControl.Dialogs
       if(Settings.Default.PhysicalDeviceUseCustomDeviceId)
         lDeviceId = Settings.Default.PhysicalDeviceCustomDeviceId;
 
-      var lDeviceInfo = new DeviceInfoData(Settings.Default.PhysicalDeviceNumber, mICSPManager.CurrentLocalIpAddress)
+      var lDeviceInfo = new DeviceInfoData(Settings.Default.PhysicalDeviceNumber, Manager.CurrentLocalIpAddress)
       {
         Version = Settings.Default.PhysicalDeviceVersion,
         Name = Settings.Default.PhysicalDeviceName,
@@ -325,7 +346,7 @@ namespace ICSPControl.Dialogs
         FirmwareId = Settings.Default.PhysicalDeviceFirmwareId
       };
 
-      mICSPManager?.CreateDeviceInfoAsync(lDeviceInfo, Settings.Default.PhysicalDevicePortCount);
+      Manager?.CreateDeviceInfoAsync(lDeviceInfo, Settings.Default.PhysicalDevicePortCount);
     }
 
     private void OpenTmpFolder()

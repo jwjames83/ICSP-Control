@@ -120,17 +120,13 @@ namespace ICSP.Core.Manager.DiagnosticManager
       return new MsgCmdDiscoveryInfo(bytes);
     }
 
-    public static ICSPMsg CreateRequest(AmxDevice source)
+    public static ICSPMsg CreateRequest(AmxDevice dest, AmxDevice source)
     {
-      var lDest = new AmxDevice(0, 0, source.System);
-
       var lRequest = new MsgCmdDiscoveryInfo();
-
-      // lRequest.Device = device;
 
       var lData = new byte[] { };
 
-      return lRequest.Serialize(lDest, source, MsgCmd, lData);
+      return lRequest.Serialize(dest, source, MsgCmd, lData);
     }
 
     /// <summary>

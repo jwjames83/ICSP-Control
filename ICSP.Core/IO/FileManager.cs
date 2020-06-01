@@ -525,7 +525,7 @@ namespace ICSP.Core.IO
         // Directory Info ... (16 Bytes)
         var lBytes = new byte[] { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x10, 0x00, 0x00, 0x33, 0x8d, 0x83, 0x00, 0x30, 0x7b, 0x66 };
 
-        lBytes = lBytes.Concat(Encoding.Default.GetBytes(lBaseDirectory.FullName + "\0")).ToArray();
+        lBytes = lBytes.Concat(Encoding.GetEncoding(1252).GetBytes(lBaseDirectory.FullName + "\0")).ToArray();
 
         mManager.SendAsync(MsgCmdFileTransfer.CreateRequest(m.Source, m.Dest, FileType.Unused, FunctionsUnused.DirectoryInfo, lBytes));
 
@@ -598,7 +598,7 @@ namespace ICSP.Core.IO
             lStream.Write(item.GetDateTime(), 0, 7);
 
             // Directory Name (Null-Terminated)
-            lBytes = Encoding.Default.GetBytes(item.Name + "\0");
+            lBytes = Encoding.GetEncoding(1252).GetBytes(item.Name + "\0");
             lStream.Write(lBytes, 0, lBytes.Length);
 
             lData = lStream.ToArray();

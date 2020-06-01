@@ -59,9 +59,13 @@
       this.tsb_Disconnect = new System.Windows.Forms.ToolStripButton();
       this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
       this.tsb_FileTransfer = new System.Windows.Forms.ToolStripButton();
+      this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
+      this.tsb_EmulateDevice = new System.Windows.Forms.ToolStripButton();
       this.tsb_ControlDevice = new System.Windows.Forms.ToolStripButton();
       this.tsb_DeviceNotifications = new System.Windows.Forms.ToolStripButton();
       this.DockPanel = new WeifenLuo.WinFormsUI.Docking.DockPanel();
+      this.tsmi_Tools_EmulateDevice = new System.Windows.Forms.ToolStripMenuItem();
+      this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripSeparator();
       this.MainStatusStrip.SuspendLayout();
       this.MainMenu.SuspendLayout();
       this.MainToolStrip.SuspendLayout();
@@ -94,7 +98,7 @@
       this.tssl_ClientState.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
       this.tssl_ClientState.Name = "tssl_ClientState";
       this.tssl_ClientState.Size = new System.Drawing.Size(140, 29);
-      this.tssl_ClientState.Text = "Not Connected";
+      this.tssl_ClientState.Text = "Not connected";
       this.tssl_ClientState.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
       // 
       // tssl_Host
@@ -189,7 +193,7 @@
       this.MainMenu.Location = new System.Drawing.Point(0, 0);
       this.MainMenu.MdiWindowListItem = this.tsmi_Window;
       this.MainMenu.Name = "MainMenu";
-      this.MainMenu.Size = new System.Drawing.Size(1725, 33);
+      this.MainMenu.Size = new System.Drawing.Size(1725, 36);
       this.MainMenu.TabIndex = 0;
       // 
       // tsmi_File
@@ -201,7 +205,7 @@
             this.toolStripMenuItem1,
             this.tsmi_File_Exit});
       this.tsmi_File.Name = "tsmi_File";
-      this.tsmi_File.Size = new System.Drawing.Size(54, 29);
+      this.tsmi_File.Size = new System.Drawing.Size(54, 32);
       this.tsmi_File.Text = "&File";
       // 
       // tsmi_File_Connect
@@ -241,13 +245,15 @@
       // 
       this.tsmi_Tools.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.tsmi_Tools_FileTransfer,
+            this.toolStripMenuItem2,
+            this.tsmi_Tools_EmulateDevice,
             this.tsmi_Tools_ControlDevice,
             this.tsmi_Tools_DeviceNotifications,
             this.toolStripMenuItem3,
             this.tsmi_Tools_InfoFileTransfer,
             this.tsmi_Tools_OpenTmpFolder});
       this.tsmi_Tools.Name = "tsmi_Tools";
-      this.tsmi_Tools.Size = new System.Drawing.Size(69, 29);
+      this.tsmi_Tools.Size = new System.Drawing.Size(69, 32);
       this.tsmi_Tools.Text = "&Tools";
       // 
       // tsmi_Tools_FileTransfer
@@ -293,7 +299,7 @@
       // tsmi_Window
       // 
       this.tsmi_Window.Name = "tsmi_Window";
-      this.tsmi_Window.Size = new System.Drawing.Size(94, 29);
+      this.tsmi_Window.Size = new System.Drawing.Size(94, 32);
       this.tsmi_Window.Text = "&Window";
       // 
       // MainToolStrip
@@ -304,11 +310,13 @@
             this.tsb_Disconnect,
             this.toolStripSeparator1,
             this.tsb_FileTransfer,
+            this.toolStripSeparator2,
+            this.tsb_EmulateDevice,
             this.tsb_ControlDevice,
             this.tsb_DeviceNotifications});
-      this.MainToolStrip.Location = new System.Drawing.Point(0, 33);
+      this.MainToolStrip.Location = new System.Drawing.Point(0, 36);
       this.MainToolStrip.Name = "MainToolStrip";
-      this.MainToolStrip.Size = new System.Drawing.Size(1725, 34);
+      this.MainToolStrip.Size = new System.Drawing.Size(1725, 38);
       this.MainToolStrip.TabIndex = 1;
       // 
       // tsb_Connect
@@ -316,7 +324,7 @@
       this.tsb_Connect.Image = global::ICSP.Control.Properties.Resources.TpDesignConnect;
       this.tsb_Connect.ImageTransparentColor = System.Drawing.Color.Magenta;
       this.tsb_Connect.Name = "tsb_Connect";
-      this.tsb_Connect.Size = new System.Drawing.Size(105, 29);
+      this.tsb_Connect.Size = new System.Drawing.Size(105, 33);
       this.tsb_Connect.Text = "Connect";
       // 
       // tsb_Disconnect
@@ -325,28 +333,41 @@
       this.tsb_Disconnect.Image = global::ICSP.Control.Properties.Resources.TpDesignDisconnect;
       this.tsb_Disconnect.ImageTransparentColor = System.Drawing.Color.Magenta;
       this.tsb_Disconnect.Name = "tsb_Disconnect";
-      this.tsb_Disconnect.Size = new System.Drawing.Size(127, 29);
+      this.tsb_Disconnect.Size = new System.Drawing.Size(127, 33);
       this.tsb_Disconnect.Text = "Disconnect";
       // 
       // toolStripSeparator1
       // 
       this.toolStripSeparator1.Name = "toolStripSeparator1";
-      this.toolStripSeparator1.Size = new System.Drawing.Size(6, 34);
+      this.toolStripSeparator1.Size = new System.Drawing.Size(6, 38);
       // 
       // tsb_FileTransfer
       // 
       this.tsb_FileTransfer.Image = global::ICSP.Control.Properties.Resources.TpDesignSendToPanel;
       this.tsb_FileTransfer.ImageTransparentColor = System.Drawing.Color.Magenta;
       this.tsb_FileTransfer.Name = "tsb_FileTransfer";
-      this.tsb_FileTransfer.Size = new System.Drawing.Size(127, 29);
+      this.tsb_FileTransfer.Size = new System.Drawing.Size(127, 33);
       this.tsb_FileTransfer.Text = "FileTransfer";
+      // 
+      // toolStripSeparator2
+      // 
+      this.toolStripSeparator2.Name = "toolStripSeparator2";
+      this.toolStripSeparator2.Size = new System.Drawing.Size(6, 38);
+      // 
+      // tsb_EmulateDevice
+      // 
+      this.tsb_EmulateDevice.Image = global::ICSP.Control.Properties.Resources.NetLinxEmulateDevice;
+      this.tsb_EmulateDevice.ImageTransparentColor = System.Drawing.Color.Magenta;
+      this.tsb_EmulateDevice.Name = "tsb_EmulateDevice";
+      this.tsb_EmulateDevice.Size = new System.Drawing.Size(174, 33);
+      this.tsb_EmulateDevice.Text = "Emulate a Device";
       // 
       // tsb_ControlDevice
       // 
       this.tsb_ControlDevice.Image = global::ICSP.Control.Properties.Resources.NetLinxControlDevice;
       this.tsb_ControlDevice.ImageTransparentColor = System.Drawing.Color.Magenta;
       this.tsb_ControlDevice.Name = "tsb_ControlDevice";
-      this.tsb_ControlDevice.Size = new System.Drawing.Size(170, 29);
+      this.tsb_ControlDevice.Size = new System.Drawing.Size(170, 33);
       this.tsb_ControlDevice.Text = "Control a Device";
       // 
       // tsb_DeviceNotifications
@@ -354,17 +375,29 @@
       this.tsb_DeviceNotifications.Image = global::ICSP.Control.Properties.Resources.NetLinxDeviceNotifications;
       this.tsb_DeviceNotifications.ImageTransparentColor = System.Drawing.Color.Magenta;
       this.tsb_DeviceNotifications.Name = "tsb_DeviceNotifications";
-      this.tsb_DeviceNotifications.Size = new System.Drawing.Size(197, 29);
+      this.tsb_DeviceNotifications.Size = new System.Drawing.Size(197, 33);
       this.tsb_DeviceNotifications.Text = "Device Notifications";
       // 
       // DockPanel
       // 
       this.DockPanel.Dock = System.Windows.Forms.DockStyle.Fill;
       this.DockPanel.DockBackColor = System.Drawing.SystemColors.AppWorkspace;
-      this.DockPanel.Location = new System.Drawing.Point(0, 67);
+      this.DockPanel.Location = new System.Drawing.Point(0, 74);
       this.DockPanel.Name = "DockPanel";
-      this.DockPanel.Size = new System.Drawing.Size(1725, 894);
+      this.DockPanel.Size = new System.Drawing.Size(1725, 887);
       this.DockPanel.TabIndex = 2;
+      // 
+      // tsmi_Tools_EmulateDevice
+      // 
+      this.tsmi_Tools_EmulateDevice.Image = global::ICSP.Control.Properties.Resources.NetLinxEmulateDevice;
+      this.tsmi_Tools_EmulateDevice.Name = "tsmi_Tools_EmulateDevice";
+      this.tsmi_Tools_EmulateDevice.Size = new System.Drawing.Size(288, 34);
+      this.tsmi_Tools_EmulateDevice.Text = "Emualte a Device";
+      // 
+      // toolStripMenuItem2
+      // 
+      this.toolStripMenuItem2.Name = "toolStripMenuItem2";
+      this.toolStripMenuItem2.Size = new System.Drawing.Size(285, 6);
       // 
       // DlgMain
       // 
@@ -429,6 +462,10 @@
         private System.Windows.Forms.ToolStripMenuItem tsmi_File_Connect;
         private System.Windows.Forms.ToolStripMenuItem tsmi_File_Disconnect;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
+        private System.Windows.Forms.ToolStripButton tsb_EmulateDevice;
+        private System.Windows.Forms.ToolStripSeparator toolStripMenuItem2;
+        private System.Windows.Forms.ToolStripMenuItem tsmi_Tools_EmulateDevice;
     }
 }
 

@@ -46,7 +46,8 @@ namespace ICSP.Core.Manager.DeviceManager
         DeviceId = Data.GetBigEndianInt16(10);
 
         // SerialNumber
-        SerialNumber = Encoding.Default.GetString(Data.Range(12, 16)).TrimEnd(new char[] { '\0', ' ' });
+        SerialNumber = AmxUtils.GetString(Data, 12, 16);
+        // SerialNumber = Encoding.Default.GetString(Data.Range(12, 16)).TrimEnd(new char[] { '\0', ' ' });
 
         // FWID
         FirmwareId = Data.GetBigEndianInt16(28);
@@ -124,12 +125,6 @@ namespace ICSP.Core.Manager.DeviceManager
 
     public static ICSPMsg CreateRequest(AmxDevice dest, AmxDevice source, DeviceInfoData deviceInfo)
     {
-      var lDest = new AmxDevice(0, 1, 0);
-
-      var lSource = new AmxDevice(deviceInfo.Device, 0, deviceInfo.System);
-
-      // AmxDevice dest, AmxDevice source
-
       var lRequest = new MsgCmdDeviceInfo
       {
         IPv4Address = deviceInfo.IPv4Address,
@@ -144,7 +139,7 @@ namespace ICSP.Core.Manager.DeviceManager
       };
 
       Logger.LogDebug(false, "-----------------------------------------------------------------------------------------------------");
-      Logger.LogDebug(false, "MsgCmdDeviceInfo.CreateRequest: Dest={0:l}, Source={1:l}, IPv4Address={2:l}", lDest, lSource, lRequest.IPv4Address);
+      Logger.LogDebug(false, "MsgCmdDeviceInfo.CreateRequest: Dest={0:l}, Source={1:l}, IPv4Address={2:l}", dest, source, lRequest.IPv4Address);
       Logger.LogDebug(false, "-----------------------------------------------------------------------------------------------------");
 
       // SerialNumber => 16 bytes of data
@@ -240,7 +235,7 @@ namespace ICSP.Core.Manager.DeviceManager
         lStream.Write(AmxUtils.Int16ToBigEndian(lRequest.DeviceId), 0, 2);
 
         // SerialNumber
-        var lBytes = Encoding.Default.GetBytes(lRequest.SerialNumber);
+        var lBytes = Encoding.GetEncoding(1252).GetBytes(lRequest.SerialNumber);
         lStream.Write(lBytes, 0, 16);
 
         // FWID
@@ -249,15 +244,15 @@ namespace ICSP.Core.Manager.DeviceManager
         // Null-Terminated Strings ...
 
         // Version
-        lBytes = Encoding.Default.GetBytes(lRequest.Version + "\0");
+        lBytes = Encoding.GetEncoding(1252).GetBytes(lRequest.Version + "\0");
         lStream.Write(lBytes, 0, lBytes.Length);
 
         // DeviceID
-        lBytes = Encoding.Default.GetBytes(lRequest.Name + "\0");
+        lBytes = Encoding.GetEncoding(1252).GetBytes(lRequest.Name + "\0");
         lStream.Write(lBytes, 0, lBytes.Length);
 
         // Manufacture
-        lBytes = Encoding.Default.GetBytes(lRequest.Manufacture + "\0");
+        lBytes = Encoding.GetEncoding(1252).GetBytes(lRequest.Manufacture + "\0");
         lStream.Write(lBytes, 0, lBytes.Length);
 
         // ExtAddressType (IP)
@@ -273,7 +268,7 @@ namespace ICSP.Core.Manager.DeviceManager
       }
 
       // Flag: 0x0212
-      return lRequest.Serialize(0x0212, lDest, lSource, 0, MsgCmd, lData);
+      return lRequest.Serialize(0x0212, dest, source, 0, MsgCmd, lData);
     }
 
     protected override void WriteLogExtended()

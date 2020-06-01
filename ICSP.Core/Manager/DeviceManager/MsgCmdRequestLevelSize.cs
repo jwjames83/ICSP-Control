@@ -35,19 +35,19 @@ namespace ICSP.Core.Manager.DeviceManager
       return new MsgCmdRequestLevelSize(bytes);
     }
 
-    public static ICSPMsg CreateRequest(AmxDevice source, AmxDevice device, ushort level)
+    public static ICSPMsg CreateRequest(AmxDevice dest, AmxDevice source, ushort level)
     {
       var lRequest = new MsgCmdRequestLevelSize
       {
-        Device = device,
+        Device = dest,
         Level = level
       };
 
-      var lData = device.GetBytesDPS().
+      var lData = dest.GetBytesDPS().
         Concat(ArrayExtensions.Int16ToBigEndian(level)).
         ToArray();
       
-      return lRequest.Serialize(device, source, MsgCmd, lData);
+      return lRequest.Serialize(dest, source, MsgCmd, lData);
     }
 
     public AmxDevice Device { get; set; }

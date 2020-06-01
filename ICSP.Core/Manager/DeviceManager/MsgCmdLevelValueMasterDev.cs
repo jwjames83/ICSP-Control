@@ -54,23 +54,23 @@ namespace ICSP.Core.Manager.DeviceManager
       return new MsgCmdLevelValueMasterDev(bytes);
     }
 
-    public static ICSPMsg CreateRequest(AmxDevice source, AmxDevice device, ushort level, ushort value)
+    public static ICSPMsg CreateRequest(AmxDevice dest, AmxDevice source, ushort level, ushort value)
     {
       var lRequest = new MsgCmdLevelValueMasterDev
       {
-        Device = device,
+        Device = source,
         Level = level,
         ValueType = LevelValueType.Integer,
         Value = value
       };
 
-      var lData = device.GetBytesDPS().
+      var lData = source.GetBytesDPS().
         Concat(ArrayExtensions.Int16ToBigEndian(level)).
         Concat(ArrayExtensions.Int16To8Bit((byte)lRequest.ValueType)).
         Concat(ArrayExtensions.Int16ToBigEndian((ushort)lRequest.Value)).
         ToArray();
 
-      return lRequest.Serialize(device, source, MsgCmd, lData);
+      return lRequest.Serialize(dest, source, MsgCmd, lData);
     }
 
     public AmxDevice Device { get; set; }
