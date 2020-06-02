@@ -277,6 +277,10 @@ namespace ICSP.Core
 
               DeviceOnline?.Invoke(this, deviceInfo);
             }
+            else
+            {
+              Logger.LogWarn("MsgCmdAck: ID={0} unknown!", m.ID);
+            }
 
             break;
           }
@@ -298,16 +302,30 @@ namespace ICSP.Core
             {
               var lKey = "Device:" + lDeviceInfo.Device;
 
-              var lPolicy = new CacheItemPolicy { SlidingExpiration = TimeSpan.FromSeconds(6), RemovedCallback = OnCacheEntryRemovedCallback };
+              var lPolicy = new CacheItemPolicy { SlidingExpiration = TimeSpan.FromSeconds(25), RemovedCallback = OnCacheEntryRemovedCallback };
 
               MemoryCache.Default.AddOrGetExisting(lKey, lDeviceInfo, lPolicy);
 
-              var lResponse = MsgCmdPingResponse.CreateRequest(m.Source, m.Dest,
+              /*
+                           P  | Len   | Flag  | Dest (SDP)        | Source (SDP)      | H  | ID    | CMD   | N-Data      | CS
+              -------------------------------------------------------------------------------------------------------------------------------------------------
+              PingRequest  02 | 00 17 | 02 00 | 00 00 00 00 00 00 | 00 00 00 00 00 00 | ff | 09 e9 | 05 01 | 3a 99 | 00 01 | e6 
+              PingResponse 02 | 00 21 | 02 00 | 00 01 00 00 00 01 | 00 01 3a 99 00 01 | 0f | 54 ba | 05 81 | 3a 99 | 00 01 | 00 01 | 01 9c | 02 04 ac 10 7e a7 | f8
+              */
+
+              // Dest => 0:1:1, Src => 15001:1:1
+              var lSource = new AmxDevice(lDeviceInfo.Device, 1, lDeviceInfo.System);
+
+              var lResponse = MsgCmdPingResponse.CreateRequest(m.Source, lSource,
                 lDeviceInfo.Device, lDeviceInfo.System, lDeviceInfo.ManufactureId, lDeviceInfo.DeviceId, mClient.LocalIpAddress);
 
               await SendAsync(lResponse);
 
               PingEvent?.Invoke(this, new PingEventArgs(m));
+            }
+            else
+            {
+              Logger.LogWarn("MsgCmdPingRequest: Device={0} not in Devices!", m.Device);
             }
 
             break;
@@ -528,7 +546,7 @@ namespace ICSP.Core
 
       var lDeviceRequest = MsgCmdDeviceInfo.CreateRequest(lDest, lSource, deviceInfo);
 
-      var lPolicy = new CacheItemPolicy { AbsoluteExpiration = DateTime.Now.AddSeconds(2), RemovedCallback = OnCacheEntryRemovedCallback };
+      var lPolicy = new CacheItemPolicy { AbsoluteExpiration = DateTime.Now.AddSeconds(5), RemovedCallback = OnCacheEntryRemovedCallback };
 
       MemoryCache.Default.Set(lDeviceRequest.ID.ToString(), deviceInfo, lPolicy);
 
