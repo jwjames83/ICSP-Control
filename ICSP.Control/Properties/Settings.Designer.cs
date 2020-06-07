@@ -97,7 +97,7 @@ namespace ICSP.Control.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("v1.00.00")]
+        [global::System.Configuration.DefaultSettingValueAttribute("v2.00.00")]
         public string PhysicalDeviceVersion {
             get {
                 return ((string)(this["PhysicalDeviceVersion"]));

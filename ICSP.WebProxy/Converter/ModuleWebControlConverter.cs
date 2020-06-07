@@ -35,6 +35,14 @@ namespace ICSP.WebProxy.Converter
     private static readonly Regex RegexMsg = new Regex($"^(?<{CaptureGroup_Type}>[^:]+):(?<{CaptureGroup_Port}>[^:]+):(?<{CaptureGroup_Arg1}>[^:]+):?(?<{CaptureGroup_Arg2}>[^;]+)?");
 
     /*
+    PANEL_TYPE=
+    PORT_COUNT=xx
+    CHANNEL_COUNT=xx
+    ADDRESS_COUNT=xx
+    LEVEL_COUNT=xx
+    */
+
+    /*
     --------------------------------------
     File: comm.js
     function processMessage (data) { ... }
@@ -182,6 +190,13 @@ namespace ICSP.WebProxy.Converter
 
       WebSocket: LEVEL:[Port]:[Level]:[Value];
       NetLinx  : send_level vdDevice[1].number:nPort:vdDevice[1].system, nLevel, nValue
+
+      _websocket.send('PANEL_TYPE=' + project.settings.panelType + ';');
+      _websocket.send('PORT_COUNT=' + project.settings.portCount + ';');
+      _websocket.send('CHANNEL_COUNT=' + project.settings.channelCount + ';');
+      _websocket.send('ADDRESS_COUNT=' + project.settings.addressCount + ';');
+      _websocket.send('LEVEL_COUNT=' + project.settings.levelCount + ';');
+      _websocket.send('UPDATE' + ';');
       */
 
       var lMatch = RegexMsg.Match(msg);

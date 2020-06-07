@@ -14,6 +14,12 @@
 
     public string DeviceName { get; set; }
 
+    public string DeviceVersion { get; set; }
+
+    public ushort DeviceId { get; set; }
+
+    public string BaseDirectory { get; set; }
+
     public bool Enabled { get; set; } = true;
 
     public string Converter { get; set; }    

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using System.Net.WebSockets;
 using System.Runtime.CompilerServices;
@@ -9,6 +10,7 @@ using System.Threading.Tasks;
 
 using ICSP.Core;
 using ICSP.Core.Client;
+using ICSP.Core.IO;
 using ICSP.Core.Manager.DeviceManager;
 using ICSP.WebProxy.Configuration;
 using ICSP.WebProxy.Converter;
@@ -29,9 +31,14 @@ namespace ICSP.WebProxy.Proxy
 
     private readonly ICSPConnectionManager mConnectionManager;
 
+    private FileTransferPostProcessor mPostProcessor;
+
     private bool mIsDisposed;
 
     private Timer mConnectionTimer;
+
+    private int mCurrentFileCount;
+    private int mCurrentFileSize;
 
     public ProxyClient(ILogger<ProxyClient> logger, IServiceProvider provider, ICSPConnectionManager connectionManager, WebSocketProxyClient connectedClient)
     {
@@ -44,6 +51,8 @@ namespace ICSP.WebProxy.Proxy
       mConnectedClient = connectedClient;
 
       mConnectedClient.OnMessage += OnWebMessage;
+
+      mPostProcessor = new FileTransferPostProcessor(this);
     }
 
     public HttpContext Context { get; private set; }
@@ -102,13 +111,12 @@ namespace ICSP.WebProxy.Proxy
       // localhost:8000 -> Device Mapping 10001
       // localhost:8001 -> Device Mapping 10002
       DeviceConfig = ProxyConfigManager.GetConfig(context, socket);
-
+      
       var lType = string.IsNullOrWhiteSpace(DeviceConfig.Converter) ? typeof(ModuleWebControlConverter) : Type.GetType(DeviceConfig.Converter, true);
 
       Converter = mServiceProvider.GetServices<IMessageConverter>().FirstOrDefault(p => p.GetType() == lType);
 
       Converter.Device = DeviceConfig.Device;
-      Converter.System = DeviceConfig.Device;
 
       Converter.Dest = new AmxDevice(0, 1, 0);
 
@@ -137,6 +145,11 @@ namespace ICSP.WebProxy.Proxy
       }
 
       Manager = mConnectionManager.GetOrCreate(DeviceConfig.RemoteHost, DeviceConfig.RemotePort);
+
+      if(!string.IsNullOrWhiteSpace(DeviceConfig.BaseDirectory))
+        Manager.FileManager.SetBaseDirectory(DeviceConfig.BaseDirectory);
+
+      mPostProcessor.ProcessFiles();
 
       ManagerAddEventHandlers();
 
@@ -204,6 +217,32 @@ namespace ICSP.WebProxy.Proxy
         Manager.StringEvent += OnManagerStringEvent;
         Manager.CommandEvent += OnManagerCommandEvent;
         Manager.LevelEvent += OnManagerLevelEvent;
+
+        // =====================================================================
+        // FileManager-Events
+        // =====================================================================
+
+        Manager.FileManager.OnTransferFileData += OnTransferFileData;
+
+        //mICSPManager.FileManager.OnTransferFileDataComplete += OnTransferFileDataComplete;
+        //mICSPManager.FileManager.OnTransferFileDataCompleteAck += OnTransferFileDataCompleteAck;
+        Manager.FileManager.OnTransferFilesInitialize += OnTransferFilesInitialize;
+        Manager.FileManager.OnTransferFilesComplete += OnTransferFilesComplete;
+
+        Manager.FileManager.OnGetDirectoryInfo += OnGetDirectoryInfo;
+        Manager.FileManager.OnDirectoryInfo += OnDirectoryInfo;
+        Manager.FileManager.OnDirectoryItem += OnDirectoryItem;
+        Manager.FileManager.OnDeleteFile += OnDeleteFile;
+        Manager.FileManager.OnCreateDirectory += OnCreateDirectory;
+
+        // mICSPManager.FileManager.OnTransferSingleFile += OnTransferSingleFile;
+        // mICSPManager.FileManager.OnTransferSingleFileAck += OnTransferSingleFileAck;
+        Manager.FileManager.OnTransferSingleFileInfo += OnTransferSingleFileInfo;
+        // mICSPManager.FileManager.OnTransferSingleFileInfoAck += OnTransferSingleFileInfoAck;
+        Manager.FileManager.OnTransferGetFileAccessToken += OnTransferGetFileAccessToken;
+        Manager.FileManager.OnTransferGetFileAccessTokenAck += OnTransferGetFileAccessTokenAck;
+        Manager.FileManager.OnTransferGetFile += OnTransferGetFile;
+
       }
     }
 
@@ -223,6 +262,31 @@ namespace ICSP.WebProxy.Proxy
         Manager.StringEvent -= OnManagerStringEvent;
         Manager.CommandEvent -= OnManagerCommandEvent;
         Manager.LevelEvent -= OnManagerLevelEvent;
+
+        // =====================================================================
+        // FileManager-Events
+        // =====================================================================
+
+        Manager.FileManager.OnTransferFileData -= OnTransferFileData;
+
+        //mICSPManager.FileManager.OnTransferFileDataComplete -=OnTransferFileDataComplete;
+        //mICSPManager.FileManager.OnTransferFileDataCompleteAck -=OnTransferFileDataCompleteAck;
+        Manager.FileManager.OnTransferFilesInitialize -= OnTransferFilesInitialize;
+        Manager.FileManager.OnTransferFilesComplete -= OnTransferFilesComplete;
+
+        Manager.FileManager.OnGetDirectoryInfo -= OnGetDirectoryInfo;
+        Manager.FileManager.OnDirectoryInfo -= OnDirectoryInfo;
+        Manager.FileManager.OnDirectoryItem -= OnDirectoryItem;
+        Manager.FileManager.OnDeleteFile -= OnDeleteFile;
+        Manager.FileManager.OnCreateDirectory -= OnCreateDirectory;
+
+        // mICSPManager.FileManager.OnTransferSingleFile -=OnTransferSingleFile;
+        // mICSPManager.FileManager.OnTransferSingleFileAck -=OnTransferSingleFileAck;
+        Manager.FileManager.OnTransferSingleFileInfo -= OnTransferSingleFileInfo;
+        // mICSPManager.FileManager.OnTransferSingleFileInfoAck -=OnTransferSingleFileInfoAck;
+        Manager.FileManager.OnTransferGetFileAccessToken -= OnTransferGetFileAccessToken;
+        Manager.FileManager.OnTransferGetFileAccessTokenAck -= OnTransferGetFileAccessTokenAck;
+        Manager.FileManager.OnTransferGetFile -= OnTransferGetFile;
       }
     }
 
@@ -239,6 +303,12 @@ namespace ICSP.WebProxy.Proxy
         else
         {
           lDeviceInfo = new DeviceInfoData(DeviceConfig.Device, Manager.CurrentLocalIpAddress);
+
+          if(!string.IsNullOrWhiteSpace(DeviceConfig.DeviceVersion))
+            lDeviceInfo.Version = DeviceConfig.DeviceVersion.ToLower();
+
+          if(DeviceConfig.DeviceId > 0)
+            lDeviceInfo.DeviceId = DeviceConfig.DeviceId;
 
           if(!string.IsNullOrWhiteSpace(DeviceConfig.DeviceName))
             lDeviceInfo.Name = DeviceConfig.DeviceName;
@@ -331,19 +401,137 @@ namespace ICSP.WebProxy.Proxy
 
     #endregion
 
+    #region FileManager-Events
+
+    private void OnTransferFileData(object sender, TransferFileDataEventArgs e)
+    {
+      mCurrentFileSize += e.JunkSize;
+    }
+
+    private void OnTransferFileDataComplete(object sender, EventArgs e)
+    {
+      LogDebug($"OnTransferFileDataComplete");
+    }
+
+    private void OnTransferFileDataCompleteAck(object sender, EventArgs e)
+    {
+      LogDebug($"OnTransferFileDataCompleteAck");
+    }
+
+    private void OnTransferFilesInitialize(object sender, TransferFilesInitializeEventArgs e)
+    {
+      LogDebug($"OnTransferFilesInitialize: FileCount={e.FileCount}");
+
+      mCurrentFileCount = 0;
+      mCurrentFileSize = 0;
+    }
+
+    private void OnTransferFilesComplete(object sender, EventArgs e)
+    {
+      mCurrentFileCount = 0;
+      mCurrentFileSize = 0;
+
+      LogDebug($"OnTransferFilesComplete");
+
+      /*
+      try
+      {
+        var lTxt = string.Format(Resources.Js_Config, mManager.Host, "8000");
+
+        var lPath = Path.Combine(Manager.FileManager.BaseDirectory, "js");
+
+        Directory.CreateDirectory(Path.Combine(Manager.FileManager.BaseDirectory, "js"));
+
+        File.WriteAllText(Path.Combine(lPath, "config.js"), lTxt);
+      }
+      catch(Exception ex)
+      {
+        LogDebug($"OnTransferFilesComplete: Error on create js\\config.js, Message={ex.Message:l}");
+      }
+      */
+
+      // TODO: Create Json
+      mPostProcessor.ProcessFiles();
+    }
+
+    private void OnGetDirectoryInfo(object sender, GetDirectoryInfoEventArgs e)
+    {
+      LogDebug($"OnGetDirectoryInfo: Path={e.Path}");
+    }
+
+    private void OnDirectoryInfo(object sender, DirectoryInfoEventArgs e)
+    {
+      LogDebug($"OnDirectoryInfo: FullPath={e.FullPath}");
+    }
+
+    private void OnDirectoryItem(object sender, DirectoryItemEventArgs e)
+    {
+      LogDebug($"OnDirectoryItem: FileName={e.FileName}");
+    }
+
+    private void OnDeleteFile(object sender, DeleteFileEventArgs e)
+    {
+      LogDebug($"OnDeleteFile: FileName={e.FileName}");
+    }
+
+    private void OnCreateDirectory(object sender, CreatDirectoryEventArgs e)
+    {
+      LogDebug($"OnCreateDirectory: Directory={e.Directory}");
+    }
+
+    private void OnTransferSingleFile(object sender, EventArgs e)
+    {
+      LogDebug($"OnTransferSingleFile");
+    }
+
+    private void OnTransferSingleFileAck(object sender, EventArgs e)
+    {
+      LogDebug($"OnTransferSingleFileAck");
+    }
+
+    private void OnTransferSingleFileInfo(object sender, TransferSingleFileInfoEventArgs e)
+    {
+      mCurrentFileCount++;
+      mCurrentFileSize = 0;
+
+      LogDebug($"OnTransferSingleFileInfo: FileSize={e.FileSize} bytes, FileName={e.FileName}");
+    }
+
+    private void OnTransferSingleFileInfoAck(object sender, EventArgs e)
+    {
+      LogDebug($"OnTransferSingleFileInfoAck");
+    }
+
+    private void OnTransferGetFileAccessToken(object sender, TransferGetFileAccessTokenEventArgs e)
+    {
+      LogDebug($"OnTransferGetFileAccessToken: Size={e.Size} bytes, FileName={e.FileName}");
+    }
+
+    private void OnTransferGetFileAccessTokenAck(object sender, EventArgs e)
+    {
+      LogDebug($"OnTransferGetFileAccessTokenAck");
+    }
+
+    private void OnTransferGetFile(object sender, EventArgs e)
+    {
+      LogDebug($"OnTransferGetFile");
+    }
+
+    #endregion
+
     #region Log & Connection stuff
 
-    private void LogError(string message, [CallerMemberName]string callerName = "(Caller name not set)")
+    internal void LogError(string message, [CallerMemberName]string callerName = "(Caller name not set)")
     {
       mLogger.LogError($"[{nameof(ProxyClient)}][{SocketId:00}][{callerName}]: {message}");
     }
 
-    private void LogInformation(string message, [CallerMemberName]string callerName = "(Caller name not set)")
+    internal void LogInformation(string message, [CallerMemberName]string callerName = "(Caller name not set)")
     {
       mLogger.LogInformation($"[{nameof(ProxyClient)}][{SocketId:00}][{callerName}]: {message}".Replace("\u0002", "[$02]").Replace("\u0003", "[$03]"));
     }
 
-    private void LogDebug(string message, [CallerMemberName]string callerName = "(Caller name not set)")
+    internal void LogDebug(string message, [CallerMemberName]string callerName = "(Caller name not set)")
     {
       mLogger.LogDebug($"[{nameof(ProxyClient)}][{SocketId:00}][{callerName}]: {message}".Replace("\u0002", "[$02]").Replace("\u0003", "[$03]"));
     }

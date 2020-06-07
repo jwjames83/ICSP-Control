@@ -25,7 +25,7 @@ namespace ICSP.Core.Manager.DeviceManager
       SerialNumber = string.Empty;
       FirmwareId = 0x0001;
       
-      Version = ProgramProperties.Version.ToString();
+      Version = "v2.00.0";
       Name = ProgramProperties.Title;
       Manufacture = ProgramProperties.Company;
 
