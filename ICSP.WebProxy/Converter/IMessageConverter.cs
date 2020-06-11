@@ -1,9 +1,15 @@
 ﻿using ICSP.Core;
+using ICSP.WebProxy.Proxy;
 
 namespace ICSP.WebProxy.Converter
 {
   public interface IMessageConverter
   {
+    /// <summary>
+    /// Owner
+    /// </summary>
+    public ProxyClient Client { set; }
+
     /// <summary>
     /// The source-device if an message of type ICSPMsg is to be created
     /// </summary>
@@ -45,15 +51,22 @@ namespace ICSP.WebProxy.Converter
 
     /// <summary>
     /// Creates a object of type ICSPMsg, that is sent to the master when a device is online.<br/>
-    /// If the conversion is not needed, null can be returned.
+    /// If this feature is not needed, null can be returned.
     /// </summary>
     ICSPMsg DeviceOnline();
 
     /// <summary>
     /// Creates a string, that is sent to the WebSocket, when a device goes offline.<br/>
-    /// If the conversion is not needed, null can be returned.
+    /// If the feature is not needed, null can be returned.
     /// </summary>
     string DeviceOffline();
+
+    /// <summary>
+    /// Creates a string, that is sent to the WebSocket, when a filetransfer is complete.<br/>
+    /// If the feature is not needed, null can be returned.
+    /// </summary>
+    /// <returns></returns>
+    string OnTransferFilesComplete();
 
     /// <summary>
     /// Creates a object of type ICSPMsg, that is sent to the master for a WebSocket-Request.<br/>

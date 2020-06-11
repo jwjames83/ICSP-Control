@@ -1,11 +1,12 @@
 ﻿using ICSP.Core;
-
-using Microsoft.Extensions.Configuration;
+using ICSP.WebProxy.Proxy;
 
 namespace ICSP.WebProxy.Converter
 {
   public class RawConverter : IMessageConverter
   {
+    public ProxyClient Client { get; set; }
+
     public ushort Device { get; set; }
 
     public ushort System { get; set; }
@@ -43,6 +44,11 @@ namespace ICSP.WebProxy.Converter
     public string DeviceOffline()
     {
       return string.Concat("[", new AmxDevice(Device, 1, System), "][Offline]:");
+    }
+
+    public string OnTransferFilesComplete()
+    {
+      return null;
     }
 
     public ICSPMsg ToDevMessage(string msg)

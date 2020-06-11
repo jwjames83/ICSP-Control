@@ -3,8 +3,10 @@ using System.Text;
 using System.Text.RegularExpressions;
 
 using ICSP.Core;
+using ICSP.Core.Constants;
 using ICSP.Core.Manager.DeviceManager;
 using ICSP.WebProxy.Configuration;
+using ICSP.WebProxy.Proxy;
 
 using Microsoft.Extensions.Configuration;
 
@@ -30,17 +32,16 @@ namespace ICSP.WebProxy.Converter
     private const string CaptureGroup_Arg1 = "arg1";
     private const string CaptureGroup_Arg2 = "arg2";
 
+    private const string CaptureGroup_Key   /**/ = "key";
+    private const string CaptureGroup_Value /**/ = "value";
+
     // http://regexstorm.net/tester
     // ^(?<type>[^:]+):(?<port>[^:]+):(?<arg1>[^:]+):?(?<arg2>[^;]+)?
     private static readonly Regex RegexMsg = new Regex($"^(?<{CaptureGroup_Type}>[^:]+):(?<{CaptureGroup_Port}>[^:]+):(?<{CaptureGroup_Arg1}>[^:]+):?(?<{CaptureGroup_Arg2}>[^;]+)?");
 
-    /*
-    PANEL_TYPE=
-    PORT_COUNT=xx
-    CHANNEL_COUNT=xx
-    ADDRESS_COUNT=xx
-    LEVEL_COUNT=xx
-    */
+    // ^(?<type>[^:]+):(?<port>[^:]+):(?<arg1>[^:]+):?(?<arg2>[^;]+)?
+    // ^(?<key>\w+)=(?<value>.+)?
+    private static readonly Regex RegexKeyValue = new Regex($"^(?<{CaptureGroup_Key}>\\w+)=(?<{CaptureGroup_Value}>.+)?");
 
     /*
     --------------------------------------
@@ -106,6 +107,8 @@ namespace ICSP.WebProxy.Converter
     /// Module WebControl.axs Version 2.6.0 does encode UTF8 by default self.
     /// </summary>
     public bool SupportUTF8 { get; set; }
+
+    public ProxyClient Client { get; set; }
 
     public ushort Device { get; set; }
 
@@ -173,6 +176,14 @@ namespace ICSP.WebProxy.Converter
       return null;
     }
 
+    public string OnTransferFilesComplete()
+    {
+      // Zum Updaten: send_command dvTp_01, "'RELOAD'"
+      // Der Port ist egal, muss nur als command verpackt sein.
+
+      return string.Concat(STX, "COMMAND", SSX, 0, SSX, "RELOAD", ETX);
+    }
+
     public ICSPMsg ToDevMessage(string msg)
     {
       /*
@@ -190,13 +201,6 @@ namespace ICSP.WebProxy.Converter
 
       WebSocket: LEVEL:[Port]:[Level]:[Value];
       NetLinx  : send_level vdDevice[1].number:nPort:vdDevice[1].system, nLevel, nValue
-
-      _websocket.send('PANEL_TYPE=' + project.settings.panelType + ';');
-      _websocket.send('PORT_COUNT=' + project.settings.portCount + ';');
-      _websocket.send('CHANNEL_COUNT=' + project.settings.channelCount + ';');
-      _websocket.send('ADDRESS_COUNT=' + project.settings.addressCount + ';');
-      _websocket.send('LEVEL_COUNT=' + project.settings.levelCount + ';');
-      _websocket.send('UPDATE' + ';');
       */
 
       var lMatch = RegexMsg.Match(msg);
@@ -226,7 +230,7 @@ namespace ICSP.WebProxy.Converter
             break;
           }
           case WsEvtType_Command:
-          { 
+          {
             return MsgCmdCommandDevMaster.CreateRequest(Dest, lSource, lMatch.Groups[CaptureGroup_Arg1].Value);
           }
           case WsEvtType_String:
@@ -247,8 +251,59 @@ namespace ICSP.WebProxy.Converter
           }
           default:
           {
+            return null;
+          }
+        }
+      }
+
+      lMatch = RegexKeyValue.Match(msg);
+
+      if(lMatch.Success)
+      {
+        /*
+        _websocket.send('PANEL_TYPE=' + project.settings.panelType + ';');
+        _websocket.send('PORT_COUNT=' + project.settings.portCount + ';');
+        _websocket.send('CHANNEL_COUNT=' + project.settings.channelCount + ';');
+        _websocket.send('ADDRESS_COUNT=' + project.settings.addressCount + ';');
+        _websocket.send('LEVEL_COUNT=' + project.settings.levelCount + ';');
+        _websocket.send('UPDATE' + ';');
+        */
+
+        switch(lMatch.Groups[CaptureGroup_Key].Value.ToUpper())
+        {
+          case "PANEL_TYPE":
+          {
+            var lPanelType = lMatch.Groups[CaptureGroup_Value].Value.TrimEnd(';');
+
+            var lPanel = Panels.GetPanelByDeviceType(lPanelType);
+
+            if(lPanel != Panels.Empty)
+            {
+              if(string.IsNullOrWhiteSpace(Client.DeviceConfig.DeviceName))
+                Client.DeviceConfig.DeviceName = lPanel.DeviceType;
+
+              Client.DeviceConfig.DeviceId = lPanel.DeviceId;
+            }
+            else
+            {
+              if(string.IsNullOrWhiteSpace(Client.DeviceConfig.DeviceName))
+                Client.DeviceConfig.DeviceName = lPanelType;
+            }
+
             break;
           }
+          case "PORT_COUNT":
+          {
+            if(ushort.TryParse(lMatch.Groups[CaptureGroup_Value].Value.TrimEnd(';'), out var lPortCount))
+            {
+              Client.DeviceConfig.PortCount = lPortCount;
+            }
+
+            break;
+          }
+          case "CHANNEL_COUNT": break;
+          case "ADDRESS_COUNT": break;
+          case "LEVEL_COUNT": break;
         }
       }
 

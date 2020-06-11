@@ -60,7 +60,6 @@ namespace ICSPControl.Dialogs
       lPanelTypes.Add(new PanelType() { DeviceId = 325, DeviceType = "G4 NXD-1000Vi" });
       lPanelTypes.Add(new PanelType() { DeviceId = 292, DeviceType = "G4 NXD-CV10" });
       lPanelTypes.Add(new PanelType() { DeviceId = 292, DeviceType = "G4 NXT-CV10" });
-      lPanelTypes.Add(new PanelType() { DeviceId = 292, DeviceType = "G4 NXT-CV10" });
       lPanelTypes.Add(new PanelType() { DeviceId = 294, DeviceType = "G4 NXD-1200V" });
       lPanelTypes.Add(new PanelType() { DeviceId = 294, DeviceType = "G4 NXT-1200V" });
       lPanelTypes.Add(new PanelType() { DeviceId = 295, DeviceType = "G4 NXD-1200VG" });

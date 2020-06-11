@@ -99,5 +99,38 @@ namespace ICSP.WebProxy.Properties {
                 return ResourceManager.GetString("DefaultPalette", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die {
+        ///  &quot;1&quot;: {
+        ///    &quot;file&quot;: &quot;cour.ttf&quot;,
+        ///    &quot;name&quot;: &quot;Courier New&quot;,
+        ///    &quot;subfamilyName&quot;: &quot;Regular&quot;,
+        ///    &quot;fullName&quot;: &quot;Courier New&quot;,
+        ///    &quot;size&quot;: &quot;9&quot;,
+        ///    &quot;usageCount&quot;: &quot;4012&quot;
+        ///  },
+        ///  &quot;2&quot;: {
+        ///    &quot;file&quot;: &quot;cour.ttf&quot;,
+        ///    &quot;name&quot;: &quot;Courier New&quot;,
+        ///    &quot;subfamilyName&quot;: &quot;Regular&quot;,
+        ///    &quot;fullName&quot;: &quot;Courier New&quot;,
+        ///    &quot;size&quot;: &quot;12&quot;,
+        ///    &quot;usageCount&quot;: &quot;4001&quot;
+        ///  },
+        ///  &quot;3&quot;: {
+        ///    &quot;file&quot;: &quot;cour.ttf&quot;,
+        ///    &quot;name&quot;: &quot;Courier New&quot;,
+        ///    &quot;subfamilyName&quot;: &quot;Regular&quot;,
+        ///    &quot;fullName&quot;: &quot;Courier New&quot;,
+        ///    &quot;size&quot;: &quot;18&quot;,
+        ///    &quot;usageCount&quot;: &quot;4001&quot;
+        ///  } [Rest der Zeichenfolge wurde abgeschnitten]&quot;; ähnelt.
+        /// </summary>
+        internal static string SystemFonts {
+            get {
+                return ResourceManager.GetString("SystemFonts", resourceCulture);
+            }
+        }
     }
 }

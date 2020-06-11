@@ -1,6 +1,5 @@
 ﻿using System;
 using System.ComponentModel;
-using System.IO;
 using System.Linq;
 using System.Net.WebSockets;
 using System.Runtime.CompilerServices;
@@ -31,7 +30,7 @@ namespace ICSP.WebProxy.Proxy
 
     private readonly ICSPConnectionManager mConnectionManager;
 
-    private FileTransferPostProcessor mPostProcessor;
+    private readonly FileTransferPostProcessor mPostProcessor;
 
     private bool mIsDisposed;
 
@@ -111,10 +110,12 @@ namespace ICSP.WebProxy.Proxy
       // localhost:8000 -> Device Mapping 10001
       // localhost:8001 -> Device Mapping 10002
       DeviceConfig = ProxyConfigManager.GetConfig(context, socket);
-      
+
       var lType = string.IsNullOrWhiteSpace(DeviceConfig.Converter) ? typeof(ModuleWebControlConverter) : Type.GetType(DeviceConfig.Converter, true);
 
       Converter = mServiceProvider.GetServices<IMessageConverter>().FirstOrDefault(p => p.GetType() == lType);
+
+      Converter.Client = this;
 
       Converter.Device = DeviceConfig.Device;
 
@@ -149,32 +150,38 @@ namespace ICSP.WebProxy.Proxy
       if(!string.IsNullOrWhiteSpace(DeviceConfig.BaseDirectory))
         Manager.FileManager.SetBaseDirectory(DeviceConfig.BaseDirectory);
 
-      mPostProcessor.ProcessFiles();
-
       ManagerAddEventHandlers();
 
-      if(Manager.IsConnected)
+      // TODO: 
+      // Before connect, wait a shortly seconds.
+      // WebControl does transmit 'PortCount' from project.settings.portCount on WebSocket online-event.
+      _ = Task.Run(async () =>
       {
-        await CreateDeviceInfoAsync();
-      }
-      else
-      {
-        // Start monitoring auto reconnect
-        StartConnectionTimer();
+          await Task.Delay(1000);
 
-        try
-        {
-          LogInformation($"Try connect, Host={DeviceConfig.RemoteHost}, Port={DeviceConfig.RemotePort}");
+          if(Manager.IsConnected)
+          {
+            await CreateDeviceInfoAsync();
+          }
+          else
+          {
+            // Start monitoring auto reconnect
+            StartConnectionTimer();
 
-          await Manager.ConnectAsync(DeviceConfig.RemoteHost, DeviceConfig.RemotePort);
-        }
-        catch(Exception ex)
-        {
-          LogError(ex.Message);
+            try
+            {
+              LogInformation($"Try connect, Host={DeviceConfig.RemoteHost}, Port={DeviceConfig.RemotePort}");
 
-          await SendAsync(ex.Message);
-        }
-      }
+              await Manager.ConnectAsync(DeviceConfig.RemoteHost, DeviceConfig.RemotePort);
+            }
+            catch(Exception ex)
+            {
+              LogError(ex.Message);
+
+              await SendAsync(ex.Message);
+            }
+          }
+        });
     }
 
     private async void OnWebMessage(object sender, MessageEventArgs e)
@@ -426,32 +433,17 @@ namespace ICSP.WebProxy.Proxy
       mCurrentFileSize = 0;
     }
 
-    private void OnTransferFilesComplete(object sender, EventArgs e)
+    private async void OnTransferFilesComplete(object sender, EventArgs e)
     {
       mCurrentFileCount = 0;
       mCurrentFileSize = 0;
 
       LogDebug($"OnTransferFilesComplete");
 
-      /*
-      try
-      {
-        var lTxt = string.Format(Resources.Js_Config, mManager.Host, "8000");
-
-        var lPath = Path.Combine(Manager.FileManager.BaseDirectory, "js");
-
-        Directory.CreateDirectory(Path.Combine(Manager.FileManager.BaseDirectory, "js"));
-
-        File.WriteAllText(Path.Combine(lPath, "config.js"), lTxt);
-      }
-      catch(Exception ex)
-      {
-        LogDebug($"OnTransferFilesComplete: Error on create js\\config.js, Message={ex.Message:l}");
-      }
-      */
-
-      // TODO: Create Json
+      // TODO: Only one Processor for shared web connections!
       mPostProcessor.ProcessFiles();
+
+      await SendAsync(Converter.OnTransferFilesComplete());
     }
 
     private void OnGetDirectoryInfo(object sender, GetDirectoryInfoEventArgs e)

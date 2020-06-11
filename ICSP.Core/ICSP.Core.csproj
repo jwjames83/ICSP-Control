@@ -89,6 +89,7 @@
     <Compile Include="AmxUtils.cs" />
     <Compile Include="Client\ClientOnlineOfflineEventArgs.cs" />
     <Compile Include="Client\ICSPClient.cs" />
+    <Compile Include="Constants\Panels.cs" />
     <Compile Include="Device.cs" />
     <Compile Include="IO\EventArgs.cs" />
     <Compile Include="IO\FileTransferFunction.cs" />
@@ -181,6 +182,7 @@
     <Compile Include="ICSPManager.cs" />
     <Compile Include="ICSPMsg.cs" />
     <Compile Include="MsgFactory.cs" />
+    <Compile Include="PanelType.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>

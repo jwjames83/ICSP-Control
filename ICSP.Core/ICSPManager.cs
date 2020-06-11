@@ -286,7 +286,7 @@ namespace ICSP.Core
           }
           case MsgCmdFileTransfer m:
           {
-            FileManager.ProcessMessage(m);
+            await FileManager.ProcessMessageAsync(m);
 
             break;
           }

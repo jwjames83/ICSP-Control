@@ -8,6 +8,7 @@ using System.Xml;
 using ICSP.Core.Logging;
 using ICSP.WebProxy.Json;
 using ICSP.WebProxy.Properties;
+
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -61,44 +62,6 @@ namespace ICSP.WebProxy.Proxy
             }
 
             lXmlDoc.Load(fileInfo.FullName);
-
-            /*
-            // Import System Fonts
-            // G4: %CommonProgramFiles(x86)%\AMXShare\G4SupportFiles\__system\graphics\fnt.xma
-            if(fileInfo.Name.Equals("fonts.xma", StringComparison.OrdinalIgnoreCase))
-            {
-              var lXmlDocSysFonts = new XmlDocument();
-
-              lXmlDocSysFonts.LoadXml(Resources.SysFonts);
-
-              var lTargetNode = lXmlDoc.DocumentElement.SelectSingleNode("/root/fontList");
-
-              if(lTargetNode.ChildNodes.Count == 0)
-              {
-                foreach(XmlNode node in lXmlDocSysFonts.DocumentElement.SelectNodes("/root/fontList/font"))
-                {
-                  var lNode = lXmlDoc.ImportNode(node, true);
-
-                  lTargetNode.AppendChild(lNode);
-                }
-              }
-              else
-              {
-                XmlNode lRefChild = null;
-
-                foreach(XmlNode node in lXmlDocSysFonts.DocumentElement.SelectNodes("/root/fontList/font"))
-                {
-                  var lNode = lXmlDoc.ImportNode(node, true);
-
-                  // Order by Font-Index
-                  if(lRefChild == null)
-                    lRefChild = lTargetNode.InsertBefore(lNode, lTargetNode.FirstChild);
-                  else
-                    lRefChild = lTargetNode.InsertAfter(lNode, lRefChild);
-                }
-              }
-            }
-            */
 
             // Remove XmlDeclaration
             foreach(XmlNode node in lXmlDoc)
@@ -250,6 +213,15 @@ namespace ICSP.WebProxy.Proxy
           {
             Client.LogError(ex.Message);
           }
+          try
+          {
+            // Add System Fonts (Font 1-31)
+            ((JObject)lJsonProject["fonts"]).Merge(JObject.Parse(Resources.SystemFonts));
+          }
+          catch(Exception ex)
+          {
+            Client.LogError(ex.Message);
+          }
 
           foreach(var keyValue in mJsonList)
           {
@@ -268,21 +240,60 @@ namespace ICSP.WebProxy.Proxy
               {
                 try
                 {
+                  // <root><pageList type="page"><pageEntry>...
+                  // <root><pageList type="subpage"><pageEntry>...
+                  var lPageEntries = lJsonObj["pageList"].SelectMany(s => s.SelectToken("pageEntry"));
+
+                  ((JArray)lJsonProject["settings"]["pageList"]).Merge(lPageEntries);
+
+                  // <root><paletteList><palette>...
+                  var lPalettes = lJsonObj.SelectTokens("paletteList.palette");
+
+                  ((JArray)lJsonProject["settings"]["paletteList"]).Merge(lPalettes);
+
                   ((JObject)lJsonProject["settings"]).Merge(lJsonObj["panelSetup"]);
                   ((JObject)lJsonProject["settings"]).Merge(lJsonObj["supportFileList"]);
                   ((JObject)lJsonProject["settings"]).Merge(lJsonObj["projectInfo"]);
                   ((JObject)lJsonProject["settings"]).Merge(lJsonObj["versionInfo"]);
+
+                  // PowerUpPopup: Add empty array if not exists (needed)
+                  // ----------------------------------------------------
+                  if(lJsonProject["settings"]["powerUpPopup"] == null)
+                    lJsonProject["settings"]["powerUpPopup"] = new JArray();
                 }
                 catch(Exception ex)
                 {
-                  Console.WriteLine(ex.Message);
+                  Client.LogError(ex.Message);
                 }
 
                 break;
               }
-              case "fonts.xma":
+              case "fnt.xma":
               {
-                // TODO ..
+                try
+                {
+                  var lFontsObj = new JObject(new JProperty("fonts", new JObject()));
+
+                  // <root><fontList><font number="{n}">...
+                  var lFonts = lJsonObj.SelectTokens("$.fontList.font..[?(@.number)]");
+
+                  foreach(var font in lFonts)
+                  {
+                    var lNumber = (string)font["number"];
+
+                    font["number"].Parent.Remove();
+                    font["faceIndex"].Parent.Remove();
+
+                    ((JObject)lFontsObj["fonts"]).Add(new JProperty(lNumber, font));
+                  }
+
+                  ((JObject)lJsonProject["fonts"]).Merge(lFontsObj["fonts"]);
+                }
+                catch(Exception ex)
+                {
+                  Client.LogError(ex.Message);
+                }
+
                 break;
               }
               case "pal_001.xma":
@@ -316,36 +327,64 @@ namespace ICSP.WebProxy.Proxy
                 {
                   case "page":
                   {
-                    var lPageName = (string)lJsonObj["page"]["name"];
-                    var lPageType = (string)lJsonObj["page"]["type"];
+                    var lPage = (JObject)lJsonObj["page"];
 
-                    lJsonObj["page"]["name"].Parent.Remove();
-                    lJsonObj["page"]["type"].Parent.Remove();
+                    var lPageName = (string)lPage["name"];
+                    var lPageType = (string)lPage["type"];
 
-                    var lStatesObj = new JObject(new JProperty("states", new JObject()));
+                    lPage.Property("name").Remove();
+                    lPage.Property("type").Remove();
 
-                    // https://stackoverflow.com/questions/51547673/json-path-expression-not-working-without-array
-                    var lStates = lJsonObj.SelectTokens("$.page.sr..[?(@.number)]");
+                    // --------------------------------------------------------
+                    // Page: rename button -> buttons
+                    //       Add empty array if not exists (needed)
+                    // --------------------------------------------------------
+                    if(lPage["button"] != null)
+                      lPage["button"].Rename("buttons");
+                    else
+                      lPage["buttons"] = new JArray();
 
-                    foreach(var sr in lStates)
+                    // --------------------------------------------------------
+                    // Page: Convert states (sr -> states)
+                    // --------------------------------------------------------
+                    ConvertStates((JObject)lPage);
+
+                    try
                     {
-                      var lNumber = (string)sr["number"];
+                      // --------------------------------------------------------
+                      // Buttons: Convert states (sr -> states)
+                      // --------------------------------------------------------
+                      var lButtons = lJsonObj.SelectTokens("$.page.buttons.[*]");
 
-                      sr["number"].Parent.Remove();
+                      foreach(var button in lButtons)
+                      {
+                        ConvertStates((JObject)button);
 
-                      ((JObject)lStatesObj["states"]).Add(new JProperty(lNumber, sr));
+                        // PageFlips: Add empty array if not exists (needed)
+                        if(button["pf"] == null)
+                          button["pf"] = new JArray();
+                      }
+
+                      // --------------------------------------------------------
+                      // Buttons: PageFlips (rename #text -> value)
+                      // --------------------------------------------------------
+                      var lPageFlips = lJsonObj.SelectTokens("$.page.buttons..pf").Cast<JArray>();
+
+                      foreach(var pageFlip in lPageFlips)
+                      {
+                        foreach(var item in pageFlip)
+                          item["#text"].Rename("value");
+                      }
                     }
-
-                    lJsonObj["page"]["sr"].Parent.Remove();
-
-                    var lPageObj = new JObject(new JProperty(lPageName, lJsonObj["page"]));
-
-                    ((JObject)lPageObj[lPageName]).Add(lStatesObj.Property("states"));
+                    catch(Exception ex)
+                    {
+                      Console.WriteLine(ex.Message);
+                    }
 
                     switch(lPageType)
                     {
-                      case "page"    /**/: ((JObject)lJsonProject["pages"]).Add(lPageObj.Property(lPageName)); break;
-                      case "subpage" /**/: ((JObject)lJsonProject["subpages"]).Add(lPageObj.Property(lPageName)); break;
+                      case "page"    /**/: ((JObject)lJsonProject["pages"]).Add(new JProperty(lPageName, lJsonObj["page"])); break;
+                      case "subpage" /**/: ((JObject)lJsonProject["subpages"]).Add(new JProperty(lPageName, lJsonObj["page"])); break;
                       default:
                       {
                         break;
@@ -366,12 +405,103 @@ namespace ICSP.WebProxy.Proxy
             }
           }
 
+          /*
+          <button type="general">
+            <bi>1</bi>                 ==> Index
+            <na>Button A</na>          ==> Name
+            <li>1</li>                 ==>
+            <lt>16</lt>                ==> Position Left
+            <tp>16</tp>                ==> Position Top
+            <wt>125</wt>               ==> Width
+            <ht>125</ht>               ==> Height
+            <zo>1</zo>                 ==> Z-Order ([<]Back, [>]:Top)
+            <hs>bounding</hs>          ==> Touch Style  (bounding, passThru)
+            <bs></bs>                  ==> Border Style (-> TAB General)
+            <da>1</da>                 ==> Disabled
+            <hd>1</hd>                 ==> Hidden
+            <fb>momentary</fb>         ==> Feedback
+            <ap>2</ap>                 ==> Address Port
+            <ad>22</ad>                ==> Address Code
+            <cp>3</cp>                 ==> Channel Port
+            <ch>33</ch>                ==> Channel Code
+            <vt>rel</vt>               ==> Level Control Type
+            <lp>4</lp>                 ==> Level Port
+            <lv>44</lv>                ==> Level Code
+            <rl>0</rl>                 ==> Range Low
+            <rh>255</rh>               ==> Range High
+            <ac di="0" />              ==>
+            <sr number="1">            ==> State Off
+              <bs>Quad Line</bs>       ==> Border Style
+              <mi>Image.jpg</mi>       ==> Chameleon Image
+              <cb>Grey7</cb>           ==> Border Color
+              <cf>VeryLightOrange</cf> ==> Fill Color
+              <ct>Black</ct>           ==> Text Color
+              <ec>#000000FF</ec>       ==> Text Effect color
+              <oo>100</oo>             ==> Overall Opacity
+              <bm>Image.png</bm>       ==> Bitmap
+              <jb>1</jb>               ==> Bitmap Justification (Top-Left)
+              <bx>20</bx>              ==> Bitmap X Offset
+              <by>20</by>              ==> Bitmap Y Offset
+              <fi>36</fi>              ==> Font Number (Ref -> $fnt.xml)
+              <te>Button A</te>        ==> Text
+              <jt>1</jt>               ==> Text Justification (Top-Left)
+              <tx>20</tx>              ==> Text X Offset
+              <ty>20</ty>              ==> Text Y Offset
+              <ww>1</ww>               ==> Word Wrap
+            </sr>
+            <sr number="2">            ==> State On
+            ...
+            </sr>
+          </button>
+          */
+
+          // Read all chameleon images
+          /*
+          "chameleons": {
+            "{imageName}": "data:image/png;base64,{base64}",
+            ...
+          */
+
+          // <root><pageList type="page"><states>...
+          /*
+            "pages": {
+              "Main": {
+                "buttons": [
+                  {
+                    "states": {
+                      "1": {
+                        "mi": "bt_66x40_chamel.png",
+          */
+
+          var lImages = lJsonProject.SelectTokens("$.pages..buttons..states..mi")
+            .Union(lJsonProject.SelectTokens("$.subpages..buttons..states..mi"))
+            .Distinct().Select(s => (string)s);
+
+          foreach(var imageName in lImages)
+          {
+            var lFileName = Path.Combine(lDir.FullName, "images", imageName);
+
+            if(File.Exists(lFileName))
+            {
+              try
+              {
+                var lBase64 = $"data:image/png;base64,{Convert.ToBase64String(File.ReadAllBytes(lFileName))}";
+
+                ((JObject)lJsonProject["chameleons"]).Add(new JProperty(imageName, lBase64));
+              }
+              catch(Exception ex)
+              {
+                Client.LogError(ex.Message);
+              }
+            }
+          }
+
           var lJSonProjStr = lJsonProject.ToString(Newtonsoft.Json.Formatting.Indented, new NullStringConverter());
 
           // JavaScript
           lJSonProjStr = $"var project = {lJSonProjStr}";
 
-          var lFileNameJsProject = string.Format(@"{0}\..\js\{1}", lDir.FullName, "project.web.V02.js");
+          var lFileNameJsProject = string.Format(@"{0}\..\js\{1}", lDir.FullName, "project.js");
 
           File.WriteAllText(lFileNameJsProject, lJSonProjStr);
         }
@@ -386,10 +516,39 @@ namespace ICSP.WebProxy.Proxy
       }
     }
 
+    private void ConvertStates(JObject parent)
+    {
+      try
+      {
+        var lStatesObj = new JObject(new JProperty("states", new JObject()));
+
+        // https://stackoverflow.com/questions/51547673/json-path-expression-not-working-without-array
+        var lStates = parent.SelectTokens("sr..[?(@.number)]");
+
+        if(lStates.Count() > 0)
+        {
+          foreach(var sr in lStates)
+          {
+            var lNumber = (string)sr["number"];
+
+            sr["number"].Parent.Remove();
+
+            ((JObject)lStatesObj["states"]).Add(new JProperty(lNumber, sr));
+          }
+
+          parent["sr"].Parent.Remove();
+
+          parent.Add(lStatesObj.Property("states"));
+        }
+      }
+      catch(Exception ex)
+      {
+        Console.WriteLine(ex.Message);
+      }
+    }
+
     private void JsonArrrayHelper(XmlDocument xmlDoc)
     {
-      var lNamespace = "http://james.newtonking.com/projects/json";
-
       /*
       From Json.NET documentation: http://james.newtonking.com/projects/json/help/?topic=html/ConvertingJSONandXML.htm
       You can force a node to be rendered as an Array by adding the attribute json:Array='true' to the XML node you are converting to JSON.
@@ -406,12 +565,24 @@ namespace ICSP.WebProxy.Proxy
 
       */
 
+      var lNamespace = "http://james.newtonking.com/projects/json";
+
       xmlDoc.DocumentElement.SetAttribute("xmlns:json", lNamespace);
 
-      // Pages    : /root/pageList/pageEntry[]
-      // PageFlips: /root/page/button/pf
-      // var lElements = xmlDoc.SelectNodes("/root/pageList/pageEntry|/rootresourceList/resource|/root/page/button|/root/page/button/pf|/root/tableList/tableEntry|/root/tableList/tableEntry/row");
-      var lElements = xmlDoc.SelectNodes("/root/panelSetup/powerUpPopup");
+      /*
+      /rootresourceList/resource
+      /root/tableList/tableEntry
+      /root/tableList/tableEntry/row
+      */
+
+      var lXPath = string.Join("|", new[] {
+        "/root/panelSetup/powerUpPopup",  // PowerUpPopup's
+        "/root/pageList/pageEntry",       // Pages/SubPages
+        "/root/page/button",              // Buttons
+        "/root/page/button/pf",           // PageFlips
+      });
+
+      var lElements = xmlDoc.SelectNodes(lXPath);
 
       foreach(XmlElement element in lElements)
       {
