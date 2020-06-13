@@ -280,7 +280,7 @@ namespace ICSP.WebProxy.Converter
             if(lPanel != Panels.Empty)
             {
               if(string.IsNullOrWhiteSpace(Client.DeviceConfig.DeviceName))
-                Client.DeviceConfig.DeviceName = lPanel.DeviceType;
+                Client.DeviceConfig.DeviceName = lPanel.Product;
 
               Client.DeviceConfig.DeviceId = lPanel.DeviceId;
             }

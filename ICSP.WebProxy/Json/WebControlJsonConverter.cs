@@ -5,10 +5,13 @@ using Newtonsoft.Json.Linq;
 
 namespace ICSP.WebProxy.Json
 {
-  public class NullStringConverter : JsonConverter
+  public class WebControlJsonConverter : JsonConverter
   {
     public override bool CanConvert(Type objectType)
     {
+      if(objectType != typeof(string))
+        Console.WriteLine(objectType);
+
       return objectType == typeof(string);
     }
 
@@ -20,13 +23,23 @@ namespace ICSP.WebProxy.Json
     public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
     {
       JToken lToken = JToken.FromObject(value);
+      
+      var lPAth = writer.Path;
 
       if(lToken.Type == JTokenType.String)
       {
-        if(string.IsNullOrEmpty(lToken.ToString()))
-          writer.WriteNull();
-        else
+        // Except color palettes
+        if(writer.Path.StartsWith("palettes"))
+        {
           lToken.WriteTo(writer);
+        }
+        else
+        {
+          if(string.IsNullOrEmpty(lToken.ToString()))
+            writer.WriteNull();
+          else
+            lToken.WriteTo(writer);
+        }
       }
       else
       {

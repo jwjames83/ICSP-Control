@@ -1,0 +1,774 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ppfRoot>
+  <includes>
+    <systemCodeGroup>
+      <name>G5 Common Codes</name>
+      <file>G5Common.xml</file>
+    </systemCodeGroup>
+  </includes>
+  <panelEntry>
+    <type>XF-700T</type>
+    <product>MXT-701</product>
+    <description>Modero X 7" tabletop touch panel</description>
+    <deviceID>415</deviceID>
+    <series>XFire</series>
+    <screenSize>71</screenSize>
+    <numVideoWindows>1</numVideoWindows>
+    <numWirelessVideo>0</numWirelessVideo>
+    <streamingVideo>1</streamingVideo>
+    <isAudioDisabled>0</isAudioDisabled>
+    <hasLightSensor>1</hasLightSensor>
+    <hasMotionSensor>1</hasMotionSensor>
+    <hasBatteryLevel>0</hasBatteryLevel>
+    <hasVoIP>1</hasVoIP>
+    <panelImage>images\XF-700T.jpg</panelImage>
+    <resolution>
+      <resolutionEntry>
+        <width>1024</width>
+        <height>600</height>
+        <refreshRate>
+          <rate>60 Hertz</rate>
+        </refreshRate>
+      </resolutionEntry>
+    </resolution>
+    <systemCodeGroup>G5 Common Codes</systemCodeGroup>
+    <deviceIDs>
+      <deviceID>415</deviceID>
+      <deviceID>416</deviceID>
+      <deviceID>417</deviceID>
+    </deviceIDs>
+  </panelEntry>
+  <panelEntry>
+    <type>XF-700D</type>
+    <product>MXD-701</product>
+    <description>Modero X 7" wall-mount touch panel</description>
+    <deviceID>417</deviceID>
+    <series>XFire</series>
+    <screenSize>71</screenSize>
+    <numVideoWindows>1</numVideoWindows>
+    <numWirelessVideo>0</numWirelessVideo>
+    <streamingVideo>1</streamingVideo>
+    <isAudioDisabled>0</isAudioDisabled>
+    <hasLightSensor>1</hasLightSensor>
+    <hasMotionSensor>1</hasMotionSensor>
+    <hasBatteryLevel>0</hasBatteryLevel>
+    <hasVoIP>1</hasVoIP>
+    <panelImage>images\XF-700D.jpg</panelImage>
+    <resolution>
+      <resolutionEntry>
+        <width>1024</width>
+        <height>600</height>
+        <refreshRate>
+          <rate>60 Hertz</rate>
+        </refreshRate>
+      </resolutionEntry>
+      <resolutionEntry>
+        <width>600</width>
+        <height>1024</height>
+        <refreshRate>
+          <rate>60 Hertz</rate>
+        </refreshRate>
+      </resolutionEntry>
+    </resolution>
+    <systemCodeGroup>G5 Common Codes</systemCodeGroup>
+    <deviceIDs>
+      <deviceID>417</deviceID>
+      <deviceID>415</deviceID>
+      <deviceID>416</deviceID>
+    </deviceIDs>
+  </panelEntry>
+  <panelEntry>
+    <type>TET-700T</type>
+    <product>MT-702</product>
+    <description>Modero 7" tabletop touch panel</description>
+    <deviceID>519</deviceID>
+    <series>ESeries</series>
+    <screenSize>71</screenSize>
+    <numVideoWindows>1</numVideoWindows>
+    <numWirelessVideo>0</numWirelessVideo>
+    <streamingVideo>1</streamingVideo>
+    <isAudioDisabled>0</isAudioDisabled>
+    <hasLightSensor>0</hasLightSensor>
+    <hasMotionSensor>0</hasMotionSensor>
+    <hasBatteryLevel>0</hasBatteryLevel>
+    <hasVoIP>0</hasVoIP>
+    <panelImage>images\MT-702.jpg</panelImage>
+    <resolution>
+      <resolutionEntry>
+        <width>1280</width>
+        <height>800</height>
+        <refreshRate>
+          <rate>60 Hertz</rate>
+        </refreshRate>
+      </resolutionEntry>
+    </resolution>
+    <systemCodeGroup>G5 Common Codes</systemCodeGroup>
+    <deviceIDs>
+      <deviceID>519</deviceID>
+      <deviceID>412</deviceID>
+      <deviceID>413</deviceID>
+      <deviceID>414</deviceID>
+      <deviceID>470</deviceID>
+      <deviceID>517</deviceID>
+      <deviceID>518</deviceID>
+      <deviceID>520</deviceID>
+      <deviceID>521</deviceID>
+      <deviceID>522</deviceID>
+      <deviceID>523</deviceID>
+    </deviceIDs>
+  </panelEntry>
+  <panelEntry>
+    <type>TET-700D</type>
+    <product>MD-702</product>
+    <description>Modero 7" wall-mount touch panel</description>
+    <deviceID>520</deviceID>
+    <series>ESeries</series>
+    <screenSize>71</screenSize>
+    <numVideoWindows>1</numVideoWindows>
+    <numWirelessVideo>0</numWirelessVideo>
+    <streamingVideo>1</streamingVideo>
+    <isAudioDisabled>0</isAudioDisabled>
+    <hasLightSensor>0</hasLightSensor>
+    <hasMotionSensor>0</hasMotionSensor>
+    <hasBatteryLevel>0</hasBatteryLevel>
+    <hasVoIP>1</hasVoIP>
+    <panelImage>images\MD-702.jpg</panelImage>
+    <resolution>
+      <resolutionEntry>
+        <width>1280</width>
+        <height>800</height>
+        <refreshRate>
+          <rate>60 Hertz</rate>
+        </refreshRate>
+      </resolutionEntry>
+      <resolutionEntry>
+        <width>800</width>
+        <height>1280</height>
+        <refreshRate>
+          <rate>60 Hertz</rate>
+        </refreshRate>
+      </resolutionEntry>
+    </resolution>
+    <systemCodeGroup>G5 Common Codes</systemCodeGroup>
+    <deviceIDs>
+      <deviceID>520</deviceID>
+      <deviceID>412</deviceID>
+      <deviceID>413</deviceID>
+      <deviceID>414</deviceID>
+      <deviceID>470</deviceID>
+      <deviceID>517</deviceID>
+      <deviceID>518</deviceID>
+      <deviceID>519</deviceID>
+      <deviceID>521</deviceID>
+      <deviceID>522</deviceID>
+      <deviceID>523</deviceID>
+    </deviceIDs>
+  </panelEntry>
+  <panelEntry>
+    <type>XF-1000T</type>
+    <product>MXT-1001</product>
+    <description>Modero X 10" tabletop touch panel</description>
+    <deviceID>412</deviceID>
+    <series>XFire</series>
+    <screenSize>102</screenSize>
+    <numVideoWindows>1</numVideoWindows>
+    <numWirelessVideo>0</numWirelessVideo>
+    <streamingVideo>1</streamingVideo>
+    <isAudioDisabled>0</isAudioDisabled>
+    <hasLightSensor>1</hasLightSensor>
+    <hasMotionSensor>1</hasMotionSensor>
+    <hasBatteryLevel>0</hasBatteryLevel>
+    <hasVoIP>1</hasVoIP>
+    <panelImage>images\XF-1000T.jpg</panelImage>
+    <resolution>
+      <resolutionEntry>
+        <width>1280</width>
+        <height>800</height>
+        <refreshRate>
+          <rate>60 Hertz</rate>
+        </refreshRate>
+      </resolutionEntry>
+    </resolution>
+    <systemCodeGroup>G5 Common Codes</systemCodeGroup>
+    <deviceIDs>
+      <deviceID>412</deviceID>
+      <deviceID>413</deviceID>
+      <deviceID>414</deviceID>
+      <deviceID>470</deviceID>
+      <deviceID>517</deviceID>
+      <deviceID>518</deviceID>
+      <deviceID>519</deviceID>
+      <deviceID>520</deviceID>
+      <deviceID>521</deviceID>
+      <deviceID>522</deviceID>
+      <deviceID>523</deviceID>
+    </deviceIDs>
+  </panelEntry>
+  <panelEntry>
+    <type>XF-1000D</type>
+    <product>MXD-1001</product>
+    <description>Modero X 10" wall-mount touch panel</description>
+    <deviceID>414</deviceID>
+    <series>XFire</series>
+    <screenSize>102</screenSize>
+    <numVideoWindows>1</numVideoWindows>
+    <numWirelessVideo>0</numWirelessVideo>
+    <streamingVideo>1</streamingVideo>
+    <isAudioDisabled>0</isAudioDisabled>
+    <hasLightSensor>1</hasLightSensor>
+    <hasMotionSensor>1</hasMotionSensor>
+    <hasBatteryLevel>0</hasBatteryLevel>
+    <hasVoIP>1</hasVoIP>
+    <panelImage>images\XF-1000D.jpg</panelImage>
+    <resolution>
+      <resolutionEntry>
+        <width>1280</width>
+        <height>800</height>
+        <refreshRate>
+          <rate>60 Hertz</rate>
+        </refreshRate>
+      </resolutionEntry>
+      <resolutionEntry>
+        <width>800</width>
+        <height>1280</height>
+        <refreshRate>
+          <rate>60 Hertz</rate>
+        </refreshRate>
+      </resolutionEntry>
+    </resolution>
+    <systemCodeGroup>G5 Common Codes</systemCodeGroup>
+    <deviceIDs>
+      <deviceID>414</deviceID>
+      <deviceID>412</deviceID>
+      <deviceID>413</deviceID>
+      <deviceID>470</deviceID>
+      <deviceID>517</deviceID>
+      <deviceID>518</deviceID>
+      <deviceID>519</deviceID>
+      <deviceID>520</deviceID>
+      <deviceID>521</deviceID>
+      <deviceID>522</deviceID>
+      <deviceID>523</deviceID>
+    </deviceIDs>
+  </panelEntry>
+  <panelEntry>
+    <type>TET-1000T</type>
+    <product>MT-1002</product>
+    <description>Modero 10" tabletop touch panel</description>
+    <deviceID>517</deviceID>
+    <series>ESeries</series>
+    <screenSize>102</screenSize>
+    <numVideoWindows>1</numVideoWindows>
+    <numWirelessVideo>0</numWirelessVideo>
+    <streamingVideo>1</streamingVideo>
+    <isAudioDisabled>0</isAudioDisabled>
+    <hasLightSensor>1</hasLightSensor>
+    <hasMotionSensor>1</hasMotionSensor>
+    <hasBatteryLevel>0</hasBatteryLevel>
+    <hasVoIP>0</hasVoIP>
+    <panelImage>images\MT-1002.jpg</panelImage>
+    <resolution>
+      <resolutionEntry>
+        <width>1280</width>
+        <height>800</height>
+        <refreshRate>
+          <rate>60 Hertz</rate>
+        </refreshRate>
+      </resolutionEntry>
+    </resolution>
+    <systemCodeGroup>G5 Common Codes</systemCodeGroup>
+    <deviceIDs>
+      <deviceID>517</deviceID>
+      <deviceID>412</deviceID>
+      <deviceID>413</deviceID>
+      <deviceID>414</deviceID>
+      <deviceID>470</deviceID>
+      <deviceID>518</deviceID>
+      <deviceID>519</deviceID>
+      <deviceID>520</deviceID>
+      <deviceID>521</deviceID>
+      <deviceID>522</deviceID>
+      <deviceID>523</deviceID>
+    </deviceIDs>
+  </panelEntry>
+  <panelEntry>
+    <type>TET-1000D</type>
+    <product>MD-1002</product>
+    <description>Modero 10" wall-mount touch panel</description>
+    <deviceID>518</deviceID>
+    <series>ESeries</series>
+    <screenSize>102</screenSize>
+    <numVideoWindows>1</numVideoWindows>
+    <numWirelessVideo>0</numWirelessVideo>
+    <streamingVideo>1</streamingVideo>
+    <isAudioDisabled>0</isAudioDisabled>
+    <hasLightSensor>0</hasLightSensor>
+    <hasMotionSensor>0</hasMotionSensor>
+    <hasBatteryLevel>0</hasBatteryLevel>
+    <hasVoIP>1</hasVoIP>
+    <panelImage>images\MD-1002.jpg</panelImage>
+    <resolution>
+      <resolutionEntry>
+        <width>1280</width>
+        <height>800</height>
+        <refreshRate>
+          <rate>60 Hertz</rate>
+        </refreshRate>
+      </resolutionEntry>
+      <resolutionEntry>
+        <width>800</width>
+        <height>1280</height>
+        <refreshRate>
+          <rate>60 Hertz</rate>
+        </refreshRate>
+      </resolutionEntry>
+    </resolution>
+    <systemCodeGroup>G5 Common Codes</systemCodeGroup>
+    <deviceIDs>
+      <deviceID>518</deviceID>
+      <deviceID>412</deviceID>
+      <deviceID>413</deviceID>
+      <deviceID>414</deviceID>
+      <deviceID>470</deviceID>
+      <deviceID>517</deviceID>
+      <deviceID>519</deviceID>
+      <deviceID>520</deviceID>
+      <deviceID>521</deviceID>
+      <deviceID>522</deviceID>
+      <deviceID>523</deviceID>
+    </deviceIDs>
+  </panelEntry>
+  <panelEntry>
+    <type>CAB-1001PU</type>
+    <product>MXR-1001</product>
+    <description>Modero X 10" Retractable touch panel</description>
+    <deviceID>470</deviceID>
+    <series>XFire</series>
+    <screenSize>102</screenSize>
+    <numVideoWindows>1</numVideoWindows>
+    <numWirelessVideo>0</numWirelessVideo>
+    <streamingVideo>1</streamingVideo>
+    <isAudioDisabled>0</isAudioDisabled>
+    <hasLightSensor>1</hasLightSensor>
+    <hasMotionSensor>1</hasMotionSensor>
+    <hasBatteryLevel>0</hasBatteryLevel>
+    <hasVoIP>1</hasVoIP>
+    <panelImage>images\CAB-1001PU.jpg</panelImage>
+    <resolution>
+      <resolutionEntry>
+        <width>1280</width>
+        <height>800</height>
+        <refreshRate>
+          <rate>60 Hertz</rate>
+        </refreshRate>
+      </resolutionEntry>
+    </resolution>
+    <systemCodeGroup>G5 Common Codes</systemCodeGroup>
+    <deviceIDs>
+      <deviceID>470</deviceID>
+      <deviceID>412</deviceID>
+      <deviceID>413</deviceID>
+      <deviceID>414</deviceID>
+      <deviceID>517</deviceID>
+      <deviceID>518</deviceID>
+      <deviceID>519</deviceID>
+      <deviceID>520</deviceID>
+      <deviceID>521</deviceID>
+      <deviceID>522</deviceID>
+      <deviceID>523</deviceID>
+    </deviceIDs>
+  </panelEntry>
+  <panelEntry>
+    <type>XF-1900T</type>
+    <product>MXT-1901-PAN</product>
+    <description>Modero X 19" Panoramic tabletop touch panel</description>
+    <deviceID>409</deviceID>
+    <series>XFire</series>
+    <screenSize>190</screenSize>
+    <numVideoWindows>1</numVideoWindows>
+    <numWirelessVideo>0</numWirelessVideo>
+    <streamingVideo>1</streamingVideo>
+    <isAudioDisabled>0</isAudioDisabled>
+    <hasLightSensor>1</hasLightSensor>
+    <hasMotionSensor>1</hasMotionSensor>
+    <hasBatteryLevel>0</hasBatteryLevel>
+    <hasVoIP>1</hasVoIP>
+    <panelImage>images\XF-1900T.jpg</panelImage>
+    <resolution>
+      <resolutionEntry>
+        <width>1920</width>
+        <height>530</height>
+        <refreshRate>
+          <rate>60 Hertz</rate>
+        </refreshRate>
+      </resolutionEntry>
+    </resolution>
+    <systemCodeGroup>G5 Common Codes</systemCodeGroup>
+    <deviceIDs>
+      <deviceID>409</deviceID>
+      <deviceID>410</deviceID>
+      <deviceID>411</deviceID>
+    </deviceIDs>
+  </panelEntry>
+  <panelEntry>
+    <type>XF-1900D</type>
+    <product>MXD-1901-PAN</product>
+    <description>Modero X 19" Panoramic wall-mount touch panel</description>
+    <deviceID>411</deviceID>
+    <series>XFire</series>
+    <screenSize>190</screenSize>
+    <numVideoWindows>1</numVideoWindows>
+    <numWirelessVideo>0</numWirelessVideo>
+    <streamingVideo>1</streamingVideo>
+    <isAudioDisabled>0</isAudioDisabled>
+    <hasLightSensor>1</hasLightSensor>
+    <hasMotionSensor>1</hasMotionSensor>
+    <hasBatteryLevel>0</hasBatteryLevel>
+    <hasVoIP>1</hasVoIP>
+    <panelImage>images\XF-1900D.jpg</panelImage>
+    <resolution>
+      <resolutionEntry>
+        <width>1920</width>
+        <height>530</height>
+        <refreshRate>
+          <rate>60 Hertz</rate>
+        </refreshRate>
+      </resolutionEntry>
+      <resolutionEntry>
+        <width>530</width>
+        <height>1920</height>
+        <refreshRate>
+          <rate>60 Hertz</rate>
+        </refreshRate>
+      </resolutionEntry>
+    </resolution>
+    <systemCodeGroup>G5 Common Codes</systemCodeGroup>
+    <deviceIDs>
+      <deviceID>411</deviceID>
+      <deviceID>409</deviceID>
+      <deviceID>410</deviceID>
+    </deviceIDs>
+  </panelEntry>
+  <panelEntry>
+    <type>XF-2000T</type>
+    <product>MXT-2001-PAN</product>
+    <description>Modero X 20" Panoramic tabletop touch panel</description>
+    <deviceID>406</deviceID>
+    <series>XFire</series>
+    <screenSize>203</screenSize>
+    <numVideoWindows>1</numVideoWindows>
+    <numWirelessVideo>0</numWirelessVideo>
+    <streamingVideo>1</streamingVideo>
+    <isAudioDisabled>0</isAudioDisabled>
+    <hasLightSensor>1</hasLightSensor>
+    <hasMotionSensor>1</hasMotionSensor>
+    <hasBatteryLevel>0</hasBatteryLevel>
+    <hasVoIP>1</hasVoIP>
+    <panelImage>images\XF-2000T.jpg</panelImage>
+    <resolution>
+      <resolutionEntry>
+        <width>1920</width>
+        <height>800</height>
+        <refreshRate>
+          <rate>60 Hertz</rate>
+        </refreshRate>
+      </resolutionEntry>
+    </resolution>
+    <systemCodeGroup>G5 Common Codes</systemCodeGroup>
+    <deviceIDs>
+      <deviceID>406</deviceID>
+      <deviceID>408</deviceID>
+      <deviceID>407</deviceID>
+      <deviceID>514</deviceID>
+      <deviceID>515</deviceID>
+      <deviceID>516</deviceID>
+    </deviceIDs>
+  </panelEntry>
+  <panelEntry>
+    <type>XF-2000D</type>
+    <product>MXD-2001-PAN</product>
+    <description>Modero X 20" Panoramic wall-mount touch panel</description>
+    <deviceID>408</deviceID>
+    <series>XFire</series>
+    <screenSize>203</screenSize>
+    <numVideoWindows>1</numVideoWindows>
+    <numWirelessVideo>0</numWirelessVideo>
+    <streamingVideo>1</streamingVideo>
+    <isAudioDisabled>0</isAudioDisabled>
+    <hasLightSensor>1</hasLightSensor>
+    <hasMotionSensor>1</hasMotionSensor>
+    <hasBatteryLevel>0</hasBatteryLevel>
+    <hasVoIP>1</hasVoIP>
+    <panelImage>images\XF-2000D.jpg</panelImage>
+    <resolution>
+      <resolutionEntry>
+        <width>1920</width>
+        <height>800</height>
+        <refreshRate>
+          <rate>60 Hertz</rate>
+        </refreshRate>
+      </resolutionEntry>
+      <resolutionEntry>
+        <width>800</width>
+        <height>1920</height>
+        <refreshRate>
+          <rate>60 Hertz</rate>
+        </refreshRate>
+      </resolutionEntry>
+    </resolution>
+    <systemCodeGroup>G5 Common Codes</systemCodeGroup>
+    <deviceIDs>
+      <deviceID>408</deviceID>
+      <deviceID>407</deviceID>
+      <deviceID>406</deviceID>
+      <deviceID>514</deviceID>
+      <deviceID>515</deviceID>
+      <deviceID>516</deviceID>
+    </deviceIDs>
+  </panelEntry>
+  <panelEntry>
+    <type>TET-2000T</type>
+    <product>MT-2002</product>
+    <description>Modero 20" Panoramic tabletop touch panel</description>
+    <deviceID>514</deviceID>
+    <series>ESeries</series>
+    <screenSize>203</screenSize>
+    <numVideoWindows>1</numVideoWindows>
+    <numWirelessVideo>0</numWirelessVideo>
+    <streamingVideo>1</streamingVideo>
+    <isAudioDisabled>0</isAudioDisabled>
+    <hasLightSensor>1</hasLightSensor>
+    <hasMotionSensor>1</hasMotionSensor>
+    <hasBatteryLevel>0</hasBatteryLevel>
+    <hasVoIP>0</hasVoIP>
+    <panelImage>images\MT-2002.jpg</panelImage>
+    <resolution>
+      <resolutionEntry>
+        <width>1920</width>
+        <height>800</height>
+        <refreshRate>
+          <rate>60 Hertz</rate>
+        </refreshRate>
+      </resolutionEntry>
+    </resolution>
+    <systemCodeGroup>G5 Common Codes</systemCodeGroup>
+    <deviceIDs>
+      <deviceID>514</deviceID>
+      <deviceID>406</deviceID>
+      <deviceID>408</deviceID>
+      <deviceID>407</deviceID>
+      <deviceID>515</deviceID>
+      <deviceID>516</deviceID>
+    </deviceIDs>
+  </panelEntry>
+  <panelEntry>
+    <type>TPControl</type>
+    <product>TPControl</product>
+    <description>TPControl (www.touchpanelcontrol.com)</description>
+    <deviceID>348</deviceID>
+    <deviceClass>tpcontrol</deviceClass>
+    <screenSize>129</screenSize>
+    <numVideoWindows>1</numVideoWindows>
+    <numWirelessVideo>1</numWirelessVideo>
+    <streamingVideo>1</streamingVideo>
+    <isAudioDisabled>0</isAudioDisabled>
+    <hasLightSensor>0</hasLightSensor>
+    <hasMotionSensor>0</hasMotionSensor>
+    <hasBatteryLevel>1</hasBatteryLevel>
+    <hasCradleSensor>1</hasCradleSensor>
+    <hasVoIP>1</hasVoIP>
+    <panelImage>images\TPControl.jpg</panelImage>
+    <resolution>
+      <!-- iPhone/iPod -->
+      <resolutionEntry>
+        <width>960</width>
+        <height>640</height>
+        <refreshRate>
+          <rate>60 Hertz</rate>
+        </refreshRate>
+      </resolutionEntry>
+      <resolutionEntry>
+        <width>640</width>
+        <height>960</height>
+        <refreshRate>
+          <rate>60 Hertz</rate>
+        </refreshRate>
+      </resolutionEntry>
+      <!-- iPad -->
+      <resolutionEntry>
+        <width>1024</width>
+        <height>768</height>
+        <refreshRate>
+          <rate>60 Hertz</rate>
+        </refreshRate>
+      </resolutionEntry>
+      <resolutionEntry>
+        <width>768</width>
+        <height>1024</height>
+        <refreshRate>
+          <rate>60 Hertz</rate>
+        </refreshRate>
+      </resolutionEntry>
+      <!-- iPhone/iPod -->
+      <resolutionEntry>
+        <width>1136</width>
+        <height>640</height>
+        <refreshRate>
+          <rate>60 Hertz</rate>
+        </refreshRate>
+      </resolutionEntry>
+      <resolutionEntry>
+        <width>640</width>
+        <height>1136</height>
+        <refreshRate>
+          <rate>60 Hertz</rate>
+        </refreshRate>
+      </resolutionEntry>
+      <!-- Surface Pro -->
+      <resolutionEntry>
+        <width>1200</width>
+        <height>800</height>
+        <refreshRate>
+          <rate>60 Hertz</rate>
+        </refreshRate>
+      </resolutionEntry>
+      <resolutionEntry>
+        <width>800</width>
+        <height>1200</height>
+        <refreshRate>
+          <rate>60 Hertz</rate>
+        </refreshRate>
+      </resolutionEntry>
+      <resolutionEntry>
+        <width>1280</width>
+        <height>800</height>
+        <refreshRate>
+          <rate>60 Hertz</rate>
+        </refreshRate>
+      </resolutionEntry>
+      <resolutionEntry>
+        <width>800</width>
+        <height>1280</height>
+        <refreshRate>
+          <rate>60 Hertz</rate>
+        </refreshRate>
+      </resolutionEntry>
+      <!-- iPhone6 -->
+      <resolutionEntry>
+        <width>1334</width>
+        <height>750</height>
+        <refreshRate>
+          <rate>60 Hertz</rate>
+        </refreshRate>
+      </resolutionEntry>
+      <resolutionEntry>
+        <width>750</width>
+        <height>1334</height>
+        <refreshRate>
+          <rate>60 Hertz</rate>
+        </refreshRate>
+      </resolutionEntry>
+      <!-- iPhone6 Plus -->
+      <resolutionEntry>
+        <width>1920</width>
+        <height>1080</height>
+        <refreshRate>
+          <rate>60 Hertz</rate>
+        </refreshRate>
+      </resolutionEntry>
+      <resolutionEntry>
+        <width>1080</width>
+        <height>1920</height>
+        <refreshRate>
+          <rate>60 Hertz</rate>
+        </refreshRate>
+      </resolutionEntry>
+      <!-- Surface Pro -->
+      <resolutionEntry>
+        <width>1920</width>
+        <height>1280</height>
+        <refreshRate>
+          <rate>60 Hertz</rate>
+        </refreshRate>
+      </resolutionEntry>
+      <resolutionEntry>
+        <width>1280</width>
+        <height>1920</height>
+        <refreshRate>
+          <rate>60 Hertz</rate>
+        </refreshRate>
+      </resolutionEntry>
+      <!-- iPad Retina -->
+      <resolutionEntry>
+        <width>2048</width>
+        <height>1536</height>
+        <refreshRate>
+          <rate>60 Hertz</rate>
+        </refreshRate>
+      </resolutionEntry>
+      <resolutionEntry>
+        <width>1536</width>
+        <height>2048</height>
+        <refreshRate>
+          <rate>60 Hertz</rate>
+        </refreshRate>
+      </resolutionEntry>
+      <!-- iPad Pro -->
+      <resolutionEntry>
+        <width>2732</width>
+        <height>2048</height>
+        <refreshRate>
+          <rate>60 Hertz</rate>
+        </refreshRate>
+      </resolutionEntry>
+      <resolutionEntry>
+        <width>2048</width>
+        <height>2732</height>
+        <refreshRate>
+          <rate>60 Hertz</rate>
+        </refreshRate>
+      </resolutionEntry>
+      <!-- iPhone X -->
+      <resolutionEntry>
+        <width>2436</width>
+        <height>1125</height>
+        <refreshRate>
+          <rate>60 Hertz</rate>
+        </refreshRate>
+      </resolutionEntry>
+      <resolutionEntry>
+        <width>1125</width>
+        <height>2436</height>
+        <refreshRate>
+          <rate>60 Hertz</rate>
+        </refreshRate>
+      </resolutionEntry>
+      <!-- 4K Display-->
+      <resolutionEntry>
+        <width>3840</width>
+        <height>2160</height>
+        <refreshRate>
+          <rate>60 Hertz</rate>
+        </refreshRate>
+      </resolutionEntry>
+      <resolutionEntry>
+        <width>2160</width>
+        <height>3840</height>
+        <refreshRate>
+          <rate>60 Hertz</rate>
+        </refreshRate>
+      </resolutionEntry>
+    </resolution>
+    <systemCodeGroup>G5 Common Codes</systemCodeGroup>
+    <deviceIDs>
+      <deviceID>347</deviceID>
+      <deviceID>348</deviceID>
+      <deviceID>349</deviceID>
+      <deviceID>350</deviceID>
+      <deviceID>351</deviceID>
+      <deviceID>355</deviceID>
+      <deviceID>356</deviceID>
+      <deviceID>358</deviceID>
+    </deviceIDs>
+  </panelEntry>
+</ppfRoot>
