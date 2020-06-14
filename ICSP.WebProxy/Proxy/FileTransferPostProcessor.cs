@@ -6,11 +6,13 @@ using System.Text.RegularExpressions;
 using System.Xml;
 
 using ICSP.Core.Logging;
+using ICSP.Core.Model;
 using ICSP.WebProxy.Json;
 using ICSP.WebProxy.Properties;
 
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Newtonsoft.Json.Serialization;
 
 namespace ICSP.WebProxy.Proxy
 {
@@ -261,7 +263,45 @@ namespace ICSP.WebProxy.Proxy
               {
                 case "page":
                 {
+                  /*
+                  {
+                    "page": {
+                      "type": "page",
+                      "pageID": "1",
+                      "name": "Page 1",
+                      "width": "1024",
+                      "height": "600",
+                      "button": [
+                        {
+                          "type": "general",
+                  */
+                  var lJson = lProperty?.Value?.ToString();
+
+                  // In work, debug stuff for Serialization ...
+                  switch((string)lJsonObj["page"]?["type"])
+                  {
+                    case "page":
+                    {
+                      var lStr = lProperty?.Value?.ToString();
+
+                      var lPage = JsonConvert.DeserializeObject<Page>(lProperty?.Value?.ToString());
+
+                      var lJsonNew = JsonConvert.SerializeObject(lPage, Newtonsoft.Json.Formatting.Indented);
+
+                      break;
+                    }
+                    case "subpage":
+                    {
+                      var lPage = JsonConvert.DeserializeObject<SubPage>(lProperty?.Value?.ToString());
+
+                      var lJsonNew = JsonConvert.SerializeObject(lPage, Newtonsoft.Json.Formatting.Indented);
+
+                      break;
+                    }
+                  }
+
                   JsonProccessPage(lJsonObj, lJsonProject);
+
                   break;
                 }
                 case "paletteData":
@@ -329,12 +369,39 @@ namespace ICSP.WebProxy.Proxy
         */
 
         var lXPath = string.Join("|", new[] {
-        "/root/panelSetup/powerUpPopup",  // PowerUpPopup's
-        "/root/pageList",                 // Pages/SubPages
-        "/root/pageList/pageEntry",       // Pages/SubPages
-        "/root/page/button",              // Buttons
-        "/root/page/button/pf",           // PageFlips
-      });
+          "/root/panelSetup/powerUpPopup",  // PowerUpPopup's
+          "/root/pageList",                 // Pages/SubPages
+          "/root/pageList/pageEntry",       // Pages/SubPages
+          "/root/page/button",              // Buttons
+          "/root/page/button/pf",           // PageFlips
+
+          // G5 Button Events
+          "/root/page/button/*/pgFlip",    // Events: Pageflips
+          "/root/page/button/*/launch",    // Events: Actions -> Launch
+          "/root/page/button/*/command",   // Events: Actions -> Command
+          "/root/page/button/*/string",    // Events: Actions -> String
+          "/root/page/button/*/custom",    // Events: Actions -> Custom
+          
+          /*
+          "/root/page/button/ep",           // Events: Button Press
+          "/root/page/button/er",           // Events: Button Release
+          "/root/page/button/ga",           // Events: Gesture Any
+          "/root/page/button/gu",           // Events: Gesture Up
+          "/root/page/button/gd",           // Events: Gesture Down
+          "/root/page/button/gr",           // Events: Gesture Right
+          "/root/page/button/gl",           // Events: Gesture Left
+          "/root/page/button/gt",           // Events: Gesture Double-Tap
+          "/root/page/button/tu",           // Events: Gesture 2-Finger Up
+          "/root/page/button/td",           // Events: Gesture 2-Finger Down
+          "/root/page/button/tr",           // Events: Gesture 2-Finger Right
+          "/root/page/button/tl",           // Events: Gesture 2-Finger Left
+          "/root/page/button/dst",          // Events
+          "/root/page/button/dca",          // Events
+          "/root/page/button/den",          // Events
+          "/root/page/button/dex",          // Events
+          "/root/page/button/ddr",          // Events
+          */
+        });
 
         var lElements = xmlDoc.SelectNodes(lXPath);
 
