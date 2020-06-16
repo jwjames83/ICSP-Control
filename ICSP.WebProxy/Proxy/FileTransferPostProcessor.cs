@@ -282,19 +282,35 @@ namespace ICSP.WebProxy.Proxy
                   {
                     case "page":
                     {
-                      var lStr = lProperty?.Value?.ToString();
+                      try
+                      {
+                        var lStr = lProperty?.Value?.ToString();
 
-                      var lPage = JsonConvert.DeserializeObject<Page>(lProperty?.Value?.ToString());
-
-                      var lJsonNew = JsonConvert.SerializeObject(lPage, Newtonsoft.Json.Formatting.Indented);
+                        var lPage = JsonConvert.DeserializeObject<Page>(lProperty?.Value?.ToString());
+                        
+                        var lJsonNew = JsonConvert.SerializeObject(lPage, Newtonsoft.Json.Formatting.Indented);
+                      }
+                      catch(Exception ex)
+                      {
+                        Console.WriteLine(ex.Message);
+                      }
 
                       break;
                     }
                     case "subpage":
                     {
-                      var lPage = JsonConvert.DeserializeObject<SubPage>(lProperty?.Value?.ToString());
+                      try
+                      {
+                        var lStr = lProperty?.Value?.ToString();
 
-                      var lJsonNew = JsonConvert.SerializeObject(lPage, Newtonsoft.Json.Formatting.Indented);
+                        var lPage = JsonConvert.DeserializeObject<SubPage>(lProperty?.Value?.ToString());
+
+                        var lJsonNew = JsonConvert.SerializeObject(lPage, Newtonsoft.Json.Formatting.Indented);
+                      }
+                      catch(Exception ex)
+                      {
+                        Console.WriteLine(ex.Message);
+                      }
 
                       break;
                     }
@@ -369,18 +385,19 @@ namespace ICSP.WebProxy.Proxy
         */
 
         var lXPath = string.Join("|", new[] {
-          "/root/panelSetup/powerUpPopup",  // PowerUpPopup's
-          "/root/pageList",                 // Pages/SubPages
-          "/root/pageList/pageEntry",       // Pages/SubPages
-          "/root/page/button",              // Buttons
-          "/root/page/button/pf",           // PageFlips
+          "/root/panelSetup/powerUpPopup",    // PowerUpPopup's
+          "/root/pageList",                   // Pages/SubPages
+          "/root/pageList/pageEntry",         // Pages/SubPages
+          "/root/page/button",                // Buttons
+          "/root/page/button/pf",             // G4:PageFlips
+          "/root/page/button/sr/bitmapEntry", // G5:Bitmaps
 
-          // G5 Button Events
-          "/root/page/button/*/pgFlip",    // Events: Pageflips
-          "/root/page/button/*/launch",    // Events: Actions -> Launch
-          "/root/page/button/*/command",   // Events: Actions -> Command
-          "/root/page/button/*/string",    // Events: Actions -> String
-          "/root/page/button/*/custom",    // Events: Actions -> Custom
+          // G5: Button Events
+          "/root/page/button/*/pgFlip",       // Events: Pageflips
+          "/root/page/button/*/launch",       // Events: Actions -> Launch
+          "/root/page/button/*/command",      // Events: Actions -> Command
+          "/root/page/button/*/string",       // Events: Actions -> String
+          "/root/page/button/*/custom",       // Events: Actions -> Custom
           
           /*
           "/root/page/button/ep",           // Events: Button Press
@@ -582,6 +599,14 @@ namespace ICSP.WebProxy.Proxy
 
           foreach(var button in lButtons)
           {
+            // "na": "Logo_AVS",
+            if((string)button["na"] == "Logo_AVS")
+            {
+              var lStr = button.ToString();
+
+              Console.WriteLine(button);
+            }
+
             JsonConvertStates((JObject)button);
 
             // Set null or add (not needed)
@@ -679,7 +704,7 @@ namespace ICSP.WebProxy.Proxy
             foreach(var bitmap in lBitmaps)
             {
               // Ugly ... :-)
-              var lState = bitmap?.Parent?.Parent?.Parent?.Parent;
+              var lState = bitmap?.Parent?.Parent?.Parent?.Parent?.Parent;
 
               // Only the first bitmap ...
               if(lState["bm"] == null)
@@ -702,9 +727,16 @@ namespace ICSP.WebProxy.Proxy
 
             foreach(var evt in lEvents)
             {
-              evt["item"]?.Parent.Remove();
+              try
+              {
+                evt["item"]?.Parent.Remove();
 
-              ((JArray)button["pf"]).Add(evt);
+                ((JArray)button["pf"]).Add(evt);
+              }
+              catch(Exception ex)
+              {
+                // Console.WriteLine(ex.Message);
+              }
             }
 
             // Button Release
@@ -712,18 +744,36 @@ namespace ICSP.WebProxy.Proxy
 
             foreach(var evt in lEvents)
             {
-              evt["item"]?.Parent.Remove();
+              try
+              {
+                evt["item"]?.Parent.Remove();
 
-              ((JArray)button["pf"]).Add(evt);
+                ((JArray)button["pf"]).Add(evt);
+              }
+              catch(Exception ex)
+              {
+                // Console.WriteLine(ex.Message);
+              }
             }
 
             button["ep"]?.Parent.Remove();
             button["er"]?.Parent.Remove();
+
+            // PageFlips: Add empty array if not exists (needed)
+            if(button["pf"] == null)
+            {
+              // Add after ac for G4 compatibility (not needed)
+              if(button["ac"] != null)
+                button["ac"].Parent.AddAfterSelf(new JProperty("pf", new JArray()));
+              else
+                button["pf"] = new JArray();
+            }
           }
 
           // --------------------------------------------------------
           // Buttons: PageFlips (rename #text -> value)
           // --------------------------------------------------------
+
           var lPageFlips = source.SelectTokens("$.page.buttons..pf").Cast<JArray>();
 
           foreach(var pageFlip in lPageFlips)
@@ -740,6 +790,8 @@ namespace ICSP.WebProxy.Proxy
         {
           Console.WriteLine(ex.Message);
         }
+
+        var lPg = source["page"].ToString();
 
         switch(lPageType)
         {

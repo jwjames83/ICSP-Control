@@ -70,57 +70,64 @@ namespace ICSP.Core.Model
     public int Height { get; set; }
 
     /// <summary>
+    /// Above Popups (G4 Only)
+    /// </summary>
+    [JsonConverter(typeof(BoolConverter))]
+    [JsonProperty("vp", Order = 10, DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
+    public bool AbovePopups { get; set; }
+
+    /// <summary>
     /// Z-Order ([<]Back, [>]:Top)
     /// </summary>
-    [JsonProperty("zo", Order = 10)]
+    [JsonProperty("zo", Order = 11)]
     public int ZOrder { get; set; }
 
     /// <summary>
-    /// Drag/Drop Type<br/>
+    /// Drag/Drop Type (G5 Only)<br/>
     /// (none, draggable, drop target)
     /// </summary>
     [DefaultValue(DragDropType.None)]
-    [JsonProperty("ddt", Order = 11, DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
+    [JsonProperty("ddt", Order = 12, DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
     public DragDropType DragDropType { get; set; }
 
     /// <summary>
-    /// Drop Group
+    /// Drop Group (G5 Only)
     /// </summary>
-    [JsonProperty("ddg", Order = 12, NullValueHandling = NullValueHandling.Ignore)]
+    [JsonProperty("ddg", Order = 13, NullValueHandling = NullValueHandling.Ignore)]
     public string DropGroup { get; set; }
 
     /// <summary>
     /// Touch Style  (bounding, passThru)
     /// </summary>
     [DefaultValue(TouchStyle.ActiveTouch)]
-    [JsonProperty("hs", Order = 13, DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
+    [JsonProperty("hs", Order = 14, DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
     public TouchStyle TouchStyle { get; set; }
 
     /// <summary>
     /// Border Style (-> TAB General)
     /// </summary>
-    [JsonProperty("bs", Order = 14)]
+    [JsonProperty("bs", Order = 15)]
     public string BorderStyle { get; set; }
 
     /// <summary>
     /// Disabled
     /// </summary>
     [JsonConverter(typeof(BoolConverter))]
-    [JsonProperty("da", Order = 15, DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
+    [JsonProperty("da", Order = 16, DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
     public bool Disabled { get; set; }
 
     /// <summary>
     /// Hidden
     /// </summary>
     [JsonConverter(typeof(BoolConverter))]
-    [JsonProperty("hd", Order = 16, DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
+    [JsonProperty("hd", Order = 17, DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
     public bool Hidden { get; set; }
 
     /// <summary>
     /// Touch Style  (bounding, passThru)
     /// </summary>
     [DefaultValue(PasswordProtection.None)]
-    [JsonProperty("pp", Order = 17, DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
+    [JsonProperty("pp", Order = 18, DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
     public PasswordProtection PasswordProtection { get; set; }
 
     // ============================================================================================
@@ -131,33 +138,33 @@ namespace ICSP.Core.Model
     /// Feedback
     /// </summary>
     [DefaultValue(FeedbackType.Channel)]
-    [JsonProperty("fb", Order = 18, DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
+    [JsonProperty("fb", Order = 19, DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
     public FeedbackType Feedback { get; set; }
 
     /// <summary>
     /// Address Port
     /// </summary>
     [DefaultValue(1)]
-    [JsonProperty("ap", Order = 19, DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
+    [JsonProperty("ap", Order = 20, DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
     public int AddressPort { get; set; }
 
     /// <summary>
     /// Address Code
     /// </summary>
-    [JsonProperty("ad", Order = 20, DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
+    [JsonProperty("ad", Order = 21, DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
     public int AddressCode { get; set; }
 
     /// <summary>
     /// Channel Port
     /// </summary>
     [DefaultValue(1)]
-    [JsonProperty("cp", Order = 21, DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
+    [JsonProperty("cp", Order = 22, DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
     public int ChannelPort { get; set; }
 
     /// <summary>
     /// Channel Code
     /// </summary>
-    [JsonProperty("ch", Order = 22, DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
+    [JsonProperty("ch", Order = 23, DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
     public int ChannelCode { get; set; }
 
     /// <summary>
@@ -165,66 +172,92 @@ namespace ICSP.Core.Model
     /// (sByte, sint, "slong"long, int)
     /// </summary>
     [DefaultValue(RangeType.Byte)]
-    [JsonProperty("rt", Order = 23, DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
+    [JsonProperty("rt", Order = 24, DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
     public RangeType RangeType { get; set; }
 
     /// <summary>
     /// Level Control Type
     /// </summary>
     [DefaultValue(LevelControlType.None)]
-    [JsonProperty("vt", Order = 24, DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
+    [JsonProperty("vt", Order = 25, DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
     public LevelControlType LevelControlType { get; set; }
 
     /// <summary>
     /// Level Port
     /// </summary>
     [DefaultValue(1)]
-    [JsonProperty("lp", Order = 25, DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
+    [JsonProperty("lp", Order = 26, DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
     public int LevelPort { get; set; }
 
     /// <summary>
     /// Level Code
     /// </summary>
-    [JsonProperty("lv", Order = 26, DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
+    [JsonProperty("lv", Order = 27, DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
     public int LevelCode { get; set; }
 
     /// <summary>
     /// Level Control Value
     /// </summary>
-    [JsonProperty("va", Order = 27, DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
+    [JsonProperty("va", Order = 28, DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
     public int LevelControlValue { get; set; }
 
     /// <summary>
     /// Range Low
     /// </summary>
-    [JsonProperty("rl", Order = 28)]
+    [JsonProperty("rl", Order = 29)]
     public int RangeLow { get; set; }
 
     /// <summary>
     /// Range High
     /// </summary>
-    [JsonProperty("rh", Order = 29)]
+    [JsonProperty("rh", Order = 30)]
     public int RangeHigh { get; set; }
 
     /// <summary>
     /// Range Time Up
     /// </summary>
     [DefaultValue(2)]
-    [JsonProperty("lu", Order = 30, DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
+    [JsonProperty("lu", Order = 31, DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
     public int RangeTimeUp { get; set; }
 
     /// <summary>
     /// Range Time Down
     /// </summary>
     [DefaultValue(2)]
-    [JsonProperty("ld", Order = 31, DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
+    [JsonProperty("ld", Order = 32, DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
     public int RangeTimeDown { get; set; }
+
+    /// <summary>
+    /// String Output Port (G4 Only)
+    /// </summary>
+    [DefaultValue(1)]
+    [JsonProperty("so", Order = 33, DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
+    public int StringOutputPort { get; set; }
+
+    /// <summary>
+    /// String Output (G4 Only)
+    /// </summary>
+    [JsonProperty("op", Order = 34, NullValueHandling = NullValueHandling.Ignore)]
+    public string StringOutput { get; set; }
+
+    /// <summary>
+    /// Command Output Port (G4 Only)
+    /// </summary>
+    [DefaultValue(21)]
+    [JsonProperty("co", Order = 35, DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
+    public int CommandOutputPort { get; set; }
+
+    /// <summary>
+    /// Command Output (G4 Only)
+    /// </summary>
+    [JsonProperty("cm", Order = 36, NullValueHandling = NullValueHandling.Ignore)]
+    public string CommandOutput { get; set; }
     
     /// <summary>
     /// Unknown (G4)
     /// </summary>
-    [JsonProperty("ac", Order = 32)]
-    public int ac { get; set; }
+    [JsonProperty("ac", Order = 37)]
+    public object ac { get; set; } // { "di": "0" },
 
     // ============================================================================================
     // TAB: States
@@ -233,7 +266,7 @@ namespace ICSP.Core.Model
     /// <summary>
     /// States
     /// </summary>
-    [JsonProperty("sr", Order = 33)]
+    [JsonProperty("sr", Order = 38)]
     public IList<State> States { get; set; }
 
     // ============================================================================================
@@ -243,73 +276,73 @@ namespace ICSP.Core.Model
     /// <summary>
     /// Events: Button Press
     /// </summary>
-    [JsonProperty("ep", Order = 34)]
+    [JsonProperty("ep", Order = 39)]
     public Events EventsButtonPress { get; set; }
 
     /// <summary>
     /// Events: Button Release
     /// </summary>
-    [JsonProperty("er", Order = 35)]
+    [JsonProperty("er", Order = 40)]
     public Events EventsButtonRelease { get; set; }
 
     /// <summary>
     /// Events: Gesture Any
     /// </summary>
-    [JsonProperty("ga", Order = 36)]
+    [JsonProperty("ga", Order = 41)]
     public Events EventsGestureAny { get; set; }
 
     /// <summary>
     /// Events: Gesture Up
     /// </summary>
-    [JsonProperty("gu", Order = 37)]
+    [JsonProperty("gu", Order = 42)]
     public Events EventsGestureUp { get; set; }
 
     /// <summary>
     /// Events: Gesture Down
     /// </summary>
-    [JsonProperty("gd", Order = 38)]
+    [JsonProperty("gd", Order = 43)]
     public Events EventsGestureDown { get; set; }
 
     /// <summary>
     /// Events: Gesture Right
     /// </summary>
-    [JsonProperty("gr", Order = 39)]
+    [JsonProperty("gr", Order = 44)]
     public Events EventsGestureRight { get; set; }
 
     /// <summary>
     /// Events: Gesture Left
     /// </summary>
-    [JsonProperty("gl", Order = 40)]
+    [JsonProperty("gl", Order = 45)]
     public Events EventsGestureLeft { get; set; }
 
     /// <summary>
     /// Events: Gesture Double-Tap
     /// </summary>
-    [JsonProperty("gt", Order = 41)]
+    [JsonProperty("gt", Order = 46)]
     public Events EventsGestureDoubleTap { get; set; }
 
     /// <summary>
     /// Events: Gesture 2-Finger Up
     /// </summary>
-    [JsonProperty("tu", Order = 42)]
+    [JsonProperty("tu", Order = 47)]
     public Events EventsGesture2FingerUp { get; set; }
 
     /// <summary>
     /// Events: Gesture 2-Finger Down
     /// </summary>
-    [JsonProperty("td", Order = 43)]
+    [JsonProperty("td", Order = 48)]
     public Events EventsGesture2FingerDown { get; set; }
 
     /// <summary>
     /// Events: Gesture 2-Finger Right
     /// </summary>
-    [JsonProperty("tr", Order = 44)]
+    [JsonProperty("tr", Order = 49)]
     public Events EventsGesture2FingerRight { get; set; }
 
     /// <summary>
     /// Events: Gesture 2-Finger Left
     /// </summary>
-    [JsonProperty("tl", Order = 45)]
+    [JsonProperty("tl", Order = 50)]
     public Events EventsGesture2FingerLeft { get; set; }
 
     /*

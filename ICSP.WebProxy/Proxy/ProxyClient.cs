@@ -150,6 +150,9 @@ namespace ICSP.WebProxy.Proxy
       if(!string.IsNullOrWhiteSpace(DeviceConfig.BaseDirectory))
         Manager.FileManager.SetBaseDirectory(DeviceConfig.BaseDirectory);
 
+      // TODO: Only one Processor for shared web connections!
+      // mPostProcessor.ProcessFiles();
+
       ManagerAddEventHandlers();
 
       // TODO: 

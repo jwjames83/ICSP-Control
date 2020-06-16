@@ -193,8 +193,10 @@
     <Compile Include="Model\BitmapEntry.cs" />
     <Compile Include="Model\BorderStyle.cs" />
     <Compile Include="Model\Button.cs" />
+    <Compile Include="Model\DrawOrder.cs" />
     <Compile Include="Model\ButtonType.cs" />
     <Compile Include="Model\DragDropType.cs" />
+    <Compile Include="Model\DrawOrderItem.cs" />
     <Compile Include="Model\Events.cs" />
     <Compile Include="Model\FeedbackType.cs" />
     <Compile Include="Model\JustificationType.cs" />
