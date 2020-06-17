@@ -231,12 +231,12 @@ namespace ICSP.Core.Model
     /// </summary>
     [JsonProperty("sd", Order = 30, NullValueHandling = NullValueHandling.Ignore)]
     public string Sound { get; set; }
-
+    
     /// <summary>
     /// Marquee Direction (G4 Only)
     /// </summary>
-    [JsonProperty("md", Order = 31, NullValueHandling = NullValueHandling.Ignore)]
-    public string MarqueeDirection { get; set; }
+    [JsonProperty("md", Order = 31, DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
+    public MarqueeDirection MarqueeDirection { get; set; }
 
     /// <summary>
     /// Marquee Repeat (G4 Only)

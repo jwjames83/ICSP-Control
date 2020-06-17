@@ -19,8 +19,8 @@ namespace ICSP.Core.Model
     // ============================================================================================
     // TAB: General
     // ============================================================================================
-    
-      /// <summary>
+
+    /// <summary>
     /// Index
     /// </summary>
     [JsonProperty("bi", Order = 2)]
@@ -109,6 +109,53 @@ namespace ICSP.Core.Model
     [JsonProperty("bs", Order = 15)]
     public string BorderStyle { get; set; }
 
+    #region Multi State General
+
+    /// <summary>
+    /// MultiGeneral: State Count
+    /// </summary>
+    [JsonProperty("stateCount", Order = 15)]
+    public int StateCount { get; set; }
+
+    /// <summary>
+    /// MultiGeneral: State Count
+    /// </summary>
+    [JsonProperty("rm", Order = 15)]
+    public int rm { get; set; }
+
+    /// <summary>
+    /// MultiGeneral: Animate Time Up
+    /// </summary>
+    [JsonProperty("nu", Order = 15)]
+    public int AnimateTimeUp { get; set; }
+
+    /// <summary>
+    /// MultiGeneral: Animate Time Down
+    /// </summary>
+    [JsonProperty("nd", Order = 15)]
+    public int AnimateTimeDown { get; set; }
+    
+    /// <summary>
+    /// MultiGeneral: Auto-Repeat
+    /// </summary>
+    [JsonConverter(typeof(BoolConverter))]
+    [JsonProperty("ar", Order = 15, DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
+    public bool AutoRepeat { get; set; }
+
+    /// <summary>
+    /// MultiGeneral: ru
+    /// </summary>
+    [JsonProperty("ru", Order = 15)]
+    public int ru { get; set; }
+
+    /// <summary>
+    /// MultiGeneral: rd
+    /// </summary>
+    [JsonProperty("rd", Order = 15)]
+    public int rd { get; set; }
+    
+    #endregion
+
     /// <summary>
     /// Disabled
     /// </summary>
@@ -122,6 +169,79 @@ namespace ICSP.Core.Model
     [JsonConverter(typeof(BoolConverter))]
     [JsonProperty("hd", Order = 17, DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
     public bool Hidden { get; set; }
+
+    #region Bargraph
+
+    /// <summary>
+    /// Bargraph: Value Direction
+    /// </summary>
+    [DefaultValue(ValueDirection.Vertical)]
+    [JsonProperty("dr", Order = 17, DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
+    public ValueDirection ValueDirection { get; set; }
+    
+    /// <summary>
+    /// Multi-State-Bargraph: Touch Map
+    /// </summary>
+    [JsonProperty("tm", Order = 17, NullValueHandling = NullValueHandling.Ignore)]
+    public string TouchMap { get; set; }
+
+    /// <summary>
+    /// Bargraph: Slider Name
+    /// </summary>
+    [JsonProperty("sd", Order = 17, DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
+    public SliderType SliderName { get; set; }
+
+    /// <summary>
+    /// Bargraph: Slider Color
+    /// </summary>
+    [JsonProperty("sc", Order = 17, NullValueHandling = NullValueHandling.Ignore)]
+    public string SliderColor { get; set; }
+
+    #endregion
+
+    #region Joystick
+
+    /// <summary>
+    /// Joystick: Cursor Name
+    /// </summary>
+    [JsonProperty("cd", Order = 17, NullValueHandling = NullValueHandling.Ignore)]
+    public string CursorName { get; set; }
+
+    /// <summary>
+    /// Joystick: Cursor Color
+    /// </summary>
+    [JsonProperty("cc", Order = 17, NullValueHandling = NullValueHandling.Ignore)]
+    public string CursorColor { get; set; }
+
+    #endregion
+
+    #region TextInput
+
+    /// <summary>
+    /// TextInput: Password Character
+    /// </summary>
+    [JsonProperty("pc", Order = 17, NullValueHandling = NullValueHandling.Ignore)]
+    public string PasswordCharacter { get; set; }
+
+    /// <summary>
+    /// TextInput: DisplayType
+    /// </summary>
+    [JsonProperty("dt", Order = 20, DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
+    public DisplayType DisplayType { get; set; }
+
+    /// <summary>
+    /// TextInput: Max Text Length
+    /// </summary>
+    [JsonProperty("mt", Order = 20, DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
+    public int MaxTextLength { get; set; }
+
+    /// <summary>
+    /// TextInput: Input Mask
+    /// </summary>
+    [JsonProperty("im", Order = 17, NullValueHandling = NullValueHandling.Ignore)]
+    public string InputMask { get; set; }
+
+    #endregion
 
     /// <summary>
     /// Touch Style  (bounding, passThru)
@@ -196,6 +316,13 @@ namespace ICSP.Core.Model
     public int LevelCode { get; set; }
 
     /// <summary>
+    /// Bargraph: Level Function
+    /// </summary>
+    [DefaultValue(LevelFunction.DisplayOnly)]
+    [JsonProperty("lf", Order = 27, DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
+    public LevelFunction LevelFunction { get; set; }
+
+    /// <summary>
     /// Level Control Value
     /// </summary>
     [JsonProperty("va", Order = 28, DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
@@ -212,6 +339,19 @@ namespace ICSP.Core.Model
     /// </summary>
     [JsonProperty("rh", Order = 30)]
     public int RangeHigh { get; set; }
+
+    /// <summary>
+    /// Bargraph: Range Drag Increment
+    /// </summary>
+    [JsonProperty("rn", Order = 30)]
+    public int RangeDragIncrement { get; set; }
+
+    /// <summary>
+    /// Bargraph: Range Inverted
+    /// </summary>
+    [JsonConverter(typeof(BoolConverter))]
+    [JsonProperty("ri", Order = 30, DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
+    public bool RangeInverted { get; set; }
 
     /// <summary>
     /// Range Time Up
@@ -252,7 +392,7 @@ namespace ICSP.Core.Model
     /// </summary>
     [JsonProperty("cm", Order = 36, NullValueHandling = NullValueHandling.Ignore)]
     public string CommandOutput { get; set; }
-    
+
     /// <summary>
     /// Unknown (G4)
     /// </summary>

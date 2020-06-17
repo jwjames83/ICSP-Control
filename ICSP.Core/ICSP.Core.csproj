@@ -193,6 +193,9 @@
     <Compile Include="Model\BitmapEntry.cs" />
     <Compile Include="Model\BorderStyle.cs" />
     <Compile Include="Model\Button.cs" />
+    <Compile Include="Model\DisplayType.cs" />
+    <Compile Include="Model\LevelFunction.cs" />
+    <Compile Include="Model\MarqueeDirection.cs" />
     <Compile Include="Model\DrawOrder.cs" />
     <Compile Include="Model\ButtonType.cs" />
     <Compile Include="Model\DragDropType.cs" />
@@ -206,9 +209,11 @@
     <Compile Include="Model\PasswordProtection.cs" />
     <Compile Include="Model\PopupType.cs" />
     <Compile Include="Model\RangeType.cs" />
+    <Compile Include="Model\SliderType.cs" />
     <Compile Include="Model\State.cs" />
     <Compile Include="Model\SubPage.cs" />
     <Compile Include="Model\TouchStyle.cs" />
+    <Compile Include="Model\ValueDirection.cs" />
     <Compile Include="Model\VideoFillType.cs" />
     <Compile Include="Model\WebColor.cs" />
     <Compile Include="MsgFactory.cs" />

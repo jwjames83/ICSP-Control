@@ -12,16 +12,28 @@ namespace ICSP.Core.Model
     General,
 
     [EnumMember(Value = "multiGeneral")]
-    MultiGeneral,
+    MultiStateGeneral,
 
     [EnumMember(Value = "bargraph")]
     Bargraph,
 
     [EnumMember(Value = "multiBargraph")]
-    MultiBargraph,
+    MultiStateBargraph,
+
+    // G4 Only
+    [EnumMember(Value = "joystick")]
+    Joystick,
 
     [EnumMember(Value = "textArea")]
-    TextArea,
+    TextInput,
+
+    // G4 Only
+    [EnumMember(Value = "virtualPC")]
+    ComputerControl,
+
+    // G4 Only
+    [EnumMember(Value = "annotation")]
+    TakeNote,
 
     [EnumMember(Value = "subPageView")]
     SubPageView,

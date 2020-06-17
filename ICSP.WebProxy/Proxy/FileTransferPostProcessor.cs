@@ -287,7 +287,7 @@ namespace ICSP.WebProxy.Proxy
                         var lStr = lProperty?.Value?.ToString();
 
                         var lPage = JsonConvert.DeserializeObject<Page>(lProperty?.Value?.ToString());
-                        
+
                         var lJsonNew = JsonConvert.SerializeObject(lPage, Newtonsoft.Json.Formatting.Indented);
                       }
                       catch(Exception ex)
@@ -389,6 +389,7 @@ namespace ICSP.WebProxy.Proxy
           "/root/pageList",                   // Pages/SubPages
           "/root/pageList/pageEntry",         // Pages/SubPages
           "/root/page/button",                // Buttons
+          "/root/page/button/sr",             // Buttons States (Button-Type Joystick has only one)
           "/root/page/button/pf",             // G4:PageFlips
           "/root/page/button/sr/bitmapEntry", // G5:Bitmaps
 
