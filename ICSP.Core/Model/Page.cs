@@ -12,8 +12,9 @@ namespace ICSP.Core.Model
     [JsonProperty("type", Order = 1)]
     public PageType Type { get; set; }
 
+    // SubPage:
     // [JsonProperty("popupType", Order = 2)]
-    
+
     /// <summary>
     /// PageID
     /// </summary>
@@ -26,8 +27,10 @@ namespace ICSP.Core.Model
     [JsonProperty("name", Order = 4)]
     public string Name { get; set; }
 
+    // SubPage:
     // [JsonProperty("left", Order = 5)]
 
+    // SubPage:
     // [JsonProperty("top", Order = 6)]
 
     /// <summary>
@@ -42,9 +45,10 @@ namespace ICSP.Core.Model
     [JsonProperty("height", Order = 8)]
     public int Height { get; set; }
 
+    // SubPage:
     // [JsonProperty("group", Order = 9)]
 
     [JsonProperty("button", Order = 10)]
-    public IList<Button> Buttons { get; set; }
+    public List<Button> Buttons { get; set; }
   }
 }

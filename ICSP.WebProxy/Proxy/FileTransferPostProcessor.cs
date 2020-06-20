@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Xml;
 
@@ -12,7 +13,6 @@ using ICSP.WebProxy.Properties;
 
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using Newtonsoft.Json.Serialization;
 
 namespace ICSP.WebProxy.Proxy
 {
@@ -63,7 +63,13 @@ namespace ICSP.WebProxy.Proxy
               case "manifest.xma": continue;
             }
 
-            lXmlDoc.Load(fileInfo.FullName);
+            var lXml = File.ReadAllText(fileInfo.FullName);
+
+            // Wrong encoded xml
+            // Convert ISO-8859-1 to UTF-8 (ZurÃ¼ck -> Zurück, LÃ¶schen -> Löschen, etc.)
+            lXml = Encoding.UTF8.GetString(Encoding.GetEncoding("ISO-8859-1").GetBytes(lXml));
+
+            lXmlDoc.LoadXml(lXml);
 
             // Remove XmlDeclaration
             foreach(XmlNode node in lXmlDoc)
@@ -78,7 +84,7 @@ namespace ICSP.WebProxy.Proxy
             var lJson = JsonConvert.SerializeXmlNode(lXmlDoc, Newtonsoft.Json.Formatting.Indented, true);
 
             // <page type="page">
-            // JSON.NET and Replacing @ Sign in XML to JSON converstion
+            // JSON.NET and Replacing @ Sign in XML to JSON conversion
             lJson = (Regex.Replace(lJson, "(?<=\")(@)(?!.*\":\\s )", string.Empty, RegexOptions.IgnoreCase));
 
             mJsonList.Add(fileInfo.Name, lJson);
@@ -431,6 +437,26 @@ namespace ICSP.WebProxy.Proxy
 
           element.Attributes.Append(lAttr);
         }
+
+        /*
+        lXPath = "/root/page/button/sr/bitmapEntry/fileName";
+
+        /*
+        "bitmapEntry": {
+          "fileName
+          }
+
+        lElements = xmlDoc.SelectNodes(lXPath);
+
+        foreach(XmlElement element in lElements)
+        {
+          var lAttr = xmlDoc.CreateAttribute("Object", lNamespace);
+
+          lAttr.Value = "true";
+
+          element.Attributes.Append(lAttr);
+        }
+        */
       }
       catch(Exception ex)
       {
@@ -601,7 +627,8 @@ namespace ICSP.WebProxy.Proxy
           foreach(var button in lButtons)
           {
             // "na": "Logo_AVS",
-            if((string)button["na"] == "Logo_AVS")
+            // "na": "ZurÃ¼ck",
+            if(((string)button["na"]).StartsWith("Zur"))
             {
               var lStr = button.ToString();
 
@@ -724,37 +751,23 @@ namespace ICSP.WebProxy.Proxy
               item?.Parent?.Remove();
 
             // Button Press
-            var lEvents = button.SelectTokens("$.ep..pgFlip");
+            var lEvents = button.SelectTokens("$.ep..pgFlip.[*]");
 
             foreach(var evt in lEvents)
             {
-              try
-              {
-                evt["item"]?.Parent.Remove();
+              evt["item"]?.Parent.Remove();
 
-                ((JArray)button["pf"]).Add(evt);
-              }
-              catch(Exception ex)
-              {
-                // Console.WriteLine(ex.Message);
-              }
+              ((JArray)button["pf"]).Add(evt);
             }
 
             // Button Release
-            lEvents = button.SelectTokens("$.er..pgFlip");
+            lEvents = button.SelectTokens("$.er..pgFlip.[*]");
 
             foreach(var evt in lEvents)
             {
-              try
-              {
-                evt["item"]?.Parent.Remove();
+              evt["item"]?.Parent.Remove();
 
-                ((JArray)button["pf"]).Add(evt);
-              }
-              catch(Exception ex)
-              {
-                // Console.WriteLine(ex.Message);
-              }
+              ((JArray)button["pf"]).Add(evt);
             }
 
             button["ep"]?.Parent.Remove();

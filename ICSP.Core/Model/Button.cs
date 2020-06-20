@@ -11,7 +11,6 @@ namespace ICSP.Core.Model
   {
     /// <summary>
     /// Button Type<br/>
-    /// (general, multiGeneral, bargraph, multiBargraph, textArea, subPageView, listView)
     /// </summary>
     [JsonProperty("type", Order = 1)]
     public ButtonType Type { get; set; }
@@ -84,7 +83,6 @@ namespace ICSP.Core.Model
 
     /// <summary>
     /// Drag/Drop Type (G5 Only)<br/>
-    /// (none, draggable, drop target)
     /// </summary>
     [DefaultValue(DragDropType.None)]
     [JsonProperty("ddt", Order = 12, DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
@@ -97,7 +95,7 @@ namespace ICSP.Core.Model
     public string DropGroup { get; set; }
 
     /// <summary>
-    /// Touch Style  (bounding, passThru)
+    /// Touch Style
     /// </summary>
     [DefaultValue(TouchStyle.ActiveTouch)]
     [JsonProperty("hs", Order = 14, DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
@@ -114,45 +112,51 @@ namespace ICSP.Core.Model
     /// <summary>
     /// MultiGeneral: State Count
     /// </summary>
-    [JsonProperty("stateCount", Order = 15)]
+    [DefaultValue(2)]
+    [JsonProperty("stateCount", Order = 16, DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
     public int StateCount { get; set; }
 
     /// <summary>
-    /// MultiGeneral: State Count
+    /// MultiGeneral: Range Count
     /// </summary>
-    [JsonProperty("rm", Order = 15)]
-    public int rm { get; set; }
+    [JsonProperty("rm", Order = 17, DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
+    [DefaultValue(2)]
+    public int RangeCount { get; set; }
 
     /// <summary>
     /// MultiGeneral: Animate Time Up
     /// </summary>
-    [JsonProperty("nu", Order = 15)]
+    [DefaultValue(2)]
+    [JsonProperty("nu", Order = 18, DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
     public int AnimateTimeUp { get; set; }
 
     /// <summary>
     /// MultiGeneral: Animate Time Down
     /// </summary>
-    [JsonProperty("nd", Order = 15)]
+    [DefaultValue(2)]
+    [JsonProperty("nd", Order = 19, DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
     public int AnimateTimeDown { get; set; }
     
     /// <summary>
     /// MultiGeneral: Auto-Repeat
     /// </summary>
     [JsonConverter(typeof(BoolConverter))]
-    [JsonProperty("ar", Order = 15, DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
+    [JsonProperty("ar", Order = 20, DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
     public bool AutoRepeat { get; set; }
 
     /// <summary>
-    /// MultiGeneral: ru
+    /// MultiGeneral: Animate Range Up
     /// </summary>
-    [JsonProperty("ru", Order = 15)]
-    public int ru { get; set; }
+    [DefaultValue(2)]
+    [JsonProperty("ru", Order = 21, DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
+    public int AnimateRangeUp { get; set; }
 
     /// <summary>
-    /// MultiGeneral: rd
+    /// MultiGeneral: Animate Range Down
     /// </summary>
-    [JsonProperty("rd", Order = 15)]
-    public int rd { get; set; }
+    [DefaultValue(2)]
+    [JsonProperty("rd", Order = 22, DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
+    public int AnimateRangeDown { get; set; }
     
     #endregion
 
@@ -160,14 +164,14 @@ namespace ICSP.Core.Model
     /// Disabled
     /// </summary>
     [JsonConverter(typeof(BoolConverter))]
-    [JsonProperty("da", Order = 16, DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
+    [JsonProperty("da", Order = 23, DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
     public bool Disabled { get; set; }
 
     /// <summary>
     /// Hidden
     /// </summary>
     [JsonConverter(typeof(BoolConverter))]
-    [JsonProperty("hd", Order = 17, DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
+    [JsonProperty("hd", Order = 24, DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
     public bool Hidden { get; set; }
 
     #region Bargraph
@@ -176,25 +180,25 @@ namespace ICSP.Core.Model
     /// Bargraph: Value Direction
     /// </summary>
     [DefaultValue(ValueDirection.Vertical)]
-    [JsonProperty("dr", Order = 17, DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
+    [JsonProperty("dr", Order = 25, DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
     public ValueDirection ValueDirection { get; set; }
     
     /// <summary>
     /// Multi-State-Bargraph: Touch Map
     /// </summary>
-    [JsonProperty("tm", Order = 17, NullValueHandling = NullValueHandling.Ignore)]
+    [JsonProperty("tm", Order = 26, NullValueHandling = NullValueHandling.Ignore)]
     public string TouchMap { get; set; }
 
     /// <summary>
     /// Bargraph: Slider Name
     /// </summary>
-    [JsonProperty("sd", Order = 17, DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
+    [JsonProperty("sd", Order = 27, DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
     public SliderType SliderName { get; set; }
 
     /// <summary>
     /// Bargraph: Slider Color
     /// </summary>
-    [JsonProperty("sc", Order = 17, NullValueHandling = NullValueHandling.Ignore)]
+    [JsonProperty("sc", Order = 28, NullValueHandling = NullValueHandling.Ignore)]
     public string SliderColor { get; set; }
 
     #endregion
@@ -204,14 +208,21 @@ namespace ICSP.Core.Model
     /// <summary>
     /// Joystick: Cursor Name
     /// </summary>
-    [JsonProperty("cd", Order = 17, NullValueHandling = NullValueHandling.Ignore)]
+    [JsonProperty("cd", Order = 29, NullValueHandling = NullValueHandling.Ignore)]
     public string CursorName { get; set; }
 
     /// <summary>
     /// Joystick: Cursor Color
     /// </summary>
-    [JsonProperty("cc", Order = 17, NullValueHandling = NullValueHandling.Ignore)]
+    [JsonProperty("cc", Order = 30, NullValueHandling = NullValueHandling.Ignore)]
     public string CursorColor { get; set; }
+
+    /// <summary>
+    /// Joystick: Range Aux Inverted
+    /// </summary>
+    [JsonConverter(typeof(BoolConverter))]
+    [JsonProperty("ji", Order = 31, DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
+    public bool RangeAuxInverted { get; set; }
 
     #endregion
 
@@ -220,34 +231,169 @@ namespace ICSP.Core.Model
     /// <summary>
     /// TextInput: Password Character
     /// </summary>
-    [JsonProperty("pc", Order = 17, NullValueHandling = NullValueHandling.Ignore)]
+    [JsonProperty("pc", Order = 32, NullValueHandling = NullValueHandling.Ignore)]
     public string PasswordCharacter { get; set; }
 
     /// <summary>
     /// TextInput: DisplayType
     /// </summary>
-    [JsonProperty("dt", Order = 20, DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
+    [JsonProperty("dt", Order = 33, DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
     public DisplayType DisplayType { get; set; }
 
     /// <summary>
     /// TextInput: Max Text Length
     /// </summary>
-    [JsonProperty("mt", Order = 20, DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
+    [JsonProperty("mt", Order = 34, DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
     public int MaxTextLength { get; set; }
 
     /// <summary>
     /// TextInput: Input Mask
     /// </summary>
-    [JsonProperty("im", Order = 17, NullValueHandling = NullValueHandling.Ignore)]
+    [JsonProperty("im", Order = 35, NullValueHandling = NullValueHandling.Ignore)]
     public string InputMask { get; set; }
 
     #endregion
 
+    #region Computer Control
+
     /// <summary>
-    /// Touch Style  (bounding, passThru)
+    /// ComputerControl: Remote Host
+    /// </summary>
+    [JsonProperty("ho", Order = 36, NullValueHandling = NullValueHandling.Ignore)]
+    public string RemoteHost { get; set; }
+
+    /// <summary>
+    /// ComputerControl: Remote Port
+    /// </summary>
+    [DefaultValue(5900)]
+    [JsonProperty("rp", Order = 37, DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
+    public int RemotePort { get; set; }
+
+    /// <summary>
+    /// ComputerControl: Password
+    /// </summary>
+    [JsonProperty("pw", Order = 38, NullValueHandling = NullValueHandling.Ignore)]
+    public object Password { get; set; }
+
+    /// <summary>
+    /// ComputerControl: Color Depth
+    /// </summary>
+    [JsonProperty("cl", Order = 39, DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
+    public int ColorDepth { get; set; }
+
+    /// <summary>
+    /// ComputerControl: Compression
+    /// </summary>
+    [JsonConverter(typeof(BoolConverter))]
+    [JsonProperty("cr", Order = 40, DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
+    public bool Compression { get; set; }
+
+    /// <summary>
+    /// ComputerControl: Scale To Fit
+    /// </summary>
+    [JsonConverter(typeof(BoolConverter))]
+    [JsonProperty("sf", Order = 41, DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
+    public bool ScaleToFit { get; set; }
+
+    /// <summary>
+    /// ComputerControl: TakeNote Enabled
+    /// </summary>
+    [JsonConverter(typeof(BoolConverter))]
+    [JsonProperty("ea", Order = 42, DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
+    public bool TakeNoteEnabled { get; set; }
+
+    /// <summary>
+    /// ComputerControl: TakeNote Host
+    /// </summary>
+    [JsonProperty("ha", Order = 43, NullValueHandling = NullValueHandling.Ignore)]
+    public string TakeNoteHost { get; set; }
+
+    /// <summary>
+    /// ComputerControl: TakeNote Port
+    /// </summary>
+    [DefaultValue(1541)]
+    [JsonProperty("pa", Order = 44, DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
+    public int TakeNotePort { get; set; }
+
+    #endregion
+
+    #region Sub-Page View
+
+    /// <summary>
+    /// Sub-Page View: Sub Page Set (Index)
+    /// </summary>
+    [JsonProperty("st", Order = 45, DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
+    public int SubPageSet { get; set; }
+
+    /// <summary>
+    /// Sub-Page View: Orientation
+    /// </summary>
+    [DefaultValue(Orientation.Horizontal)]
+    [JsonProperty("on", Order = 46, DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
+    public Orientation Orientation { get; set; }
+
+    /// <summary>
+    /// Sub-Page View: Spacing (%)
+    /// </summary>
+    [JsonProperty("sa", Order = 47, DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
+    public int Spacing { get; set; }
+
+    /// <summary>
+    /// Sub-Page View: Anchor Position
+    /// </summary>
+    [DefaultValue(AnchorPosition.Center)]
+    [JsonProperty("we", Order = 48, DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
+    public AnchorPosition AnchorPosition { get; set; }
+
+    /// <summary>
+    /// Sub-Page View: Wrap Sub-Pages
+    /// </summary>
+    [JsonConverter(typeof(BoolConverter))]
+    [JsonProperty("ws", Order = 49, DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
+    public bool WrapSubPages { get; set; }
+
+    /// <summary>
+    /// Sub-Page View: Show Sub-Pages
+    /// </summary>
+    [DefaultValue(true)]
+    [JsonConverter(typeof(BoolConverter))]
+    [JsonProperty("sw", Order = 50, DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
+    public bool ShowSubPages { get; set; }
+   
+    /// <summary>
+    /// Sub-Page View: Allow Dynamic Reordering
+    /// </summary>
+    [JsonConverter(typeof(BoolConverter))]
+    [JsonProperty("dy", Order = 51, DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
+    public bool AllowDynamicReordering { get; set; }
+
+    /// <summary>
+    /// Sub-Page View: Reset View on Show
+    /// </summary>
+    [JsonConverter(typeof(BoolConverter))]
+    [JsonProperty("rs", Order = 52, DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
+    public bool ResetViewOnShow { get; set; }
+
+    /// <summary>
+    /// Sub-Page View: Scrollbar
+    /// </summary>
+    [JsonConverter(typeof(BoolConverter))]
+    [JsonProperty("ba", Order = 53, DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
+    public bool Scrollbar { get; set; }
+
+    /// <summary>
+    /// Sub-Page View: Scrollbar Offset
+    /// </summary>
+    [JsonProperty("bo", Order = 54, DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
+    public int ScrollbarOffset { get; set; }
+    
+    #endregion
+
+    /// <summary>
+    /// Password Protection
     /// </summary>
     [DefaultValue(PasswordProtection.None)]
-    [JsonProperty("pp", Order = 18, DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
+    [JsonProperty("pp", Order = 55, DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
     public PasswordProtection PasswordProtection { get; set; }
 
     // ============================================================================================
@@ -258,33 +404,33 @@ namespace ICSP.Core.Model
     /// Feedback
     /// </summary>
     [DefaultValue(FeedbackType.Channel)]
-    [JsonProperty("fb", Order = 19, DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
+    [JsonProperty("fb", Order = 56, DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
     public FeedbackType Feedback { get; set; }
 
     /// <summary>
     /// Address Port
     /// </summary>
     [DefaultValue(1)]
-    [JsonProperty("ap", Order = 20, DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
+    [JsonProperty("ap", Order = 57, DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
     public int AddressPort { get; set; }
 
     /// <summary>
     /// Address Code
     /// </summary>
-    [JsonProperty("ad", Order = 21, DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
+    [JsonProperty("ad", Order = 58, DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
     public int AddressCode { get; set; }
 
     /// <summary>
     /// Channel Port
     /// </summary>
     [DefaultValue(1)]
-    [JsonProperty("cp", Order = 22, DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
+    [JsonProperty("cp", Order = 59, DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
     public int ChannelPort { get; set; }
 
     /// <summary>
     /// Channel Code
     /// </summary>
-    [JsonProperty("ch", Order = 23, DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
+    [JsonProperty("ch", Order = 60, DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
     public int ChannelCode { get; set; }
 
     /// <summary>
@@ -292,113 +438,125 @@ namespace ICSP.Core.Model
     /// (sByte, sint, "slong"long, int)
     /// </summary>
     [DefaultValue(RangeType.Byte)]
-    [JsonProperty("rt", Order = 24, DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
+    [JsonProperty("rt", Order = 61, DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
     public RangeType RangeType { get; set; }
 
     /// <summary>
     /// Level Control Type
     /// </summary>
     [DefaultValue(LevelControlType.None)]
-    [JsonProperty("vt", Order = 25, DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
+    [JsonProperty("vt", Order = 62, DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
     public LevelControlType LevelControlType { get; set; }
 
     /// <summary>
     /// Level Port
     /// </summary>
     [DefaultValue(1)]
-    [JsonProperty("lp", Order = 26, DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
+    [JsonProperty("lp", Order = 63, DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
     public int LevelPort { get; set; }
 
     /// <summary>
     /// Level Code
     /// </summary>
-    [JsonProperty("lv", Order = 27, DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
+    [JsonProperty("lv", Order = 64, DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
     public int LevelCode { get; set; }
 
     /// <summary>
     /// Bargraph: Level Function
     /// </summary>
     [DefaultValue(LevelFunction.DisplayOnly)]
-    [JsonProperty("lf", Order = 27, DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
+    [JsonProperty("lf", Order = 65, DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
     public LevelFunction LevelFunction { get; set; }
 
     /// <summary>
     /// Level Control Value
     /// </summary>
-    [JsonProperty("va", Order = 28, DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
+    [JsonProperty("va", Order = 66, DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
     public int LevelControlValue { get; set; }
 
     /// <summary>
     /// Range Low
     /// </summary>
-    [JsonProperty("rl", Order = 29)]
+    [JsonProperty("rl", Order = 67)]
     public int RangeLow { get; set; }
 
     /// <summary>
     /// Range High
     /// </summary>
-    [JsonProperty("rh", Order = 30)]
+    [JsonProperty("rh", Order = 68)]
     public int RangeHigh { get; set; }
 
     /// <summary>
     /// Bargraph: Range Drag Increment
     /// </summary>
-    [JsonProperty("rn", Order = 30)]
+    [JsonProperty("rn", Order = 69, DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
     public int RangeDragIncrement { get; set; }
 
     /// <summary>
     /// Bargraph: Range Inverted
     /// </summary>
     [JsonConverter(typeof(BoolConverter))]
-    [JsonProperty("ri", Order = 30, DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
+    [JsonProperty("ri", Order = 70, DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
     public bool RangeInverted { get; set; }
 
     /// <summary>
     /// Range Time Up
     /// </summary>
     [DefaultValue(2)]
-    [JsonProperty("lu", Order = 31, DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
+    [JsonProperty("lu", Order = 71, DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
     public int RangeTimeUp { get; set; }
 
     /// <summary>
     /// Range Time Down
     /// </summary>
     [DefaultValue(2)]
-    [JsonProperty("ld", Order = 32, DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
+    [JsonProperty("ld", Order = 72, DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
     public int RangeTimeDown { get; set; }
 
     /// <summary>
     /// String Output Port (G4 Only)
     /// </summary>
     [DefaultValue(1)]
-    [JsonProperty("so", Order = 33, DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
+    [JsonProperty("so", Order = 73, DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
     public int StringOutputPort { get; set; }
 
     /// <summary>
     /// String Output (G4 Only)
     /// </summary>
-    [JsonProperty("op", Order = 34, NullValueHandling = NullValueHandling.Ignore)]
+    [JsonProperty("op", Order = 74, NullValueHandling = NullValueHandling.Ignore)]
     public string StringOutput { get; set; }
 
     /// <summary>
     /// Command Output Port (G4 Only)
     /// </summary>
     [DefaultValue(21)]
-    [JsonProperty("co", Order = 35, DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
+    [JsonProperty("co", Order = 75, DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
     public int CommandOutputPort { get; set; }
 
     /// <summary>
     /// Command Output (G4 Only)
     /// </summary>
-    [JsonProperty("cm", Order = 36, NullValueHandling = NullValueHandling.Ignore)]
+    [JsonProperty("cm", Order = 76, NullValueHandling = NullValueHandling.Ignore)]
     public string CommandOutput { get; set; }
 
     /// <summary>
-    /// Unknown (G4)
+    /// Page Flip Animation (G4 Only)
     /// </summary>
-    [JsonProperty("ac", Order = 37)]
-    public object ac { get; set; } // { "di": "0" },
+    [JsonProperty("ac", Order = 77, NullValueHandling = NullValueHandling.Ignore)]
+    public PageFlipAnimation PageFlipAnimation { get; set; }
+    
+    /// <summary>
+    /// Page Flip: Animation Time (tenths/sec) (G4 Only)
+    /// </summary>
+    [JsonProperty("at", Order = 78, DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
+    public int PageFlipAnimationTime { get; set; }
 
+    /// <summary>
+    /// Page Flips (G4 Only)
+    /// </summary>
+    [JsonProperty("pf", Order = 79, NullValueHandling = NullValueHandling.Ignore)]
+    public List<PageFlip> PageFlips { get; set; }
+    
     // ============================================================================================
     // TAB: States
     // ============================================================================================
@@ -406,84 +564,84 @@ namespace ICSP.Core.Model
     /// <summary>
     /// States
     /// </summary>
-    [JsonProperty("sr", Order = 38)]
-    public IList<State> States { get; set; }
+    [JsonProperty("sr", Order = 80)]
+    public List<State> States { get; set; }
 
     // ============================================================================================
     // TAB: Events (G5 Only)
     // ============================================================================================
 
     /// <summary>
-    /// Events: Button Press
+    /// G5 Events: Button Press
     /// </summary>
-    [JsonProperty("ep", Order = 39)]
-    public Events EventsButtonPress { get; set; }
+    [JsonProperty("ep", Order = 81)]
+    public ActionEvents EventsButtonPress { get; set; }
 
     /// <summary>
-    /// Events: Button Release
+    /// G5 Events: Button Release
     /// </summary>
-    [JsonProperty("er", Order = 40)]
-    public Events EventsButtonRelease { get; set; }
+    [JsonProperty("er", Order = 82)]
+    public ActionEvents EventsButtonRelease { get; set; }
 
     /// <summary>
-    /// Events: Gesture Any
+    /// G5 Events: Gesture Any
     /// </summary>
-    [JsonProperty("ga", Order = 41)]
-    public Events EventsGestureAny { get; set; }
+    [JsonProperty("ga", Order = 83)]
+    public ActionEvents EventsGestureAny { get; set; }
 
     /// <summary>
-    /// Events: Gesture Up
+    /// G5 Events: Gesture Up
     /// </summary>
-    [JsonProperty("gu", Order = 42)]
-    public Events EventsGestureUp { get; set; }
+    [JsonProperty("gu", Order = 84)]
+    public ActionEvents EventsGestureUp { get; set; }
 
     /// <summary>
-    /// Events: Gesture Down
+    /// G5 Events: Gesture Down
     /// </summary>
-    [JsonProperty("gd", Order = 43)]
-    public Events EventsGestureDown { get; set; }
+    [JsonProperty("gd", Order = 85)]
+    public ActionEvents EventsGestureDown { get; set; }
 
     /// <summary>
-    /// Events: Gesture Right
+    /// G5 Events: Gesture Right
     /// </summary>
-    [JsonProperty("gr", Order = 44)]
-    public Events EventsGestureRight { get; set; }
+    [JsonProperty("gr", Order = 86)]
+    public ActionEvents EventsGestureRight { get; set; }
 
     /// <summary>
-    /// Events: Gesture Left
+    /// G5 Events: Gesture Left
     /// </summary>
-    [JsonProperty("gl", Order = 45)]
-    public Events EventsGestureLeft { get; set; }
+    [JsonProperty("gl", Order = 87)]
+    public ActionEvents EventsGestureLeft { get; set; }
 
     /// <summary>
-    /// Events: Gesture Double-Tap
+    /// G5 Events: Gesture Double-Tap
     /// </summary>
-    [JsonProperty("gt", Order = 46)]
-    public Events EventsGestureDoubleTap { get; set; }
+    [JsonProperty("gt", Order = 88)]
+    public ActionEvents EventsGestureDoubleTap { get; set; }
 
     /// <summary>
-    /// Events: Gesture 2-Finger Up
+    /// G5 Events: Gesture 2-Finger Up
     /// </summary>
-    [JsonProperty("tu", Order = 47)]
-    public Events EventsGesture2FingerUp { get; set; }
+    [JsonProperty("tu", Order = 89)]
+    public ActionEvents EventsGesture2FingerUp { get; set; }
 
     /// <summary>
-    /// Events: Gesture 2-Finger Down
+    /// G5 Events: Gesture 2-Finger Down
     /// </summary>
-    [JsonProperty("td", Order = 48)]
-    public Events EventsGesture2FingerDown { get; set; }
+    [JsonProperty("td", Order = 90)]
+    public ActionEvents EventsGesture2FingerDown { get; set; }
 
     /// <summary>
-    /// Events: Gesture 2-Finger Right
+    /// G5 Events: Gesture 2-Finger Right
     /// </summary>
-    [JsonProperty("tr", Order = 49)]
-    public Events EventsGesture2FingerRight { get; set; }
+    [JsonProperty("tr", Order = 91)]
+    public ActionEvents EventsGesture2FingerRight { get; set; }
 
     /// <summary>
-    /// Events: Gesture 2-Finger Left
+    /// G5 Events: Gesture 2-Finger Left
     /// </summary>
-    [JsonProperty("tl", Order = 50)]
-    public Events EventsGesture2FingerLeft { get; set; }
+    [JsonProperty("tl", Order = 92)]
+    public ActionEvents EventsGesture2FingerLeft { get; set; }
 
     /*
     <dst / ==> Events: 
