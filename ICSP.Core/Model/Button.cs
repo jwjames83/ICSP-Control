@@ -10,7 +10,7 @@ namespace ICSP.Core.Model
   public class Button
   {
     /// <summary>
-    /// Button Type<br/>
+    /// Button Type
     /// </summary>
     [JsonProperty("type", Order = 1)]
     public ButtonType Type { get; set; }

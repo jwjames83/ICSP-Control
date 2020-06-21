@@ -12,6 +12,9 @@ namespace ICSP.Core.Model
     Popup,
 
     [EnumMember(Value = "subpage")]
-    SubPage
+    SubPage,
+
+    [EnumMember(Value = "appwindow")]
+    AppWindow,
   }
 }

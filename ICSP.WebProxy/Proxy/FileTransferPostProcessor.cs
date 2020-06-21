@@ -8,6 +8,7 @@ using System.Xml;
 
 using ICSP.Core.Logging;
 using ICSP.Core.Model;
+using ICSP.Core.Model.ProjectProperties;
 using ICSP.WebProxy.Json;
 using ICSP.WebProxy.Properties;
 
@@ -44,12 +45,46 @@ namespace ICSP.WebProxy.Proxy
 
         mJsonList = new Dictionary<string, string>();
 
-        var lXmlDoc = new XmlDocument();
+        var lSuccess = false;
 
-        var lFiles = lDir
-          .EnumerateFiles()
-          .Where(file => file.Extension.Equals(".xml", StringComparison.OrdinalIgnoreCase) || file.Extension.Equals(".xma", StringComparison.OrdinalIgnoreCase))
-          .ToList();
+        var lFiles = new List<FileInfo>();
+
+        try
+        {
+          var lProjectFile = Path.Combine(lDir.FullName, "prj.xma");
+
+          if(ReadFileToJson(lProjectFile) is string lJson)
+          {
+            var lProject = JsonConvert.DeserializeObject<Project>(lJson);
+
+            foreach(var file in lProject.PageList)
+              lFiles.Add(new FileInfo(Path.Combine(lDir.FullName, file.File)));
+
+            // icon.xma
+            var lFile = new FileInfo(Path.Combine(lDir.FullName, "icon.xma"));
+            if(lFile.Exists)
+              lFiles.Add(lFile);
+
+            // fnt.xma
+            lFile = new FileInfo(Path.Combine(lDir.FullName, "fnt.xma"));
+            if(lFile.Exists)
+              lFiles.Add(lFile);
+
+            lSuccess = true;
+          }
+        }
+        catch(Exception ex)
+        {
+          Client.LogError(ex.Message);
+        }
+
+        if(!lSuccess)
+        {
+          lFiles = lDir
+            .EnumerateFiles()
+            .Where(file => file.Extension.Equals(".xml", StringComparison.OrdinalIgnoreCase) || file.Extension.Equals(".xma", StringComparison.OrdinalIgnoreCase))
+            .ToList();
+        }
 
         foreach(var fileInfo in lFiles)
         {
@@ -63,31 +98,8 @@ namespace ICSP.WebProxy.Proxy
               case "manifest.xma": continue;
             }
 
-            var lXml = File.ReadAllText(fileInfo.FullName);
-
-            // Wrong encoded xml
-            // Convert ISO-8859-1 to UTF-8 (ZurÃ¼ck -> Zurück, LÃ¶schen -> Löschen, etc.)
-            lXml = Encoding.UTF8.GetString(Encoding.GetEncoding("ISO-8859-1").GetBytes(lXml));
-
-            lXmlDoc.LoadXml(lXml);
-
-            // Remove XmlDeclaration
-            foreach(XmlNode node in lXmlDoc)
-            {
-              if(node.NodeType == XmlNodeType.XmlDeclaration)
-                lXmlDoc.RemoveChild(node);
-            }
-
-            // Force nodes to be rendered as an Array
-            JsonConfigureArrays(lXmlDoc);
-
-            var lJson = JsonConvert.SerializeXmlNode(lXmlDoc, Newtonsoft.Json.Formatting.Indented, true);
-
-            // <page type="page">
-            // JSON.NET and Replacing @ Sign in XML to JSON conversion
-            lJson = (Regex.Replace(lJson, "(?<=\")(@)(?!.*\":\\s )", string.Empty, RegexOptions.IgnoreCase));
-
-            mJsonList.Add(fileInfo.Name, lJson);
+            if(ReadFileToJson(fileInfo.FullName) is string lJson)
+              mJsonList.Add(fileInfo.Name, lJson);
           }
           catch(Exception ex)
           {
@@ -96,6 +108,158 @@ namespace ICSP.WebProxy.Proxy
             Client.LogDebug("CreateJsonList: Error, Message={0:l}", ex.Message);
           }
         }
+      }
+      catch(Exception ex)
+      {
+        Client.LogError(ex.Message);
+      }
+    }
+
+    private string ReadFileToJson(string path)
+    {
+      try
+      {
+        if(File.Exists(path))
+        {
+          var lXml = File.ReadAllText(path);
+
+          // Wrong encoded xml
+          // Convert ISO-8859-1 to UTF-8 (ZurÃ¼ck -> Zurück, LÃ¶schen -> Löschen, etc.)
+          lXml = Encoding.UTF8.GetString(Encoding.GetEncoding("ISO-8859-1").GetBytes(lXml));
+
+          var lXmlDoc = new XmlDocument();
+
+          lXmlDoc.LoadXml(lXml);
+
+          // Remove XmlDeclaration
+          foreach(XmlNode node in lXmlDoc)
+          {
+            if(node.NodeType == XmlNodeType.XmlDeclaration)
+              lXmlDoc.RemoveChild(node);
+          }
+
+          // Force nodes to be rendered as an Array
+          JsonConfigureArrays(lXmlDoc);
+
+          var lJson = JsonConvert.SerializeXmlNode(lXmlDoc, Newtonsoft.Json.Formatting.Indented, true);
+
+          // <page type="page">
+          // JSON.NET and Replacing @ Sign in XML to JSON conversion
+          return (Regex.Replace(lJson, "(?<=\")(@)(?!.*\":\\s )", string.Empty, RegexOptions.IgnoreCase));
+        }
+      }
+      catch(Exception ex)
+      {
+        Client.LogError(ex.Message);
+      }
+
+      return null;
+    }
+
+    private void JsonConfigureArrays(XmlDocument xmlDoc)
+    {
+      try
+      {
+        /*
+        From Json.NET documentation: http://james.newtonking.com/projects/json/help/?topic=html/ConvertingJSONandXML.htm
+        You can force a node to be rendered as an Array by adding the attribute json:Array='true' to the XML node you are converting to JSON.
+
+        Also, you need to declare the json prefix namespace at the XML header xmlns:json='http://james.newtonking.com/projects/json' or 
+        else you will get an XML error stating that the json prefix is not declared.
+
+        The next example is provided by the documentation:
+        xml = @"<person xmlns:json='http://james.newtonking.com/projects/json' id='1'>
+              <name>Alan</name>
+              <url>http://www.google.com</url>
+              <role json:Array='true'>Admin</role>
+            </person>";
+
+        */
+
+        var lNamespace = "http://james.newtonking.com/projects/json";
+
+        xmlDoc.DocumentElement.SetAttribute("xmlns:json", lNamespace);
+
+        var lXPath = string.Join("|", new[] {
+          
+          // Project
+          "/root/panelSetup/powerUpPopup",                // PowerUpPopup's
+          "/root/pageList",                               // Pages/SubPages (type: page, subpage)
+          "/root/pageList/pageEntry",                     // Pages/SubPages
+          "/root/tableList/tableEntry",                   // G4: List-Tables
+          "/root/tableList/tableEntry/row",               // G4: List-Tables
+          "/root/subPageSets/subPageSetEntry",            // Sub-Page Sets
+          "/root/subPageSets/subPageSetEntry/items/item", // Sub-Page Sets -> Items
+          "/root/dropGroups/dropGroup",                   // G5: DropGroups
+          "/root/dropGroups/dropGroup/dgItems/dgItem",    // G5: DropGroup -> Items
+          "/root/resourceList",                           // Resources (type: image, dataSource)
+          "/root/resourceList/resource",                  // Resources
+          "/root/fwFeatureList/feature",                  // Features
+          "/root/paletteList/palette",                    // Palettes
+
+          "/root/page/button",                            // Buttons
+          "/root/page/button/sr",                         // Buttons States (Button-Type Joystick has only one)
+          "/root/page/button/pf",                         // G4:PageFlips
+          "/root/page/button/sr/bitmapEntry",             // G5:Bitmaps
+
+          // G5: Button Events
+          "/root/page/button/*/pgFlip",                   // Events: Pageflips
+          "/root/page/button/*/launch",                   // Events: Actions -> Launch
+          "/root/page/button/*/command",                  // Events: Actions -> Command
+          "/root/page/button/*/string",                   // Events: Actions -> String
+          "/root/page/button/*/custom",                   // Events: Actions -> Custom
+          
+          /*
+          "/root/page/button/ep",           // Events: Button Press
+          "/root/page/button/er",           // Events: Button Release
+          "/root/page/button/ga",           // Events: Gesture Any
+          "/root/page/button/gu",           // Events: Gesture Up
+          "/root/page/button/gd",           // Events: Gesture Down
+          "/root/page/button/gr",           // Events: Gesture Right
+          "/root/page/button/gl",           // Events: Gesture Left
+          "/root/page/button/gt",           // Events: Gesture Double-Tap
+          "/root/page/button/tu",           // Events: Gesture 2-Finger Up
+          "/root/page/button/td",           // Events: Gesture 2-Finger Down
+          "/root/page/button/tr",           // Events: Gesture 2-Finger Right
+          "/root/page/button/tl",           // Events: Gesture 2-Finger Left
+          "/root/page/button/dst",          // Events
+          "/root/page/button/dca",          // Events
+          "/root/page/button/den",          // Events
+          "/root/page/button/dex",          // Events
+          "/root/page/button/ddr",          // Events
+          */
+        });
+
+        var lElements = xmlDoc.SelectNodes(lXPath);
+
+        foreach(XmlElement element in lElements)
+        {
+          var lAttr = xmlDoc.CreateAttribute("Array", lNamespace);
+
+          lAttr.Value = "true";
+
+          element.Attributes.Append(lAttr);
+        }
+
+        /*
+        lXPath = "/root/page/button/sr/bitmapEntry/fileName";
+
+        /*
+        "bitmapEntry": {
+          "fileName
+          }
+
+        lElements = xmlDoc.SelectNodes(lXPath);
+
+        foreach(XmlElement element in lElements)
+        {
+          var lAttr = xmlDoc.CreateAttribute("Object", lNamespace);
+
+          lAttr.Value = "true";
+
+          element.Attributes.Append(lAttr);
+        }
+        */
       }
       catch(Exception ex)
       {
@@ -250,6 +414,20 @@ namespace ICSP.WebProxy.Proxy
           {
             case "prj.xma":
             {
+              try
+              {
+                // In work, debug stuff for Serialization ...
+                var lStr = lJsonObj?.ToString();
+
+                var lProject = JsonConvert.DeserializeObject<Project>(lStr);
+
+                var lJsonNew = JsonConvert.SerializeObject(lProject, Newtonsoft.Json.Formatting.Indented);
+              }
+              catch(Exception ex)
+              {
+                Console.WriteLine(ex.Message);
+              }
+
               JsonProccessProject(lJsonObj, lSettingsObj);
               break;
             }
@@ -353,110 +531,6 @@ namespace ICSP.WebProxy.Proxy
         var lFileNameJsProject = string.Format(@"{0}\..\js\{1}", lDir.FullName, "project.js");
 
         File.WriteAllText(lFileNameJsProject, lJSonProjStr);
-      }
-      catch(Exception ex)
-      {
-        Client.LogError(ex.Message);
-      }
-    }
-
-    private void JsonConfigureArrays(XmlDocument xmlDoc)
-    {
-      try
-      {
-        /*
-        From Json.NET documentation: http://james.newtonking.com/projects/json/help/?topic=html/ConvertingJSONandXML.htm
-        You can force a node to be rendered as an Array by adding the attribute json:Array='true' to the XML node you are converting to JSON.
-
-        Also, you need to declare the json prefix namespace at the XML header xmlns:json='http://james.newtonking.com/projects/json' or 
-        else you will get an XML error stating that the json prefix is not declared.
-
-        The next example is provided by the documentation:
-        xml = @"<person xmlns:json='http://james.newtonking.com/projects/json' id='1'>
-              <name>Alan</name>
-              <url>http://www.google.com</url>
-              <role json:Array='true'>Admin</role>
-            </person>";
-
-        */
-
-        var lNamespace = "http://james.newtonking.com/projects/json";
-
-        xmlDoc.DocumentElement.SetAttribute("xmlns:json", lNamespace);
-
-        /*
-        /rootresourceList/resource
-        /root/tableList/tableEntry
-        /root/tableList/tableEntry/row
-        */
-
-        var lXPath = string.Join("|", new[] {
-          "/root/panelSetup/powerUpPopup",    // PowerUpPopup's
-          "/root/pageList",                   // Pages/SubPages
-          "/root/pageList/pageEntry",         // Pages/SubPages
-          "/root/page/button",                // Buttons
-          "/root/page/button/sr",             // Buttons States (Button-Type Joystick has only one)
-          "/root/page/button/pf",             // G4:PageFlips
-          "/root/page/button/sr/bitmapEntry", // G5:Bitmaps
-
-          // G5: Button Events
-          "/root/page/button/*/pgFlip",       // Events: Pageflips
-          "/root/page/button/*/launch",       // Events: Actions -> Launch
-          "/root/page/button/*/command",      // Events: Actions -> Command
-          "/root/page/button/*/string",       // Events: Actions -> String
-          "/root/page/button/*/custom",       // Events: Actions -> Custom
-          
-          /*
-          "/root/page/button/ep",           // Events: Button Press
-          "/root/page/button/er",           // Events: Button Release
-          "/root/page/button/ga",           // Events: Gesture Any
-          "/root/page/button/gu",           // Events: Gesture Up
-          "/root/page/button/gd",           // Events: Gesture Down
-          "/root/page/button/gr",           // Events: Gesture Right
-          "/root/page/button/gl",           // Events: Gesture Left
-          "/root/page/button/gt",           // Events: Gesture Double-Tap
-          "/root/page/button/tu",           // Events: Gesture 2-Finger Up
-          "/root/page/button/td",           // Events: Gesture 2-Finger Down
-          "/root/page/button/tr",           // Events: Gesture 2-Finger Right
-          "/root/page/button/tl",           // Events: Gesture 2-Finger Left
-          "/root/page/button/dst",          // Events
-          "/root/page/button/dca",          // Events
-          "/root/page/button/den",          // Events
-          "/root/page/button/dex",          // Events
-          "/root/page/button/ddr",          // Events
-          */
-        });
-
-        var lElements = xmlDoc.SelectNodes(lXPath);
-
-        foreach(XmlElement element in lElements)
-        {
-          var lAttr = xmlDoc.CreateAttribute("Array", lNamespace);
-
-          lAttr.Value = "true";
-
-          element.Attributes.Append(lAttr);
-        }
-
-        /*
-        lXPath = "/root/page/button/sr/bitmapEntry/fileName";
-
-        /*
-        "bitmapEntry": {
-          "fileName
-          }
-
-        lElements = xmlDoc.SelectNodes(lXPath);
-
-        foreach(XmlElement element in lElements)
-        {
-          var lAttr = xmlDoc.CreateAttribute("Object", lNamespace);
-
-          lAttr.Value = "true";
-
-          element.Attributes.Append(lAttr);
-        }
-        */
       }
       catch(Exception ex)
       {
@@ -626,15 +700,6 @@ namespace ICSP.WebProxy.Proxy
 
           foreach(var button in lButtons)
           {
-            // "na": "Logo_AVS",
-            // "na": "ZurÃ¼ck",
-            if(((string)button["na"]).StartsWith("Zur"))
-            {
-              var lStr = button.ToString();
-
-              Console.WriteLine(button);
-            }
-
             JsonConvertStates((JObject)button);
 
             // Set null or add (not needed)
@@ -947,6 +1012,13 @@ namespace ICSP.WebProxy.Proxy
 
           parent.Add(lStatesObj.Property("states"));
         }
+
+        // --------------------------------------------------------
+        // popupType="appwindow"
+        // states: Add empty array if not exists (needed)
+        // --------------------------------------------------------
+        if(parent["states"] == null)
+          parent["states"] = JObject.Parse("{ '1': { } }");
       }
       catch(Exception ex)
       {
