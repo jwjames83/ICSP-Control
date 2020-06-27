@@ -246,7 +246,7 @@ namespace ICSPControl.Dialogs
       await Manager.CreateDeviceInfoAsync(new DeviceInfoData(e.Device, Manager.CurrentLocalIpAddress) { System = e.System });
 
       // Request ProgramInfo ...
-      await Manager.SendAsync(MsgCmdRequestDiscoveryInfo.CreateRequest(Manager.SystemDevice, DynamicDevice, 0x1F));
+      // await Manager.SendAsync(MsgCmdRequestDiscoveryInfo.CreateRequest(Manager.SystemDevice, DynamicDevice, 0x1F));
     }
 
     private void OnDeviceOnline(object sender, DeviceInfoData e)

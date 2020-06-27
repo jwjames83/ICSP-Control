@@ -21,21 +21,30 @@ namespace ICSP.WebProxy.Proxy
   {
     private Dictionary<string, string> mJsonList;
 
+    private List<Font> mFontsG4;
+
+    private List<Font> mFontsG5;
+
     public FileTransferPostProcessor(ProxyClient client)
     {
       Client = client;
+
+      mJsonList = new Dictionary<string, string>();
+
+      mFontsG4 = new List<Font>();
+
+      mFontsG5 = new List<Font>();
     }
 
     public ProxyClient Client { get; private set; }
 
     public void ProcessFiles()
     {
-      CreateJsonList();
-
-      ProccessJsonList();
+      if(CreateJsonList())
+        ProccessJsonList();
     }
 
-    private void CreateJsonList()
+    private bool CreateJsonList()
     {
       try
       {
@@ -43,7 +52,11 @@ namespace ICSP.WebProxy.Proxy
 
         Client.LogDebug("CreateJsonList: Directory={0}", lDir.FullName);
 
-        mJsonList = new Dictionary<string, string>();
+        mJsonList.Clear();
+
+        mFontsG4.Clear();
+
+        mFontsG5.Clear();
 
         var lSuccess = false;
 
@@ -57,18 +70,46 @@ namespace ICSP.WebProxy.Proxy
           {
             var lProject = JsonConvert.DeserializeObject<Project>(lJson);
 
+            // fnt.xma
+            var lFile = new FileInfo(Path.Combine(lDir.FullName, "fnt.xma"));
+            if(lFile.Exists)
+              lFiles.Add(lFile);
+
+            // G5: fonts.xma
+            lFile = new FileInfo(Path.Combine(lDir.FullName, lProject.SupportFileList.FontFile));
+            if(lFile.Exists)
+              lFiles.Add(lFile);
+
             foreach(var file in lProject.PageList)
               lFiles.Add(new FileInfo(Path.Combine(lDir.FullName, file.File)));
 
-            // icon.xma
-            var lFile = new FileInfo(Path.Combine(lDir.FullName, "icon.xma"));
+            // prj.xma
+            lFile = new FileInfo(Path.Combine(lDir.FullName, "prj.xma"));
             if(lFile.Exists)
               lFiles.Add(lFile);
 
-            // fnt.xma
-            lFile = new FileInfo(Path.Combine(lDir.FullName, "fnt.xma"));
+            // icon.xma
+            lFile = new FileInfo(Path.Combine(lDir.FullName, "icon.xma"));
             if(lFile.Exists)
               lFiles.Add(lFile);
+
+            // pal_001.xma / pal_002.xma / ...
+            lFile = new FileInfo(Path.Combine(lDir.FullName, lProject.SupportFileList.ColorFile));
+            if(lFile.Exists)
+              lFiles.Add(lFile);
+
+            var lHtml = Resources.MainPage;
+            var lProjectPath = new DirectoryInfo(Client.Manager.FileManager.BaseDirectory);
+
+            lHtml = lHtml?
+              .Replace("{title}", lProject.ProjectInfo.JobName)
+              .Replace("{width}", lProject.PanelSetup.ScreenWidth.ToString())
+              .Replace("{height}", lProject.PanelSetup.ScreenHeight.ToString())
+              .Replace("{projectPath}", lProjectPath.Name);
+
+            var lFileNameMainPage = string.Format(@"{0}\..\{1}", lDir.FullName, "index.html");
+
+            File.WriteAllText(lFileNameMainPage, lHtml);
 
             lSuccess = true;
           }
@@ -76,6 +117,10 @@ namespace ICSP.WebProxy.Proxy
         catch(Exception ex)
         {
           Client.LogError(ex.Message);
+
+          // Client.LogWarn("CreateJsonList: Directory={0}", lDir.FullName);
+
+          return false;
         }
 
         if(!lSuccess)
@@ -106,13 +151,19 @@ namespace ICSP.WebProxy.Proxy
             Logger.LogError(ex);
 
             Client.LogDebug("CreateJsonList: Error, Message={0:l}", ex.Message);
+
+            return false;
           }
         }
       }
       catch(Exception ex)
       {
         Client.LogError(ex.Message);
+
+        return false;
       }
+
+      return true;
     }
 
     private string ReadFileToJson(string path)
@@ -124,8 +175,8 @@ namespace ICSP.WebProxy.Proxy
           var lXml = File.ReadAllText(path);
 
           // Wrong encoded xml
-          // Convert ISO-8859-1 to UTF-8 (ZurÃ¼ck -> Zurück, LÃ¶schen -> Löschen, etc.)
-          lXml = Encoding.UTF8.GetString(Encoding.GetEncoding("ISO-8859-1").GetBytes(lXml));
+          // Convert Windows-1252 to UTF-8 (ZurÃ¼ck -> Zurück, LÃ¶schen -> Löschen, etc.)
+          lXml = Encoding.UTF8.GetString(Encoding.GetEncoding(1252).GetBytes(lXml));
 
           var lXmlDoc = new XmlDocument();
 
@@ -271,12 +322,17 @@ namespace ICSP.WebProxy.Proxy
     {
       try
       {
-        var lDir = new DirectoryInfo(Path.Combine(Client.Manager.FileManager.BaseDirectory, "AMXPanel"));
+        var lDir = new DirectoryInfo(Path.Combine(Client?.Manager?.FileManager?.BaseDirectory ?? string.Empty, "AMXPanel"));
 
         Client.LogDebug("ProccessJsonList: Directory={0}", lDir.FullName);
 
-        if((mJsonList?.Count ?? 0) == 0)
+        if((mJsonList?.Count ?? 0) < 6)
+        {
+          Client.LogInformation(string.Format("ProcessFiles: FileCount={0}, processing was aborted because Readable FileCount < 6", mJsonList?.Count));
+          Client.LogInformation(string.Format("ProcessFiles: Important for G5 Panels: XML-Files in G5-Designs are always encrypted. Excecute from Menu: [Panel]/[Verify Function Maps] in TPDesign5 before send."));
+
           return;
+        }
 
         /*
         WebControl 1.7.0 JavaScript Project-Structure:
@@ -441,6 +497,12 @@ namespace ICSP.WebProxy.Proxy
               JsonProccessFonts(lJsonObj, (JObject)lJsonProject["fonts"]);
               break;
             }
+            case "fonts.xma": // G5
+            {
+              JsonProccessFontsG5(lJsonObj);
+
+              break;
+            }
             default:
             {
               switch(lProperty?.Name)
@@ -520,10 +582,17 @@ namespace ICSP.WebProxy.Proxy
           }
         }
 
+        // Process Fonts
+        JsonConvertButtonFonts(lJsonProject);
+
         // Read all chameleon images
         JsonGenerateChameleonImages(lJsonProject, Path.Combine(lDir.FullName, "images"));
 
+        Client.LogInformation("Project Serialize Start ...");
+
         var lJSonProjStr = lJsonProject.ToString(Newtonsoft.Json.Formatting.Indented, new WebControlJsonConverter());
+
+        Client.LogInformation("Project Serialize End ...");
 
         // JavaScript
         lJSonProjStr = $"var project = {lJSonProjStr}";
@@ -531,6 +600,8 @@ namespace ICSP.WebProxy.Proxy
         var lFileNameJsProject = string.Format(@"{0}\..\js\{1}", lDir.FullName, "project.js");
 
         File.WriteAllText(lFileNameJsProject, lJSonProjStr);
+
+        Client.LogInformation($"Project Write: FileName={lFileNameJsProject} End ...");
       }
       catch(Exception ex)
       {
@@ -604,6 +675,16 @@ namespace ICSP.WebProxy.Proxy
     {
       try
       {
+        try
+        {
+          if(source["fontList"]?["font"] is JArray allfonts)
+            mFontsG4.AddRange(JsonConvert.DeserializeObject<List<Font>>(allfonts.ToString()));
+        }
+        catch(Exception ex)
+        {
+          Console.WriteLine(ex.Message);
+        }
+
         var lFontsObj = new JObject(new JProperty("fonts", new JObject()));
 
         // <root><fontList><font number="{n}">...
@@ -624,6 +705,78 @@ namespace ICSP.WebProxy.Proxy
       catch(Exception ex)
       {
         Client.LogError(ex.Message);
+      }
+    }
+
+    private void JsonProccessFontsG5(JToken source)
+    {
+      try
+      {
+        if(source["fontList"]?["font"] is JArray fonts)
+          mFontsG5.AddRange(JsonConvert.DeserializeObject<List<Font>>(fonts.ToString()));
+      }
+      catch(Exception ex)
+      {
+        Console.WriteLine(ex.Message);
+      }
+    }
+
+    private void JsonConvertButtonFonts(JObject project)
+    {
+      try
+      {
+        var lMaxFontIndex = mFontsG4.Max(s => s.Number);
+
+        // Fonts
+        var lStates = project.SelectTokens("$..states..[?(@ff)]").ToList();
+
+        foreach(var state in lStates)
+        {
+          var lFontFace = (string)state["ff"];
+          var lFontSize = (int)(state["fs"] ?? 0);
+
+          state["ff"]?.Parent?.Remove();
+          state["fs"]?.Parent?.Remove();
+
+          var lG4Font = mFontsG4.FirstOrDefault(p => p.File == lFontFace && p.Size == lFontSize);
+
+          if(lG4Font != null)
+          {
+            state["fi"] = lG4Font.Number;
+          }
+          else
+          {
+            var lFullName = mFontsG5.FirstOrDefault(p => p.File == lFontFace)?.FullName;
+
+            if(lFullName == null)
+              lFullName = lFontFace.Replace(".ttf", "");
+
+            var lFont = new Font()
+            {
+              Number = ++lMaxFontIndex,
+              File = lFontFace,
+              Size = lFontSize,
+              Name = lFullName,
+              SubFamilyName = "Regular",
+              FullName = lFullName,
+            };
+
+            mFontsG4.Add(lFont);
+
+            var lFontObj = JObject.Parse(JsonConvert.SerializeObject(lFont));
+
+            lFontObj["number"]?.Parent?.Remove();
+            lFontObj["faceIndex"]?.Parent?.Remove();
+
+            ((JObject)project["fonts"]).Merge(new JObject(new JProperty(lFont.Number.ToString(), lFontObj)));
+
+            state["fi"] = lFont.Number.ToString();
+          }
+        }
+      }
+      catch(Exception ex)
+      {
+        Console.WriteLine(ex.Message);
       }
     }
 
@@ -838,6 +991,34 @@ namespace ICSP.WebProxy.Proxy
             button["ep"]?.Parent.Remove();
             button["er"]?.Parent.Remove();
 
+            // Remove poperties where not used in WebControl
+            button["ac"]?.Parent.Remove();
+
+            // G5: Gesture poperties
+            button["ga"]?.Parent.Remove();
+            button["gu"]?.Parent.Remove();
+            button["gd"]?.Parent.Remove();
+            button["gr"]?.Parent.Remove();
+            button["gl"]?.Parent.Remove();
+            button["gt"]?.Parent.Remove();
+            button["tu"]?.Parent.Remove();
+            button["td"]?.Parent.Remove();
+            button["tr"]?.Parent.Remove();
+            button["tl"]?.Parent.Remove();
+            button["dst"]?.Parent.Remove();
+            button["dca"]?.Parent.Remove();
+            button["den"]?.Parent.Remove();
+            button["dex"]?.Parent.Remove();
+            button["ddr"]?.Parent.Remove();
+
+            /*
+            Convert G5 FontNamily & FontSize to G4 FontIndex
+            ------------------------------------------------
+            "ff": "avenirltstd-book.ttf",
+            "fs": "10",
+            "fi": "12",
+            */
+
             // PageFlips: Add empty array if not exists (needed)
             if(button["pf"] == null)
             {
@@ -1003,7 +1184,10 @@ namespace ICSP.WebProxy.Proxy
           {
             var lNumber = (string)sr["number"];
 
-            sr["number"].Parent.Remove();
+            sr["number"]?.Parent?.Remove();
+
+            if(sr["te"] != null)
+              sr["te"] = ((string)sr["te"])?.Replace("\r", "&#13").Replace("\n", "&#10").Replace(" ", "&nbsp;");
 
             ((JObject)lStatesObj["states"]).Add(new JProperty(lNumber, sr));
           }

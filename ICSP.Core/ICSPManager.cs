@@ -231,6 +231,8 @@ namespace ICSP.Core
 
         SystemDevice = AmxDevice.Empty;
 
+        // Do not remove devices!
+        // After restart Master controller, master does ping ...
         mDevices.Clear();
 
         var lKeys = MemoryCache.Default.Select(s => s.Key).ToList();
@@ -263,9 +265,13 @@ namespace ICSP.Core
         {
           case MsgCmdAck m:
           {
-            if(MemoryCache.Default.Get(m.ID.ToString()) is DeviceInfoData deviceInfo)
+            var lKey = CreateDeviceInfoKey(m.ID);
+
+            if(MemoryCache.Default.Get(lKey) is DeviceInfoData deviceInfo)
             {
-              MemoryCache.Default.Remove(m.ID.ToString());
+              MemoryCache.Default.Remove(lKey);
+
+              Logger.LogInfo("MsgCmdAck: ID=0x{0:X4}, Device={1}, System={2}, DeviceId={3}, Name={4:l}", m.ID, deviceInfo.Device, deviceInfo.System, deviceInfo.DeviceId, deviceInfo.Name);
 
               deviceInfo.System = m.Source.System;
 
@@ -279,7 +285,7 @@ namespace ICSP.Core
             }
             else
             {
-              Logger.LogWarn("MsgCmdAck: ID={0} unknown!", m.ID);
+              Logger.LogWarn("MsgCmdAck: ID=0x{0:X4} unknown!", m.ID);
             }
 
             break;
@@ -343,6 +349,18 @@ namespace ICSP.Core
               var lRequest = MsgCmdGetEthernetIpAddress.CreateRequest(m.Source, m.Dest, mClient.LocalIpAddress);
 
               await SendAsync(lRequest);
+            }
+            else
+            {
+              var lRequest = MsgCmdGetEthernetIpAddress.CreateRequest(m.Source, m.Dest, mClient.LocalIpAddress);
+
+              await SendAsync(lRequest);
+
+              /*
+              lRequest = MsgCmdStatus.CreateRequest(m.Source, m.Dest, m.Dest, StatusType.Reset, 0, "Sorry, was offline ...");
+
+              await SendAsync(lRequest);
+              */
             }
 
             break;
@@ -457,13 +475,20 @@ namespace ICSP.Core
       {
         if(arguments.CacheItem.Value is DeviceInfoData deviceInfo)
         {
-          Logger.LogDebug(false, "-----------------------------------------------------------------------------------------------------");
-          Logger.LogDebug(false, "Device Offline: Device={0}, Name={1:l}, IPv4Address={2:l}", deviceInfo.Device, deviceInfo.Name, deviceInfo.IPv4Address);
-          Logger.LogDebug(false, "-----------------------------------------------------------------------------------------------------");
+          if(arguments.CacheItem.Key.StartsWith("CreateDeviceInfoAsync:"))
+          {
+            Logger.LogWarn(false, "No response for {0:l}, Device={1}, Name={2:l}, IPv4Address={3:l}", arguments.CacheItem.Key, deviceInfo.Device, deviceInfo.Name, deviceInfo.IPv4Address);
+          }
+          else
+          {
+            Logger.LogDebug(false, "-----------------------------------------------------------------------------------------------------");
+            Logger.LogDebug(false, "Device Offline: Device={0}, Name={1:l}, IPv4Address={2:l}", deviceInfo.Device, deviceInfo.Name, deviceInfo.IPv4Address);
+            Logger.LogDebug(false, "-----------------------------------------------------------------------------------------------------");
 
-          var lResult = mDevices.TryRemove(deviceInfo.Device, out _);
+            var lResult = mDevices.TryRemove(deviceInfo.Device, out _);
 
-          DeviceOffline?.Invoke(this, deviceInfo);
+            DeviceOffline?.Invoke(this, deviceInfo);
+          }
         }
       }
     }
@@ -546,9 +571,13 @@ namespace ICSP.Core
 
       var lDeviceRequest = MsgCmdDeviceInfo.CreateRequest(lDest, lSource, deviceInfo);
 
-      var lPolicy = new CacheItemPolicy { AbsoluteExpiration = DateTime.Now.AddSeconds(5), RemovedCallback = OnCacheEntryRemovedCallback };
+      // 30 Sec: If controller is startup, response need a short short time ...
+      var lPolicy = new CacheItemPolicy { AbsoluteExpiration = DateTime.Now.AddSeconds(30), RemovedCallback = OnCacheEntryRemovedCallback };
 
-      MemoryCache.Default.Set(lDeviceRequest.ID.ToString(), deviceInfo, lPolicy);
+      // Add this request to identify the Ack-Message
+      MemoryCache.Default.Set(CreateDeviceInfoKey(lDeviceRequest.ID), deviceInfo, lPolicy);
+
+      Logger.LogInfo("ID=0x{0:X4}, Device={1}, System={2}, DeviceId={3}, Name={4:l}, PortCount={5}", lDeviceRequest.ID, deviceInfo.Device, deviceInfo.System, deviceInfo.DeviceId, deviceInfo.Name, portCount);
 
       await SendAsync(lDeviceRequest);
 
@@ -594,6 +623,11 @@ namespace ICSP.Core
         Logger.LogDebug(false, "ICSPManager.Send[2]: Source={0:l}, Dest={1:l}", request.Source, request.Dest);
         Logger.LogError(false, "ICSPManager.Send[3]: Client is offline");
       }
+    }
+
+    private string CreateDeviceInfoKey(ushort id)
+    {
+      return string.Format("CreateDeviceInfoAsync:ID=0x{0:X4}", id);
     }
   }
 }

@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using System.Xml;
@@ -13,6 +14,7 @@ using ICSP.Core;
 using ICSP.Core.Client;
 using ICSP.Core.IO;
 using ICSP.Core.Logging;
+using ICSP.Core.Manager.ConfigurationManager;
 using ICSP.Core.Manager.DeviceManager;
 
 using ICSPControl.Extensions;

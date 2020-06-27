@@ -9,9 +9,6 @@ namespace ICSP.WebProxy.Json
   {
     public override bool CanConvert(Type objectType)
     {
-      if(objectType != typeof(string))
-        Console.WriteLine(objectType);
-
       return objectType == typeof(string);
     }
 

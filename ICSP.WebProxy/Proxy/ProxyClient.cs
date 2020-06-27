@@ -185,6 +185,8 @@ namespace ICSP.WebProxy.Proxy
             }
           }
         });
+
+      await Task.CompletedTask;
     }
 
     private async void OnWebMessage(object sender, MessageEventArgs e)
@@ -356,7 +358,9 @@ namespace ICSP.WebProxy.Proxy
       }
       else
       {
-        StartConnectionTimer();
+        // StartConnectionTimer();
+
+        Socket?.CloseAsync(WebSocketCloseStatus.EndpointUnavailable, "Device Offline", CancellationToken.None);
       }
     }
 
@@ -379,6 +383,8 @@ namespace ICSP.WebProxy.Proxy
       LogInformation($"Device={e.Device}, System={e.System}, Name={e.Name}");
 
       await SendAsync(Converter.DeviceOffline());
+
+      Socket?.CloseAsync(WebSocketCloseStatus.EndpointUnavailable, "Device Offline", CancellationToken.None);
     }
 
     private async void OnManagerChannelEvent(object sender, ChannelEventArgs e)

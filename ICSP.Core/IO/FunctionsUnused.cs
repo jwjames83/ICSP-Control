@@ -6,6 +6,11 @@
   public enum FunctionsUnused
   {
     /// <summary>
+    /// Negative Acknowledgement 
+    /// </summary>
+    Nak = 0x0001,
+
+    /// <summary>
     /// Get Directory Information
     /// </summary>
     GetDirectoryInfo = 0x0100,

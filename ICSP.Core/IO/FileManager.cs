@@ -108,6 +108,14 @@ namespace ICSP.Core.IO
         {
           switch((FunctionsUnused)m.Function)
           {
+            case FunctionsUnused.Nak: // 0x0001
+            {
+              var lErrorCode = (FileTransferStatusCode)m.FileData.GetBigEndianInt16(0);
+
+              Logger.LogError(false, "FileManager[Nak]: ErrorCode=0x{0:X4} ({1})", (int)lErrorCode, lErrorCode);
+
+              return null;
+            }
             case FunctionsUnused.GetDirectoryInfo: // 0x0100
             {
               return await GetDirectoryInfoAsync(m);
@@ -142,7 +150,7 @@ namespace ICSP.Core.IO
             }
             default:
             {
-              Logger.LogWarn(false, "FileManager[ProcessMessage]: Unknown function: FileType=Unused, Function=0x{1:X4}", m.Function);
+              Logger.LogWarn(false, "FileManager[ProcessMessage]: Unknown function: FileType=Unused, Function=0x{0:X4}", m.Function);
 
               return MsgCmdFileTransfer.CreateRequest(m.Source, m.Dest, FileType.Unused, FileTransferFunction.Ack);
             }

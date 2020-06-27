@@ -194,6 +194,7 @@
     <Compile Include="Model\ActionEventCustom.cs" />
     <Compile Include="Model\ActionEventString.cs" />
     <Compile Include="Model\ActionEventCommand.cs" />
+    <Compile Include="Model\Fonts.cs" />
     <Compile Include="Model\LaunchAction.cs" />
     <Compile Include="Model\BitmapEntry.cs" />
     <Compile Include="Model\BorderStyle.cs" />
