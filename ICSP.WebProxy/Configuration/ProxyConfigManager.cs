@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.WebSockets;
 using System.Text.RegularExpressions;
 
@@ -38,7 +39,7 @@ namespace ICSP.WebProxy.Configuration
       var lLocalScheme = context.Request.Scheme;
       var lLocalPort = context.Connection.LocalPort;
 
-      foreach(var item in Program.ProxyConfig.Connections)
+      foreach(var item in Program.ProxyConfig.Connections.Where(p => p.Enabled))
       {
         var lMatch = RegexUrl.Match(item.LocalHost);
 
