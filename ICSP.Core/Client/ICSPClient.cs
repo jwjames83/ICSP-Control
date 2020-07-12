@@ -257,7 +257,7 @@ namespace ICSP.Core.Client
 
         while(true)
         {
-          var lBuffer = new byte[mSocket.ReceiveBufferSize];
+          var lBuffer = new byte[mSocket?.ReceiveBufferSize ?? 0];
 
           var lCount = await mStream.ReadAsync(lBuffer, 0, lBuffer.Length, cancellationToken);
 

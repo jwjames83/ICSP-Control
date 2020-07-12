@@ -13,6 +13,7 @@ using ICSP.Core.IO;
 using ICSP.Core.Manager.DeviceManager;
 using ICSP.WebProxy.Configuration;
 using ICSP.WebProxy.Converter;
+using ICSP.WebProxy.WebControl;
 
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
@@ -139,6 +140,9 @@ namespace ICSP.WebProxy.Proxy
           DeviceConfig.RemotePort = lPort;
       }
 
+      if(DeviceConfig.RemotePort == 0)
+        DeviceConfig.RemotePort = ICSPClient.DefaultPort;
+
       if(ushort.TryParse(context.Request.Query["device"], out var lDevice))
       {
         if(lDevice > 0)
@@ -160,31 +164,31 @@ namespace ICSP.WebProxy.Proxy
       // WebControl does transmit 'PortCount' from project.settings.portCount on WebSocket online-event.
       _ = Task.Run(async () =>
       {
-          await Task.Delay(1000);
+        await Task.Delay(1000);
 
-          if(Manager.IsConnected)
+        if(Manager.IsConnected)
+        {
+          await CreateDeviceInfoAsync();
+        }
+        else
+        {
+          // Start monitoring auto reconnect
+          StartConnectionTimer();
+
+          try
           {
-            await CreateDeviceInfoAsync();
+            LogInformation($"Try connect, Host={DeviceConfig.RemoteHost}, Port={DeviceConfig.RemotePort}");
+
+            await Manager.ConnectAsync(DeviceConfig.RemoteHost, DeviceConfig.RemotePort);
           }
-          else
+          catch(Exception ex)
           {
-            // Start monitoring auto reconnect
-            StartConnectionTimer();
+            LogError(ex.Message);
 
-            try
-            {
-              LogInformation($"Try connect, Host={DeviceConfig.RemoteHost}, Port={DeviceConfig.RemotePort}");
-
-              await Manager.ConnectAsync(DeviceConfig.RemoteHost, DeviceConfig.RemotePort);
-            }
-            catch(Exception ex)
-            {
-              LogError(ex.Message);
-
-              await SendAsync(ex.Message);
-            }
+            await SendAsync(ex.Message);
           }
-        });
+        }
+      });
 
       await Task.CompletedTask;
     }
@@ -198,8 +202,15 @@ namespace ICSP.WebProxy.Proxy
 
       var lMsg = Converter.ToDevMessage(e.Message);
 
-      if(lMsg != null)
-        await Manager.SendAsync(lMsg);
+      try
+      {
+        if(lMsg != null)
+          await Manager.SendAsync(lMsg);
+      }
+      catch(Exception ex)
+      {
+        LogError(ex.Message);
+      }
     }
 
     public async Task SendAsync(string message)
@@ -522,17 +533,17 @@ namespace ICSP.WebProxy.Proxy
 
     #region Log & Connection stuff
 
-    internal void LogError(string message, [CallerMemberName]string callerName = "(Caller name not set)")
+    internal void LogError(string message, [CallerMemberName] string callerName = "(Caller name not set)")
     {
       mLogger.LogError($"[{nameof(ProxyClient)}][{SocketId:00}][{callerName}]: {message}");
     }
 
-    internal void LogInformation(string message, [CallerMemberName]string callerName = "(Caller name not set)")
+    internal void LogInformation(string message, [CallerMemberName] string callerName = "(Caller name not set)")
     {
       mLogger.LogInformation($"[{nameof(ProxyClient)}][{SocketId:00}][{callerName}]: {message}".Replace("\u0002", "[$02]").Replace("\u0003", "[$03]"));
     }
 
-    internal void LogDebug(string message, [CallerMemberName]string callerName = "(Caller name not set)")
+    internal void LogDebug(string message, [CallerMemberName] string callerName = "(Caller name not set)")
     {
       mLogger.LogDebug($"[{nameof(ProxyClient)}][{SocketId:00}][{callerName}]: {message}".Replace("\u0002", "[$02]").Replace("\u0003", "[$03]"));
     }

@@ -10,7 +10,7 @@ namespace ICSP.Core.Model.ProjectProperties
   public class DropGroup
   {
     [JsonExtensionData]
-    private IDictionary<string, JToken> mAdditionalData;
+    private readonly IDictionary<string, JToken> mAdditionalData;
 
     public DropGroup()
     {

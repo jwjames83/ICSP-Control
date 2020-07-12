@@ -10,7 +10,7 @@ namespace ICSP.Core.Model
   public class Fonts : List<Font>
   {
     [JsonExtensionData]
-    private IDictionary<string, JToken> mAdditionalData;
+    private readonly IDictionary<string, JToken> mAdditionalData;
 
     public Fonts()
     {
@@ -104,7 +104,7 @@ namespace ICSP.Core.Model
     [JsonProperty("file", Order = 1)]
     public string File { get; set; }
 
-    [JsonProperty("fileSize", Order = 2)]
+    [JsonProperty("fileSize", Order = 2, DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
     public int FileSize { get; set; }
 
     [JsonProperty("faceIndex", Order = 3)]

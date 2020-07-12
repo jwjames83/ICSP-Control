@@ -1,5 +1,7 @@
 ﻿using System;
 
+using Microsoft.VisualBasic.CompilerServices;
+
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -9,7 +11,7 @@ namespace ICSP.WebProxy.Json
   {
     public override bool CanConvert(Type objectType)
     {
-      return objectType == typeof(string);
+      return objectType == typeof(string) || objectType.IsPrimitive || objectType.IsEnum;
     }
 
     public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
@@ -19,29 +21,44 @@ namespace ICSP.WebProxy.Json
 
     public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
     {
-      JToken lToken = JToken.FromObject(value);
-      
-      var lPAth = writer.Path;
-
-      if(lToken.Type == JTokenType.String)
+      switch(value)
       {
-        // Except color palettes
-        if(writer.Path.StartsWith("palettes"))
+        case string s:
         {
-          lToken.WriteTo(writer);
-        }
-        else
-        {
-          if(string.IsNullOrEmpty(lToken.ToString()))
-            writer.WriteNull();
+          // Except color palettes
+          if(writer.Path.StartsWith("palettes"))
+          {
+            writer.WriteValue(value);
+          }
           else
-            lToken.WriteTo(writer);
+          {
+            if(string.IsNullOrEmpty(s))
+              writer.WriteNull();
+            else
+              writer.WriteValue(value);
+          }
+
+          break;
         }
-      }
-      else
-      {
-        // Normal serialization
-        lToken.WriteTo(writer);
+        case bool v:
+        {
+          writer.WriteValue(v ? "1" : "0");
+          break;
+        }
+        case Enum v:
+        {
+          writer.WriteValue(((int)value).ToString().ToLower());
+          break;
+        }
+        default:
+        {
+          // In JSON format, numbers and booleans do not have quotes around them, while strings do (see JSON.org).
+          writer.WriteValue(value.ToString().ToLower());
+
+          // writer.WriteValue(value);
+
+          break;
+        }
       }
     }
 

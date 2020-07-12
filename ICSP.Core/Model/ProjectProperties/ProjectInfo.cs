@@ -9,7 +9,7 @@ namespace ICSP.Core.Model.ProjectProperties
   public class ProjectInfo
   {
     [JsonExtensionData]
-    private IDictionary<string, JToken> mAdditionalData;
+    private readonly IDictionary<string, JToken> mAdditionalData;
 
     public ProjectInfo()
     {

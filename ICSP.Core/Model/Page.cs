@@ -50,5 +50,11 @@ namespace ICSP.Core.Model
 
     [JsonProperty("button", Order = 10)]
     public List<Button> Buttons { get; set; }
+
+    /// <summary>
+    /// States
+    /// </summary>
+    [JsonProperty("sr", Order = 11)]
+    public List<State> States { get; set; }
   }
 }

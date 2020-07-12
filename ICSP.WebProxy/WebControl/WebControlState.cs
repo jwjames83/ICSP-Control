@@ -3,18 +3,19 @@ using System.ComponentModel;
 using System.Reflection;
 using System.Runtime.Serialization;
 
-using ICSP.Core.Json;
+using ICSP.Core.Model;
+using ICSP.WebProxy.Json;
 
 using Newtonsoft.Json;
 
-namespace ICSP.Core.Model
+namespace ICSP.WebProxy.WebControl
 {
-  public class State
+  public class WebControlState
   {
     /// <summary>
     /// 1: State Off, 2: State On
     /// </summary>
-    [JsonProperty("number", Order = 1)]
+    [JsonIgnore]
     public int Number { get; set; }
 
     /// <summary>
@@ -169,7 +170,7 @@ namespace ICSP.Core.Model
     /// </summary>
     [JsonProperty("iy", Order = 20, DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
     public int IconOffsetY { get; set; }
-    
+
     /// <summary>
     /// Font Index (G4 Only, Ref -> $fnt.xml)
     /// </summary>
@@ -187,7 +188,7 @@ namespace ICSP.Core.Model
     /// </summary>
     [JsonProperty("fs", Order = 23, DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
     public int FontSize { get; set; }
-
+    
     /// <summary>
     /// Text
     /// </summary>
@@ -222,7 +223,7 @@ namespace ICSP.Core.Model
     /// <summary>
     /// Word Wrap
     /// </summary>
-    [JsonConverter(typeof(BoolConverter))]
+    [JsonConverter(typeof(WebControlBoolConverter))]
     [JsonProperty("ww", Order = 29, DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
     public bool WordWrap { get; set; }
 
@@ -231,7 +232,7 @@ namespace ICSP.Core.Model
     /// </summary>
     [JsonProperty("sd", Order = 30, NullValueHandling = NullValueHandling.Ignore)]
     public string Sound { get; set; }
-    
+
     /// <summary>
     /// Marquee Direction (G4 Only)
     /// </summary>
@@ -241,8 +242,86 @@ namespace ICSP.Core.Model
     /// <summary>
     /// Marquee Repeat (G4 Only)
     /// </summary>
-    [JsonConverter(typeof(BoolConverter))]
+    [JsonConverter(typeof(WebControlBoolConverter))]
     [JsonProperty("mr", Order = 32, DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
     public bool MarqueeRepeat { get; set; }
+
+    public static implicit operator WebControlState(State state)
+    {
+      return new WebControlState()
+      {
+        Number              /**/ = state.Number,
+        DrawOrder           /**/ = state.DrawOrder,
+        BorderStyle         /**/ = state.BorderStyle,
+        ChameleonImage      /**/ = state.ChameleonImage,
+        BorderColor         /**/ = state.BorderColor,
+        FillColor           /**/ = state.FillColor,
+        TextColor           /**/ = state.TextColor,
+        TextEffectColor     /**/ = state.TextEffectColor,
+        OverallOpacity      /**/ = state.OverallOpacity,
+        VideoFill           /**/ = state.VideoFill,
+        StreamingSource     /**/ = state.StreamingSource,
+        Bitmap              /**/ = state.Bitmap,
+        BitmapJustification /**/ = state.BitmapJustification,
+        BitmapOffsetX       /**/ = state.BitmapOffsetX,
+        BitmapOffsetY       /**/ = state.BitmapOffsetY,
+        Bitmaps             /**/ = state.Bitmaps,
+        IconSlot            /**/ = state.IconSlot,
+        IconJustification   /**/ = state.IconJustification,
+        IconOffsetX         /**/ = state.IconOffsetX,
+        IconOffsetY         /**/ = state.IconOffsetY,
+        FontIndex           /**/ = state.FontIndex,
+        Font                /**/ = state.Font,
+        FontSize            /**/ = state.FontSize,
+        Text                /**/ = state.Text,
+        TextJustification   /**/ = state.TextJustification,
+        TextOffsetX         /**/ = state.TextOffsetX,
+        TextOffsetY         /**/ = state.TextOffsetY,
+        TextEffect          /**/ = state.TextEffect,
+        WordWrap            /**/ = state.WordWrap,
+        Sound               /**/ = state.Sound,
+        MarqueeDirection    /**/ = state.MarqueeDirection,
+        MarqueeRepeat       /**/ = state.MarqueeRepeat,
+      };
+    }
+
+    public static implicit operator State(WebControlState state)
+    {
+      return new State()
+      {
+        Number              /**/ = state.Number,
+        DrawOrder           /**/ = state.DrawOrder,
+        BorderStyle         /**/ = state.BorderStyle,
+        ChameleonImage      /**/ = state.ChameleonImage,
+        BorderColor         /**/ = state.BorderColor,
+        FillColor           /**/ = state.FillColor,
+        TextColor           /**/ = state.TextColor,
+        TextEffectColor     /**/ = state.TextEffectColor,
+        OverallOpacity      /**/ = state.OverallOpacity,
+        VideoFill           /**/ = state.VideoFill,
+        StreamingSource     /**/ = state.StreamingSource,
+        Bitmap              /**/ = state.Bitmap,
+        BitmapJustification /**/ = state.BitmapJustification,
+        BitmapOffsetX       /**/ = state.BitmapOffsetX,
+        BitmapOffsetY       /**/ = state.BitmapOffsetY,
+        Bitmaps             /**/ = state.Bitmaps,
+        IconSlot            /**/ = state.IconSlot,
+        IconJustification   /**/ = state.IconJustification,
+        IconOffsetX         /**/ = state.IconOffsetX,
+        IconOffsetY         /**/ = state.IconOffsetY,
+        FontIndex           /**/ = state.FontIndex,
+        Font                /**/ = state.Font,
+        FontSize            /**/ = state.FontSize,
+        Text                /**/ = state.Text,
+        TextJustification   /**/ = state.TextJustification,
+        TextOffsetX         /**/ = state.TextOffsetX,
+        TextOffsetY         /**/ = state.TextOffsetY,
+        TextEffect          /**/ = state.TextEffect,
+        WordWrap            /**/ = state.WordWrap,
+        Sound               /**/ = state.Sound,
+        MarqueeDirection    /**/ = state.MarqueeDirection,
+        MarqueeRepeat       /**/ = state.MarqueeRepeat,
+      };
+    }
   }
 }

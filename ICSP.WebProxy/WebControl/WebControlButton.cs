@@ -1,13 +1,15 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 
-using ICSP.Core.Json;
+using ICSP.Core.Model;
+using ICSP.WebProxy.Json;
 
 using Newtonsoft.Json;
 
-namespace ICSP.Core.Model
+namespace ICSP.WebProxy.WebControl
 {
-  public class Button
+  public class WebControlButton
   {
     /// <summary>
     /// Button Type
@@ -34,7 +36,7 @@ namespace ICSP.Core.Model
     /// <summary>
     /// Lock Button Name
     /// </summary>
-    [JsonConverter(typeof(BoolConverter))]
+    [JsonConverter(typeof(WebControlBoolConverter))]
     [JsonProperty("li", Order = 4, DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
     public bool LockButtonName { get; set; }
 
@@ -71,7 +73,7 @@ namespace ICSP.Core.Model
     /// <summary>
     /// Above Popups (G4 Only)
     /// </summary>
-    [JsonConverter(typeof(BoolConverter))]
+    [JsonConverter(typeof(WebControlBoolConverter))]
     [JsonProperty("vp", Order = 10, DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
     public bool AbovePopups { get; set; }
 
@@ -136,11 +138,11 @@ namespace ICSP.Core.Model
     [DefaultValue(2)]
     [JsonProperty("nd", Order = 19, DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
     public int AnimateTimeDown { get; set; }
-    
+
     /// <summary>
     /// MultiGeneral: Auto-Repeat
     /// </summary>
-    [JsonConverter(typeof(BoolConverter))]
+    [JsonConverter(typeof(WebControlBoolConverter))]
     [JsonProperty("ar", Order = 20, DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
     public bool AutoRepeat { get; set; }
 
@@ -157,20 +159,20 @@ namespace ICSP.Core.Model
     [DefaultValue(2)]
     [JsonProperty("rd", Order = 22, DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
     public int AnimateRangeDown { get; set; }
-    
+
     #endregion
 
     /// <summary>
     /// Disabled
     /// </summary>
-    [JsonConverter(typeof(BoolConverter))]
+    [JsonConverter(typeof(WebControlBoolConverter))]
     [JsonProperty("da", Order = 23, DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
     public bool Disabled { get; set; }
 
     /// <summary>
     /// Hidden
     /// </summary>
-    [JsonConverter(typeof(BoolConverter))]
+    [JsonConverter(typeof(WebControlBoolConverter))]
     [JsonProperty("hd", Order = 24, DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
     public bool Hidden { get; set; }
 
@@ -182,7 +184,7 @@ namespace ICSP.Core.Model
     [DefaultValue(ValueDirection.Vertical)]
     [JsonProperty("dr", Order = 25, DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
     public ValueDirection ValueDirection { get; set; }
-    
+
     /// <summary>
     /// Multi-State-Bargraph: Touch Map
     /// </summary>
@@ -220,7 +222,7 @@ namespace ICSP.Core.Model
     /// <summary>
     /// Joystick: Range Aux Inverted
     /// </summary>
-    [JsonConverter(typeof(BoolConverter))]
+    [JsonConverter(typeof(WebControlBoolConverter))]
     [JsonProperty("ji", Order = 31, DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
     public bool RangeAuxInverted { get; set; }
 
@@ -284,21 +286,21 @@ namespace ICSP.Core.Model
     /// <summary>
     /// ComputerControl: Compression
     /// </summary>
-    [JsonConverter(typeof(BoolConverter))]
+    [JsonConverter(typeof(WebControlBoolConverter))]
     [JsonProperty("cr", Order = 40, DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
     public bool Compression { get; set; }
 
     /// <summary>
     /// ComputerControl: Scale To Fit
     /// </summary>
-    [JsonConverter(typeof(BoolConverter))]
+    [JsonConverter(typeof(WebControlBoolConverter))]
     [JsonProperty("sf", Order = 41, DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
     public bool ScaleToFit { get; set; }
 
     /// <summary>
     /// ComputerControl: TakeNote Enabled
     /// </summary>
-    [JsonConverter(typeof(BoolConverter))]
+    [JsonConverter(typeof(WebControlBoolConverter))]
     [JsonProperty("ea", Order = 42, DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
     public bool TakeNoteEnabled { get; set; }
 
@@ -348,7 +350,7 @@ namespace ICSP.Core.Model
     /// <summary>
     /// Sub-Page View: Wrap Sub-Pages
     /// </summary>
-    [JsonConverter(typeof(BoolConverter))]
+    [JsonConverter(typeof(WebControlBoolConverter))]
     [JsonProperty("ws", Order = 49, DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
     public bool WrapSubPages { get; set; }
 
@@ -356,28 +358,28 @@ namespace ICSP.Core.Model
     /// Sub-Page View: Show Sub-Pages
     /// </summary>
     [DefaultValue(true)]
-    [JsonConverter(typeof(BoolConverter))]
+    [JsonConverter(typeof(WebControlBoolConverter))]
     [JsonProperty("sw", Order = 50, DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
     public bool ShowSubPages { get; set; }
-   
+
     /// <summary>
     /// Sub-Page View: Allow Dynamic Reordering
     /// </summary>
-    [JsonConverter(typeof(BoolConverter))]
+    [JsonConverter(typeof(WebControlBoolConverter))]
     [JsonProperty("dy", Order = 51, DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
     public bool AllowDynamicReordering { get; set; }
 
     /// <summary>
     /// Sub-Page View: Reset View on Show
     /// </summary>
-    [JsonConverter(typeof(BoolConverter))]
+    [JsonConverter(typeof(WebControlBoolConverter))]
     [JsonProperty("rs", Order = 52, DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
     public bool ResetViewOnShow { get; set; }
 
     /// <summary>
     /// Sub-Page View: Scrollbar
     /// </summary>
-    [JsonConverter(typeof(BoolConverter))]
+    [JsonConverter(typeof(WebControlBoolConverter))]
     [JsonProperty("ba", Order = 53, DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
     public bool Scrollbar { get; set; }
 
@@ -386,7 +388,7 @@ namespace ICSP.Core.Model
     /// </summary>
     [JsonProperty("bo", Order = 54, DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
     public int ScrollbarOffset { get; set; }
-    
+
     #endregion
 
     /// <summary>
@@ -495,7 +497,7 @@ namespace ICSP.Core.Model
     /// <summary>
     /// Bargraph: Range Inverted
     /// </summary>
-    [JsonConverter(typeof(BoolConverter))]
+    [JsonConverter(typeof(WebControlBoolConverter))]
     [JsonProperty("ri", Order = 70, DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
     public bool RangeInverted { get; set; }
 
@@ -544,7 +546,7 @@ namespace ICSP.Core.Model
     /// </summary>
     [JsonProperty("ac", Order = 77, NullValueHandling = NullValueHandling.Ignore)]
     public PageFlipAnimation PageFlipAnimation { get; set; }
-    
+
     /// <summary>
     /// Page Flip: Animation Time (tenths/sec) (G4 Only)
     /// </summary>
@@ -555,8 +557,8 @@ namespace ICSP.Core.Model
     /// Page Flips (G4 Only)
     /// </summary>
     [JsonProperty("pf", Order = 79, NullValueHandling = NullValueHandling.Ignore)]
-    public List<PageFlip> PageFlips { get; set; }
-    
+    public List<WebControlPageFlip> PageFlips { get; set; }
+
     // ============================================================================================
     // TAB: States
     // ============================================================================================
@@ -564,83 +566,83 @@ namespace ICSP.Core.Model
     /// <summary>
     /// States
     /// </summary>
-    [JsonProperty("sr", Order = 80)]
-    public List<State> States { get; set; }
+    [JsonProperty("states", Order = 80)]
+    public Dictionary<int, WebControlState> States { get; set; }
 
     // ============================================================================================
     // TAB: Events (G5 Only)
     // ============================================================================================
-
+    
     /// <summary>
     /// G5 Events: Button Press
     /// </summary>
-    [JsonProperty("ep", Order = 81)]
+    [JsonProperty("ep", Order = 81, NullValueHandling = NullValueHandling.Ignore)]
     public ActionEvents EventsButtonPress { get; set; }
 
     /// <summary>
     /// G5 Events: Button Release
     /// </summary>
-    [JsonProperty("er", Order = 82)]
+    [JsonProperty("er", Order = 82, NullValueHandling = NullValueHandling.Ignore)]
     public ActionEvents EventsButtonRelease { get; set; }
 
     /// <summary>
     /// G5 Events: Gesture Any
     /// </summary>
-    [JsonProperty("ga", Order = 83)]
+    [JsonProperty("ga", Order = 83, NullValueHandling = NullValueHandling.Ignore)]
     public ActionEvents EventsGestureAny { get; set; }
 
     /// <summary>
     /// G5 Events: Gesture Up
     /// </summary>
-    [JsonProperty("gu", Order = 84)]
+    [JsonProperty("gu", Order = 84, NullValueHandling = NullValueHandling.Ignore)]
     public ActionEvents EventsGestureUp { get; set; }
 
     /// <summary>
     /// G5 Events: Gesture Down
     /// </summary>
-    [JsonProperty("gd", Order = 85)]
+    [JsonProperty("gd", Order = 85, NullValueHandling = NullValueHandling.Ignore)]
     public ActionEvents EventsGestureDown { get; set; }
 
     /// <summary>
     /// G5 Events: Gesture Right
     /// </summary>
-    [JsonProperty("gr", Order = 86)]
+    [JsonProperty("gr", Order = 86, NullValueHandling = NullValueHandling.Ignore)]
     public ActionEvents EventsGestureRight { get; set; }
 
     /// <summary>
     /// G5 Events: Gesture Left
     /// </summary>
-    [JsonProperty("gl", Order = 87)]
+    [JsonProperty("gl", Order = 87, NullValueHandling = NullValueHandling.Ignore)]
     public ActionEvents EventsGestureLeft { get; set; }
 
     /// <summary>
     /// G5 Events: Gesture Double-Tap
     /// </summary>
-    [JsonProperty("gt", Order = 88)]
+    [JsonProperty("gt", Order = 88, NullValueHandling = NullValueHandling.Ignore)]
     public ActionEvents EventsGestureDoubleTap { get; set; }
 
     /// <summary>
     /// G5 Events: Gesture 2-Finger Up
     /// </summary>
-    [JsonProperty("tu", Order = 89)]
+    [JsonProperty("tu", Order = 89, NullValueHandling = NullValueHandling.Ignore)]
     public ActionEvents EventsGesture2FingerUp { get; set; }
 
     /// <summary>
     /// G5 Events: Gesture 2-Finger Down
     /// </summary>
-    [JsonProperty("td", Order = 90)]
+    [JsonProperty("td", Order = 90, NullValueHandling = NullValueHandling.Ignore)]
     public ActionEvents EventsGesture2FingerDown { get; set; }
 
     /// <summary>
     /// G5 Events: Gesture 2-Finger Right
     /// </summary>
-    [JsonProperty("tr", Order = 91)]
+    [JsonProperty("tr", Order = 91, NullValueHandling = NullValueHandling.Ignore)]
     public ActionEvents EventsGesture2FingerRight { get; set; }
 
     /// <summary>
     /// G5 Events: Gesture 2-Finger Left
     /// </summary>
-    [JsonProperty("tl", Order = 92)]
+    [JsonProperty("tl", Order = 92, NullValueHandling = NullValueHandling.Ignore)]
     public ActionEvents EventsGesture2FingerLeft { get; set; }
 
     /*
@@ -650,5 +652,259 @@ namespace ICSP.Core.Model
     <dex / ==> Events: 
     <ddr / ==> Events: 
     */
+
+    public static implicit operator WebControlButton(Button button)
+    {
+      return new WebControlButton()
+      {
+        Type                      /**/ = button.Type,
+
+        // ============================================================================================
+        // TAB: General
+        // ============================================================================================
+
+        Index                     /**/ = button.Index,
+        Name                      /**/ = button.Name,
+        LockButtonName            /**/ = button.LockButtonName,
+        Description               /**/ = button.Description,
+        Left                      /**/ = button.Left,
+        Top                       /**/ = button.Top,
+        Width                     /**/ = button.Width,
+        Height                    /**/ = button.Height,
+        AbovePopups               /**/ = button.AbovePopups,
+        ZOrder                    /**/ = button.ZOrder,
+        DragDropType              /**/ = button.DragDropType,
+        DropGroup                 /**/ = button.DropGroup,
+        TouchStyle                /**/ = button.TouchStyle,
+        BorderStyle               /**/ = button.BorderStyle,
+        StateCount                /**/ = button.StateCount,
+        RangeCount                /**/ = button.RangeCount,
+        AnimateTimeUp             /**/ = button.AnimateTimeUp,
+        AnimateTimeDown           /**/ = button.AnimateTimeDown,
+        AutoRepeat                /**/ = button.AutoRepeat,
+        AnimateRangeUp            /**/ = button.AnimateRangeUp,
+        AnimateRangeDown          /**/ = button.AnimateRangeDown,
+        Disabled                  /**/ = button.Disabled,
+        Hidden                    /**/ = button.Hidden,
+        ValueDirection            /**/ = button.ValueDirection,
+        TouchMap                  /**/ = button.TouchMap,
+        SliderName                /**/ = button.SliderName,
+        SliderColor               /**/ = button.SliderColor,
+        CursorName                /**/ = button.CursorName,
+        CursorColor               /**/ = button.CursorColor,
+        RangeAuxInverted          /**/ = button.RangeAuxInverted,
+        PasswordCharacter         /**/ = button.PasswordCharacter,
+        DisplayType               /**/ = button.DisplayType,
+        MaxTextLength             /**/ = button.MaxTextLength,
+        InputMask                 /**/ = button.InputMask,
+        RemoteHost                /**/ = button.RemoteHost,
+        RemotePort                /**/ = button.RemotePort,
+        Password                  /**/ = button.Password,
+        ColorDepth                /**/ = button.ColorDepth,
+        Compression               /**/ = button.Compression,
+        ScaleToFit                /**/ = button.ScaleToFit,
+        TakeNoteEnabled           /**/ = button.TakeNoteEnabled,
+        TakeNoteHost              /**/ = button.TakeNoteHost,
+        TakeNotePort              /**/ = button.TakeNotePort,
+        SubPageSet                /**/ = button.SubPageSet,
+        Orientation               /**/ = button.Orientation,
+        Spacing                   /**/ = button.Spacing,
+        AnchorPosition            /**/ = button.AnchorPosition,
+        WrapSubPages              /**/ = button.WrapSubPages,
+        ShowSubPages              /**/ = button.ShowSubPages,
+        AllowDynamicReordering    /**/ = button.AllowDynamicReordering,
+        ResetViewOnShow           /**/ = button.ResetViewOnShow,
+        Scrollbar                 /**/ = button.Scrollbar,
+        ScrollbarOffset           /**/ = button.ScrollbarOffset,
+        PasswordProtection        /**/ = button.PasswordProtection,
+
+        // ============================================================================================
+        // TAB: Programming
+        // ============================================================================================
+
+        Feedback                  /**/ = button.Feedback,
+        AddressPort               /**/ = button.AddressPort,
+        AddressCode               /**/ = button.AddressCode,
+        ChannelPort               /**/ = button.ChannelPort,
+        ChannelCode               /**/ = button.ChannelCode,
+        RangeType                 /**/ = button.RangeType,
+        LevelControlType          /**/ = button.LevelControlType,
+        LevelPort                 /**/ = button.LevelPort,
+        LevelCode                 /**/ = button.LevelCode,
+        LevelFunction             /**/ = button.LevelFunction,
+        LevelControlValue         /**/ = button.LevelControlValue,
+        RangeLow                  /**/ = button.RangeLow,
+        RangeHigh                 /**/ = button.RangeHigh,
+        RangeDragIncrement        /**/ = button.RangeDragIncrement,
+        RangeInverted             /**/ = button.RangeInverted,
+        RangeTimeUp               /**/ = button.RangeTimeUp,
+        RangeTimeDown             /**/ = button.RangeTimeDown,
+        StringOutputPort          /**/ = button.StringOutputPort,
+        StringOutput              /**/ = button.StringOutput,
+        CommandOutputPort         /**/ = button.CommandOutputPort,
+        CommandOutput             /**/ = button.CommandOutput,
+        PageFlipAnimation         /**/ = button.PageFlipAnimation,
+        PageFlipAnimationTime     /**/ = button.PageFlipAnimationTime,
+        PageFlips                 /**/ = button.PageFlips?.Select(s => (WebControlPageFlip)s)?.ToList() ?? new List<WebControlPageFlip>(),
+
+        // ============================================================================================
+        // TAB: States
+        // ============================================================================================
+
+        States                    /**/ = button.States?.ToDictionary(k => k.Number, e => (WebControlState)e) ?? new Dictionary<int, WebControlState>(),
+
+        // ============================================================================================
+        // TAB: Events (G5 Only)
+        // ============================================================================================
+
+        EventsButtonPress         /**/ = button.EventsButtonPress,
+        EventsButtonRelease       /**/ = button.EventsButtonRelease,
+        EventsGestureAny          /**/ = button.EventsGestureAny,
+        EventsGestureUp           /**/ = button.EventsGestureUp,
+        EventsGestureDown         /**/ = button.EventsGestureDown,
+        EventsGestureRight        /**/ = button.EventsGestureRight,
+        EventsGestureLeft         /**/ = button.EventsGestureLeft,
+        EventsGestureDoubleTap    /**/ = button.EventsGestureDoubleTap,
+        EventsGesture2FingerUp    /**/ = button.EventsGesture2FingerUp,
+        EventsGesture2FingerDown  /**/ = button.EventsGesture2FingerDown,
+        EventsGesture2FingerRight /**/ = button.EventsGesture2FingerRight,
+        EventsGesture2FingerLeft  /**/ = button.EventsGesture2FingerLeft,
+
+        /*
+        <dst / ==> Events: 
+        <dca / ==> Events: 
+        <den / ==> Events: 
+        <dex / ==> Events: 
+        <ddr / ==> Events: 
+        */
+      };
+    }
+
+    public static implicit operator Button(WebControlButton button)
+    {
+      return new Button()
+      {
+        Type                      /**/ = button.Type,
+
+        // ============================================================================================
+        // TAB: General
+        // ============================================================================================
+
+        Index                     /**/ = button.Index,
+        Name                      /**/ = button.Name,
+        LockButtonName            /**/ = button.LockButtonName,
+        Description               /**/ = button.Description,
+        Left                      /**/ = button.Left,
+        Top                       /**/ = button.Top,
+        Width                     /**/ = button.Width,
+        Height                    /**/ = button.Height,
+        AbovePopups               /**/ = button.AbovePopups,
+        ZOrder                    /**/ = button.ZOrder,
+        DragDropType              /**/ = button.DragDropType,
+        DropGroup                 /**/ = button.DropGroup,
+        TouchStyle                /**/ = button.TouchStyle,
+        BorderStyle               /**/ = button.BorderStyle,
+        StateCount                /**/ = button.StateCount,
+        RangeCount                /**/ = button.RangeCount,
+        AnimateTimeUp             /**/ = button.AnimateTimeUp,
+        AnimateTimeDown           /**/ = button.AnimateTimeDown,
+        AutoRepeat                /**/ = button.AutoRepeat,
+        AnimateRangeUp            /**/ = button.AnimateRangeUp,
+        AnimateRangeDown          /**/ = button.AnimateRangeDown,
+        Disabled                  /**/ = button.Disabled,
+        Hidden                    /**/ = button.Hidden,
+        ValueDirection            /**/ = button.ValueDirection,
+        TouchMap                  /**/ = button.TouchMap,
+        SliderName                /**/ = button.SliderName,
+        SliderColor               /**/ = button.SliderColor,
+        CursorName                /**/ = button.CursorName,
+        CursorColor               /**/ = button.CursorColor,
+        RangeAuxInverted          /**/ = button.RangeAuxInverted,
+        PasswordCharacter         /**/ = button.PasswordCharacter,
+        DisplayType               /**/ = button.DisplayType,
+        MaxTextLength             /**/ = button.MaxTextLength,
+        InputMask                 /**/ = button.InputMask,
+        RemoteHost                /**/ = button.RemoteHost,
+        RemotePort                /**/ = button.RemotePort,
+        Password                  /**/ = button.Password,
+        ColorDepth                /**/ = button.ColorDepth,
+        Compression               /**/ = button.Compression,
+        ScaleToFit                /**/ = button.ScaleToFit,
+        TakeNoteEnabled           /**/ = button.TakeNoteEnabled,
+        TakeNoteHost              /**/ = button.TakeNoteHost,
+        TakeNotePort              /**/ = button.TakeNotePort,
+        SubPageSet                /**/ = button.SubPageSet,
+        Orientation               /**/ = button.Orientation,
+        Spacing                   /**/ = button.Spacing,
+        AnchorPosition            /**/ = button.AnchorPosition,
+        WrapSubPages              /**/ = button.WrapSubPages,
+        ShowSubPages              /**/ = button.ShowSubPages,
+        AllowDynamicReordering    /**/ = button.AllowDynamicReordering,
+        ResetViewOnShow           /**/ = button.ResetViewOnShow,
+        Scrollbar                 /**/ = button.Scrollbar,
+        ScrollbarOffset           /**/ = button.ScrollbarOffset,
+        PasswordProtection        /**/ = button.PasswordProtection,
+
+        // ============================================================================================
+        // TAB: Programming
+        // ============================================================================================
+
+        Feedback                  /**/ = button.Feedback,
+        AddressPort               /**/ = button.AddressPort,
+        AddressCode               /**/ = button.AddressCode,
+        ChannelPort               /**/ = button.ChannelPort,
+        ChannelCode               /**/ = button.ChannelCode,
+        RangeType                 /**/ = button.RangeType,
+        LevelControlType          /**/ = button.LevelControlType,
+        LevelPort                 /**/ = button.LevelPort,
+        LevelCode                 /**/ = button.LevelCode,
+        LevelFunction             /**/ = button.LevelFunction,
+        LevelControlValue         /**/ = button.LevelControlValue,
+        RangeLow                  /**/ = button.RangeLow,
+        RangeHigh                 /**/ = button.RangeHigh,
+        RangeDragIncrement        /**/ = button.RangeDragIncrement,
+        RangeInverted             /**/ = button.RangeInverted,
+        RangeTimeUp               /**/ = button.RangeTimeUp,
+        RangeTimeDown             /**/ = button.RangeTimeDown,
+        StringOutputPort          /**/ = button.StringOutputPort,
+        StringOutput              /**/ = button.StringOutput,
+        CommandOutputPort         /**/ = button.CommandOutputPort,
+        CommandOutput             /**/ = button.CommandOutput,
+        PageFlipAnimation         /**/ = button.PageFlipAnimation,
+        PageFlipAnimationTime     /**/ = button.PageFlipAnimationTime,
+        PageFlips                 /**/ = button.PageFlips?.Select(s => (PageFlip)s)?.ToList(),
+
+        // ============================================================================================
+        // TAB: States
+        // ============================================================================================
+
+        States                    /**/ = button.States?.Values?.Select(s => (State)s)?.ToList(),
+
+        // ============================================================================================
+        // TAB: Events (G5 Only)
+        // ============================================================================================
+
+        EventsButtonPress         /**/ = button.EventsButtonPress,
+        EventsButtonRelease       /**/ = button.EventsButtonRelease,
+        EventsGestureAny          /**/ = button.EventsGestureAny,
+        EventsGestureUp           /**/ = button.EventsGestureUp,
+        EventsGestureDown         /**/ = button.EventsGestureDown,
+        EventsGestureRight        /**/ = button.EventsGestureRight,
+        EventsGestureLeft         /**/ = button.EventsGestureLeft,
+        EventsGestureDoubleTap    /**/ = button.EventsGestureDoubleTap,
+        EventsGesture2FingerUp    /**/ = button.EventsGesture2FingerUp,
+        EventsGesture2FingerDown  /**/ = button.EventsGesture2FingerDown,
+        EventsGesture2FingerRight /**/ = button.EventsGesture2FingerRight,
+        EventsGesture2FingerLeft  /**/ = button.EventsGesture2FingerLeft,
+
+        /*
+        <dst / ==> Events: 
+        <dca / ==> Events: 
+        <den / ==> Events: 
+        <dex / ==> Events: 
+        <ddr / ==> Events: 
+        */
+      };
+    }
   }
 }

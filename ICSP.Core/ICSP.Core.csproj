@@ -221,6 +221,8 @@
     <Compile Include="Model\PageFlipAnimationType.cs" />
     <Compile Include="Model\PageFlipType.cs" />
     <Compile Include="Model\PageType.cs" />
+    <Compile Include="Model\PaletteDataItem.cs" />
+    <Compile Include="Model\PaletteData.cs" />
     <Compile Include="Model\ProjectProperties\FormatType.cs" />
     <Compile Include="Model\ProjectProperties\ProtocolType.cs" />
     <Compile Include="Model\ProjectProperties\DropGroupItem.cs" />

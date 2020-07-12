@@ -6,24 +6,29 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Xml;
 
-using ICSP.Core.Logging;
+using ICSP.Core.Constants;
 using ICSP.Core.Model;
 using ICSP.Core.Model.ProjectProperties;
 using ICSP.WebProxy.Json;
 using ICSP.WebProxy.Properties;
+using ICSP.WebProxy.Proxy;
 
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace ICSP.WebProxy.Proxy
+namespace ICSP.WebProxy.WebControl
 {
   public class FileTransferPostProcessor
   {
-    private Dictionary<string, string> mJsonList;
+    private readonly Dictionary<string, string> mJsonList;
 
-    private List<Font> mFontsG4;
+    private readonly List<Font> mFontsG4;
 
-    private List<Font> mFontsG5;
+    private readonly List<Font> mFontsG5;
+
+    private readonly List<PaletteData> mPalettes;
+
+    private WebControlProject mProject;
 
     public FileTransferPostProcessor(ProxyClient client)
     {
@@ -34,23 +39,21 @@ namespace ICSP.WebProxy.Proxy
       mFontsG4 = new List<Font>();
 
       mFontsG5 = new List<Font>();
+
+      mPalettes = new List<PaletteData>();
     }
 
     public ProxyClient Client { get; private set; }
 
     public void ProcessFiles()
     {
-      if(CreateJsonList())
-        ProccessJsonList();
-    }
-
-    private bool CreateJsonList()
-    {
       try
       {
-        var lDir = new DirectoryInfo(Path.Combine(Client.Manager.FileManager.BaseDirectory, "AMXPanel"));
+        var lDirectory = new DirectoryInfo(Path.Combine(Client?.Manager?.FileManager?.BaseDirectory ?? string.Empty, "AMXPanel"));
 
-        Client.LogDebug("CreateJsonList: Directory={0}", lDir.FullName);
+        Client?.LogInformation(string.Format("Directory={0:l}", lDirectory.FullName));
+
+        mProject = new WebControlProject();
 
         mJsonList.Clear();
 
@@ -58,80 +61,102 @@ namespace ICSP.WebProxy.Proxy
 
         mFontsG5.Clear();
 
-        var lSuccess = false;
+        mPalettes.Clear();
 
-        var lFiles = new List<FileInfo>();
+        if(CreateJsonList(lDirectory))
+          ProccessJsonList(lDirectory);
+      }
+      catch(Exception ex)
+      {
+        Client?.LogError(ex.Message);
+      }
+    }
 
-        try
+    private bool CreateJsonList(DirectoryInfo directory)
+    {
+      try
+      {
+        Client?.LogDebug(string.Format("Directory={0:l}", directory.FullName));
+
+        var lEncoding = false;
+
+        var lFiles = new Dictionary<string, FileInfo>();
+
+        var lProjectFile = Path.Combine(directory.FullName, "prj.xma");
+
+        var lJson = ReadFileToJson(lProjectFile, false);
+
+        mProject.Settings = JsonConvert.DeserializeObject<Project>(lJson);
+
+        var lPanelInfo = Panels.GetPanelByDeviceType(mProject.Settings.PanelType);
+
+        lEncoding = lPanelInfo.Generation == Core.PanelGeneration.G5;
+
+        // PanelType G5 => Read again with correct encoding
+        if(lEncoding)
         {
-          var lProjectFile = Path.Combine(lDir.FullName, "prj.xma");
+          lJson = ReadFileToJson(lProjectFile, lEncoding);
 
-          if(ReadFileToJson(lProjectFile) is string lJson)
-          {
-            var lProject = JsonConvert.DeserializeObject<Project>(lJson);
+          mProject.Settings = JsonConvert.DeserializeObject<Project>(lJson);
 
-            // fnt.xma
-            var lFile = new FileInfo(Path.Combine(lDir.FullName, "fnt.xma"));
-            if(lFile.Exists)
-              lFiles.Add(lFile);
+          lPanelInfo = Panels.GetPanelByDeviceType(mProject.Settings.PanelType);
 
-            // G5: fonts.xma
-            lFile = new FileInfo(Path.Combine(lDir.FullName, lProject.SupportFileList.FontFile));
-            if(lFile.Exists)
-              lFiles.Add(lFile);
-
-            foreach(var file in lProject.PageList)
-              lFiles.Add(new FileInfo(Path.Combine(lDir.FullName, file.File)));
-
-            // prj.xma
-            lFile = new FileInfo(Path.Combine(lDir.FullName, "prj.xma"));
-            if(lFile.Exists)
-              lFiles.Add(lFile);
-
-            // icon.xma
-            lFile = new FileInfo(Path.Combine(lDir.FullName, "icon.xma"));
-            if(lFile.Exists)
-              lFiles.Add(lFile);
-
-            // pal_001.xma / pal_002.xma / ...
-            lFile = new FileInfo(Path.Combine(lDir.FullName, lProject.SupportFileList.ColorFile));
-            if(lFile.Exists)
-              lFiles.Add(lFile);
-
-            var lHtml = Resources.MainPage;
-            var lProjectPath = new DirectoryInfo(Client.Manager.FileManager.BaseDirectory);
-
-            lHtml = lHtml?
-              .Replace("{title}", lProject.ProjectInfo.JobName)
-              .Replace("{width}", lProject.PanelSetup.ScreenWidth.ToString())
-              .Replace("{height}", lProject.PanelSetup.ScreenHeight.ToString())
-              .Replace("{projectPath}", lProjectPath.Name);
-
-            var lFileNameMainPage = string.Format(@"{0}\..\{1}", lDir.FullName, "index.html");
-
-            File.WriteAllText(lFileNameMainPage, lHtml);
-
-            lSuccess = true;
-          }
-        }
-        catch(Exception ex)
-        {
-          Client.LogError(ex.Message);
-
-          // Client.LogWarn("CreateJsonList: Directory={0}", lDir.FullName);
-
-          return false;
+          lEncoding = lPanelInfo.Generation == Core.PanelGeneration.G5;
         }
 
-        if(!lSuccess)
+        var lFile = new FileInfo(Path.Combine(directory.FullName, mProject.Settings.FontFile ?? string.Empty));
+        if(lFile.Exists && !lFiles.ContainsKey(lFile.FullName))
+          lFiles.Add(lFile.FullName, lFile);
+
+        // G4: fnt.xma
+        lFile = new FileInfo(Path.Combine(directory.FullName, "fnt.xma"));
+        if(lFile.Exists && !lFiles.ContainsKey(lFile.FullName))
+          lFiles.Add(lFile.FullName, lFile);
+
+        // G5: fonts.xma
+        lFile = new FileInfo(Path.Combine(directory.FullName, "fonts.xma"));
+        if(lFile.Exists && !lFiles.ContainsKey(lFile.FullName))
+          lFiles.Add(lFile.FullName, lFile);
+
+        // PageList
+        foreach(var file in mProject.Settings.PageList)
         {
-          lFiles = lDir
-            .EnumerateFiles()
-            .Where(file => file.Extension.Equals(".xml", StringComparison.OrdinalIgnoreCase) || file.Extension.Equals(".xma", StringComparison.OrdinalIgnoreCase))
-            .ToList();
+          lFile = new FileInfo(Path.Combine(directory.FullName, file.File));
+
+          if(lFile.Exists && !lFiles.ContainsKey(lFile.FullName))
+            lFiles.Add(lFile.FullName, lFile);
         }
 
-        foreach(var fileInfo in lFiles)
+        // prj.xma
+        lFile = new FileInfo(Path.Combine(directory.FullName, "prj.xma"));
+        if(lFile.Exists && !lFiles.ContainsKey(lFile.FullName))
+          lFiles.Add(lFile.FullName, lFile);
+
+        // icon.xma
+        lFile = new FileInfo(Path.Combine(directory.FullName, mProject.Settings.IconFile ?? string.Empty));
+        if(lFile.Exists && !lFiles.ContainsKey(lFile.FullName))
+          lFiles.Add(lFile.FullName, lFile);
+
+        // pal_001.xma / pal_002.xma / ...
+        lFile = new FileInfo(Path.Combine(directory.FullName, mProject.Settings.ColorFile ?? string.Empty));
+        if(lFile.Exists && !lFiles.ContainsKey(lFile.FullName))
+          lFiles.Add(lFile.FullName, lFile);
+
+        // Create index.html
+        var lHtml = Resources.MainPage;
+        var lProjectPath = new DirectoryInfo(Client?.Manager?.FileManager?.BaseDirectory ?? string.Empty);
+
+        lHtml = lHtml?
+          .Replace("{title}", mProject.Settings.JobName)
+          .Replace("{width}", mProject.Settings.ScreenWidth.ToString())
+          .Replace("{height}", mProject.Settings.ScreenHeight.ToString())
+          .Replace("{projectPath}", lProjectPath.Name);
+
+        var lFileNameMainPage = string.Format(@"{0}\..\{1}", directory.FullName, "index.html");
+
+        File.WriteAllText(lFileNameMainPage, lHtml);
+
+        foreach(var fileInfo in lFiles.Values)
         {
           try
           {
@@ -143,14 +168,14 @@ namespace ICSP.WebProxy.Proxy
               case "manifest.xma": continue;
             }
 
-            if(ReadFileToJson(fileInfo.FullName) is string lJson)
+            lJson = ReadFileToJson(fileInfo.FullName, lEncoding);
+
+            if(!mJsonList.ContainsKey(fileInfo.Name))
               mJsonList.Add(fileInfo.Name, lJson);
           }
           catch(Exception ex)
           {
-            Logger.LogError(ex);
-
-            Client.LogDebug("CreateJsonList: Error, Message={0:l}", ex.Message);
+            Client?.LogError(string.Format("FileName={0:l}, Message={1:l}", fileInfo.Name, ex.Message));
 
             return false;
           }
@@ -158,7 +183,7 @@ namespace ICSP.WebProxy.Proxy
       }
       catch(Exception ex)
       {
-        Client.LogError(ex.Message);
+        Client?.LogError(ex.Message);
 
         return false;
       }
@@ -166,45 +191,34 @@ namespace ICSP.WebProxy.Proxy
       return true;
     }
 
-    private string ReadFileToJson(string path)
+    private string ReadFileToJson(string path, bool encoding)
     {
-      try
+      var lXml = File.ReadAllText(path);
+
+      // Wrong encoded xml
+      // G5: Convert Windows-1252 to UTF-8 (ZurÃ¼ck -> Zurück, LÃ¶schen -> Löschen, etc.)
+      if(encoding)
+        lXml = Encoding.UTF8.GetString(Encoding.GetEncoding(1252).GetBytes(lXml));
+
+      var lXmlDoc = new XmlDocument();
+
+      lXmlDoc.LoadXml(lXml);
+
+      // Remove XmlDeclaration
+      foreach(XmlNode node in lXmlDoc)
       {
-        if(File.Exists(path))
-        {
-          var lXml = File.ReadAllText(path);
-
-          // Wrong encoded xml
-          // Convert Windows-1252 to UTF-8 (ZurÃ¼ck -> Zurück, LÃ¶schen -> Löschen, etc.)
-          lXml = Encoding.UTF8.GetString(Encoding.GetEncoding(1252).GetBytes(lXml));
-
-          var lXmlDoc = new XmlDocument();
-
-          lXmlDoc.LoadXml(lXml);
-
-          // Remove XmlDeclaration
-          foreach(XmlNode node in lXmlDoc)
-          {
-            if(node.NodeType == XmlNodeType.XmlDeclaration)
-              lXmlDoc.RemoveChild(node);
-          }
-
-          // Force nodes to be rendered as an Array
-          JsonConfigureArrays(lXmlDoc);
-
-          var lJson = JsonConvert.SerializeXmlNode(lXmlDoc, Newtonsoft.Json.Formatting.Indented, true);
-
-          // <page type="page">
-          // JSON.NET and Replacing @ Sign in XML to JSON conversion
-          return (Regex.Replace(lJson, "(?<=\")(@)(?!.*\":\\s )", string.Empty, RegexOptions.IgnoreCase));
-        }
-      }
-      catch(Exception ex)
-      {
-        Client.LogError(ex.Message);
+        if(node.NodeType == XmlNodeType.XmlDeclaration)
+          lXmlDoc.RemoveChild(node);
       }
 
-      return null;
+      // Force nodes to be rendered as an Array
+      JsonConfigureArrays(lXmlDoc);
+
+      var lJson = JsonConvert.SerializeXmlNode(lXmlDoc, Newtonsoft.Json.Formatting.Indented, true);
+
+      // <page type="page">
+      // JSON.NET and Replacing @ Sign in XML to JSON conversion
+      return (Regex.Replace(lJson, "(?<=\")(@)(?!.*\":\\s )", string.Empty, RegexOptions.IgnoreCase));
     }
 
     private void JsonConfigureArrays(XmlDocument xmlDoc)
@@ -247,7 +261,8 @@ namespace ICSP.WebProxy.Proxy
           "/root/resourceList/resource",                  // Resources
           "/root/fwFeatureList/feature",                  // Features
           "/root/paletteList/palette",                    // Palettes
-
+          
+          "/root/page/sr",                                // Page States
           "/root/page/button",                            // Buttons
           "/root/page/button/sr",                         // Buttons States (Button-Type Joystick has only one)
           "/root/page/button/pf",                         // G4:PageFlips
@@ -314,22 +329,20 @@ namespace ICSP.WebProxy.Proxy
       }
       catch(Exception ex)
       {
-        Client.LogError(ex.Message);
+        Client?.LogError(ex.Message);
       }
     }
 
-    private void ProccessJsonList()
+    private void ProccessJsonList(DirectoryInfo directory)
     {
       try
       {
-        var lDir = new DirectoryInfo(Path.Combine(Client?.Manager?.FileManager?.BaseDirectory ?? string.Empty, "AMXPanel"));
+        Client?.LogDebug("ProccessJsonList: Directory={0}", directory.FullName);
 
-        Client.LogDebug("ProccessJsonList: Directory={0}", lDir.FullName);
-
-        if((mJsonList?.Count ?? 0) < 6)
+        if((mJsonList?.Count ?? 0) < 5)
         {
-          Client.LogInformation(string.Format("ProcessFiles: FileCount={0}, processing was aborted because Readable FileCount < 6", mJsonList?.Count));
-          Client.LogInformation(string.Format("ProcessFiles: Important for G5 Panels: XML-Files in G5-Designs are always encrypted. Excecute from Menu: [Panel]/[Verify Function Maps] in TPDesign5 before send."));
+          Client?.LogInformation(string.Format("ProcessFiles: FileCount={0}, processing was aborted because Readable FileCount < 6", mJsonList?.Count));
+          Client?.LogInformation(string.Format("ProcessFiles: Important for G5 Panels: XML-Files in G5-Designs are always encrypted. Excecute from Menu: [Panel]/[Verify Function Maps] in TPDesign5 before send."));
 
           return;
         }
@@ -439,20 +452,42 @@ namespace ICSP.WebProxy.Proxy
         {
           // Add default palette
           ((JObject)lJsonProject["palettes"]).Add(new JProperty("default", JObject.Parse(Resources.DefaultPalette)));
+
+          var lDefaultPalette = new PaletteData() { Name = "default" };
+
+          var lPalettes = JsonConvert.DeserializeObject<Dictionary<int, WebControlPaletteDataItem>>(Resources.DefaultPalette);
+
+          foreach(var palette in lPalettes)
+          {
+            palette.Value.Index = palette.Key;
+
+            lDefaultPalette.PaletteDataItems.TryAdd(palette.Key, palette.Value);
+          }
+
+          mPalettes.Add(lDefaultPalette);
         }
         catch(Exception ex)
         {
-          Client.LogError(ex.Message);
+          Client?.LogError(ex.Message);
         }
 
         try
         {
           // Add System Fonts (Font 1-31)
           ((JObject)lJsonProject["fonts"]).Merge(JObject.Parse(Resources.SystemFonts));
+
+          var lFonts = JsonConvert.DeserializeObject<Dictionary<int, Font>>(Resources.SystemFonts);
+
+          foreach(var font in lFonts)
+          {
+            font.Value.Number = font.Key;
+
+            mFontsG4.Add(font.Value);
+          }
         }
         catch(Exception ex)
         {
-          Client.LogError(ex.Message);
+          Client?.LogError(ex.Message);
         }
 
         foreach(var keyValue in mJsonList)
@@ -465,25 +500,10 @@ namespace ICSP.WebProxy.Proxy
 
           var lProperty = lJsonObj.First as JProperty;
 
-          // Resources (cm/bm/sm/..)
           switch(keyValue.Key.ToLower())
           {
             case "prj.xma":
             {
-              try
-              {
-                // In work, debug stuff for Serialization ...
-                var lStr = lJsonObj?.ToString();
-
-                var lProject = JsonConvert.DeserializeObject<Project>(lStr);
-
-                var lJsonNew = JsonConvert.SerializeObject(lProject, Newtonsoft.Json.Formatting.Indented);
-              }
-              catch(Exception ex)
-              {
-                Console.WriteLine(ex.Message);
-              }
-
               JsonProccessProject(lJsonObj, lSettingsObj);
               break;
             }
@@ -492,15 +512,14 @@ namespace ICSP.WebProxy.Proxy
               JsonProccessIcons(lJsonObj, lSettingsObj);
               break;
             }
-            case "fnt.xma":
+            case "fnt.xma": // G4
             {
-              JsonProccessFonts(lJsonObj, (JObject)lJsonProject["fonts"]);
+              JsonProccessFontsG4(lJsonObj, (JObject)lJsonProject["fonts"]);
               break;
             }
             case "fonts.xma": // G5
             {
               JsonProccessFontsG5(lJsonObj);
-
               break;
             }
             default:
@@ -509,57 +528,39 @@ namespace ICSP.WebProxy.Proxy
               {
                 case "page":
                 {
-                  /*
+                  try
                   {
-                    "page": {
-                      "type": "page",
-                      "pageID": "1",
-                      "name": "Page 1",
-                      "width": "1024",
-                      "height": "600",
-                      "button": [
+                    var lPage = JsonConvert.DeserializeObject<SubPage>(lProperty?.Value?.ToString());
+
+                    // Replace \r\n -> &#13&#10
+                    if(lPage.States != null)
+                    {
+                      foreach(var state in lPage.States)
+                        state.Text = state.Text?.Replace("\r", "&#13")?.Replace("\n", "&#10");
+                    }
+
+                    // Replace \r\n -> &#13&#10
+                    if(lPage.Buttons != null)
+                    {
+                      foreach(var button in lPage.Buttons)
+                      {
+                        if(button.States != null)
                         {
-                          "type": "general",
-                  */
-                  var lJson = lProperty?.Value?.ToString();
+                          foreach(var state in button.States)
+                            state.Text = state.Text?.Replace("\r", "&#13")?.Replace("\n", "&#10");
+                        }
+                      }
+                    }
 
-                  // In work, debug stuff for Serialization ...
-                  switch((string)lJsonObj["page"]?["type"])
+                    switch(lPage.Type)
+                    {
+                      case PageType.Page    /**/: mProject.Pages.TryAdd(lPage.Name, lPage); break;
+                      case PageType.SubPage /**/: mProject.SubPages.TryAdd(lPage.Name, lPage); break;
+                    }
+                  }
+                  catch(Exception ex)
                   {
-                    case "page":
-                    {
-                      try
-                      {
-                        var lStr = lProperty?.Value?.ToString();
-
-                        var lPage = JsonConvert.DeserializeObject<Page>(lProperty?.Value?.ToString());
-
-                        var lJsonNew = JsonConvert.SerializeObject(lPage, Newtonsoft.Json.Formatting.Indented);
-                      }
-                      catch(Exception ex)
-                      {
-                        Console.WriteLine(ex.Message);
-                      }
-
-                      break;
-                    }
-                    case "subpage":
-                    {
-                      try
-                      {
-                        var lStr = lProperty?.Value?.ToString();
-
-                        var lPage = JsonConvert.DeserializeObject<SubPage>(lProperty?.Value?.ToString());
-
-                        var lJsonNew = JsonConvert.SerializeObject(lPage, Newtonsoft.Json.Formatting.Indented);
-                      }
-                      catch(Exception ex)
-                      {
-                        Console.WriteLine(ex.Message);
-                      }
-
-                      break;
-                    }
+                    Client?.LogError(ex.Message);
                   }
 
                   JsonProccessPage(lJsonObj, lJsonProject);
@@ -568,7 +569,19 @@ namespace ICSP.WebProxy.Proxy
                 }
                 case "paletteData":
                 {
+                  try
+                  {
+                    var lPaletteList = JsonConvert.DeserializeObject<PaletteData>(keyValue.Value);
+
+                    mPalettes.Add(lPaletteList);
+                  }
+                  catch(Exception ex)
+                  {
+                    Client?.LogError(ex.Message);
+                  }
+
                   JsonProccessPalette(lJsonObj, (JObject)lJsonProject["palettes"]);
+
                   break;
                 }
                 // case "cm" /**/:
@@ -586,26 +599,68 @@ namespace ICSP.WebProxy.Proxy
         JsonConvertButtonFonts(lJsonProject);
 
         // Read all chameleon images
-        JsonGenerateChameleonImages(lJsonProject, Path.Combine(lDir.FullName, "images"));
+        JsonGenerateChameleonImages(lJsonProject, Path.Combine(directory.FullName, "images"));
 
-        Client.LogInformation("Project Serialize Start ...");
+        Client?.LogInformation("Project Serialize Start ...");
 
         var lJSonProjStr = lJsonProject.ToString(Newtonsoft.Json.Formatting.Indented, new WebControlJsonConverter());
 
-        Client.LogInformation("Project Serialize End ...");
+        Client?.LogInformation("Project Serialize End ...");
 
         // JavaScript
         lJSonProjStr = $"var project = {lJSonProjStr}";
 
-        var lFileNameJsProject = string.Format(@"{0}\..\js\{1}", lDir.FullName, "project.js");
+        var lFileNameJsProject = string.Format(@"{0}\..\js\{1}", directory.FullName, "project.js");
 
         File.WriteAllText(lFileNameJsProject, lJSonProjStr);
 
-        Client.LogInformation($"Project Write: FileName={lFileNameJsProject} End ...");
+        // ======================================================================================================
+        // WebControl (In work ...)
+        // ======================================================================================================
+
+        foreach(var palette in mPalettes)
+          mProject.Palettes.TryAdd(palette.Name, palette.PaletteDataItems.ToDictionary(k => k.Key, e => (WebControlPaletteDataItem)e.Value));
+
+        foreach(var font in mFontsG4)
+          mProject.Fonts.TryAdd(font.Number, font);
+
+        var lImages = lJsonProject.SelectTokens("$.pages..buttons..states..mi")
+          .Union(lJsonProject.SelectTokens("$.subpages..buttons..states..mi"))
+          .Distinct().Select(s => (string)s);
+
+        foreach(var imageName in lImages)
+        {
+          var lFileName = Path.Combine(Path.Combine(directory.FullName, "images"), imageName);
+
+          if(File.Exists(lFileName))
+          {
+            try
+            {
+              var lBase64 = $"data:image/png;base64,{Convert.ToBase64String(File.ReadAllBytes(lFileName))}";
+
+              mProject.Chameleons.Add(imageName, lBase64);
+            }
+            catch(Exception ex)
+            {
+              Client?.LogError(ex.Message);
+            }
+          }
+        }
+
+        lJSonProjStr = JsonConvert.SerializeObject(mProject, Newtonsoft.Json.Formatting.Indented, new WebControlJsonConverter());
+
+        // JavaScript
+        lJSonProjStr = $"var project = {lJSonProjStr}";
+
+        lFileNameJsProject = string.Format(@"{0}\..\js\{1}", directory.FullName, "project.wc.js");
+
+        File.WriteAllText(lFileNameJsProject, lJSonProjStr);
+
+        Client?.LogInformation($"Project Write: FileName={lFileNameJsProject} End ...");
       }
       catch(Exception ex)
       {
-        Client.LogError(ex.Message);
+        Client?.LogError(ex.Message);
       }
     }
 
@@ -645,7 +700,7 @@ namespace ICSP.WebProxy.Proxy
       }
       catch(Exception ex)
       {
-        Client.LogError(ex.Message);
+        Client?.LogError(ex.Message);
       }
     }
 
@@ -667,11 +722,11 @@ namespace ICSP.WebProxy.Proxy
       }
       catch(Exception ex)
       {
-        Client.LogError(ex.Message);
+        Client?.LogError(ex.Message);
       }
     }
 
-    private void JsonProccessFonts(JToken source, JObject fonts)
+    private void JsonProccessFontsG4(JToken source, JObject fonts)
     {
       try
       {
@@ -704,7 +759,7 @@ namespace ICSP.WebProxy.Proxy
       }
       catch(Exception ex)
       {
-        Client.LogError(ex.Message);
+        Client?.LogError(ex.Message);
       }
     }
 
@@ -807,7 +862,7 @@ namespace ICSP.WebProxy.Proxy
       }
       catch(Exception ex)
       {
-        Client.LogError(ex.Message);
+        Client?.LogError(ex.Message);
       }
     }
 
@@ -1065,7 +1120,7 @@ namespace ICSP.WebProxy.Proxy
       }
       catch(Exception ex)
       {
-        Client.LogError(ex.Message);
+        Client?.LogError(ex.Message);
       }
     }
 
@@ -1158,14 +1213,14 @@ namespace ICSP.WebProxy.Proxy
             }
             catch(Exception ex)
             {
-              Client.LogError(ex.Message);
+              Client?.LogError(ex.Message);
             }
           }
         }
       }
       catch(Exception ex)
       {
-        Client.LogError(ex.Message);
+        Client?.LogError(ex.Message);
       }
     }
 
@@ -1206,7 +1261,7 @@ namespace ICSP.WebProxy.Proxy
       }
       catch(Exception ex)
       {
-        Client.LogError(ex.Message);
+        Client?.LogError(ex.Message);
       }
     }
   }
