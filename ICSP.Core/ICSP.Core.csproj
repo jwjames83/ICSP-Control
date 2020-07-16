@@ -194,6 +194,7 @@
     <Compile Include="Model\ActionEventCustom.cs" />
     <Compile Include="Model\ActionEventString.cs" />
     <Compile Include="Model\ActionEventCommand.cs" />
+    <Compile Include="Model\IconList.cs" />
     <Compile Include="Model\Fonts.cs" />
     <Compile Include="Model\LaunchAction.cs" />
     <Compile Include="Model\BitmapEntry.cs" />
@@ -242,6 +243,7 @@
     <Compile Include="Model\PopupType.cs" />
     <Compile Include="Model\ProjectProperties\Project.cs" />
     <Compile Include="Model\RangeType.cs" />
+    <Compile Include="Model\Icon.cs" />
     <Compile Include="Model\SliderType.cs" />
     <Compile Include="Model\State.cs" />
     <Compile Include="Model\SubPage.cs" />

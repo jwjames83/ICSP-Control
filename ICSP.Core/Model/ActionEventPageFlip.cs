@@ -43,5 +43,23 @@ namespace ICSP.Core.Model
     /// </summary>
     [JsonProperty("#text", Order = 6, NullValueHandling = NullValueHandling.Ignore)]
     public string Value { get; set; }
+
+    public static explicit operator ActionEventPageFlip(PageFlip pageFlip)
+    {
+      return new ActionEventPageFlip()
+      {
+        Type = pageFlip.Type,
+        Value = pageFlip.Value,
+      };
+    }
+
+    public static implicit operator PageFlip(ActionEventPageFlip pageFlip)
+    {
+      return new PageFlip()
+      {
+        Type = pageFlip.Type,
+        Value = pageFlip.Value,
+      };
+    }
   }
 }

@@ -127,13 +127,8 @@ namespace ICSP.WebProxy.WebControl
             lFiles.Add(lFile.FullName, lFile);
         }
 
-        // prj.xma
-        lFile = new FileInfo(Path.Combine(directory.FullName, "prj.xma"));
-        if(lFile.Exists && !lFiles.ContainsKey(lFile.FullName))
-          lFiles.Add(lFile.FullName, lFile);
-
         // icon.xma
-        lFile = new FileInfo(Path.Combine(directory.FullName, mProject.Settings.IconFile ?? string.Empty));
+        lFile = new FileInfo(Path.Combine(directory.FullName, mProject.Settings.IconFile ?? "icon.xma"));
         if(lFile.Exists && !lFiles.ContainsKey(lFile.FullName))
           lFiles.Add(lFile.FullName, lFile);
 
@@ -261,12 +256,27 @@ namespace ICSP.WebProxy.WebControl
           "/root/resourceList/resource",                  // Resources
           "/root/fwFeatureList/feature",                  // Features
           "/root/paletteList/palette",                    // Palettes
-          
+          "/root/iconList/icon",                          // Icons
+
           "/root/page/sr",                                // Page States
           "/root/page/button",                            // Buttons
           "/root/page/button/sr",                         // Buttons States (Button-Type Joystick has only one)
           "/root/page/button/pf",                         // G4:PageFlips
           "/root/page/button/sr/bitmapEntry",             // G5:Bitmaps
+          
+          // G5: Page Events (eventShow, eventHide)
+          "/root/page/*/pgFlip",                          // Events: Pageflips
+          "/root/page/*/launch",                          // Events: Actions -> Launch
+          "/root/page/*/command",                         // Events: Actions -> Command
+          "/root/page/*/string",                          // Events: Actions -> String
+          "/root/page/*/custom",                          // Events: Actions -> Custom
+          
+          // G5: Page Events (gestureAny, ...)
+          "/root/page/*/*/pgFlip",                        // Events: Pageflips
+          "/root/page/*/*/launch",                        // Events: Actions -> Launch
+          "/root/page/*/*/command",                       // Events: Actions -> Command
+          "/root/page/*/*/string",                        // Events: Actions -> String
+          "/root/page/*/*/custom",                        // Events: Actions -> Custom
 
           // G5: Button Events
           "/root/page/button/*/pgFlip",                   // Events: Pageflips
@@ -427,32 +437,9 @@ namespace ICSP.WebProxy.WebControl
           }
         */
 
-        var lJsonProject = new JObject
-        {
-          // Main-Properties:
-          // --------------------------------------------
-          new JProperty("settings", new JObject()
-            {
-              new JProperty("pageList", new JArray()),
-              new JProperty("paletteList", new JArray()),
-              new JProperty("resourceList", new JObject()),
-              new JProperty("iconList", new JObject()),
-              new JProperty("powerUpPopup", new JArray()),
-            }),
-          new JProperty("pages", new JObject()),
-          new JProperty("subpages", new JObject()),
-          new JProperty("palettes", new JObject()),
-          new JProperty("fonts", new JObject()),
-          new JProperty("chameleons", new JObject()),
-        };
-
-        var lSettingsObj = (JObject)lJsonProject["settings"];
-
         try
         {
           // Add default palette
-          ((JObject)lJsonProject["palettes"]).Add(new JProperty("default", JObject.Parse(Resources.DefaultPalette)));
-
           var lDefaultPalette = new PaletteData() { Name = "default" };
 
           var lPalettes = JsonConvert.DeserializeObject<Dictionary<int, WebControlPaletteDataItem>>(Resources.DefaultPalette);
@@ -474,8 +461,6 @@ namespace ICSP.WebProxy.WebControl
         try
         {
           // Add System Fonts (Font 1-31)
-          ((JObject)lJsonProject["fonts"]).Merge(JObject.Parse(Resources.SystemFonts));
-
           var lFonts = JsonConvert.DeserializeObject<Dictionary<int, Font>>(Resources.SystemFonts);
 
           foreach(var font in lFonts)
@@ -502,24 +487,47 @@ namespace ICSP.WebProxy.WebControl
 
           switch(keyValue.Key.ToLower())
           {
-            case "prj.xma":
-            {
-              JsonProccessProject(lJsonObj, lSettingsObj);
-              break;
-            }
             case "icon.xma":
             {
-              JsonProccessIcons(lJsonObj, lSettingsObj);
+              try
+              {
+                var lIcons = JsonConvert.DeserializeObject<IconList>(lProperty?.Value?.ToString());
+
+                mProject.Settings.IconList = lIcons.Icons?.ToDictionary(k => k.Number, e => e.File) ?? new Dictionary<int, string>();
+              }
+              catch(Exception ex)
+              {
+                Client?.LogError(ex.Message);
+              }
+
               break;
             }
             case "fnt.xma": // G4
             {
-              JsonProccessFontsG4(lJsonObj, (JObject)lJsonProject["fonts"]);
+              try
+              {
+                if(lJsonObj["fontList"]?["font"] is JArray allfonts)
+                  mFontsG4.AddRange(JsonConvert.DeserializeObject<List<Font>>(allfonts.ToString()));
+              }
+              catch(Exception ex)
+              {
+                Client?.LogError(ex.Message);
+              }
+
               break;
             }
             case "fonts.xma": // G5
             {
-              JsonProccessFontsG5(lJsonObj);
+              try
+              {
+                if(lJsonObj["fontList"]?["font"] is JArray fonts)
+                  mFontsG5.AddRange(JsonConvert.DeserializeObject<List<Font>>(fonts.ToString()));
+              }
+              catch(Exception ex)
+              {
+                Client?.LogError(ex.Message);
+              }
+
               break;
             }
             default:
@@ -532,25 +540,108 @@ namespace ICSP.WebProxy.WebControl
                   {
                     var lPage = JsonConvert.DeserializeObject<SubPage>(lProperty?.Value?.ToString());
 
-                    // Replace \r\n -> &#13&#10
-                    if(lPage.States != null)
-                    {
-                      foreach(var state in lPage.States)
-                        state.Text = state.Text?.Replace("\r", "&#13")?.Replace("\n", "&#10");
-                    }
+                    var lStates = lPage.States?.Select(s => s)
+                      .Union(lPage.Buttons?.SelectMany(s => s.States) ?? new List<State>());
 
-                    // Replace \r\n -> &#13&#10
-                    if(lPage.Buttons != null)
+                    foreach(var state in lStates)
                     {
-                      foreach(var button in lPage.Buttons)
+                      // Replace \r\n -> &#13&#10
+                      state.Text = state.Text?.Replace("\r", "&#13")?.Replace("\n", "&#10");
+
+                      // ============================================
+                      // G5: Convert Bitmaps back to G4 ...
+                      // ============================================
+                      if(state.Bitmap == null && state.Bitmaps != null)
                       {
-                        if(button.States != null)
+                        // Only the first bitmap ...
+                        if(state.Bitmaps?.FirstOrDefault() is BitmapEntry bitmap)
                         {
-                          foreach(var state in button.States)
-                            state.Text = state.Text?.Replace("\r", "&#13")?.Replace("\n", "&#10");
+                          state.Bitmap = bitmap.FileName;
+                          state.BitmapJustification = bitmap.Justification;
+                          state.BitmapOffsetX = bitmap.OffsetX;
+                          state.BitmapOffsetY = bitmap.OffsetY;
+                        }
+
+                        state.Bitmaps = null;
+                      }
+
+                      // ==============================================================================================================
+                      // Add ChameleonImage as base64-Resource to Project
+                      // Reason: JavsScript function "getImageData" requires that the image originate on the same domain as the webpage
+                      //         or else you will get a cross - domain security error.
+                      // ==============================================================================================================
+                      if(state.ChameleonImage != null && !mProject.Chameleons.ContainsKey(state.ChameleonImage))
+                      {
+                        var lFileName = Path.Combine(Path.Combine(directory.FullName, "images"), state.ChameleonImage);
+
+                        if(File.Exists(lFileName))
+                        {
+                          try
+                          {
+                            var lBase64 = $"data:image/png;base64,{Convert.ToBase64String(File.ReadAllBytes(lFileName))}";
+
+                            mProject.Chameleons.Add(state.ChameleonImage, lBase64);
+                          }
+                          catch(Exception ex)
+                          {
+                            Client?.LogError(ex.Message);
+                          }
                         }
                       }
                     }
+
+                    // ============================================
+                    // G5: Convert Events back to G4 Pageflips ...
+                    // ============================================
+
+                    foreach(var button in lPage.Buttons ?? new List<Button>())
+                    {
+                      // ButtonPress
+                      if(button.EventsButtonPress?.PageFlips != null)
+                      {
+                        if(button.PageFlips == null)
+                          button.PageFlips = new List<PageFlip>();
+
+                        button.PageFlips.AddRange(button.EventsButtonPress.PageFlips.Select(s => (PageFlip)s));
+                      }
+
+                      // ButtonRelease
+                      if(button.EventsButtonRelease?.PageFlips != null)
+                      {
+                        if(button.PageFlips == null)
+                          button.PageFlips = new List<PageFlip>();
+
+                        button.PageFlips.AddRange(button.EventsButtonRelease.PageFlips.Select(s => (PageFlip)s));
+                      }
+
+                      // G5: Remaining events not supported -> ignore
+                      button.EventsButtonPress = null;
+                      button.EventsButtonRelease = null;
+                      button.EventsGestureAny = null;
+                      button.EventsGestureUp = null;
+                      button.EventsGestureDown = null;
+                      button.EventsGestureRight = null;
+                      button.EventsGestureLeft = null;
+                      button.EventsGestureDoubleTap = null;
+                      button.EventsGesture2FingerUp = null;
+                      button.EventsGesture2FingerDown = null;
+                      button.EventsGesture2FingerRight = null;
+                      button.EventsGesture2FingerLeft = null;
+                    }
+
+                    // G5 Page: Remaining events not supported -> ignore
+                    lPage.EventsShowPage = null;
+                    lPage.EventsHidePage = null;
+                    lPage.EventsGestureAny = null;
+                    lPage.EventsGestureUp = null;
+                    lPage.EventsGestureDown = null;
+                    lPage.EventsGestureRight = null;
+                    lPage.EventsGestureLeft = null;
+                    lPage.EventsGestureDoubleTap = null;
+                    lPage.EventsGesture2FingerUp = null;
+                    lPage.EventsGesture2FingerDown = null;
+                    lPage.EventsGesture2FingerRight = null;
+                    lPage.EventsGesture2FingerLeft = null;
 
                     switch(lPage.Type)
                     {
@@ -562,8 +653,6 @@ namespace ICSP.WebProxy.WebControl
                   {
                     Client?.LogError(ex.Message);
                   }
-
-                  JsonProccessPage(lJsonObj, lJsonProject);
 
                   break;
                 }
@@ -580,7 +669,7 @@ namespace ICSP.WebProxy.WebControl
                     Client?.LogError(ex.Message);
                   }
 
-                  JsonProccessPalette(lJsonObj, (JObject)lJsonProject["palettes"]);
+                  // JsonProccessPalette(lJsonObj, (JObject)lJsonProject["palettes"]);
 
                   break;
                 }
@@ -595,68 +684,28 @@ namespace ICSP.WebProxy.WebControl
           }
         }
 
-        // Process Fonts
-        JsonConvertButtonFonts(lJsonProject);
+        // Convert G5 Fonts to G4 Fonts (ff & fs => fi)
+        JsonConvertG5ButtonFonts();
 
-        // Read all chameleon images
-        JsonGenerateChameleonImages(lJsonProject, Path.Combine(directory.FullName, "images"));
+        // Add Palettes to Project
+        foreach(var palette in mPalettes)
+          mProject.Palettes.TryAdd(palette.Name, palette.PaletteDataItems.ToDictionary(k => k.Key, e => (WebControlPaletteDataItem)e.Value));
 
-        Client?.LogInformation("Project Serialize Start ...");
+        // Add G4-Fonts to Project
+        foreach(var font in mFontsG4)
+          mProject.Fonts.TryAdd(font.Number, font);
 
-        var lJSonProjStr = lJsonProject.ToString(Newtonsoft.Json.Formatting.Indented, new WebControlJsonConverter());
+        // Serialize Project to JSON-string
+        var lJSonProjStr = JsonConvert.SerializeObject(mProject, Newtonsoft.Json.Formatting.Indented, new WebControlJsonConverter());
 
-        Client?.LogInformation("Project Serialize End ...");
-
-        // JavaScript
+        // Generate JavaScript variable
         lJSonProjStr = $"var project = {lJSonProjStr}";
 
         var lFileNameJsProject = string.Format(@"{0}\..\js\{1}", directory.FullName, "project.js");
 
-        File.WriteAllText(lFileNameJsProject, lJSonProjStr);
-
-        // ======================================================================================================
-        // WebControl (In work ...)
-        // ======================================================================================================
-
-        foreach(var palette in mPalettes)
-          mProject.Palettes.TryAdd(palette.Name, palette.PaletteDataItems.ToDictionary(k => k.Key, e => (WebControlPaletteDataItem)e.Value));
-
-        foreach(var font in mFontsG4)
-          mProject.Fonts.TryAdd(font.Number, font);
-
-        var lImages = lJsonProject.SelectTokens("$.pages..buttons..states..mi")
-          .Union(lJsonProject.SelectTokens("$.subpages..buttons..states..mi"))
-          .Distinct().Select(s => (string)s);
-
-        foreach(var imageName in lImages)
-        {
-          var lFileName = Path.Combine(Path.Combine(directory.FullName, "images"), imageName);
-
-          if(File.Exists(lFileName))
-          {
-            try
-            {
-              var lBase64 = $"data:image/png;base64,{Convert.ToBase64String(File.ReadAllBytes(lFileName))}";
-
-              mProject.Chameleons.Add(imageName, lBase64);
-            }
-            catch(Exception ex)
-            {
-              Client?.LogError(ex.Message);
-            }
-          }
-        }
-
-        lJSonProjStr = JsonConvert.SerializeObject(mProject, Newtonsoft.Json.Formatting.Indented, new WebControlJsonConverter());
-
-        // JavaScript
-        lJSonProjStr = $"var project = {lJSonProjStr}";
-
-        lFileNameJsProject = string.Format(@"{0}\..\js\{1}", directory.FullName, "project.wc.js");
+        Client?.LogInformation($"Project Write: FileName={lFileNameJsProject}");
 
         File.WriteAllText(lFileNameJsProject, lJSonProjStr);
-
-        Client?.LogInformation($"Project Write: FileName={lFileNameJsProject} End ...");
       }
       catch(Exception ex)
       {
@@ -664,153 +713,42 @@ namespace ICSP.WebProxy.WebControl
       }
     }
 
-    private void JsonProccessProject(JToken source, JObject settings)
+    private void JsonConvertG5ButtonFonts()
     {
       try
       {
-        // <root><pageList type="page"><pageEntry>...
-        // <root><pageList type="subpage"><pageEntry>...
-        var lPageEntries = source["pageList"].SelectMany(s => s.SelectToken("pageEntry"));
+        var lMaxG4FontIndex = mFontsG4.Max(s => s.Number);
 
-        ((JArray)settings["pageList"]).Merge(lPageEntries);
-
-        // <root><paletteList><palette>...
-        var lPalettes = source.SelectTokens("$.paletteList.palette..[?(@.name)]");
-
-        ((JArray)settings["paletteList"]).Merge(lPalettes);
-
-        // <root><resourceList type="image"><resource>...
-        var lResources = source.SelectTokens("$.resourceList.resource..[?(@.name)]");
-
-        foreach(var resource in lResources)
-        {
-          var lName = (string)resource["name"];
-
-          resource["name"].Parent.Remove();
-
-          ((JObject)settings["resourceList"]).Add(new JProperty(lName, resource));
-        }
-
-        settings.Merge(source["panelSetup"]);
-        settings.Merge(source["supportFileList"]);
-        settings.Merge(source["projectInfo"]);
-        settings.Merge(source["versionInfo"]);
-
-        settings["password"] = "";
-      }
-      catch(Exception ex)
-      {
-        Client?.LogError(ex.Message);
-      }
-    }
-
-    private void JsonProccessIcons(JToken source, JObject settings)
-    {
-      try
-      {
-        // <root><iconList><icon number="1">...
-        var lIcons = source.SelectTokens("$.iconList.icon..[?(@.number)]");
-
-        foreach(var icon in lIcons)
-        {
-          var lNumber = (string)icon["number"];
-
-          icon["number"].Parent.Remove();
-
-          ((JObject)settings["iconList"]).Add(new JProperty(lNumber, icon));
-        }
-      }
-      catch(Exception ex)
-      {
-        Client?.LogError(ex.Message);
-      }
-    }
-
-    private void JsonProccessFontsG4(JToken source, JObject fonts)
-    {
-      try
-      {
-        try
-        {
-          if(source["fontList"]?["font"] is JArray allfonts)
-            mFontsG4.AddRange(JsonConvert.DeserializeObject<List<Font>>(allfonts.ToString()));
-        }
-        catch(Exception ex)
-        {
-          Console.WriteLine(ex.Message);
-        }
-
-        var lFontsObj = new JObject(new JProperty("fonts", new JObject()));
-
-        // <root><fontList><font number="{n}">...
-        var lFonts = source.SelectTokens("$.fontList.font..[?(@.number)]");
-
-        foreach(var font in lFonts)
-        {
-          var lNumber = (string)font["number"];
-
-          font["number"].Parent.Remove();
-          font["faceIndex"].Parent.Remove();
-
-          ((JObject)lFontsObj["fonts"]).Add(new JProperty(lNumber, font));
-        }
-
-        fonts.Merge(lFontsObj["fonts"]);
-      }
-      catch(Exception ex)
-      {
-        Client?.LogError(ex.Message);
-      }
-    }
-
-    private void JsonProccessFontsG5(JToken source)
-    {
-      try
-      {
-        if(source["fontList"]?["font"] is JArray fonts)
-          mFontsG5.AddRange(JsonConvert.DeserializeObject<List<Font>>(fonts.ToString()));
-      }
-      catch(Exception ex)
-      {
-        Console.WriteLine(ex.Message);
-      }
-    }
-
-    private void JsonConvertButtonFonts(JObject project)
-    {
-      try
-      {
-        var lMaxFontIndex = mFontsG4.Max(s => s.Number);
-
-        // Fonts
-        var lStates = project.SelectTokens("$..states..[?(@ff)]").ToList();
+        var lStates = mProject.Pages.Values.SelectMany(s => s.States.Values)
+          .Union(mProject.SubPages.Values.SelectMany(s => s.States.Values))
+          .Union(mProject.Pages.Values.SelectMany(b => b.Buttons.SelectMany(bs => bs.States.Values)))
+          .Union(mProject.SubPages.Values.SelectMany(b => b.Buttons.SelectMany(bs => bs.States.Values)))
+          .Where(p => p.FontIndex == 0);
 
         foreach(var state in lStates)
         {
-          var lFontFace = (string)state["ff"];
-          var lFontSize = (int)(state["fs"] ?? 0);
+          // Invalid Font -> Set arial.ttf as default ...
+          if(state.Font == null)
+            state.Font = "arial.ttf";
 
-          state["ff"]?.Parent?.Remove();
-          state["fs"]?.Parent?.Remove();
-
-          var lG4Font = mFontsG4.FirstOrDefault(p => p.File == lFontFace && p.Size == lFontSize);
+          var lG4Font = mFontsG4.FirstOrDefault(p => p.File == state.Font && p.Size == state.FontSize);
 
           if(lG4Font != null)
           {
-            state["fi"] = lG4Font.Number;
+            state.FontIndex = lG4Font.Number;
           }
           else
           {
-            var lFullName = mFontsG5.FirstOrDefault(p => p.File == lFontFace)?.FullName;
+            var lFullName = mFontsG5.FirstOrDefault(p => p.File == state.Font)?.FullName;
 
             if(lFullName == null)
-              lFullName = lFontFace.Replace(".ttf", "");
+              lFullName = state.Font?.Replace(".ttf", "");
 
             var lFont = new Font()
             {
-              Number = ++lMaxFontIndex,
-              File = lFontFace,
-              Size = lFontSize,
+              Number = ++lMaxG4FontIndex,
+              File = state.Font,
+              Size = state.FontSize,
               Name = lFullName,
               SubFamilyName = "Regular",
               FullName = lFullName,
@@ -818,450 +756,16 @@ namespace ICSP.WebProxy.WebControl
 
             mFontsG4.Add(lFont);
 
-            var lFontObj = JObject.Parse(JsonConvert.SerializeObject(lFont));
-
-            lFontObj["number"]?.Parent?.Remove();
-            lFontObj["faceIndex"]?.Parent?.Remove();
-
-            ((JObject)project["fonts"]).Merge(new JObject(new JProperty(lFont.Number.ToString(), lFontObj)));
-
-            state["fi"] = lFont.Number.ToString();
+            state.FontIndex = lFont.Number;
           }
+
+          state.Font = null;
+          state.FontSize = 0;
         }
       }
       catch(Exception ex)
       {
         Console.WriteLine(ex.Message);
-      }
-    }
-
-    private void JsonProccessPalette(JToken source, JObject palettes)
-    {
-      try
-      {
-        var lPaletteName = (string)source["paletteData"]["name"];
-
-        var lPaletteObj = new JObject(new JProperty(lPaletteName, new JObject()));
-
-        var lColors = source.SelectTokens("$.paletteData.color[?(@.name)]");
-
-        foreach(var color in lColors)
-        {
-          var lIndex = (string)color["index"];
-
-          color["index"].Parent.Remove();
-          color["#text"].Rename("color");
-
-          ((JObject)lPaletteObj[lPaletteName]).Add(new JProperty(lIndex, color));
-        }
-
-        if(palettes[lPaletteName] == null)
-          palettes.Add(lPaletteObj.Property(lPaletteName));
-        else
-          palettes[lPaletteName] = lPaletteObj[lPaletteName];
-      }
-      catch(Exception ex)
-      {
-        Client?.LogError(ex.Message);
-      }
-    }
-
-    private void JsonProccessPage(JToken source, JObject project)
-    {
-      try
-      {
-        var lPage = (JObject)source["page"];
-
-        var lPageName = (string)lPage["name"];
-        var lPageType = (string)lPage["type"];
-
-        lPage.Property("name").Remove();
-        lPage.Property("type").Remove();
-
-        // --------------------------------------------------------
-        // Page: rename button -> buttons
-        //       Add empty array if not exists (needed)
-        // --------------------------------------------------------
-        if(lPage["button"] != null)
-          lPage["button"].Rename("buttons");
-        else
-          lPage["buttons"] = new JArray();
-
-        // Move to first (not relevant)
-        var lButtonsProperty = lPage.Property("buttons");
-
-        lButtonsProperty.Remove();
-
-        lPage.AddFirst(lButtonsProperty);
-
-        // --------------------------------------------------------
-        // Page: Convert states (sr -> states)
-        // --------------------------------------------------------
-        JsonConvertStates((JObject)lPage);
-
-        try
-        {
-          // --------------------------------------------------------
-          // Buttons: Convert states (sr -> states)
-          // --------------------------------------------------------
-          var lButtons = source.SelectTokens("$.page.buttons.[*]");
-
-          foreach(var button in lButtons)
-          {
-            JsonConvertStates((JObject)button);
-
-            // Set null or add (not needed)
-            // <ac di="0" />
-            if(button["ac"] != null)
-            {
-              // Set null (not needed)
-              button["ac"] = "";
-            }
-            else
-            {
-              // Add after rh (Range High) for G4 compatibility (not needed)
-              if(button["rh"] != null)
-                button["rh"].Parent.AddAfterSelf(new JProperty("ac", ""));
-              else
-                button["ac"] = "";
-            }
-
-            // PageFlips: Add empty array if not exists (needed)
-            if(button["pf"] == null)
-            {
-              // Add after ac for G4 compatibility (not needed)
-              if(button["ac"] != null)
-                button["ac"].Parent.AddAfterSelf(new JProperty("pf", new JArray()));
-              else
-                button["pf"] = new JArray();
-            }
-
-            // G5: Convert back to G4 ...
-            // --------------------------------------------------------
-            /*
-            <button type="general">
-              <bi>1</bi>                 ==> Index
-              <na>Button A</na>          ==> Name
-              <lt>40</lt>                ==> Position Left
-              <tp>34</tp>                ==> Position Top
-              <wt>207</wt>               ==> Width
-              <ht>109</ht>               ==> Height
-              <zo>1</zo>                 ==> Z-Order ([<]Back, [>]:Top)
-              <bs></bs>                  ==> Border Style (-> TAB General)
-              <rl>0</rl>                 ==> Range Low
-              <rh>255</rh>               ==> Range High
-              <sr number="1">            ==> State Off
-                <bs></bs>                ==> Border Style
-                <cb>#FFFF00FF</cb>       ==> Border Color
-                <cf>#0000DFFF</cf>       ==> Fill Color
-                <ct>#FFFFFFFF</ct>       ==> Text Color
-                <ec>#000000FF</ec>       ==> Text Effect color
-                <bitmapEntry>
-                  <fileName>{filename}</fileName>
-                </bitmapEntry>
-                <ff>arial.ttf</ff>       ==> Font
-                <fs>10</fs>              ==> Font Size
-              </sr>
-              <sr number="2">
-                <bs>
-                </bs>
-                <cb>#0000DFFF</cb>
-                <cf>#FFFF00FF</cf>
-                <ct>#000000FF</ct>
-                <ec>#000000FF</ec>
-                <bitmapEntry>
-                  <fileName>realvista_webdesign_3d_design_16.png</fileName>
-                </bitmapEntry>
-                <ff>arial.ttf</ff>
-                <fs>10</fs>
-              </sr>
-              <ep /> ==> Events: Button Press
-              <er /> ==> Events: Button Release
-              <ga /> ==> Events: Gesture Any
-              <gu /> ==> Events: Gesture Up
-              <gd /> ==> Events: Gesture Down
-              <gr /> ==> Events: Gesture Right
-              <gl /> ==> Events: Gesture Left
-              <gt /> ==> Events: Gesture Double-Tap
-              <tu /> ==> Events: Gesture 2-Finger Up
-              <td /> ==> Events: Gesture 2-Finger Down
-              <tr /> ==> Events: Gesture 2-Finger Right
-              <tl /> ==> Events: Gesture 2-Finger Left
-              <dst / ==> Events: 
-              <dca / ==> Events: 
-              <den / ==> Events: 
-              <dex / ==> Events: 
-              <ddr / ==> Events: 
-            </button>
-            */
-
-            /*
-              "bitmapEntry": {
-                "fileName": "realvista_webdesign_3d_design_16.png"
-              },
-            */
-            var lBitmaps = button.SelectTokens("$.states..bitmapEntry..fileName");
-
-            foreach(var bitmap in lBitmaps)
-            {
-              // Ugly ... :-)
-              var lState = bitmap?.Parent?.Parent?.Parent?.Parent?.Parent;
-
-              // Only the first bitmap ...
-              if(lState["bm"] == null)
-              {
-                // Add after ec (Text Effect color) for G4 compatibility (not needed)
-                if(lState["ec"] != null)
-                  lState["ec"].Parent.AddAfterSelf(new JProperty("bm", (string)bitmap));
-                else
-                  lState["bm"] = (string)bitmap;
-              }
-            }
-
-            lBitmaps = button.SelectTokens("$.states..bitmapEntry").ToList();
-
-            foreach(var item in lBitmaps)
-              item?.Parent?.Remove();
-
-            // Button Press
-            var lEvents = button.SelectTokens("$.ep..pgFlip.[*]");
-
-            foreach(var evt in lEvents)
-            {
-              evt["item"]?.Parent.Remove();
-
-              ((JArray)button["pf"]).Add(evt);
-            }
-
-            // Button Release
-            lEvents = button.SelectTokens("$.er..pgFlip.[*]");
-
-            foreach(var evt in lEvents)
-            {
-              evt["item"]?.Parent.Remove();
-
-              ((JArray)button["pf"]).Add(evt);
-            }
-
-            button["ep"]?.Parent.Remove();
-            button["er"]?.Parent.Remove();
-
-            // Remove poperties where not used in WebControl
-            button["ac"]?.Parent.Remove();
-
-            // G5: Gesture poperties
-            button["ga"]?.Parent.Remove();
-            button["gu"]?.Parent.Remove();
-            button["gd"]?.Parent.Remove();
-            button["gr"]?.Parent.Remove();
-            button["gl"]?.Parent.Remove();
-            button["gt"]?.Parent.Remove();
-            button["tu"]?.Parent.Remove();
-            button["td"]?.Parent.Remove();
-            button["tr"]?.Parent.Remove();
-            button["tl"]?.Parent.Remove();
-            button["dst"]?.Parent.Remove();
-            button["dca"]?.Parent.Remove();
-            button["den"]?.Parent.Remove();
-            button["dex"]?.Parent.Remove();
-            button["ddr"]?.Parent.Remove();
-
-            /*
-            Convert G5 FontNamily & FontSize to G4 FontIndex
-            ------------------------------------------------
-            "ff": "avenirltstd-book.ttf",
-            "fs": "10",
-            "fi": "12",
-            */
-
-            // PageFlips: Add empty array if not exists (needed)
-            if(button["pf"] == null)
-            {
-              // Add after ac for G4 compatibility (not needed)
-              if(button["ac"] != null)
-                button["ac"].Parent.AddAfterSelf(new JProperty("pf", new JArray()));
-              else
-                button["pf"] = new JArray();
-            }
-          }
-
-          // --------------------------------------------------------
-          // Buttons: PageFlips (rename #text -> value)
-          // --------------------------------------------------------
-
-          var lPageFlips = source.SelectTokens("$.page.buttons..pf").Cast<JArray>();
-
-          foreach(var pageFlip in lPageFlips)
-          {
-            foreach(var item in pageFlip)
-              item["#text"]?.Rename("value");
-          }
-
-          // Remove (not needed)
-          // "popupType": "popup",
-          lPage["popupType"]?.Parent?.Remove();
-        }
-        catch(Exception ex)
-        {
-          Console.WriteLine(ex.Message);
-        }
-
-        var lPg = source["page"].ToString();
-
-        switch(lPageType)
-        {
-          case "page"    /**/: ((JObject)project["pages"]).Add(new JProperty(lPageName, source["page"])); break;
-          case "subpage" /**/: ((JObject)project["subpages"]).Add(new JProperty(lPageName, source["page"])); break;
-          default:
-          {
-            break;
-          }
-        }
-      }
-      catch(Exception ex)
-      {
-        Client?.LogError(ex.Message);
-      }
-    }
-
-    private void JsonGenerateChameleonImages(JObject project, string directory)
-    {
-      try
-      {
-        /*
-        <button type="general">
-          <bi>1</bi>                 ==> Index
-          <na>Button A</na>          ==> Name
-          <li>1</li>                 ==>
-          <lt>16</lt>                ==> Position Left
-          <tp>16</tp>                ==> Position Top
-          <wt>125</wt>               ==> Width
-          <ht>125</ht>               ==> Height
-          <zo>1</zo>                 ==> Z-Order ([<]Back, [>]:Top)
-          <hs>bounding</hs>          ==> Touch Style  (bounding, passThru)
-          <bs></bs>                  ==> Border Style (-> TAB General)
-          <da>1</da>                 ==> Disabled
-          <hd>1</hd>                 ==> Hidden
-          <fb>momentary</fb>         ==> Feedback
-          <ap>2</ap>                 ==> Address Port
-          <ad>22</ad>                ==> Address Code
-          <cp>3</cp>                 ==> Channel Port
-          <ch>33</ch>                ==> Channel Code
-          <vt>rel</vt>               ==> Level Control Type
-          <lp>4</lp>                 ==> Level Port
-          <lv>44</lv>                ==> Level Code
-          <rl>0</rl>                 ==> Range Low
-          <rh>255</rh>               ==> Range High
-          <ac di="0" />              ==> 
-          <sr number="1">            ==> State Off
-            <bs>Quad Line</bs>       ==> Border Style
-            <mi>Image.jpg</mi>       ==> Chameleon Image
-            <cb>Grey7</cb>           ==> Border Color
-            <cf>VeryLightOrange</cf> ==> Fill Color
-            <ct>Black</ct>           ==> Text Color
-            <ec>#000000FF</ec>       ==> Text Effect color
-            <oo>100</oo>             ==> Overall Opacity
-            <bm>Image.png</bm>       ==> Bitmap
-            <jb>1</jb>               ==> Bitmap Justification (Top-Left)
-            <bx>20</bx>              ==> Bitmap X Offset
-            <by>20</by>              ==> Bitmap Y Offset
-            <fi>36</fi>              ==> Font Number (Ref -> $fnt.xml)
-            <te>Button A</te>        ==> Text
-            <jt>1</jt>               ==> Text Justification (Top-Left)
-            <tx>20</tx>              ==> Text X Offset
-            <ty>20</ty>              ==> Text Y Offset
-            <ww>1</ww>               ==> Word Wrap
-          </sr>
-          <sr number="2">            ==> State On
-          ...
-          </sr>
-        </button>
-        */
-
-        /*
-        Reference
-        -------------------------------------------------
-        "pages": {
-          "Main": {
-            "buttons": [
-              {
-                "states": {
-                  "1": {
-                    "mi": "bt_66x40_chamel.png",
-
-        JSON:
-        "chameleons": {
-          "{imageName}": "data:image/png;base64,{base64}",
-          ...
-        */
-
-        var lImages = project.SelectTokens("$.pages..buttons..states..mi")
-          .Union(project.SelectTokens("$.subpages..buttons..states..mi"))
-          .Distinct().Select(s => (string)s);
-
-        foreach(var imageName in lImages)
-        {
-          var lFileName = Path.Combine(directory, imageName);
-
-          if(File.Exists(lFileName))
-          {
-            try
-            {
-              var lBase64 = $"data:image/png;base64,{Convert.ToBase64String(File.ReadAllBytes(lFileName))}";
-
-              ((JObject)project["chameleons"]).Add(new JProperty(imageName, lBase64));
-            }
-            catch(Exception ex)
-            {
-              Client?.LogError(ex.Message);
-            }
-          }
-        }
-      }
-      catch(Exception ex)
-      {
-        Client?.LogError(ex.Message);
-      }
-    }
-
-    private void JsonConvertStates(JObject parent)
-    {
-      try
-      {
-        var lStatesObj = new JObject(new JProperty("states", new JObject()));
-
-        // https://stackoverflow.com/questions/51547673/json-path-expression-not-working-without-array
-        var lStates = parent.SelectTokens("sr..[?(@.number)]");
-
-        if(lStates.Count() > 0)
-        {
-          foreach(var sr in lStates)
-          {
-            var lNumber = (string)sr["number"];
-
-            sr["number"]?.Parent?.Remove();
-
-            if(sr["te"] != null)
-              sr["te"] = ((string)sr["te"])?.Replace("\r", "&#13").Replace("\n", "&#10").Replace(" ", "&nbsp;");
-
-            ((JObject)lStatesObj["states"]).Add(new JProperty(lNumber, sr));
-          }
-
-          parent["sr"].Parent.Remove();
-
-          parent.Add(lStatesObj.Property("states"));
-        }
-
-        // --------------------------------------------------------
-        // popupType="appwindow"
-        // states: Add empty array if not exists (needed)
-        // --------------------------------------------------------
-        if(parent["states"] == null)
-          parent["states"] = JObject.Parse("{ '1': { } }");
-      }
-      catch(Exception ex)
-      {
-        Client?.LogError(ex.Message);
       }
     }
   }

@@ -45,7 +45,7 @@ namespace ICSP.WebProxy.Json
           writer.WriteValue(v ? "1" : "0");
           break;
         }
-        case Enum v:
+        case Enum _:
         {
           writer.WriteValue(((int)value).ToString().ToLower());
           break;

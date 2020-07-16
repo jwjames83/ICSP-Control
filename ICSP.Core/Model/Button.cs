@@ -82,7 +82,7 @@ namespace ICSP.Core.Model
     public int ZOrder { get; set; }
 
     /// <summary>
-    /// Drag/Drop Type (G5 Only)<br/>
+    /// Drag/Drop Type (G5 Only)
     /// </summary>
     [DefaultValue(DragDropType.None)]
     [JsonProperty("ddt", Order = 12, DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]

@@ -15,9 +15,9 @@ namespace ICSP.WebProxy.WebControl
 
       PaletteList = new List<Palette>();
 
-      ResourceList = new Dictionary<string, Resource>();
+      ResourceList = new Dictionary<string, WebControlResource>();
 
-      IconList = new Dictionary<string, SubPageSet>();
+      IconList = new Dictionary<int, string>();
     }
 
     // ==============================================================================================
@@ -31,10 +31,10 @@ namespace ICSP.WebProxy.WebControl
     public List<Palette> PaletteList { get; set; }
 
     [JsonProperty("resourceList", Order = 3)]
-    public Dictionary<string, Resource> ResourceList { get; set; }
+    public Dictionary<string, WebControlResource> ResourceList { get; set; }
 
     [JsonProperty("iconList", Order = 4)]
-    public Dictionary<string, SubPageSet> IconList { get; set; }
+    public Dictionary<int, string> IconList { get; set; }
 
     // ==============================================================================================
     // 4: PanelSetup
@@ -309,7 +309,7 @@ namespace ICSP.WebProxy.WebControl
 
         PageList                /**/ = project.PageList?.Select(s => (WebControlPageEntry)s)?.ToList() ?? new List<WebControlPageEntry>(),
         PaletteList             /**/ = project.PaletteList ?? new List<Palette>(),
-        ResourceList            /**/ = project.ResourceList?.ToDictionary(k => k.File) ?? new Dictionary<string, Resource>(),
+        ResourceList            /**/ = project.ResourceList?.ToDictionary(k => k.Name, s => (WebControlResource)s) ?? new Dictionary<string, WebControlResource>(),
         // IconList             /**/ = project.IconList,
 
         // ==============================================================================================
@@ -423,7 +423,7 @@ namespace ICSP.WebProxy.WebControl
 
         PageList                /**/ = settings.PageList?.Select(s => (PageEntry)s)?.ToList(),
         PaletteList             /**/ = settings.PaletteList,
-        ResourceList            /**/ = settings.ResourceList?.Values?.ToList(),
+        ResourceList            /**/ = settings.ResourceList?.Values?.Select(s => (Resource)s).ToList(),
 
         // ==============================================================================================
         // VersionInfo

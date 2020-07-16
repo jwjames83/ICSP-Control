@@ -101,28 +101,28 @@ namespace ICSP.Core.Model
     [JsonProperty("number", Order = 1)]
     public int Number { get; set; }
 
-    [JsonProperty("file", Order = 1)]
+    [JsonProperty("file", Order = 2)]
     public string File { get; set; }
 
-    [JsonProperty("fileSize", Order = 2, DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
+    [JsonProperty("fileSize", Order = 3, DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
     public int FileSize { get; set; }
 
-    [JsonProperty("faceIndex", Order = 3)]
+    [JsonProperty("faceIndex", Order = 4)]
     public int FaceIndex { get; set; }
 
-    [JsonProperty("name", Order = 4)]
+    [JsonProperty("name", Order = 5)]
     public string Name { get; set; }
 
-    [JsonProperty("subfamilyName", Order = 5)]
+    [JsonProperty("subfamilyName", Order = 6)]
     public string SubFamilyName { get; set; }
 
-    [JsonProperty("fullName", Order = 6)]
+    [JsonProperty("fullName", Order = 7)]
     public string FullName { get; set; }
 
-    [JsonProperty("size", Order = 7)]
+    [JsonProperty("size", Order = 8)]
     public int Size { get; set; }
 
-    [JsonProperty("usageCount", Order = 8)]
+    [JsonProperty("usageCount", Order = 9)]
     public int UsageCount { get; set; }
   }
 }
