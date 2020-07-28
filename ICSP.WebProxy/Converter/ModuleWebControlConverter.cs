@@ -4,6 +4,7 @@ using System.Text.RegularExpressions;
 
 using ICSP.Core;
 using ICSP.Core.Constants;
+using ICSP.Core.Logging;
 using ICSP.Core.Manager.DeviceManager;
 using ICSP.WebProxy.Configuration;
 using ICSP.WebProxy.Proxy;
@@ -255,6 +256,8 @@ namespace ICSP.WebProxy.Converter
           }
         }
       }
+
+      Logger.LogInfo($"Msg={msg}");
 
       lMatch = RegexKeyValue.Match(msg);
 

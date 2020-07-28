@@ -22,6 +22,8 @@ namespace ICSP.WebProxy.Configuration
 
     public string BaseDirectory { get; set; }
 
+    public string RequestPath { get; set; }
+
     public bool Enabled { get; set; } = true;
 
     public string Converter { get; set; }    

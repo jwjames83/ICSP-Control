@@ -1,0 +1,17 @@
+Start / Stop a Windows Service from a non-Administrator user account:
+https://stackoverflow.com/questions/4436558/start-stop-a-windows-service-from-a-non-administrator-user-account
+// -----------------------------------------------------------------------------------------------------------
+subinacl.exe /service ICSP.WebProxy /grant=Jeder=PTO
+subinacl.exe /service ICSP.WebProxy /grant=Users=PTO
+
+// Important:
+// If a remote scope is used, the following registry value is required on the server!
+// ------------------------------------------------------------------------------------------------
+// HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\system\LocalAccountTokenFilterPolicy = 1
+reg add HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System /v LocalAccountTokenFilterPolicy /t REG_DWORD /d 1 /f
+
+// Configuring namespace reservations:
+// https://docs.microsoft.com/en-us/dotnet/framework/wcf/feature-details/configuring-http-and-https
+// ------------------------------------------------------------------------------------------------
+// netsh http add urlacl url=http://+:8000/ user=Jeder
+// netsh http add urlacl url=http://+:8000/ user=Users

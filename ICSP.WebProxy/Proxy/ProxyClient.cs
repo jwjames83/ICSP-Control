@@ -198,7 +198,7 @@ namespace ICSP.WebProxy.Proxy
       if(e.SocketId != SocketId)
         return;
 
-      LogInformation($"Message={e.Message}");
+      LogDebug($"Message={e.Message}");
 
       var lMsg = Converter.ToDevMessage(e.Message);
 

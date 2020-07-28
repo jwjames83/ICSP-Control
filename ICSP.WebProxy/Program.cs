@@ -47,11 +47,14 @@ namespace ICSP.WebProxy
         catch { }
       }
 
-      // CreateHostBuilder(args).Build().Run();
+      var lLoggingConfig = GetLoggingConfiguration(args);
+
+      // Initializes the Log system
+      LoggingConfigurator.Configure(lLoggingConfig);
+
+      Logger.LogInfo("Starting up");
 
       var lHostBuilder = CreateHostBuilder(args);
-
-      var lLoggingConfig = GetLoggingConfiguration(args);
 
       // Initializes the Log system
       LoggingConfigurator.Configure(lHostBuilder, lLoggingConfig);
@@ -73,9 +76,17 @@ namespace ICSP.WebProxy
 
       var lUrls = lConfig.Connections.Where(p => p.Enabled).Select(s => s.LocalHost).ToArray();
 
+      Logger.LogInfo("Enable running as a Windows service ... (UseWindowsService)");
+
+      // Enable running as a Windows service
+      lBuilder.UseWindowsService();
+
       lBuilder.ConfigureWebHostDefaults(webBuilder =>
       {
-        webBuilder.UseUrls(lUrls.ToArray());
+        foreach(var url in lUrls.ToArray())
+          Logger.LogInfo($"Use Url: {url}");
+
+        webBuilder.UseUrls(lUrls);
 
         webBuilder.UseStartup<Startup>();
 

@@ -18,6 +18,49 @@ namespace ICSP.WebProxy
     public const string LogTemplateFile    /**/ = "{Timestamp:yyyy-MM-dd HH:mm:ss.fff} [{Level:u3}] {StackTrace}{Message:lj}{NewLine}";
     public const string LogTemplateConsole /**/ = "[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}{Exception}";
 
+    public static void Configure(LoggingConfiguration loggingConfiguration, bool console = true)
+    {
+      Logger.Flush();
+
+      if(loggingConfiguration == null)
+        throw new ArgumentNullException(nameof(loggingConfiguration));
+
+      try
+      {
+        Logger.MethodInfo = loggingConfiguration.MethodInfo;
+
+        var lPath = loggingConfiguration.Path;
+        var lLimitBytes = (long)loggingConfiguration.MaxLogFileLength * 1024;
+        var lFileCountLimit = loggingConfiguration.MaxSizeRollBackups;
+
+        var lConf = new LoggerConfiguration();
+
+        switch(loggingConfiguration.LogLevel)
+        {
+          case LogEventLevel.Fatal       /**/: lConf.MinimumLevel.Fatal(); break;
+          case LogEventLevel.Error       /**/: lConf.MinimumLevel.Error(); break;
+          case LogEventLevel.Warning     /**/: lConf.MinimumLevel.Warning(); break;
+          case LogEventLevel.Information /**/: lConf.MinimumLevel.Information(); break;
+          case LogEventLevel.Debug       /**/: lConf.MinimumLevel.Debug(); break;
+          case LogEventLevel.Verbose     /**/: lConf.MinimumLevel.Verbose(); break;
+        }
+
+        // lConf.Enrich.With<CustomLevelEnricher>();
+        // lConf.Enrich.With<StackTraceEnricher>();
+
+        lConf.WriteTo.File(lPath, outputTemplate: LogTemplateFile, fileSizeLimitBytes: lLimitBytes, retainedFileCountLimit: lFileCountLimit, rollOnFileSizeLimit: true, flushToDiskInterval: TimeSpan.FromSeconds(1));
+
+        if(console)
+          lConf.WriteTo.Console(outputTemplate: LogTemplateConsole);
+
+        Log.Logger = lConf.CreateLogger();
+      }
+      catch(Exception ex)
+      {
+        Logger.LogError(ex);
+      }
+    }
+
     public static void Configure(IHostBuilder hostBuilder, LoggingConfiguration loggingConfiguration, bool console = true)
     {
       Logger.Flush();

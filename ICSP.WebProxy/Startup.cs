@@ -1,5 +1,8 @@
+using System;
 using System.IO;
+using System.Linq;
 
+using ICSP.Core.Logging;
 using ICSP.WebProxy.Configuration;
 
 using Microsoft.AspNetCore.Builder;
@@ -8,7 +11,9 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 
 namespace ICSP.WebProxy
 {
@@ -36,7 +41,7 @@ namespace ICSP.WebProxy
     }
 
     // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-    public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+    public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILogger<Startup> logger)
     {
       var lFactory = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>();
       var lProvider = lFactory.CreateScope().ServiceProvider;
@@ -85,8 +90,48 @@ namespace ICSP.WebProxy
 
       app = app.MapWebSocketManager("", lProvider.GetService<WebSocketProxyClient>());
 
-      app.UseDefaultFiles();
-      app.UseStaticFiles();
+      var lConfigs = Program.ProxyConfig.Connections.Where(p => p.Enabled).ToArray();
+      
+      var lUseDefault = true;
+
+      foreach(var config in lConfigs)
+      {
+        try
+        {
+          if(!string.IsNullOrWhiteSpace(config.BaseDirectory))
+          {
+            Logger.LogInfo($"UseStaticFiles: Path={config.BaseDirectory}, RequestPath={config.RequestPath}");
+
+            app.UseDefaultFiles(new DefaultFilesOptions()
+            {
+              FileProvider = new PhysicalFileProvider(Path.Combine(config.BaseDirectory)),
+
+              RequestPath = config.RequestPath,
+            });
+
+            app.UseStaticFiles(new StaticFileOptions
+            {
+              FileProvider = new PhysicalFileProvider(Path.Combine(config.BaseDirectory)),
+              
+              RequestPath = config.RequestPath,
+            });
+
+            lUseDefault = false;
+          }
+        }
+        catch(Exception ex)
+        {
+          Logger.LogError(ex.Message);
+        }
+      }
+
+      // No Base-Directories configured, use defaults ...
+      if(lUseDefault)
+      {
+        app.UseDefaultFiles();
+        app.UseStaticFiles();
+      }
+
       // app.UseCookiePolicy();
 
       app.UseRouting();
