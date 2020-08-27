@@ -16,8 +16,8 @@ namespace ICSP.Core.Environment
     public static T GetAssemblyAttribute<T>(Assembly assembly, bool throwExceptionIfNotExists)
     {
       T local = AttributeHelper.Get<T>(assembly);
-      
-      if (local == null && throwExceptionIfNotExists)
+
+      if(local == null && throwExceptionIfNotExists)
         throw new Exception(string.Format("Assembly {0} hat kein {1}.", assembly.FullName, typeof(T).Name));
 
       return local;
@@ -106,6 +106,18 @@ namespace ICSP.Core.Environment
         return Assembly.GetEntryAssembly().GetName().Version;
 
         // return Application.ProductVersion;
+      }
+    }
+
+    /// <summary>
+    /// Gets the compile date of the currently executing assembly.
+    /// </summary>
+    /// <value>The compile date.</value>
+    public static DateTime CompileDate
+    {
+      get
+      {
+        return File.GetLastWriteTime(Assembly.GetExecutingAssembly().Location);
       }
     }
 

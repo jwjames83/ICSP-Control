@@ -7,6 +7,7 @@ using System.Text.RegularExpressions;
 using System.Xml;
 
 using ICSP.Core.Constants;
+using ICSP.Core.Environment;
 using ICSP.Core.Model;
 using ICSP.Core.Model.ProjectProperties;
 using ICSP.WebProxy.Json;
@@ -65,6 +66,19 @@ namespace ICSP.WebProxy.WebControl
 
         if(CreateJsonList(lDirectory))
           ProccessJsonList(lDirectory);
+
+        try
+        {
+          // If exists, remove XML-Root folder from WebControl Extraction
+          lDirectory = new DirectoryInfo(Path.Combine(Client?.Manager?.FileManager?.BaseDirectory ?? string.Empty, "xml"));
+
+          if(lDirectory.Exists)
+            lDirectory.Delete(true);
+        }
+        catch(Exception ex)
+        {
+          Client?.LogError(ex.Message);
+        }
       }
       catch(Exception ex)
       {
@@ -144,8 +158,13 @@ namespace ICSP.WebProxy.WebControl
         lHtml = lHtml?
           .Replace("{title}", mProject.Settings.JobName)
           .Replace("{width}", mProject.Settings.ScreenWidth.ToString())
-          .Replace("{height}", mProject.Settings.ScreenHeight.ToString())
-          .Replace("{projectPath}", lProjectPath.Name);
+          .Replace("{height}", mProject.Settings.ScreenHeight.ToString());
+
+        // LastBuild & Version
+        lHtml = lHtml?
+          .Replace("{LastBuild}", ProgramProperties.CompileDate.ToString("yyyy-MM-dd HH:mm:ss:ffffff")) // 2020-08-27 12:03:37.946386
+          .Replace("{Title}", ProgramProperties.Title)
+          .Replace("{version}", ProgramProperties.Version.ToString());
 
         var lFileNameMainPage = string.Format(@"{0}\..\{1}", directory.FullName, "index.html");
 
