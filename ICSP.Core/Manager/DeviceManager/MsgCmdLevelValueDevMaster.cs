@@ -63,7 +63,7 @@ namespace ICSP.Core.Manager.DeviceManager
         ValueType = LevelValueType.Integer,
         Value = value
       };
-
+      
       var lData = source.GetBytesDPS().
         Concat(ArrayExtensions.Int16ToBigEndian(level)).
         Concat(ArrayExtensions.Int16To8Bit((byte)lRequest.ValueType)).

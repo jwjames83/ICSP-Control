@@ -313,7 +313,7 @@ namespace ICSP.WebProxy.Proxy
       }
     }
 
-    private async Task CreateDeviceInfoAsync()
+    internal async Task CreateDeviceInfoAsync(bool force = false)
     {
       if(Manager != null && DeviceConfig.Device > 0)
       {
@@ -322,6 +322,22 @@ namespace ICSP.WebProxy.Proxy
           Converter.System = lDeviceInfo.System;
 
           Converter.Dest = new AmxDevice(0, 1, lDeviceInfo.System);
+
+          if(force)
+          {
+            lDeviceInfo = new DeviceInfoData(DeviceConfig.Device, Manager.CurrentLocalIpAddress);
+
+            if(!string.IsNullOrWhiteSpace(DeviceConfig.DeviceVersion))
+              lDeviceInfo.Version = DeviceConfig.DeviceVersion.ToLower();
+
+            if(DeviceConfig.DeviceId > 0)
+              lDeviceInfo.DeviceId = DeviceConfig.DeviceId;
+
+            if(!string.IsNullOrWhiteSpace(DeviceConfig.DeviceName))
+              lDeviceInfo.Name = DeviceConfig.DeviceName;
+
+            await Manager?.CreateDeviceInfoAsync(lDeviceInfo, DeviceConfig.PortCount);
+          }
         }
         else
         {

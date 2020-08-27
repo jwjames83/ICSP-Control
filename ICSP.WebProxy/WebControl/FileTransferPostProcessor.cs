@@ -349,6 +349,7 @@ namespace ICSP.WebProxy.WebControl
       {
         Client?.LogDebug("ProccessJsonList: Directory={0}", directory.FullName);
 
+        /*
         if((mJsonList?.Count ?? 0) < 5)
         {
           Client?.LogInformation(string.Format("ProcessFiles: FileCount={0}, processing was aborted because Readable FileCount < 6", mJsonList?.Count));
@@ -356,6 +357,7 @@ namespace ICSP.WebProxy.WebControl
 
           return;
         }
+        */
 
         /*
         WebControl 1.7.0 JavaScript Project-Structure:
@@ -493,7 +495,7 @@ namespace ICSP.WebProxy.WebControl
               {
                 var lIcons = JsonConvert.DeserializeObject<IconList>(lProperty?.Value?.ToString());
 
-                mProject.Settings.IconList = lIcons.Icons?.ToDictionary(k => k.Number, e => e.File) ?? new Dictionary<int, string>();
+                mProject.Settings.IconList = lIcons.Icons?.ToDictionary(k => k.Number, e => new IconItem() { File = e.File }) ?? new Dictionary<int, IconItem>();
               }
               catch(Exception ex)
               {
@@ -538,6 +540,8 @@ namespace ICSP.WebProxy.WebControl
                 {
                   try
                   {
+                    var lStr = lProperty?.Value?.ToString();
+
                     var lPage = JsonConvert.DeserializeObject<SubPage>(lProperty?.Value?.ToString());
 
                     var lStates = lPage.States?.Select(s => s)
@@ -546,7 +550,7 @@ namespace ICSP.WebProxy.WebControl
                     foreach(var state in lStates)
                     {
                       // Replace \r\n -> &#13&#10
-                      state.Text = state.Text?.Replace("\r", "&#13")?.Replace("\n", "&#10");
+                      // state.Text = state.Text?.Replace("\r", "&#13")?.Replace("\n", "&#10");
 
                       // ============================================
                       // G5: Convert Bitmaps back to G4 ...

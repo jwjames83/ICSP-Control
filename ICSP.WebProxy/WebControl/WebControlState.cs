@@ -75,6 +75,12 @@ namespace ICSP.WebProxy.WebControl
     public string ChameleonImage { get; set; }
 
     /// <summary>
+    /// Chameleon Image
+    /// </summary>
+    [JsonIgnore]
+    public bool ChameleonImageDynamic { get; set; }
+
+    /// <summary>
     /// Border Color (Alpha not supported)
     /// </summary>
     [JsonProperty("cb", Order = 5)]
@@ -120,6 +126,12 @@ namespace ICSP.WebProxy.WebControl
     /// </summary>
     [JsonProperty("bm", Order = 12, NullValueHandling = NullValueHandling.Ignore)]
     public string Bitmap { get; set; }
+
+    /// <summary>
+    /// Bitmap (G4 Only)
+    /// </summary>
+    [JsonIgnore]
+    public bool BitmapDynamic { get; set; }
 
     /// <summary>
     /// Bitmap Justification (G4 Only)
@@ -250,38 +262,40 @@ namespace ICSP.WebProxy.WebControl
     {
       return new WebControlState()
       {
-        Number              /**/ = state.Number,
-        DrawOrder           /**/ = state.DrawOrder,
-        BorderStyle         /**/ = state.BorderStyle,
-        ChameleonImage      /**/ = state.ChameleonImage,
-        BorderColor         /**/ = state.BorderColor,
-        FillColor           /**/ = state.FillColor,
-        TextColor           /**/ = state.TextColor,
-        TextEffectColor     /**/ = state.TextEffectColor,
-        OverallOpacity      /**/ = state.OverallOpacity,
-        VideoFill           /**/ = state.VideoFill,
-        StreamingSource     /**/ = state.StreamingSource,
-        Bitmap              /**/ = state.Bitmap,
-        BitmapJustification /**/ = state.BitmapJustification,
-        BitmapOffsetX       /**/ = state.BitmapOffsetX,
-        BitmapOffsetY       /**/ = state.BitmapOffsetY,
-        Bitmaps             /**/ = state.Bitmaps,
-        IconSlot            /**/ = state.IconSlot,
-        IconJustification   /**/ = state.IconJustification,
-        IconOffsetX         /**/ = state.IconOffsetX,
-        IconOffsetY         /**/ = state.IconOffsetY,
-        FontIndex           /**/ = state.FontIndex,
-        Font                /**/ = state.Font,
-        FontSize            /**/ = state.FontSize,
-        Text                /**/ = state.Text,
-        TextJustification   /**/ = state.TextJustification,
-        TextOffsetX         /**/ = state.TextOffsetX,
-        TextOffsetY         /**/ = state.TextOffsetY,
-        TextEffect          /**/ = state.TextEffect,
-        WordWrap            /**/ = state.WordWrap,
-        Sound               /**/ = state.Sound,
-        MarqueeDirection    /**/ = state.MarqueeDirection,
-        MarqueeRepeat       /**/ = state.MarqueeRepeat,
+        Number                /**/ = state.Number,
+        DrawOrder             /**/ = state.DrawOrder,
+        BorderStyle           /**/ = state.BorderStyle,
+        ChameleonImage        /**/ = state.ChameleonImage,
+        ChameleonImageDynamic /**/ = state.ChameleonImageDynamic,
+        BorderColor           /**/ = state.BorderColor,
+        FillColor             /**/ = state.FillColor,
+        TextColor             /**/ = state.TextColor,
+        TextEffectColor       /**/ = state.TextEffectColor,
+        OverallOpacity        /**/ = state.OverallOpacity,
+        VideoFill             /**/ = state.VideoFill,
+        StreamingSource       /**/ = state.StreamingSource,
+        Bitmap                /**/ = state.Bitmap,
+        BitmapDynamic         /**/ = state.BitmapDynamic,
+        BitmapJustification   /**/ = state.BitmapJustification,
+        BitmapOffsetX         /**/ = state.BitmapOffsetX,
+        BitmapOffsetY         /**/ = state.BitmapOffsetY,
+        Bitmaps               /**/ = state.Bitmaps,
+        IconSlot              /**/ = state.IconSlot,
+        IconJustification     /**/ = state.IconJustification,
+        IconOffsetX           /**/ = state.IconOffsetX,
+        IconOffsetY           /**/ = state.IconOffsetY,
+        FontIndex             /**/ = state.FontIndex,
+        Font                  /**/ = state.Font,
+        FontSize              /**/ = state.FontSize,
+        Text                  /**/ = state.Text,
+        TextJustification     /**/ = state.TextJustification,
+        TextOffsetX           /**/ = state.TextOffsetX,
+        TextOffsetY           /**/ = state.TextOffsetY,
+        TextEffect            /**/ = state.TextEffect,
+        WordWrap              /**/ = state.WordWrap,
+        Sound                 /**/ = state.Sound,
+        MarqueeDirection      /**/ = state.MarqueeDirection,
+        MarqueeRepeat         /**/ = state.MarqueeRepeat,
       };
     }
 
@@ -289,38 +303,40 @@ namespace ICSP.WebProxy.WebControl
     {
       return new State()
       {
-        Number              /**/ = state.Number,
-        DrawOrder           /**/ = state.DrawOrder,
-        BorderStyle         /**/ = state.BorderStyle,
-        ChameleonImage      /**/ = state.ChameleonImage,
-        BorderColor         /**/ = state.BorderColor,
-        FillColor           /**/ = state.FillColor,
-        TextColor           /**/ = state.TextColor,
-        TextEffectColor     /**/ = state.TextEffectColor,
-        OverallOpacity      /**/ = state.OverallOpacity,
-        VideoFill           /**/ = state.VideoFill,
-        StreamingSource     /**/ = state.StreamingSource,
-        Bitmap              /**/ = state.Bitmap,
-        BitmapJustification /**/ = state.BitmapJustification,
-        BitmapOffsetX       /**/ = state.BitmapOffsetX,
-        BitmapOffsetY       /**/ = state.BitmapOffsetY,
-        Bitmaps             /**/ = state.Bitmaps,
-        IconSlot            /**/ = state.IconSlot,
-        IconJustification   /**/ = state.IconJustification,
-        IconOffsetX         /**/ = state.IconOffsetX,
-        IconOffsetY         /**/ = state.IconOffsetY,
-        FontIndex           /**/ = state.FontIndex,
-        Font                /**/ = state.Font,
-        FontSize            /**/ = state.FontSize,
-        Text                /**/ = state.Text,
-        TextJustification   /**/ = state.TextJustification,
-        TextOffsetX         /**/ = state.TextOffsetX,
-        TextOffsetY         /**/ = state.TextOffsetY,
-        TextEffect          /**/ = state.TextEffect,
-        WordWrap            /**/ = state.WordWrap,
-        Sound               /**/ = state.Sound,
-        MarqueeDirection    /**/ = state.MarqueeDirection,
-        MarqueeRepeat       /**/ = state.MarqueeRepeat,
+        Number                /**/ = state.Number,
+        DrawOrder             /**/ = state.DrawOrder,
+        BorderStyle           /**/ = state.BorderStyle,
+        ChameleonImage        /**/ = state.ChameleonImage,
+        ChameleonImageDynamic /**/ = state.ChameleonImageDynamic,
+        BorderColor           /**/ = state.BorderColor,
+        FillColor             /**/ = state.FillColor,
+        TextColor             /**/ = state.TextColor,
+        TextEffectColor       /**/ = state.TextEffectColor,
+        OverallOpacity        /**/ = state.OverallOpacity,
+        VideoFill             /**/ = state.VideoFill,
+        StreamingSource       /**/ = state.StreamingSource,
+        Bitmap                /**/ = state.Bitmap,
+        BitmapDynamic         /**/ = state.BitmapDynamic,
+        BitmapJustification   /**/ = state.BitmapJustification,
+        BitmapOffsetX         /**/ = state.BitmapOffsetX,
+        BitmapOffsetY         /**/ = state.BitmapOffsetY,
+        Bitmaps               /**/ = state.Bitmaps,
+        IconSlot              /**/ = state.IconSlot,
+        IconJustification     /**/ = state.IconJustification,
+        IconOffsetX           /**/ = state.IconOffsetX,
+        IconOffsetY           /**/ = state.IconOffsetY,
+        FontIndex             /**/ = state.FontIndex,
+        Font                  /**/ = state.Font,
+        FontSize              /**/ = state.FontSize,
+        Text                  /**/ = state.Text,
+        TextJustification     /**/ = state.TextJustification,
+        TextOffsetX           /**/ = state.TextOffsetX,
+        TextOffsetY           /**/ = state.TextOffsetY,
+        TextEffect            /**/ = state.TextEffect,
+        WordWrap              /**/ = state.WordWrap,
+        Sound                 /**/ = state.Sound,
+        MarqueeDirection      /**/ = state.MarqueeDirection,
+        MarqueeRepeat         /**/ = state.MarqueeRepeat,
       };
     }
   }

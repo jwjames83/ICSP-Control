@@ -186,13 +186,13 @@ namespace ICSP.Core.Manager.DeviceManager
       {
         case ExtAddressType.IPv4Address:
           {
-            lRequest.ExtAddress = lRequest.IPv4Address.GetAddressBytes();
+            lRequest.ExtAddress = lRequest.IPv4Address?.GetAddressBytes();
             break;
           }
         case ExtAddressType.IPv4PortMac:
           {
             lRequest.ExtAddress =
-              lRequest.IPv4Address.GetAddressBytes().
+              lRequest.IPv4Address?.GetAddressBytes().
               Concat(ArrayExtensions.Int16ToBigEndian(lRequest.IpPort)).
               Concat(lRequest.MacAddress.GetAddressBytes()).ToArray();
             break;
@@ -200,7 +200,7 @@ namespace ICSP.Core.Manager.DeviceManager
         case ExtAddressType.IPv4PortMacIPv6:
           {
             lRequest.ExtAddress =
-              lRequest.IPv4Address.GetAddressBytes().
+              lRequest.IPv4Address?.GetAddressBytes().
               Concat(ArrayExtensions.Int16ToBigEndian(lRequest.IpPort)).
               Concat(lRequest.MacAddress.GetAddressBytes()).
             Concat(lRequest.IPv6Address.GetAddressBytes()).ToArray();

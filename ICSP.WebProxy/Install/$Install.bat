@@ -7,7 +7,7 @@ echo Path=%~dp0
 echo ----------------------------------------------------------------------------------------------------
 
 sc create ICSP.WebProxy binPath= "%~dp0..\ICSP.WebProxy.exe" start=auto
-sc description ICSP.WebProxy "Schnittstelle fueÅr HTML-WebSockets und AMX ICSP-Protokoll"
+sc description ICSP.WebProxy "Schnittstelle fuer HTML-WebSockets und AMX ICSP-Protokoll"
 
 echo ----------------------------------------------------------------------------------------------------
 echo Apply Security Settings for ICSP.WebProxy...

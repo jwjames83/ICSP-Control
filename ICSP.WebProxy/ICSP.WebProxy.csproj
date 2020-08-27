@@ -4,6 +4,7 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <AssemblyName>ICSP.WebProxy</AssemblyName>
     <RootNamespace>ICSP.WebProxy</RootNamespace>
+    <ApplicationIcon>App.ico</ApplicationIcon>
   </PropertyGroup>
 
   <ItemGroup>
@@ -16,10 +17,15 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="Resources\404.jpg" />
     <None Remove="Resources\index.html" />
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="Resources\404.jpg">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
     <Content Include="Resources\index.html" />
   </ItemGroup>
 

@@ -134,7 +134,7 @@ namespace ICSP.WebProxy.Converter
       // NetLinx:
       // SendToWebSocket(WS_OpCode_TextFrame, "'LEVEL', SSX, itoa(nPort), SSX, itoa(level.input.level), SSX, format('%d', level.value)")
 
-      return string.Concat(STX, "LEVEL", SSX, e.Device.Port, SSX, e.Level, SSX, e.Level, ETX);
+      return string.Concat(STX, "LEVEL", SSX, e.Device.Port, SSX, e.Level, SSX, e.Value, ETX);
     }
 
     public string FromCommandEvent(CommandEventArgs e)
@@ -292,6 +292,12 @@ namespace ICSP.WebProxy.Converter
               if(string.IsNullOrWhiteSpace(Client.DeviceConfig.DeviceName))
                 Client.DeviceConfig.DeviceName = lPanelType;
             }
+
+            // _ = Client.CreateDeviceInfoAsync(true);
+
+            // Client.Manager.Disconnect(true);
+
+            // _ = Client.Manager.ConnectAsync(Client.DeviceConfig.RemoteHost, Client.DeviceConfig.RemotePort);
 
             break;
           }

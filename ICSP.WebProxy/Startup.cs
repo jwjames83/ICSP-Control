@@ -46,9 +46,11 @@ namespace ICSP.WebProxy
       var lFactory = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>();
       var lProvider = lFactory.CreateScope().ServiceProvider;
 
+      // app.UseStatusCodePages();
+
       if(env.IsDevelopment())
       {
-        app.UseDeveloperExceptionPage();
+        // app.UseDeveloperExceptionPage();
       }
       else
       {
@@ -91,9 +93,9 @@ namespace ICSP.WebProxy
       app = app.MapWebSocketManager("", lProvider.GetService<WebSocketProxyClient>());
 
       var lConfigs = Program.ProxyConfig.Connections.Where(p => p.Enabled).ToArray();
-      
-      var lUseDefault = true;
 
+      var lUseDefault = true;
+           
       foreach(var config in lConfigs)
       {
         try
@@ -112,8 +114,36 @@ namespace ICSP.WebProxy
             app.UseStaticFiles(new StaticFileOptions
             {
               FileProvider = new PhysicalFileProvider(Path.Combine(config.BaseDirectory)),
-              
+
               RequestPath = config.RequestPath,
+
+              OnPrepareResponse = context =>
+              {
+                // Disable caching for all static files.
+                context.Context.Response.Headers["Cache-Control"] /**/ = Configuration["StaticFiles:Headers:Cache-Control"];
+                context.Context.Response.Headers["Pragma"]        /**/ = Configuration["StaticFiles:Headers:Pragma"];
+                context.Context.Response.Headers["Expires"]       /**/ = Configuration["StaticFiles:Headers:Expires"];
+              }
+            });
+
+            // Setup
+            var lOptions = new DefaultFilesOptions()
+            {
+              FileProvider = new PhysicalFileProvider(Path.Combine(config.BaseDirectory)),
+
+              RequestPath = config.RequestPath + "/setup",
+            };
+
+            lOptions.DefaultFileNames.Clear();
+            lOptions.DefaultFileNames.Add("setup.html");
+
+            app.UseDefaultFiles(lOptions);
+
+            app.UseStaticFiles(new StaticFileOptions
+            {
+              FileProvider = new PhysicalFileProvider(Path.Combine(config.BaseDirectory)),
+
+              RequestPath = config.RequestPath + "/setup",
             });
 
             lUseDefault = false;
@@ -135,6 +165,45 @@ namespace ICSP.WebProxy
       // app.UseCookiePolicy();
 
       app.UseRouting();
+
+      /*
+      app.Use(async (context, next) =>
+      {
+        await next.Invoke();
+        
+        // After going down the pipeline check if we 404'd. 
+        if(context.Response.StatusCode == StatusCodes.Status404NotFound)
+        {
+          Console.WriteLine(context.Request.Path);
+
+          var lSb = new StringBuilder();
+
+          lSb.AppendLine("<html>");
+          lSb.AppendLine("<meta name='viewport' content='width=device-width, initial-scale=1'>");
+          lSb.AppendLine("<style>");
+          lSb.AppendLine("body, html {");
+          lSb.AppendLine("  height: 100%;");
+          lSb.AppendLine("  margin: 0;");
+          lSb.AppendLine("}");
+          lSb.AppendLine(".bg {");
+          lSb.AppendLine("  background-image: url('data:image/png;base64," + Convert.ToBase64String(ICSP.WebProxy.Properties.Resources.Error_404) + "');");
+          lSb.AppendLine("  height: 100%;");
+          lSb.AppendLine("  background-position: center;");
+          lSb.AppendLine("  background-repeat: no-repeat;");
+          lSb.AppendLine("  background-size: cover;");
+          lSb.AppendLine("}");
+          lSb.AppendLine("</style>");
+          lSb.AppendLine("<body>");
+          lSb.AppendLine("<div class='bg'></div>");
+          lSb.AppendLine("</body>");
+          lSb.AppendLine("</html>");
+
+          context.Response.ContentType = "text/html";
+
+          await context.Response.WriteAsync(lSb.ToString());
+        }
+      });
+      */
 
       // app.UseAuthentication();
       // app.UseAuthorization();

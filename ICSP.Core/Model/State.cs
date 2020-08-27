@@ -6,11 +6,20 @@ using System.Runtime.Serialization;
 using ICSP.Core.Json;
 
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace ICSP.Core.Model
 {
   public class State
   {
+    [JsonExtensionData]
+    private IDictionary<string, JToken> mAdditionalData;
+
+    public State()
+    {
+      mAdditionalData = new Dictionary<string, JToken>();
+    }
+
     /// <summary>
     /// 1: State Off, 2: State On
     /// </summary>
@@ -67,11 +76,25 @@ namespace ICSP.Core.Model
     [JsonProperty("bs", Order = 3)]
     public string BorderStyle { get; set; }
 
+    /*
     /// <summary>
     /// Chameleon Image
     /// </summary>
     [JsonProperty("mi", Order = 4, NullValueHandling = NullValueHandling.Ignore)]
     public string ChameleonImage { get; set; }
+    */
+
+    /// <summary>
+    /// Chameleon Image
+    /// </summary>
+    [JsonIgnore]
+    public string ChameleonImage { get; set; }
+
+    /// <summary>
+    /// Chameleon Image
+    /// </summary>
+    [JsonIgnore]
+    public bool ChameleonImageDynamic { get; set; }
 
     /// <summary>
     /// Border Color (Alpha not supported)
@@ -114,11 +137,25 @@ namespace ICSP.Core.Model
     [JsonProperty("dv", Order = 11, NullValueHandling = NullValueHandling.Ignore)]
     public string StreamingSource { get; set; }
 
+    /*
     /// <summary>
     /// Bitmap (G4 Only)
     /// </summary>
     [JsonProperty("bm", Order = 12, NullValueHandling = NullValueHandling.Ignore)]
     public string Bitmap { get; set; }
+    */
+
+    /// <summary>
+    /// Bitmap (G4 Only)
+    /// </summary>
+    [JsonIgnore]
+    public string Bitmap { get; set; }
+
+    /// <summary>
+    /// Bitmap (G4 Only)
+    /// </summary>
+    [JsonIgnore]
+    public bool BitmapDynamic { get; set; }
 
     /// <summary>
     /// Bitmap Justification (G4 Only)
@@ -244,5 +281,65 @@ namespace ICSP.Core.Model
     [JsonConverter(typeof(BoolConverter))]
     [JsonProperty("mr", Order = 32, DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
     public bool MarqueeRepeat { get; set; }
+
+    [OnDeserialized]
+    private void OnDeserializedMethod(StreamingContext context)
+    {
+      /*
+      XML:
+      <bm>Logo-202x92.png</bm>
+      <bm dynamic="1">AXIS_Quad</bm>
+
+      JSON:
+      "bm": "Line_White_V.png",
+      "bm": { "dynamic": "1", "#text": "AXIS_Quad" },
+      */
+
+      if(mAdditionalData.TryGetValue("bm", out var bitmapToken))
+      {
+        switch(bitmapToken)
+        {
+          case JValue value:
+          {
+            Bitmap = (string)value;
+            break;
+          }
+          case JObject obj:
+          {
+            BitmapDynamic = (string)obj["dynamic"] == "1";
+            Bitmap = (string)obj["#text"];
+            break;
+          }
+        }
+      }
+
+      /*
+      XML:
+      <mi>AVS_Icon_Alarm-60x50.png</mi>
+      <mi dynamic="1">AXIS_Quad</mi>
+
+      JSON:
+      "mi": "AVS_Icon_Alarm-60x50.png",
+      "mi": { "dynamic": "1", "#text": "AVS_Icon_Alarm-60x50.png" },
+      */
+
+      if(mAdditionalData.TryGetValue("mi", out var chameleonImageToken))
+      {
+        switch(chameleonImageToken)
+        {
+          case JValue value:
+          {
+            ChameleonImage = (string)value;
+            break;
+          }
+          case JObject obj:
+          {
+            ChameleonImageDynamic = (string)obj["dynamic"] == "1";
+            ChameleonImage = (string)obj["#text"];
+            break;
+          }
+        }
+      }
+    }
   }
 }

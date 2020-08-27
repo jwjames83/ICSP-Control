@@ -17,7 +17,7 @@ namespace ICSP.WebProxy.WebControl
 
       ResourceList = new Dictionary<string, WebControlResource>();
 
-      IconList = new Dictionary<int, string>();
+      IconList = new Dictionary<int, IconItem>();
     }
 
     // ==============================================================================================
@@ -34,7 +34,7 @@ namespace ICSP.WebProxy.WebControl
     public Dictionary<string, WebControlResource> ResourceList { get; set; }
 
     [JsonProperty("iconList", Order = 4)]
-    public Dictionary<int, string> IconList { get; set; }
+    public Dictionary<int, IconItem> IconList { get; set; }
 
     // ==============================================================================================
     // 4: PanelSetup

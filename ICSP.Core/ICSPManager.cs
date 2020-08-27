@@ -204,14 +204,15 @@ namespace ICSP.Core
       }
     }
 
-    public void Disconnect()
+    public void Disconnect(bool force = false)
     {
       if(IsDisposed)
         return;
 
       var lEventArgs = new CancelEventArgs();
 
-      Disconnecting?.Invoke(this, lEventArgs);
+      if(!force) 
+        Disconnecting?.Invoke(this, lEventArgs);
 
       if(lEventArgs.Cancel)
         return;
