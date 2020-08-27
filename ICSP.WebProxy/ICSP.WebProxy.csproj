@@ -17,12 +17,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Remove="Resources\404.jpg" />
+    <None Remove="Resources\error_404.jpg" />
     <None Remove="Resources\index.html" />
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="Resources\404.jpg">
+    <Content Include="Resources\error_404.jpg">
       <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     </Content>

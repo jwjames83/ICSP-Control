@@ -101,27 +101,60 @@ namespace ICSP.WebProxy.Properties {
         }
         
         /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die &lt;!DOCTYPE html&gt;
+        ///&lt;html&gt;
+        ///&lt;head&gt;
+        ///  &lt;meta http-equiv=&quot;Content-Type&quot; content=&quot;text/html; charset=UTF-8&quot;&gt;
+        ///  &lt;title&gt;Error | ICSP.WebProxy&lt;/title&gt;
+        ///  &lt;style type=&quot;text/css&quot;&gt;
+        ///
+        ///    html, body, div, h1, h2, h3, h4, h5, h6, p, a, form, fieldset, select, input, ul, li, table, td, th, img {
+        ///      padding: 0px;
+        ///      margin: 0px;
+        ///    }
+        ///
+        ///    img {
+        ///      border: none;
+        ///    }
+        ///
+        ///    h1 {
+        ///      padding: 0;
+        ///      font-size: 46px;
+        ///      font-weight: normal;
+        ///      line-height: 60px;
+        ///      color: #000;
+        ///      pad [Rest der Zeichenfolge wurde abgeschnitten]&quot;; ähnelt.
+        /// </summary>
+        internal static string Error_404_html {
+            get {
+                return ResourceManager.GetString("Error_404_html", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
         /// </summary>
-        internal static byte[] Error_404 {
+        internal static byte[] Error_404_jpg {
             get {
-                object obj = ResourceManager.GetObject("Error_404", resourceCulture);
+                object obj = ResourceManager.GetObject("Error_404_jpg", resourceCulture);
                 return ((byte[])(obj));
             }
         }
         
         /// <summary>
-        ///   Sucht eine lokalisierte Zeichenfolge, die &lt;!DOCTYPE html&gt;
+        ///   Sucht eine lokalisierte Zeichenfolge, die ﻿
+        ///&lt;!DOCTYPE html&gt;
         ///&lt;html&gt;
         ///&lt;head&gt;
-        ///    &lt;meta charset=&quot;utf-8&quot;&gt;
-        ///    &lt;title&gt;{title}&lt;/title&gt;
-        ///    &lt;meta http-equiv=&quot;pragma&quot; content=&quot;no-cache&quot;&gt;
-        ///    &lt;meta http-equiv=&quot;expires&quot; content=&quot;-1&quot;&gt;
-        ///    &lt;meta http-equiv=&quot;cache-control&quot; content=&quot;no-cache&quot;&gt;
-        ///    &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1.0, user-scalable=0&quot;&gt;
-        ///    &lt;link rel=&quot;apple-touch-icon&quot; sizes=&quot;57x57&quot; href=&quot;AMXPanel/images/icon/apple-icon-57x57.png&quot;&gt;
-        ///    &lt;link rel=&quot;apple-touch-icon&quot; sizes=&quot;60x60&quot; href=&quot;AMXPanel/images/icon/app [Rest der Zeichenfolge wurde abgeschnitten]&quot;; ähnelt.
+        ///  &lt;meta charset=&quot;utf-8&quot;&gt;
+        ///  &lt;title&gt;{title}&lt;/title&gt;
+        ///  &lt;meta http-equiv=&quot;pragma&quot; content=&quot;no-cache, no-store&quot;&gt;
+        ///  &lt;meta http-equiv=&quot;expires&quot; content=&quot;0&quot;&gt;
+        ///  &lt;meta http-equiv=&quot;cache-control&quot; content=&quot;no-cache, no-store&quot;&gt;
+        ///  &lt;meta http-equiv=&quot;X-UA-Compatible&quot; content=&quot;IE=edge&quot; /&gt;
+        ///  &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1.0, user-scalable=0&quot;&gt;
+        ///  &lt;link rel=&quot;apple-touch-icon&quot; sizes=&quot;57x57&quot; href=&quot;AMXPanel/images/icon/apple-icon-57x57.png&quot;&gt;
+        ///  &lt;link re [Rest der Zeichenfolge wurde abgeschnitten]&quot;; ähnelt.
         /// </summary>
         internal static string MainPage {
             get {

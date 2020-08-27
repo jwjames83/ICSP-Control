@@ -4,6 +4,7 @@ using System.Linq;
 
 using ICSP.Core.Logging;
 using ICSP.WebProxy.Configuration;
+using ICSP.WebProxy.Properties;
 
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics;
@@ -95,7 +96,7 @@ namespace ICSP.WebProxy
       var lConfigs = Program.ProxyConfig.Connections.Where(p => p.Enabled).ToArray();
 
       var lUseDefault = true;
-           
+
       foreach(var config in lConfigs)
       {
         try
@@ -166,44 +167,25 @@ namespace ICSP.WebProxy
 
       app.UseRouting();
 
-      /*
       app.Use(async (context, next) =>
       {
-        await next.Invoke();
-        
-        // After going down the pipeline check if we 404'd. 
-        if(context.Response.StatusCode == StatusCodes.Status404NotFound)
+        if(context.Request.Path.Value?.EndsWith("/error_404.jpg", StringComparison.OrdinalIgnoreCase) ?? false)
         {
-          Console.WriteLine(context.Request.Path);
+          await context.Response.Body.WriteAsync(Resources.Error_404_jpg);
 
-          var lSb = new StringBuilder();
+          return;
+        }
 
-          lSb.AppendLine("<html>");
-          lSb.AppendLine("<meta name='viewport' content='width=device-width, initial-scale=1'>");
-          lSb.AppendLine("<style>");
-          lSb.AppendLine("body, html {");
-          lSb.AppendLine("  height: 100%;");
-          lSb.AppendLine("  margin: 0;");
-          lSb.AppendLine("}");
-          lSb.AppendLine(".bg {");
-          lSb.AppendLine("  background-image: url('data:image/png;base64," + Convert.ToBase64String(ICSP.WebProxy.Properties.Resources.Error_404) + "');");
-          lSb.AppendLine("  height: 100%;");
-          lSb.AppendLine("  background-position: center;");
-          lSb.AppendLine("  background-repeat: no-repeat;");
-          lSb.AppendLine("  background-size: cover;");
-          lSb.AppendLine("}");
-          lSb.AppendLine("</style>");
-          lSb.AppendLine("<body>");
-          lSb.AppendLine("<div class='bg'></div>");
-          lSb.AppendLine("</body>");
-          lSb.AppendLine("</html>");
+        await next();
 
-          context.Response.ContentType = "text/html";
+        var lReferer = context.Request.GetTypedHeaders().Referer;
 
-          await context.Response.WriteAsync(lSb.ToString());
+        // After going down the pipeline check if 404
+        if(lReferer == null && context.Response.StatusCode == StatusCodes.Status404NotFound)
+        {
+          await context.Response.WriteAsync(Resources.Error_404_html);
         }
       });
-      */
 
       // app.UseAuthentication();
       // app.UseAuthorization();
