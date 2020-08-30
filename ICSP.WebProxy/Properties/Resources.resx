@@ -127,8 +127,23 @@
   <data name="Error_404_jpg" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\resources\error_404.jpg;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
+  <data name="Error_404_V01_freak" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\error_404_v01.freak.jpg;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="Error_404_V02_notfound" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\error_404_v02.notfound.jpg;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="Error_404_V03_monster" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\error_404_v03.monster.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="Error_404_V04_pixar" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\error_404_v04.pixar.jpg;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
   <data name="MainPage" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\index.html;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  </data>
+  <data name="Status_4001" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\status_4001.html;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
   </data>
   <data name="SystemFonts" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\SystemFonts.json;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>

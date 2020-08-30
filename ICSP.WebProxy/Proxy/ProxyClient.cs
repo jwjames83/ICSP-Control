@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Net.WebSockets;
@@ -10,6 +11,7 @@ using System.Threading.Tasks;
 using ICSP.Core;
 using ICSP.Core.Client;
 using ICSP.Core.IO;
+using ICSP.Core.Manager.ConnectionManager;
 using ICSP.Core.Manager.DeviceManager;
 using ICSP.WebProxy.Configuration;
 using ICSP.WebProxy.Converter;
@@ -18,6 +20,7 @@ using ICSP.WebProxy.WebControl;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace ICSP.WebProxy.Proxy
 {
@@ -40,7 +43,21 @@ namespace ICSP.WebProxy.Proxy
     private int mCurrentFileCount;
     private int mCurrentFileSize;
 
-    public ProxyClient(ILogger<ProxyClient> logger, IServiceProvider provider, ICSPConnectionManager connectionManager, WebSocketProxyClient connectedClient)
+    private List<ushort> mDevices;
+
+    private AmxDevice mDynamicDevice;
+
+    private ushort mDevicePortCount = 1;
+    private string mDeviceName;
+    private string mDeviceVersion;
+    private ushort mDeviceId;
+
+    private bool mOverrideDevicePortCount;
+    private bool mOverrideDeviceName;
+    private bool mOverrideDeviceVersion;
+    private bool mOverrideDeviceId;
+
+    public ProxyClient(ILogger<ProxyClient> logger, IServiceProvider provider, ICSPConnectionManager connectionManager, WebSocketProxyClient connectedClient, IOptions<ProxyConfig> config)
     {
       mLogger = logger;
 
@@ -53,7 +70,15 @@ namespace ICSP.WebProxy.Proxy
       mConnectedClient.OnMessage += OnWebMessage;
 
       mPostProcessor = new FileTransferPostProcessor(this);
+
+      ProxyConfig = config.Value;
+
+      mDevices = new List<ushort>();
+
+      CurrentDevice = string.Empty;
     }
+
+    public static ProxyConfig ProxyConfig { get; set; }
 
     public HttpContext Context { get; private set; }
 
@@ -63,9 +88,11 @@ namespace ICSP.WebProxy.Proxy
 
     public ICSPManager Manager { get; private set; }
 
-    public ProxyConnectionConfig DeviceConfig { get; private set; }
+    public ProxyConnectionConfig ConnectionConfig { get; private set; }
 
     public IMessageConverter Converter { get; private set; }
+
+    public string CurrentDevice { get; private set; }
 
     public void Dispose()
     {
@@ -108,19 +135,13 @@ namespace ICSP.WebProxy.Proxy
       Socket = socket;
       SocketId = socketId;
 
+      // ============================================================================================================================================
+      // Setup DeviceConfig
+      // ============================================================================================================================================
+
       // localhost:8000 -> Device Mapping 10001
       // localhost:8001 -> Device Mapping 10002
-      DeviceConfig = ProxyConfigManager.GetConfig(context, socket);
-
-      var lType = string.IsNullOrWhiteSpace(DeviceConfig.Converter) ? typeof(ModuleWebControlConverter) : Type.GetType(DeviceConfig.Converter, true);
-
-      Converter = mServiceProvider.GetServices<IMessageConverter>().FirstOrDefault(p => p.GetType() == lType);
-
-      Converter.Client = this;
-
-      Converter.Device = DeviceConfig.Device;
-
-      Converter.Dest = new AmxDevice(0, 1, 0);
+      ConnectionConfig = ProxyConfig.GetConfig(context);
 
       // Specific parameters by QueryString ...
       // file:///C:/Tmp/WebControl/index.html?ip=172.16.126.250&device=8002
@@ -132,27 +153,42 @@ namespace ICSP.WebProxy.Proxy
         lHost = context.Request.Query["ip"];
 
       if(!string.IsNullOrWhiteSpace(lHost))
-        DeviceConfig.RemoteHost = lHost;
+        ConnectionConfig.RemoteHost = lHost;
 
       if(ushort.TryParse(context.Request.Query["port"], out var lPort))
       {
         if(lPort > 0)
-          DeviceConfig.RemotePort = lPort;
+          ConnectionConfig.RemotePort = lPort;
       }
 
-      if(DeviceConfig.RemotePort == 0)
-        DeviceConfig.RemotePort = ICSPClient.DefaultPort;
+      if(ConnectionConfig.RemotePort == 0)
+        ConnectionConfig.RemotePort = ICSPClient.DefaultPort;
 
       if(ushort.TryParse(context.Request.Query["device"], out var lDevice))
       {
         if(lDevice > 0)
-          DeviceConfig.Device = lDevice;
+          ConnectionConfig.Devices = new List<ushort> { lDevice };
       }
 
-      Manager = mConnectionManager.GetOrCreate(DeviceConfig.RemoteHost, DeviceConfig.RemotePort);
+      // Manager = mConnectionManager.GetOrCreate(DeviceConfig.RemoteHost, DeviceConfig.RemotePort);
 
-      if(!string.IsNullOrWhiteSpace(DeviceConfig.BaseDirectory))
-        Manager.FileManager.SetBaseDirectory(DeviceConfig.BaseDirectory);
+      Manager = new ICSPManager();
+      Manager.socketId = socketId;
+
+      if(!string.IsNullOrWhiteSpace(ConnectionConfig.BaseDirectory))
+        Manager.FileManager.SetBaseDirectory(ConnectionConfig.BaseDirectory);
+
+      // ============================================================================================================================================
+      // Setup Converter
+      // ============================================================================================================================================
+
+      var lType = string.IsNullOrWhiteSpace(ConnectionConfig.Converter) ? typeof(ModuleWebControlConverter) : Type.GetType(ConnectionConfig.Converter, true);
+
+      Converter = mServiceProvider.GetServices<IMessageConverter>().FirstOrDefault(p => p.GetType() == lType);
+
+      Converter.Client = this;
+
+      Converter.Dest = new AmxDevice(0, 1, 0);
 
       // TODO: Only one Processor for shared web connections!
       // mPostProcessor.ProcessFiles();
@@ -168,7 +204,7 @@ namespace ICSP.WebProxy.Proxy
 
         if(Manager.IsConnected)
         {
-          await CreateDeviceInfoAsync();
+          await InitializeDeviceConnectionAsync();
         }
         else
         {
@@ -177,9 +213,9 @@ namespace ICSP.WebProxy.Proxy
 
           try
           {
-            LogInformation($"Try connect, Host={DeviceConfig.RemoteHost}, Port={DeviceConfig.RemotePort}");
+            LogInformation($"Try connect, Host={ConnectionConfig.RemoteHost}, Port={ConnectionConfig.RemotePort}");
 
-            await Manager.ConnectAsync(DeviceConfig.RemoteHost, DeviceConfig.RemotePort);
+            await Manager.ConnectAsync(ConnectionConfig.RemoteHost, ConnectionConfig.RemotePort);
           }
           catch(Exception ex)
           {
@@ -193,6 +229,14 @@ namespace ICSP.WebProxy.Proxy
       await Task.CompletedTask;
     }
 
+    public ushort DevicePortCount { get => mDevicePortCount; set { mDevicePortCount = value; mOverrideDevicePortCount = true; } }
+
+    public string DeviceName { get => mDeviceName; set { mDeviceName = value; mOverrideDeviceName = true; } }
+
+    public string DeviceVersion { get => mDeviceVersion; set { mDeviceVersion = value; mOverrideDeviceVersion = true; } }
+
+    public ushort DeviceId { get => mDeviceId; set { mDeviceId = value; mOverrideDeviceId = true; } }
+
     private async void OnWebMessage(object sender, MessageEventArgs e)
     {
       if(e.SocketId != SocketId)
@@ -200,7 +244,7 @@ namespace ICSP.WebProxy.Proxy
 
       LogDebug($"Message={e.Message}");
 
-      var lMsg = Converter.ToDevMessage(e.Message);
+      var lMsg = await Converter.ToDevMessageAsync(e.Message);
 
       try
       {
@@ -240,6 +284,13 @@ namespace ICSP.WebProxy.Proxy
         Manager.StringEvent += OnManagerStringEvent;
         Manager.CommandEvent += OnManagerCommandEvent;
         Manager.LevelEvent += OnManagerLevelEvent;
+
+        // =====================================================================
+        // RequestDevicesOnlineAsync
+        // =====================================================================
+        Manager.DynamicDeviceCreated += OnDynamicDeviceCreated;
+        Manager.DeviceInfo += OnDeviceInfo;
+        Manager.RequestDevicesOnlineEOT += OnManagerRequestDevicesOnlineEOT;
 
         // =====================================================================
         // FileManager-Events
@@ -287,6 +338,13 @@ namespace ICSP.WebProxy.Proxy
         Manager.LevelEvent -= OnManagerLevelEvent;
 
         // =====================================================================
+        // RequestDevicesOnlineAsync
+        // =====================================================================
+        Manager.DynamicDeviceCreated -= OnDynamicDeviceCreated;
+        Manager.DeviceInfo -= OnDeviceInfo;
+        Manager.RequestDevicesOnlineEOT -= OnManagerRequestDevicesOnlineEOT;
+
+        // =====================================================================
         // FileManager-Events
         // =====================================================================
 
@@ -315,9 +373,38 @@ namespace ICSP.WebProxy.Proxy
 
     internal async Task CreateDeviceInfoAsync(bool force = false)
     {
-      if(Manager != null && DeviceConfig.Device > 0)
+      if(Manager != null && ConnectionConfig.Devices?.Count > 0)
       {
-        if(Manager.Devices.TryGetValue(DeviceConfig.Device, out var lDeviceInfo))
+        // Find free Device
+        var lDeviceNo = ConnectionConfig.Devices.Except(mDevices).FirstOrDefault();
+
+        // No more connections, Close WebSocket ...
+        if(lDeviceNo == 0)
+        {
+          LogWarn($"DeviceRange={string.Join(", ", ConnectionConfig.Devices)}, No more device connections available on controller");
+
+          Socket?.CloseAsync((WebSocketCloseStatus)4001, "No more device connections available on controller", CancellationToken.None);
+
+          return;
+        }
+
+        CurrentDevice = lDeviceNo.ToString();
+
+        // Get custom values from config for device
+        if(ConnectionConfig.DeviceConfig.TryGetValue(CurrentDevice, out var deviceConfig))
+        {
+          // Check has override by IMessageConverter
+          if(!mOverrideDevicePortCount) /**/ mDevicePortCount /**/ = deviceConfig.PortCount;
+          if(!mOverrideDeviceName)      /**/ mDeviceName      /**/ = deviceConfig.DeviceName;
+          if(!mOverrideDeviceVersion)   /**/ mDeviceVersion   /**/ = deviceConfig.DeviceVersion;
+          if(!mOverrideDeviceId)        /**/ mDeviceId        /**/ = deviceConfig.DeviceId;
+        }
+
+        Converter.Device = lDeviceNo;
+
+        LogWarn($"Device={lDeviceNo}");
+
+        if(Manager.Devices.TryGetValue(lDeviceNo, out var lDeviceInfo))
         {
           Converter.System = lDeviceInfo.System;
 
@@ -325,37 +412,47 @@ namespace ICSP.WebProxy.Proxy
 
           if(force)
           {
-            lDeviceInfo = new DeviceInfoData(DeviceConfig.Device, Manager.CurrentLocalIpAddress);
+            lDeviceInfo = new DeviceInfoData(lDeviceNo, Manager.CurrentLocalIpAddress.Address);
 
-            if(!string.IsNullOrWhiteSpace(DeviceConfig.DeviceVersion))
-              lDeviceInfo.Version = DeviceConfig.DeviceVersion.ToLower();
+            if(!string.IsNullOrWhiteSpace(mDeviceVersion))
+              lDeviceInfo.Version = mDeviceVersion?.ToLower();
 
-            if(DeviceConfig.DeviceId > 0)
-              lDeviceInfo.DeviceId = DeviceConfig.DeviceId;
+            if(mDeviceId > 0)
+              lDeviceInfo.DeviceId = mDeviceId;
 
-            if(!string.IsNullOrWhiteSpace(DeviceConfig.DeviceName))
-              lDeviceInfo.Name = DeviceConfig.DeviceName;
+            if(!string.IsNullOrWhiteSpace(mDeviceName))
+              lDeviceInfo.Name = mDeviceName;
 
-            await Manager?.CreateDeviceInfoAsync(lDeviceInfo, DeviceConfig.PortCount);
+            await Manager?.CreateDeviceInfoAsync(lDeviceInfo, mDevicePortCount);
           }
         }
         else
         {
-          lDeviceInfo = new DeviceInfoData(DeviceConfig.Device, Manager.CurrentLocalIpAddress);
+          lDeviceInfo = new DeviceInfoData(lDeviceNo, Manager.CurrentLocalIpAddress.Address);
 
-          if(!string.IsNullOrWhiteSpace(DeviceConfig.DeviceVersion))
-            lDeviceInfo.Version = DeviceConfig.DeviceVersion.ToLower();
+          if(!string.IsNullOrWhiteSpace(mDeviceVersion))
+            lDeviceInfo.Version = mDeviceVersion?.ToLower();
 
-          if(DeviceConfig.DeviceId > 0)
-            lDeviceInfo.DeviceId = DeviceConfig.DeviceId;
+          if(mDeviceId > 0)
+            lDeviceInfo.DeviceId = mDeviceId;
 
-          if(!string.IsNullOrWhiteSpace(DeviceConfig.DeviceName))
-            lDeviceInfo.Name = DeviceConfig.DeviceName;
+          if(!string.IsNullOrWhiteSpace(mDeviceName))
+            lDeviceInfo.Name = mDeviceName;
 
           Converter.Dest = Manager.SystemDevice;
 
-          await Manager?.CreateDeviceInfoAsync(lDeviceInfo, DeviceConfig.PortCount);
+          await Manager?.CreateDeviceInfoAsync(lDeviceInfo, mDevicePortCount);
         }
+      }
+
+      // No more connections, Close WebSocket ...
+      if(ConnectionConfig.Devices?.Count == 0)
+      {
+        LogWarn($"DeviceRange={string.Join(", ", ConnectionConfig.Devices)}, No more device connections available on controller");
+
+        Socket?.CloseAsync((WebSocketCloseStatus)4001, "No more device connections available on controller", CancellationToken.None);
+
+        return;
       }
     }
 
@@ -381,14 +478,45 @@ namespace ICSP.WebProxy.Proxy
       {
         StopConnectionTimer();
 
-        await CreateDeviceInfoAsync();
+        await InitializeDeviceConnectionAsync();
       }
       else
       {
-        // StartConnectionTimer();
-
-        Socket?.CloseAsync(WebSocketCloseStatus.EndpointUnavailable, "Device Offline", CancellationToken.None);
+        Socket?.CloseAsync(WebSocketCloseStatus.EndpointUnavailable, "Remote connection has closed", CancellationToken.None);
       }
+    }
+
+    private async void OnDynamicDeviceCreated(object sender, DynamicDeviceCreatedEventArgs e)
+    {
+      LogDebug($"System={e.System}, Device={e.Device}");
+
+      mDynamicDevice = new AmxDevice(e.Device, 1, e.System);
+
+      // Not Needed ...
+      // await Manager?.CreateDeviceInfoAsync(new DeviceInfoData(e.Device, Manager?.CurrentLocalIpAddress) { System = e.System });
+
+      // Use DynamicDevice for query online-tree
+      await Manager?.RequestDevicesOnlineAsync(mDynamicDevice);
+    }
+
+    private void OnDeviceInfo(object sender, DeviceInfoEventArgs e)
+    {
+      // Ignore
+      if(mDynamicDevice == AmxDevice.Empty || e.ObjectId > 0)
+        return;
+
+      LogDebug($"{e.Device:00000} - {e.Name} ({e.Version})");
+
+      if(!mDevices.Contains(e.Device))
+        mDevices.Add(e.Device);
+    }
+
+    private async void OnManagerRequestDevicesOnlineEOT(object sender, EventArgs e)
+    {
+      LogDebug($"End ...");
+
+      // Online-tree has finished, create the device
+      await CreateDeviceInfoAsync();
     }
 
     private async void OnManagerDeviceOnline(object sender, DeviceInfoData e)
@@ -396,6 +524,8 @@ namespace ICSP.WebProxy.Proxy
       LogInformation($"Device={e.Device}, System={e.System}, Name={e.Name}");
 
       Converter.System = e.System;
+
+      Converter.Device = e.Device;
 
       Converter.Dest = new AmxDevice(0, 1, e.System);
 
@@ -554,6 +684,11 @@ namespace ICSP.WebProxy.Proxy
       mLogger.LogError($"[{nameof(ProxyClient)}][{SocketId:00}][{callerName}]: {message}");
     }
 
+    internal void LogWarn(string message, [CallerMemberName] string callerName = "(Caller name not set)")
+    {
+      mLogger.LogWarning($"[{nameof(ProxyClient)}][{SocketId:00}][{callerName}]: {message}");
+    }
+
     internal void LogInformation(string message, [CallerMemberName] string callerName = "(Caller name not set)")
     {
       mLogger.LogInformation($"[{nameof(ProxyClient)}][{SocketId:00}][{callerName}]: {message}".Replace("\u0002", "[$02]").Replace("\u0003", "[$03]"));
@@ -562,6 +697,16 @@ namespace ICSP.WebProxy.Proxy
     internal void LogDebug(string message, [CallerMemberName] string callerName = "(Caller name not set)")
     {
       mLogger.LogDebug($"[{nameof(ProxyClient)}][{SocketId:00}][{callerName}]: {message}".Replace("\u0002", "[$02]").Replace("\u0003", "[$03]"));
+    }
+
+    private async Task InitializeDeviceConnectionAsync()
+    {
+      mDynamicDevice = AmxDevice.Empty;
+
+      mDevices.Clear();
+
+      // Create dynamic device for request OnlineTree
+      await Manager?.SendAsync(MsgCmdDynamicDeviceAddressRequest.CreateRequest(Manager?.CurrentLocalIpAddress?.Address));
     }
 
     private void StartConnectionTimer()
@@ -590,11 +735,11 @@ namespace ICSP.WebProxy.Proxy
 
       if(!Manager?.IsConnected ?? false)
       {
-        LogInformation($"Try Reconnect, Host={DeviceConfig.RemoteHost}, Port={DeviceConfig.RemotePort}");
+        LogInformation($"Try Reconnect, Host={ConnectionConfig.RemoteHost}, Port={ConnectionConfig.RemotePort}");
 
         try
         {
-          await Manager?.ConnectAsync(DeviceConfig.RemoteHost, DeviceConfig.RemotePort);
+          await Manager?.ConnectAsync(ConnectionConfig.RemoteHost, ConnectionConfig.RemotePort);
         }
         catch(Exception ex)
         {

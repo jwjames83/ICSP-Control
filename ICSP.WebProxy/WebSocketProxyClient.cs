@@ -33,11 +33,11 @@ namespace ICSP.WebProxy
       {
         using var lServiceScope = mServiceProvider.CreateScope();
 
-        using var lManager = lServiceScope.ServiceProvider.GetService<ProxyClient>();
+        using var lClient = lServiceScope.ServiceProvider.GetService<ProxyClient>();
 
         var lSocketId = ConnectionManager.GetId(socket);
 
-        await lManager.InvokeAsync(context, socket, lSocketId);
+        await lClient.InvokeAsync(context, socket, lSocketId);
 
         var lBuffer = WebSocket.CreateClientBuffer(4096, 4096);
 
@@ -66,6 +66,10 @@ namespace ICSP.WebProxy
             }
           }
         }
+
+        if(!string.IsNullOrWhiteSpace(socket.CloseStatusDescription))
+          mLogger.LogWarning($"Socket[{lSocketId:00}]: State={socket.State}, CloseStatus={socket.CloseStatus}, CloseStatusDescription={socket.CloseStatusDescription}");
+
 
         mLogger.LogInformation($"Socket[{lSocketId:00}]: Ending processing loop in state {socket.State}");
       }

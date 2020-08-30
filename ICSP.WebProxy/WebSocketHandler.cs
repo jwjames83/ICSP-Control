@@ -30,7 +30,7 @@ namespace ICSP.WebProxy
     {
       var lSocketId = ConnectionManager.AddSocket(socket);
 
-      mLogger.LogInformation($"Socket[{lSocketId:00}]: New connection. Port={context.Connection.LocalPort}, Path={context.Request.Path}, QueryString={context.Request.QueryString}");
+      mLogger.LogWarning($"Socket[{lSocketId:00}]: New connection. Port={context.Connection.LocalPort}, Path={context.Request.Path}, QueryString={context.Request.QueryString}");
 
       return Task.CompletedTask;
     }

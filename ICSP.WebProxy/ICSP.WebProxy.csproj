@@ -9,7 +9,6 @@
 
   <ItemGroup>
     <Compile Remove="Configuration\ProxyDefaultConfig.cs" />
-    <Compile Remove="Configuration\ProxyDeviceConfig.cs" />
     <Compile Remove="HttpConnection.cs" />
     <Compile Remove="MessagesController.cs" />
     <Compile Remove="NotificationsMessageHandler.cs" />

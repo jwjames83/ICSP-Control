@@ -47,7 +47,7 @@ namespace ICSP.WebProxy
         catch { }
       }
 
-      var lLoggingConfig = GetLoggingConfiguration(args);
+      var lLoggingConfig = GetLoggingConfiguration();
 
       // Initializes the Log system
       LoggingConfigurator.Configure(lLoggingConfig);
@@ -82,20 +82,20 @@ namespace ICSP.WebProxy
       lBuilder.UseWindowsService();
 
       lBuilder.ConfigureWebHostDefaults(webBuilder =>
-      {
-        foreach(var url in lUrls.ToArray())
-          Logger.LogInfo($"Use Url: {url}");
+    {
+      foreach(var url in lUrls.ToArray())
+        Logger.LogInfo($"UseUrl: {url}");
 
-        webBuilder.UseUrls(lUrls);
+      webBuilder.UseUrls(lUrls);
 
-        webBuilder.UseStartup<Startup>();
+      webBuilder.UseStartup<Startup>();
 
-      });
+    });
 
       return lBuilder;
     }
 
-    private static LoggingConfiguration GetLoggingConfiguration(string[] args)
+    private static LoggingConfiguration GetLoggingConfiguration()
     {
       var lConfig = new LoggingConfiguration();
 
@@ -103,7 +103,7 @@ namespace ICSP.WebProxy
        .AddJsonFile("appsettings.json")
        .Build();
 
-      var lConfigx = config["Logging:LogLevel:Default"];
+      var lConfigx = config["Logging:LogLevel:WebProxy"];
 
       switch(lConfigx?.ToLower())
       {
@@ -119,7 +119,5 @@ namespace ICSP.WebProxy
 
       return lConfig;
     }
-
-    public static ProxyConfig ProxyConfig { get; set; }
   }
 }

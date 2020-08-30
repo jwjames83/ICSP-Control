@@ -1,4 +1,6 @@
-﻿using ICSP.Core.Client;
+﻿using System.Collections.Generic;
+
+using ICSP.Core.Client;
 
 namespace ICSP.WebProxy.Configuration
 {
@@ -10,15 +12,7 @@ namespace ICSP.WebProxy.Configuration
 
     public ushort RemotePort { get; set; } = ICSPClient.DefaultPort;
 
-    public ushort Device { get; set; }
-
-    public ushort PortCount { get; set; } = 1;
-
-    public string DeviceName { get; set; }
-
-    public string DeviceVersion { get; set; }
-
-    public ushort DeviceId { get; set; }
+    public List<ushort> Devices { get; set; } = new List<ushort>();
 
     public string BaseDirectory { get; set; }
 
@@ -26,6 +20,8 @@ namespace ICSP.WebProxy.Configuration
 
     public bool Enabled { get; set; } = true;
 
-    public string Converter { get; set; }    
+    public string Converter { get; set; }
+
+    public Dictionary<string, ProxyDeviceConfig> DeviceConfig { get; set; } = new Dictionary<string, ProxyDeviceConfig>();
   }
 }

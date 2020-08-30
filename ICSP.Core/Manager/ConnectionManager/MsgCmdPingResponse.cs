@@ -111,7 +111,7 @@ namespace ICSP.Core.Manager.ConnectionManager
         ExtAddressLength = 4
       };
 
-      lRequest.ExtAddress = lRequest.IPv4Address.GetAddressBytes();
+      lRequest.ExtAddress = lRequest.IPv4Address?.GetAddressBytes();
 
       byte[] lData;
 

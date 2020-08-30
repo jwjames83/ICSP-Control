@@ -11,7 +11,7 @@ namespace Microsoft.Extensions.DependencyInjection
       services.AddSingleton<ICSPConnectionManager>();
 
       services.AddScoped<ProxyClient>();
-
+      
       var lTypes = TypeHelper.GetImplementedClassesForInterface(typeof(IMessageConverter));
 
       foreach(var type in lTypes)

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 
 using ICSP.Core;
 using ICSP.Core.Constants;
@@ -9,7 +10,7 @@ using ICSP.Core.Manager.DeviceManager;
 using ICSP.WebProxy.Configuration;
 using ICSP.WebProxy.Proxy;
 
-using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 
 namespace ICSP.WebProxy.Converter
 {
@@ -96,11 +97,9 @@ namespace ICSP.WebProxy.Converter
     - Regex for commands! > COMMAND:1:^TXT-1,0,//TECHNIK/SZENEN SPEICHERN; --> fixed [^\S{1,}:\d{1,}:.{1,};$]
     */
 
-    public ModuleWebControlConverter(IConfiguration configuration)
+    public ModuleWebControlConverter(IOptions<WebControlConfig> config)
     {
-      var lConfig = configuration.GetSection(nameof(WebControlConfig)).Get<WebControlConfig>() ?? new WebControlConfig();
-
-      SupportUTF8 = lConfig.SupportUTF8;
+      SupportUTF8 = config.Value.SupportUTF8;
     }
 
     /// <summary>
@@ -185,7 +184,7 @@ namespace ICSP.WebProxy.Converter
       return string.Concat(STX, "COMMAND", SSX, 0, SSX, "RELOAD", ETX);
     }
 
-    public ICSPMsg ToDevMessage(string msg)
+    public async Task<ICSPMsg> ToDevMessageAsync(string msg)
     {
       /*
       WebSocket: PUSH:[Port]:[Channel];
@@ -282,16 +281,18 @@ namespace ICSP.WebProxy.Converter
 
             if(lPanel != Panels.Empty)
             {
-              if(string.IsNullOrWhiteSpace(Client.DeviceConfig.DeviceName))
-                Client.DeviceConfig.DeviceName = lPanel.Product;
+              if(string.IsNullOrWhiteSpace(Client.DeviceName))
+                Client.DeviceName = lPanel.Product;
 
-              Client.DeviceConfig.DeviceId = lPanel.DeviceId;
+              Client.DeviceId = lPanel.DeviceId;
             }
             else
             {
-              if(string.IsNullOrWhiteSpace(Client.DeviceConfig.DeviceName))
-                Client.DeviceConfig.DeviceName = lPanelType;
+              if(string.IsNullOrWhiteSpace(Client.DeviceName))
+                Client.DeviceName = lPanelType;
             }
+            
+            // await Client.UpdateDeviceInfoAsync();
 
             // _ = Client.CreateDeviceInfoAsync(true);
 
@@ -305,7 +306,9 @@ namespace ICSP.WebProxy.Converter
           {
             if(ushort.TryParse(lMatch.Groups[CaptureGroup_Value].Value.TrimEnd(';'), out var lPortCount))
             {
-              Client.DeviceConfig.PortCount = lPortCount;
+              Client.DevicePortCount = lPortCount;
+
+              // await Client.UpdateDeviceInfoAsync();
             }
 
             break;

@@ -67,9 +67,9 @@ namespace ICSP.Core.Client
       get { return mSocket?.Connected ?? false; }
     }
 
-    public IPAddress RemoteIpAddress { get; private set; }
+    public IPEndPoint RemoteEndPoint { get; private set; }
 
-    public IPAddress LocalIpAddress { get; private set; }
+    public IPEndPoint LocalEndPoint { get; private set; }
 
     public void Dispose()
     {
@@ -104,7 +104,7 @@ namespace ICSP.Core.Client
       {
         if(Connected)
         {
-          Logger.LogInfo("StartClient: Host={0:l}, Port={1} => Client already connected", host, port);
+          Logger.LogInfo("Host={0:l}, Port={1} => Client already connected", host, port);
           return;
         }
 
@@ -116,12 +116,12 @@ namespace ICSP.Core.Client
         // Establish the remote endpoint for the socket
         var lIpAddress = Dns.GetHostAddresses(host)[0];
 
-        Logger.LogInfo("StartClient: Host={0:l}, Port={1}", lIpAddress, port);
+        Logger.LogInfo("Host={0:l}, Port={1}", lIpAddress, port);
 
         mSocket = new TcpClient(AddressFamily.InterNetwork)
         {
           ReceiveBufferSize = 8192,
-          SendBufferSize = 8192
+          SendBufferSize = 8192,
         };
 
         try
@@ -165,10 +165,10 @@ namespace ICSP.Core.Client
 
         if(mSocket.Connected)
         {
-          Logger.LogInfo("Client connected: {0:l}:{1}", lIpAddress, port);
+          RemoteEndPoint = ((IPEndPoint)mSocket.Client.RemoteEndPoint);
+          LocalEndPoint = ((IPEndPoint)mSocket.Client.LocalEndPoint);
 
-          RemoteIpAddress = ((IPEndPoint)mSocket.Client.RemoteEndPoint).Address;
-          LocalIpAddress = ((IPEndPoint)mSocket.Client.LocalEndPoint).Address;
+          Logger.LogInfo("Client connected: RemoteEndPoint={0:l}:{1}, LocalEndPoint={2:l}:{3}", RemoteEndPoint.Address, RemoteEndPoint.Port, LocalEndPoint.Address, LocalEndPoint.Port);
 
           mStream = new NetworkStream(mSocket.Client, true);
 
@@ -176,7 +176,7 @@ namespace ICSP.Core.Client
 
           ReadAsync(mCts.Token);
 
-          ClientOnlineStatusChanged?.Invoke(this, new ClientOnlineOfflineEventArgs(0, true, RemoteIpAddress?.ToString()));
+          ClientOnlineStatusChanged?.Invoke(this, new ClientOnlineOfflineEventArgs(0, true, RemoteEndPoint?.ToString()));
         }
         else
         {
@@ -327,9 +327,9 @@ namespace ICSP.Core.Client
 
     private void OnClientDisconnected()
     {
-      Logger.LogInfo("Client Disconnected: {0:l}", RemoteIpAddress);
+      Logger.LogInfo("Client Disconnected: {0:l}", RemoteEndPoint);
 
-      ClientOnlineStatusChanged?.Invoke(this, new ClientOnlineOfflineEventArgs(0, false, RemoteIpAddress?.ToString()));
+      ClientOnlineStatusChanged?.Invoke(this, new ClientOnlineOfflineEventArgs(0, false, RemoteEndPoint?.ToString()));
 
       mSocket = null;
     }

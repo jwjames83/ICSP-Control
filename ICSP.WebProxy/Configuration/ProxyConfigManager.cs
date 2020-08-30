@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.WebSockets;
 using System.Text.RegularExpressions;
-
-using ICSP.Core.Client;
 
 using Microsoft.AspNetCore.Http;
 
@@ -12,7 +9,7 @@ namespace ICSP.WebProxy.Configuration
 {
   public static class ProxyConfigManager
   {
-    private static Regex RegexUrl = new Regex(@"^((?<scheme>[^:/?#]+):(?=//))?(//)?(((?<login>[^:]+)(?::(?<password>[^@]+)?)?@)?(?<host>[^@/?#:]*)(?::(?<port>\d+)?)?)?(?<path>[^?#]*)(\?(?<query>[^#]*))?(#(?<fragment>.*))?", RegexOptions.None);
+    private static readonly Regex RegexUrl = new Regex(@"^((?<scheme>[^:/?#]+):(?=//))?(//)?(((?<login>[^:]+)(?::(?<password>[^@]+)?)?@)?(?<host>[^@/?#:]*)(?::(?<port>\d+)?)?)?(?<path>[^?#]*)(\?(?<query>[^#]*))?(#(?<fragment>.*))?", RegexOptions.None);
 
     public static void Configure(this ProxyConfig config)
     {
@@ -24,22 +21,22 @@ namespace ICSP.WebProxy.Configuration
 
       if(config.Connections.Count == 0)
       {
-        var lDefaultConfig = new ProxyConnectionConfig()
-        {
-          RemoteHost = "localhost",
-          RemotePort = ICSPClient.DefaultPort
-        };
+        //var lDefaultConfig = new ProxyConnectionConfig()
+        //{
+        //  RemoteHost = "localhost",
+        //  RemotePort = ICSPClient.DefaultPort
+        //};
 
-        config.Connections.Add(lDefaultConfig);
+        //config.Connections.Add(lDefaultConfig);
       }
     }
 
-    public static ProxyConnectionConfig GetConfig(HttpContext context, WebSocket socket)
+    public static ProxyConnectionConfig GetConfig(this ProxyConfig config, HttpContext context)
     {
       var lLocalScheme = context.Request.Scheme;
       var lLocalPort = context.Connection.LocalPort;
 
-      foreach(var item in Program.ProxyConfig.Connections.Where(p => p.Enabled))
+      foreach(var item in config.Connections.Where(p => p.Enabled))
       {
         var lMatch = RegexUrl.Match(item.LocalHost);
 
@@ -57,7 +54,7 @@ namespace ICSP.WebProxy.Configuration
       }
 
       // First Default ...
-      return Program.ProxyConfig.Connections[0];
+      return config.Connections[0];
     }
   }
 }

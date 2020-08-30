@@ -1,4 +1,6 @@
-﻿using ICSP.Core;
+﻿using System.Threading.Tasks;
+
+using ICSP.Core;
 using ICSP.WebProxy.Proxy;
 
 namespace ICSP.WebProxy.Converter
@@ -72,6 +74,6 @@ namespace ICSP.WebProxy.Converter
     /// Creates a object of type ICSPMsg, that is sent to the master for a WebSocket-Request.<br/>
     /// If the conversion is not needed, null can be returned.
     /// </summary>
-    ICSPMsg ToDevMessage(string msg);
+    Task<ICSPMsg> ToDevMessageAsync(string msg);
   }
 }

@@ -1,4 +1,6 @@
-﻿using ICSP.Core;
+﻿using System.Threading.Tasks;
+
+using ICSP.Core;
 using ICSP.WebProxy.Proxy;
 
 namespace ICSP.WebProxy.Converter
@@ -51,7 +53,7 @@ namespace ICSP.WebProxy.Converter
       return null;
     }
 
-    public ICSPMsg ToDevMessage(string msg)
+    public Task<ICSPMsg> ToDevMessageAsync(string msg)
     {
       return null;
     }

@@ -14,7 +14,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using Microsoft.Net.Http.Headers;
 
 namespace ICSP.WebProxy
 {
@@ -23,12 +24,6 @@ namespace ICSP.WebProxy
     public Startup(IConfiguration configuration)
     {
       Configuration = configuration;
-
-      var lConfig = Configuration.GetSection(nameof(ProxyConfig)).Get<ProxyConfig>() ?? new ProxyConfig();
-
-      lConfig.Configure();
-
-      Program.ProxyConfig = lConfig;
     }
 
     public IConfiguration Configuration { get; }
@@ -39,10 +34,11 @@ namespace ICSP.WebProxy
     {
       services.AddWebSocketManager();
       services.AddProxyClient();
+      services.AddConfig(Configuration);
     }
 
     // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-    public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILogger<Startup> logger)
+    public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IOptions<ProxyConfig> config, IOptions<StaticFiles> staticFiles)
     {
       var lFactory = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>();
       var lProvider = lFactory.CreateScope().ServiceProvider;
@@ -93,67 +89,109 @@ namespace ICSP.WebProxy
 
       app = app.MapWebSocketManager("", lProvider.GetService<WebSocketProxyClient>());
 
-      var lConfigs = Program.ProxyConfig.Connections.Where(p => p.Enabled).ToArray();
+      var lConnections = config.Value.Connections.Where(p => p.Enabled).ToArray();
 
       var lUseDefault = true;
 
-      foreach(var config in lConfigs)
+      // StaticFiles -> Directories
+      if(staticFiles.Value.Directories.Count() > 0)
       {
-        try
+        Logger.LogInfo($"======================================================================================================================================================");
+        Logger.LogInfo($"Using StaticFiles:Directories:");
+
+        foreach(var directory in staticFiles.Value.Directories)
         {
-          if(!string.IsNullOrWhiteSpace(config.BaseDirectory))
+          var lRootDirectory = Environment.ExpandEnvironmentVariables(directory.BaseDirectory);
+
+          Logger.LogInfo($"Root={lRootDirectory}, Root={directory.RequestPath}");
+
+          var lFileServerOptions = new FileServerOptions
           {
-            Logger.LogInfo($"UseStaticFiles: Path={config.BaseDirectory}, RequestPath={config.RequestPath}");
+            FileProvider = new PhysicalFileProvider(lRootDirectory),
 
-            app.UseDefaultFiles(new DefaultFilesOptions()
+            RequestPath = directory.RequestPath,
+          };
+
+          lFileServerOptions.StaticFileOptions.OnPrepareResponse = context =>
+          {
+            // Disable caching for all static files.
+            context.Context.Response.Headers[HeaderNames.CacheControl] /**/ = staticFiles.Value.Headers.CacheControl;
+            context.Context.Response.Headers[HeaderNames.Pragma]       /**/ = staticFiles.Value.Headers.Pragma;
+            context.Context.Response.Headers[HeaderNames.Expires]      /**/ = staticFiles.Value.Headers.Expires;
+          };
+
+          app.UseFileServer(lFileServerOptions);
+        }
+
+        Logger.LogInfo($"======================================================================================================================================================");
+      }
+
+      if(lConnections.Count() == 0)
+      {
+        Logger.LogInfo($"======================================================================================================================================================");
+        Logger.LogWarn($"No valid connections configured -> (see appsettings.json)");
+        Logger.LogInfo($"======================================================================================================================================================");
+      }
+      else
+      {
+        Logger.LogInfo($"======================================================================================================================================================");
+        Logger.LogInfo($"Configured connections:");
+
+        foreach(var connection in lConnections)
+        {
+          try
+          {
+            if(!string.IsNullOrWhiteSpace(connection.BaseDirectory))
             {
-              FileProvider = new PhysicalFileProvider(Path.Combine(config.BaseDirectory)),
+              var lRootDirectory = Environment.ExpandEnvironmentVariables(connection.BaseDirectory);
 
-              RequestPath = config.RequestPath,
-            });
+              Logger.LogInfo($"======================================================================================================================================================");
+              Logger.LogInfo($"LocalHost  : {connection.LocalHost}");
+              Logger.LogInfo($"RemoteHost : {connection.RemoteHost}");
+              Logger.LogInfo($"Devices    : {string.Join(", ", connection.Devices)}");
+              Logger.LogInfo($"Root       : {lRootDirectory}");
+              Logger.LogInfo($"RequestPath: {connection.RequestPath}");
 
-            app.UseStaticFiles(new StaticFileOptions
-            {
-              FileProvider = new PhysicalFileProvider(Path.Combine(config.BaseDirectory)),
+              var lFileServerOptions = new FileServerOptions
+              {
+                FileProvider = new PhysicalFileProvider(lRootDirectory),
 
-              RequestPath = config.RequestPath,
+                RequestPath = connection.RequestPath,
+              };
 
-              OnPrepareResponse = context =>
+              lFileServerOptions.StaticFileOptions.OnPrepareResponse = context =>
               {
                 // Disable caching for all static files.
-                context.Context.Response.Headers["Cache-Control"] /**/ = Configuration["StaticFiles:Headers:Cache-Control"];
-                context.Context.Response.Headers["Pragma"]        /**/ = Configuration["StaticFiles:Headers:Pragma"];
-                context.Context.Response.Headers["Expires"]       /**/ = Configuration["StaticFiles:Headers:Expires"];
-              }
-            });
+                context.Context.Response.Headers[HeaderNames.CacheControl] /**/ = staticFiles.Value.Headers.CacheControl;
+                context.Context.Response.Headers[HeaderNames.Pragma]       /**/ = staticFiles.Value.Headers.Pragma;
+                context.Context.Response.Headers[HeaderNames.Expires]      /**/ = staticFiles.Value.Headers.Expires;
+              };
 
-            // Setup
-            var lOptions = new DefaultFilesOptions()
-            {
-              FileProvider = new PhysicalFileProvider(Path.Combine(config.BaseDirectory)),
+              app.UseFileServer(lFileServerOptions);
 
-              RequestPath = config.RequestPath + "/setup",
-            };
+              // Setup
+              lFileServerOptions = new FileServerOptions
+              {
+                FileProvider = new PhysicalFileProvider(lRootDirectory),
 
-            lOptions.DefaultFileNames.Clear();
-            lOptions.DefaultFileNames.Add("setup.html");
+                RequestPath = connection.RequestPath + "/setup",
+              };
 
-            app.UseDefaultFiles(lOptions);
+              lFileServerOptions.DefaultFilesOptions.DefaultFileNames.Clear();
+              lFileServerOptions.DefaultFilesOptions.DefaultFileNames.Add("setup.html");
 
-            app.UseStaticFiles(new StaticFileOptions
-            {
-              FileProvider = new PhysicalFileProvider(Path.Combine(config.BaseDirectory)),
+              app.UseFileServer(lFileServerOptions);
 
-              RequestPath = config.RequestPath + "/setup",
-            });
-
-            lUseDefault = false;
+              lUseDefault = false;
+            }
+          }
+          catch(Exception ex)
+          {
+            Logger.LogError(ex.Message);
           }
         }
-        catch(Exception ex)
-        {
-          Logger.LogError(ex.Message);
-        }
+
+        Logger.LogInfo($"======================================================================================================================================================");
       }
 
       // No Base-Directories configured, use defaults ...
@@ -172,6 +210,20 @@ namespace ICSP.WebProxy
         if(context.Request.Path.Value?.EndsWith("/error_404.jpg", StringComparison.OrdinalIgnoreCase) ?? false)
         {
           await context.Response.Body.WriteAsync(Resources.Error_404_jpg);
+
+          return;
+        }
+
+        if(context.Request.Path.Value?.EndsWith("/error_404_V04.pixar.jpg", StringComparison.OrdinalIgnoreCase) ?? false)
+        {
+          await context.Response.Body.WriteAsync(Resources.Error_404_V04_pixar);
+
+          return;
+        }
+
+        if(context.Request.Path.Value?.EndsWith("/Status_4001", StringComparison.OrdinalIgnoreCase) ?? false)
+        {
+          await context.Response.WriteAsync(Resources.Status_4001);
 
           return;
         }

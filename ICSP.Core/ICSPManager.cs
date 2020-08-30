@@ -66,6 +66,8 @@ namespace ICSP.Core
       FileManager = new FileManager(this);
     }
 
+    public int socketId;
+
     public bool IsDisposed { get; private set; }
 
     public ushort CurrentSystem { get; private set; }
@@ -88,19 +90,19 @@ namespace ICSP.Core
       }
     }
 
-    public IPAddress CurrentRemoteIpAddress
+    public IPEndPoint CurrentRemoteIpAddress
     {
       get
       {
-        return mClient?.RemoteIpAddress;
+        return mClient?.RemoteEndPoint;
       }
     }
 
-    public IPAddress CurrentLocalIpAddress
+    public IPEndPoint CurrentLocalIpAddress
     {
       get
       {
-        return mClient?.LocalIpAddress;
+        return mClient?.LocalEndPoint;
       }
     }
 
@@ -324,7 +326,7 @@ namespace ICSP.Core
               var lSource = new AmxDevice(lDeviceInfo.Device, 1, lDeviceInfo.System);
 
               var lResponse = MsgCmdPingResponse.CreateRequest(m.Source, lSource,
-                lDeviceInfo.Device, lDeviceInfo.System, lDeviceInfo.ManufactureId, lDeviceInfo.DeviceId, mClient.LocalIpAddress);
+                lDeviceInfo.Device, lDeviceInfo.System, lDeviceInfo.ManufactureId, lDeviceInfo.DeviceId, mClient?.LocalEndPoint?.Address);
 
               await SendAsync(lResponse);
 
@@ -347,13 +349,13 @@ namespace ICSP.Core
           {
             if(mDevices.ContainsKey(m.Dest.Device))
             {
-              var lRequest = MsgCmdGetEthernetIpAddress.CreateRequest(m.Source, m.Dest, mClient.LocalIpAddress);
+              var lRequest = MsgCmdGetEthernetIpAddress.CreateRequest(m.Source, m.Dest, mClient.LocalEndPoint.Address);
 
               await SendAsync(lRequest);
             }
             else
             {
-              var lRequest = MsgCmdGetEthernetIpAddress.CreateRequest(m.Source, m.Dest, mClient.LocalIpAddress);
+              var lRequest = MsgCmdGetEthernetIpAddress.CreateRequest(m.Source, m.Dest, mClient.LocalEndPoint.Address);
 
               await SendAsync(lRequest);
 
@@ -368,7 +370,7 @@ namespace ICSP.Core
           }
           case MsgCmdRequestDeviceInfo m:
           {
-            var lDeviceInfo = new DeviceInfoData(m.Device, mClient.LocalIpAddress) { System = m.System };
+            var lDeviceInfo = new DeviceInfoData(m.Device, mClient.LocalEndPoint.Address) { System = m.System };
 
             var lResponse = MsgCmdDeviceInfo.CreateRequest(m.Source, m.Dest, lDeviceInfo);
 

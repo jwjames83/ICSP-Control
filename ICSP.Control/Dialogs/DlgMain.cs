@@ -207,7 +207,7 @@ namespace ICSPControl.Dialogs
         tssl_ClientState.Text = "Connected";
         tssl_ClientState.BackColor = Color.Green;
 
-        await Manager.SendAsync(MsgCmdDynamicDeviceAddressRequest.CreateRequest(Manager.CurrentLocalIpAddress));
+        await Manager.SendAsync(MsgCmdDynamicDeviceAddressRequest.CreateRequest(Manager.CurrentLocalIpAddress.Address));
 
         if(Settings.Default.PhysicalDeviceAutoCreate)
           CreatePhysicalDevice();
@@ -243,7 +243,7 @@ namespace ICSPControl.Dialogs
 
       DynamicDevice = new AmxDevice(e.Device, 1, e.System);
 
-      await Manager.CreateDeviceInfoAsync(new DeviceInfoData(e.Device, Manager.CurrentLocalIpAddress) { System = e.System });
+      await Manager.CreateDeviceInfoAsync(new DeviceInfoData(e.Device, Manager.CurrentLocalIpAddress.Address) { System = e.System });
 
       // Request ProgramInfo ...
       // await Manager.SendAsync(MsgCmdRequestDiscoveryInfo.CreateRequest(Manager.SystemDevice, DynamicDevice, 0x1F));
@@ -335,7 +335,7 @@ namespace ICSPControl.Dialogs
       if(Settings.Default.PhysicalDeviceUseCustomDeviceId)
         lDeviceId = Settings.Default.PhysicalDeviceCustomDeviceId;
 
-      var lDeviceInfo = new DeviceInfoData(Settings.Default.PhysicalDeviceNumber, Manager.CurrentLocalIpAddress)
+      var lDeviceInfo = new DeviceInfoData(Settings.Default.PhysicalDeviceNumber, Manager.CurrentLocalIpAddress.Address)
       {
         Version = Settings.Default.PhysicalDeviceVersion,
         Name = Settings.Default.PhysicalDeviceName,

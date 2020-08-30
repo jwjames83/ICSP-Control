@@ -376,7 +376,7 @@ namespace ICSPControl.Dialogs
       if(Settings.Default.PhysicalDeviceUseCustomDeviceId)
         lDeviceId = Settings.Default.PhysicalDeviceCustomDeviceId;
 
-      var lDeviceInfo = new DeviceInfoData(Settings.Default.PhysicalDeviceNumber, mManager.CurrentLocalIpAddress)
+      var lDeviceInfo = new DeviceInfoData(Settings.Default.PhysicalDeviceNumber, mManager.CurrentLocalIpAddress.Address)
       {
         Version = Settings.Default.PhysicalDeviceVersion,
         Name = Settings.Default.PhysicalDeviceName,
