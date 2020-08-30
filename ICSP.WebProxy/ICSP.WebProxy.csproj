@@ -5,6 +5,8 @@
     <AssemblyName>ICSP.WebProxy</AssemblyName>
     <RootNamespace>ICSP.WebProxy</RootNamespace>
     <ApplicationIcon>App.ico</ApplicationIcon>
+    <StartupObject></StartupObject>
+    <Version>1.0.1.0</Version>
   </PropertyGroup>
 
   <ItemGroup>
