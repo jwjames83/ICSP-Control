@@ -4,7 +4,7 @@
 ###### Licence: Donald Peter, AVS [ http://www.avs.ch ]
 ###### Project: ICSP.WebProxy, ICSP.WebProxy, ICSP.Control
 
-## [Release 1.0.1.0] (https://avs-ch-gitlab-01.avs.local/Donald.Peter/avs.icsp.webproxy/-/blob/master/ICSP.WebProxy%201.0.1.0.zip)
+## [Release 1.0.1.0](https://avs-ch-gitlab-01.avs.local/Donald.Peter/avs.icsp.webproxy/-/blob/master/ICSP.WebProxy%201.0.1.0.zip)
 ### TODO
 - ...
 
