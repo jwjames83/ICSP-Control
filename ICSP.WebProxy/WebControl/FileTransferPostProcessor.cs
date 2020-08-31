@@ -278,6 +278,7 @@ namespace ICSP.WebProxy.WebControl
           "/root/iconList/icon",                          // Icons
 
           "/root/page/sr",                                // Page States
+          "/root/page/sr/bitmapEntry",                    // G5:Bitmaps
           "/root/page/button",                            // Buttons
           "/root/page/button/sr",                         // Buttons States (Button-Type Joystick has only one)
           "/root/page/button/pf",                         // G4:PageFlips
@@ -674,7 +675,7 @@ namespace ICSP.WebProxy.WebControl
                   }
                   catch(Exception ex)
                   {
-                    Client?.LogError(ex.Message);
+                    Client?.LogError(string.Format("Page: {0}, {1}", keyValue.Key, ex.Message));
                   }
 
                   break;
