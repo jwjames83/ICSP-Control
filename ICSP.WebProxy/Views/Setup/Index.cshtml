@@ -1,0 +1,111 @@
+﻿@using ICSP.Core
+@using ICSP.Core.Constants
+@model ICSP.WebProxy.Models.DeviceConfiguration
+
+@{
+  ViewData["Title"] = "Setup";
+}
+<div class="main-block">
+  <h1>WebControl Panel Setup</h1>
+  <form id="setup" method="post">
+    <h3>Panel Information</h3>
+
+    <table>
+      <tr>
+        <td style="width:30%">
+          <label>Panel Generation:</label>
+        </td>
+        <td>
+          <div class="panelgeneration">
+            <div>
+              <input type="radio" name="panelGeneration" id="G4" value="G4" checked />
+              <label for="G4" class="radio">G4</label>
+            </div>
+            <div>
+              <input type="radio" name="panelGeneration" id="G5" value="G5" />
+              <label for="G5" class="radio">G5</label>
+            </div>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <label>Panel Type:</label>
+        </td>
+        <td>
+          <select id="panelType_G4" name="panelType"
+                  @*asp-items="@(new SelectList(Panels.AllPanels.Where(p => p.Generation == PanelGeneration.G4), "Product", "Product"))"*@
+                  required>
+            <option value="">Please select one</option>
+            @foreach(var panel in Panels.AllPanels.Where(p => p.Generation == PanelGeneration.G4))
+            {
+              <!option value="@panel.Product" @(panel.Product == Model.PanelType ? "selected" : "")>@panel.Product</!option>
+            }
+          </select>
+          <select id="panelType_G5" name="panelType"
+                  @*asp-items="@(new SelectList(Panels.AllPanels.Where(p => p.Generation == PanelGeneration.G5), "Product", "Product"))"*@
+                  style="visibility: collapse; display: none">
+            <option value="">Please select one</option>
+            @foreach(var panel in Panels.AllPanels.Where(p => p.Generation == PanelGeneration.G5))
+            {
+              <!option value="@panel.Product" @(panel.Product == Model.PanelType ? "selected" : "")>@panel.Product</!option>
+            }
+          </select>
+          <span asp-validation-for="PanelType" class="text-danger"></span>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <label for="PortCount">Portcount:</label>
+        </td>
+        <td>
+          <input asp-for="PortCount" min="1" max="1000" value="1" required />
+          <span asp-validation-for="PortCount" class="text-danger"></span>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <label for="Devicename">Devicename:</label>
+        </td>
+        <td>
+          <input asp-for="DeviceName" />
+        </td>
+      </tr>
+    </table>
+
+    <button type="submit" class="button">Submit</button>
+  </form>
+</div>
+<script>
+  var panelGenerations = document.getElementsByName("panelGeneration");
+  var panelType_G4 = document.getElementById("panelType_G4");
+  var panelType_G5 = document.getElementById("panelType_G5");
+
+  for (let panelGeneration of panelGenerations) {
+    panelGeneration.onchange = function () {
+
+      panelType_G4.style.display = panelGeneration.value != 'G4' ? 'none' : ''
+      panelType_G5.style.display = panelGeneration.value != 'G5' ? 'none' : ''
+
+      panelType_G5.style.visibility = panelGeneration.value != 'G5' ? 'collapse' : ''
+      panelType_G4.style.visibility = panelGeneration.value != 'G4' ? 'collapse' : ''
+
+      panelType_G4.disabled = panelGeneration.value != 'G4'
+      panelType_G5.disabled = panelGeneration.value != 'G5'
+
+      panelType_G4.required = panelGeneration.value == 'G4'
+      panelType_G5.required = panelGeneration.value == 'G5'
+    };
+
+    var form = document.getElementById("setup");
+    form.onsubmit = function () {
+      for (let panelGeneration of panelGenerations) {
+        panelGeneration.disabled = true;
+      }
+    };
+  }
+</script>
+@*@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+  }*@
+

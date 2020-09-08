@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Linq;
 
+using ICSP.Core;
 using ICSP.Core.Logging;
 using ICSP.WebProxy.Configuration;
 using ICSP.WebProxy.Properties;
@@ -16,6 +17,8 @@ using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using Microsoft.Net.Http.Headers;
+
+using Serilog;
 
 namespace ICSP.WebProxy
 {
@@ -35,6 +38,7 @@ namespace ICSP.WebProxy
       services.AddWebSocketManager();
       services.AddProxyClient();
       services.AddConfig(Configuration);
+      services.AddControllersWithViews();
     }
 
     // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -90,8 +94,6 @@ namespace ICSP.WebProxy
       app = app.MapWebSocketManager("", lProvider.GetService<WebSocketProxyClient>());
 
       var lConnections = config.Value.Connections.Where(p => p.Enabled).ToArray();
-
-      var lUseDefault = true;
 
       // StaticFiles -> Directories
       if(staticFiles.Value.Directories.Count() > 0)
@@ -169,20 +171,18 @@ namespace ICSP.WebProxy
 
               app.UseFileServer(lFileServerOptions);
 
-              // Setup
-              lFileServerOptions = new FileServerOptions
-              {
-                FileProvider = new PhysicalFileProvider(lRootDirectory),
+              //// Setup
+              //lFileServerOptions = new FileServerOptions
+              //{
+              //  FileProvider = new PhysicalFileProvider(lRootDirectory),
 
-                RequestPath = connection.RequestPath + "/setup",
-              };
+              //  RequestPath = connection.RequestPath + "/setup",
+              //};
 
-              lFileServerOptions.DefaultFilesOptions.DefaultFileNames.Clear();
-              lFileServerOptions.DefaultFilesOptions.DefaultFileNames.Add("setup.html");
+              //lFileServerOptions.DefaultFilesOptions.DefaultFileNames.Clear();
+              //lFileServerOptions.DefaultFilesOptions.DefaultFileNames.Add("setup.html");
 
-              app.UseFileServer(lFileServerOptions);
-
-              lUseDefault = false;
+              //app.UseFileServer(lFileServerOptions);
             }
           }
           catch(Exception ex)
@@ -194,16 +194,20 @@ namespace ICSP.WebProxy
         Logger.LogInfo($"======================================================================================================================================================");
       }
 
-      // No Base-Directories configured, use defaults ...
-      if(lUseDefault)
-      {
-        app.UseDefaultFiles();
-        app.UseStaticFiles();
-      }
+      // Enable all static file middleware (except directory browsing) for the current
+      // request path in the current directory.
+      app.UseFileServer();
 
       // app.UseCookiePolicy();
 
       app.UseRouting();
+
+      app.UseEndpoints(endpoints =>
+      {
+        endpoints.MapControllerRoute(
+            name: "default",
+            pattern: "{controller=Home}/{action=Index}/{id?}");
+      });
 
       app.Use(async (context, next) =>
       {
@@ -221,11 +225,28 @@ namespace ICSP.WebProxy
           return;
         }
 
-        if(context.Request.Path.Value?.EndsWith("/Status_4001", StringComparison.OrdinalIgnoreCase) ?? false)
+        if(context.Request.Path.Value?.EndsWith("/status_4001", StringComparison.OrdinalIgnoreCase) ?? false)
         {
           await context.Response.WriteAsync(Resources.Status_4001);
 
           return;
+        }
+
+        if(context.Request.Path.Value?.EndsWith("/configure", StringComparison.OrdinalIgnoreCase) ?? false)
+        {
+          var lParamPanelType = context.Request.Query["paneltype"].ToString();
+          var lParamPortCount = context.Request.Query["portcount"].ToString();
+          var lParamDevicename = context.Request.Query["devicename"].ToString();
+
+          var lPortCount = 1;
+
+          if(ushort.TryParse(lParamPortCount, out var value))
+          {
+            if(value >= 1 && value <= 100)
+              lPortCount = value;
+          }
+
+          Logger.LogWarn("Configure: PanelType={0}, PortCount={1}, Devicename={2}", lParamPanelType, lPortCount, lParamDevicename);
         }
 
         await next();

@@ -95,7 +95,7 @@ namespace ICSP.Core.Constants
     public static PanelType G5_MT_2002      /**/ = new PanelType(PanelGeneration.G5, 514, "TET-2000T",  /**/ "MT-2002",      /**/ "Modero 20\" Panoramic tabletop touch panel");
     public static PanelType G5_TPControl    /**/ = new PanelType(PanelGeneration.G5, 348, "TPControl",  /**/ "TPControl",    /**/ "TPControl (www.touchpanelcontrol.com)");
 
-    private static List<PanelType> AllPanels = new List<PanelType>();
+    public static readonly List<PanelType> AllPanels = new List<PanelType>();
 
     static Panels()
     {
