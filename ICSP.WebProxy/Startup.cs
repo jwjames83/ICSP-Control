@@ -206,7 +206,7 @@ namespace ICSP.WebProxy
       {
         endpoints.MapControllerRoute(
             name: "default",
-            pattern: "{controller=Home}/{action=Index}/{id?}");
+            pattern: "{controller=Setup}/{action=Index}/{id?}");
       });
 
       app.Use(async (context, next) =>

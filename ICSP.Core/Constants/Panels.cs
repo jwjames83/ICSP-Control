@@ -199,5 +199,13 @@ namespace ICSP.Core.Constants
 
       return AllPanels.FirstOrDefault(p => p.Type.Equals(deviceType, StringComparison.OrdinalIgnoreCase));
     }
+
+    public static PanelType GetPanelByDeviceProduct(string deviceProduct)
+    {
+      if(string.IsNullOrWhiteSpace(deviceProduct))
+        return Empty;
+
+      return AllPanels.FirstOrDefault(p => p.Product.Equals(deviceProduct, StringComparison.OrdinalIgnoreCase));
+    }
   }
 }

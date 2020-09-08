@@ -278,6 +278,9 @@ namespace ICSP.WebProxy.Converter
             var lPanelType = lMatch.Groups[CaptureGroup_Value].Value.TrimEnd(';');
 
             var lPanel = Panels.GetPanelByDeviceType(lPanelType);
+            
+            if (lPanel == Panels.Empty)
+              lPanel = Panels.GetPanelByDeviceProduct(lPanelType);
 
             if(lPanel != Panels.Empty)
             {

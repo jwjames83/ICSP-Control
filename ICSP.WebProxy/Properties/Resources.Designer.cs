@@ -101,6 +101,43 @@ namespace ICSP.WebProxy.Properties {
         }
         
         /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die var project = {
+        ///	&quot;settings&quot;: {
+        ///		&quot;pageList&quot;: [
+        ///			{
+        ///				&quot;name&quot;: &quot;Main&quot;,
+        ///				&quot;pageID&quot;: &quot;1&quot;,
+        ///				&quot;file&quot;: &quot;Main.xml&quot;,
+        ///				&quot;isValid&quot;: &quot;-1&quot;
+        ///			}
+        ///		],
+        ///		&quot;paletteList&quot;: [
+        ///			{
+        ///				&quot;name&quot;: &quot;Palette 1&quot;,
+        ///				&quot;file&quot;: &quot;pal_001.xma&quot;,
+        ///				&quot;paletteID&quot;: &quot;1&quot;
+        ///			}
+        ///		],
+        ///		&quot;resourceList&quot;: {},
+        ///		&quot;iconList&quot;: {},
+        ///		&quot;powerUpPopup&quot;: [],
+        ///		&quot;portCount&quot;: &quot;{PortCount}&quot;,
+        ///		&quot;setupPort&quot;: &quot;0&quot;,
+        ///		&quot;addressCount&quot;: &quot;0&quot;,
+        ///		&quot;channelCount&quot;: &quot;16&quot;,
+        ///		&quot;levelCount&quot;: &quot;0&quot;,
+        ///		&quot;powerUpPage&quot;: &quot;Main&quot;,
+        ///		&quot;feedbackBlinkRate&quot;: &quot;5&quot;,
+        ///		&quot;startupString&quot;: null,
+        ///		 [Rest der Zeichenfolge wurde abgeschnitten]&quot;; ähnelt.
+        /// </summary>
+        internal static string DefaultProject {
+            get {
+                return ResourceManager.GetString("DefaultProject", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die &lt;!DOCTYPE html&gt;
         ///&lt;html&gt;
         ///&lt;head&gt;
