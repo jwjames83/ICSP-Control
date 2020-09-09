@@ -1,14 +1,11 @@
 using System;
-using System.IO;
 using System.Linq;
 
-using ICSP.Core;
 using ICSP.Core.Logging;
 using ICSP.WebProxy.Configuration;
 using ICSP.WebProxy.Properties;
 
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
@@ -17,8 +14,6 @@ using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using Microsoft.Net.Http.Headers;
-
-using Serilog;
 
 namespace ICSP.WebProxy
 {
@@ -51,37 +46,11 @@ namespace ICSP.WebProxy
 
       if(env.IsDevelopment())
       {
-        // app.UseDeveloperExceptionPage();
+        app.UseStatusCodePagesWithRedirects("/Error/{0}");
       }
       else
       {
-        app.UseExceptionHandler(configure =>
-        {
-          configure.Run(async context =>
-          {
-            context.Response.StatusCode = 500;
-            context.Response.ContentType = "text/html";
-
-            await context.Response.WriteAsync("<html lang=\"en\"><body>\r\n");
-            await context.Response.WriteAsync("ERROR!<br><br>\r\n");
-
-            var exceptionHandlerPathFeature =
-                context.Features.Get<IExceptionHandlerPathFeature>();
-
-            // Use exceptionHandlerPathFeature to process the exception (for example, 
-            // logging), but do NOT expose sensitive error information directly to 
-            // the client.
-
-            if(exceptionHandlerPathFeature?.Error is FileNotFoundException)
-            {
-              await context.Response.WriteAsync("File error thrown!<br><br>\r\n");
-            }
-
-            await context.Response.WriteAsync("<a href=\"/\">Home</a><br>\r\n");
-            await context.Response.WriteAsync("</body></html>\r\n");
-            await context.Response.WriteAsync(new string(' ', 512)); // IE padding
-          });
-        });
+        app.UseStatusCodePagesWithRedirects("/Error/{0}");
 
         app.UseHsts();
       }
@@ -211,53 +180,17 @@ namespace ICSP.WebProxy
 
       app.Use(async (context, next) =>
       {
-        if(context.Request.Path.Value?.EndsWith("/error_404.jpg", StringComparison.OrdinalIgnoreCase) ?? false)
-        {
-          await context.Response.Body.WriteAsync(Resources.Error_404_jpg);
-
-          return;
-        }
-
-        if(context.Request.Path.Value?.EndsWith("/error_404_V04.pixar.jpg", StringComparison.OrdinalIgnoreCase) ?? false)
-        {
-          await context.Response.Body.WriteAsync(Resources.Error_404_V04_pixar);
-
-          return;
-        }
-
-        if(context.Request.Path.Value?.EndsWith("/status_4001", StringComparison.OrdinalIgnoreCase) ?? false)
-        {
-          await context.Response.WriteAsync(Resources.Status_4001);
-
-          return;
-        }
-
-        if(context.Request.Path.Value?.EndsWith("/configure", StringComparison.OrdinalIgnoreCase) ?? false)
-        {
-          var lParamPanelType = context.Request.Query["paneltype"].ToString();
-          var lParamPortCount = context.Request.Query["portcount"].ToString();
-          var lParamDevicename = context.Request.Query["devicename"].ToString();
-
-          var lPortCount = 1;
-
-          if(ushort.TryParse(lParamPortCount, out var value))
-          {
-            if(value >= 1 && value <= 100)
-              lPortCount = value;
-          }
-
-          Logger.LogWarn("Configure: PanelType={0}, PortCount={1}, Devicename={2}", lParamPanelType, lPortCount, lParamDevicename);
-        }
-
         await next();
 
         var lReferer = context.Request.GetTypedHeaders().Referer;
 
         // After going down the pipeline check if 404
+        /*
         if(lReferer == null && context.Response.StatusCode == StatusCodes.Status404NotFound)
         {
           await context.Response.WriteAsync(Resources.Error_404_html);
         }
+        */
       });
 
       // app.UseAuthentication();

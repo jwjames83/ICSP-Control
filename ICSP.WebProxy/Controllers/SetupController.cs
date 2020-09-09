@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using ICSP.Core.Environment;
 using ICSP.Core.Logging;
@@ -6,6 +7,7 @@ using ICSP.WebProxy.Configuration;
 using ICSP.WebProxy.Models;
 using ICSP.WebProxy.Properties;
 
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 

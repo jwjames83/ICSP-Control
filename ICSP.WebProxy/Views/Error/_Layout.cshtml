@@ -1,8 +1,11 @@
 ﻿<!DOCTYPE html>
-<html>
+<html lang="de">
 <head>
-  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-  <title>Error | ICSP.WebProxy</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>@ViewData["Title"] - ICSP.WebProxy</title>
+  <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="~/css/site.css" />
   <style type="text/css">
 
     html, body, div, h1, h2, h3, h4, h5, h6, p, a, form, fieldset, select, input, ul, li, table, td, th, img {
@@ -112,27 +115,10 @@
       top: 0px;
       z-index: 20;
     }
-
   </style>
 </head>
 <body>
-  <div class="wrap_container">
-    <div class="wrap_container_inner">
-      <div id="header" />
-      <div class="container-bg">
-        <div class="container">
-          <div class="main">
-            <h1>404 Error</h1>
-            <div class="panel_grey">
-              <div class="top">
-                <h3>Oh Snap! Double Check Your URL</h3>
-              </div>
-              <img src="error_404.jpg">
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
+  @RenderBody()
+  @RenderSection("Scripts", required: false)
 </body>
 </html>

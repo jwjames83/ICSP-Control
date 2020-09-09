@@ -1,0 +1,30 @@
+﻿@using Microsoft.AspNetCore.WebUtilities;
+@model ErrorViewModel
+@{
+  ViewData["Title"] = "Error";
+}
+
+<div class="wrap_container">
+  <div class="wrap_container_inner">
+    <div id="header" />
+    <div class="container-bg">
+      <div class="container">
+        <div class="main">
+          <h1>Error @Model.ErrorCode</h1>
+          <p><strong>Reason: </strong> <code>@ReasonPhrases.GetReasonPhrase(@Model.ErrorCode)</code></p>
+          @if(Model.ShowRequestId)
+          {
+            <p><strong>Request ID:</strong> <code>@Model.RequestId</code></p>
+          }
+          <br />
+          <div class="panel_grey">
+            <div class="top">
+              <h3>Oh Snap! Double Check Your URL</h3>
+            </div>
+            <img src="~/error_404.jpg">
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

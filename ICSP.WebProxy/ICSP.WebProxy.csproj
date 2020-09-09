@@ -18,15 +18,17 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Remove="Resources\error_404.jpg" />
+    <Content Remove="wwwroot\error_404_V01.freak.jpg" />
+    <Content Remove="wwwroot\error_404_V02.notfound.jpg" />
+    <Content Remove="wwwroot\error_404_V03.monster.png" />
+    <Content Remove="wwwroot\error_404_V04.pixar.jpg" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Remove="Resources\index.html" />
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="Resources\error_404.jpg">
-      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </Content>
     <Content Include="Resources\index.html" />
   </ItemGroup>
 
@@ -40,6 +42,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Include="wwwroot\error_404_V01.freak.jpg" />
+    <None Include="wwwroot\error_404_V02.notfound.jpg" />
+    <None Include="wwwroot\error_404_V03.monster.png" />
+    <None Include="wwwroot\error_404_V04.pixar.jpg" />
     <None Include="wwwroot\js\site.js" />
     <None Include="wwwroot\lib\bootstrap\dist\css\bootstrap-grid.css.map" />
     <None Include="wwwroot\lib\bootstrap\dist\css\bootstrap-grid.min.css.map" />
