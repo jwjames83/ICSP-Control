@@ -22,7 +22,7 @@
   },
   "targets": {
     ".NETCoreApp,Version=v3.1": {
-      "ICSP.WebProxy/1.0.1.1": {
+      "ICSP.WebProxy/1.0.1.2": {
         "dependencies": {
           "ICSP.Core": "1.0.0",
           "Microsoft.AspNetCore.WebSockets": "2.2.1",
@@ -2868,7 +2868,7 @@
     }
   },
   "libraries": {
-    "ICSP.WebProxy/1.0.1.1": {
+    "ICSP.WebProxy/1.0.1.2": {
       "type": "project",
       "serviceable": false,
       "sha512": ""
