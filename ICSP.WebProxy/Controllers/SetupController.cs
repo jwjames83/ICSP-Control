@@ -1,13 +1,13 @@
 ﻿using System;
-using System.Diagnostics;
 using System.IO;
+
 using ICSP.Core.Environment;
 using ICSP.Core.Logging;
 using ICSP.WebProxy.Configuration;
+using ICSP.WebProxy.Extensions;
 using ICSP.WebProxy.Models;
 using ICSP.WebProxy.Properties;
 
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 
@@ -77,9 +77,7 @@ namespace ICSP.WebProxy.Controllers
           System.IO.File.WriteAllText(lFileNameMainPage, lHtml);
 
           // Redirect to BaseUrl
-          var lBaseUrl = $"{HttpContext.Request.Scheme}://{HttpContext.Request.Host}{HttpContext.Request.PathBase}{lConnectionConfig?.RequestPath}";
-
-          return Redirect(lBaseUrl);
+          return Redirect(this.GetBaseUrl());
         }
         catch(Exception ex)
         {

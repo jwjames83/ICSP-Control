@@ -10,9 +10,8 @@ namespace ICSP.WebProxy.Controllers
   public class ErrorController : Controller
   {
     [AllowAnonymous]
-    [RouteAttribute("/Error/{errorCode?}")]
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-    public IActionResult Error(int errorCode)
+    public IActionResult Index(int errorCode)
     {
       return View(new ErrorViewModel
       {

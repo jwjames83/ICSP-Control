@@ -2,6 +2,8 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 
 using ICSP.Core.Logging;
 using ICSP.WebProxy.Configuration;
@@ -16,9 +18,13 @@ namespace ICSP.WebProxy
 {
   public class Program
   {
+    private static CancellationTokenSource mCts = new CancellationTokenSource();
+
+    private static bool mRestartRequest;
+
     public const int CLOSE_SOCKET_TIMEOUT_MS = 2500;
 
-    public static void Main(string[] args)
+    public static async Task Main(string[] args)
     {
       // GetEncoding(1252)
       // System.NotSupportedException: No data is available for encoding 1252
@@ -47,22 +53,52 @@ namespace ICSP.WebProxy
         catch { }
       }
 
-      var lLoggingConfig = GetLoggingConfiguration();
+      await StartServer(args);
 
-      // Initializes the Log system
-      LoggingConfigurator.Configure(lLoggingConfig);
+      while(mRestartRequest)
+      {
+        mRestartRequest = false;
 
-      Logger.LogInfo("Starting up");
-
-      var lHostBuilder = CreateHostBuilder(args);
-
-      // Initializes the Log system
-      LoggingConfigurator.Configure(lHostBuilder, lLoggingConfig);
-
-      lHostBuilder.Build().Run();
+        await StartServer(args);
+      }
     }
 
-    public static IHostBuilder CreateHostBuilder(string[] args)
+    public static void Restart()
+    {
+      Logger.LogWarn("Restarting App");
+
+      mRestartRequest = true;
+
+      mCts.Cancel();
+    }
+
+    private static async Task StartServer(string[] args)
+    {
+      try
+      {
+        mCts = new CancellationTokenSource();
+
+        var lLoggingConfig = GetLoggingConfiguration();
+
+        // Initializes the Log system
+        LoggingConfigurator.Configure(lLoggingConfig);
+
+        Logger.LogInfo("Starting up");
+
+        var lHostBuilder = CreateHostBuilder(args);
+
+        // Initializes the Log system
+        LoggingConfigurator.Configure(lHostBuilder, lLoggingConfig);
+
+        await lHostBuilder.Build().RunAsync(mCts.Token);
+      }
+      catch(OperationCanceledException ex)
+      {
+        Logger.LogError(ex.Message);
+      }
+    }
+
+    private static IHostBuilder CreateHostBuilder(string[] args)
     {
       var lBuilder = Host.CreateDefaultBuilder(args);
 
@@ -89,7 +125,6 @@ namespace ICSP.WebProxy
       webBuilder.UseUrls(lUrls);
 
       webBuilder.UseStartup<Startup>();
-
     });
 
       return lBuilder;

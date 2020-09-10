@@ -1,13 +1,12 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 using ICSP.Core.Logging;
 using ICSP.WebProxy.Configuration;
-using ICSP.WebProxy.Properties;
 
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
@@ -62,7 +61,7 @@ namespace ICSP.WebProxy
 
       app = app.MapWebSocketManager("", lProvider.GetService<WebSocketProxyClient>());
 
-      var lConnections = config.Value.Connections.Where(p => p.Enabled).ToArray();
+      var lConnections = config.Value.Connections.Where(p => p.Enabled);
 
       // StaticFiles -> Directories
       if(staticFiles.Value.Directories.Count() > 0)
@@ -139,19 +138,6 @@ namespace ICSP.WebProxy
               };
 
               app.UseFileServer(lFileServerOptions);
-
-              //// Setup
-              //lFileServerOptions = new FileServerOptions
-              //{
-              //  FileProvider = new PhysicalFileProvider(lRootDirectory),
-
-              //  RequestPath = connection.RequestPath + "/setup",
-              //};
-
-              //lFileServerOptions.DefaultFilesOptions.DefaultFileNames.Clear();
-              //lFileServerOptions.DefaultFilesOptions.DefaultFileNames.Add("setup.html");
-
-              //app.UseFileServer(lFileServerOptions);
             }
           }
           catch(Exception ex)
@@ -171,31 +157,52 @@ namespace ICSP.WebProxy
 
       app.UseRouting();
 
-      app.UseEndpoints(endpoints =>
-      {
-        endpoints.MapControllerRoute(
-            name: "default",
-            pattern: "{controller=Setup}/{action=Index}/{id?}");
-      });
-
-      app.Use(async (context, next) =>
-      {
-        await next();
-
-        var lReferer = context.Request.GetTypedHeaders().Referer;
-
-        // After going down the pipeline check if 404
-        /*
-        if(lReferer == null && context.Response.StatusCode == StatusCodes.Status404NotFound)
-        {
-          await context.Response.WriteAsync(Resources.Error_404_html);
-        }
-        */
-      });
+      ConfigureRoutes(app, lConnections);
 
       // app.UseAuthentication();
       // app.UseAuthorization();
       // app.UseSession();
+    }
+
+    private void ConfigureRoutes(IApplicationBuilder app, IEnumerable<ProxyConnectionConfig> lConnections)
+    {
+      // MVC-Routes
+      // ------------------------
+      // /Error/{errorCode?}
+      // /Controller/action/{id?}
+      // ------------------------
+
+      try
+      {
+        foreach(var connection in lConnections)
+        {
+          if(!string.IsNullOrWhiteSpace(connection.RequestPath))
+          {
+            app.UseEndpoints(endpoints =>
+            {
+              var lName    /**/ = string.Concat(connection.RequestPath, "/error");
+              var lPattern /**/ = string.Concat(connection.RequestPath, "/Error/{errorCode?}");
+
+              endpoints.MapControllerRoute(lName, lPattern, new { controller = "Error", action = "Index" });
+
+              lName    /**/ = string.Concat(connection.RequestPath, "/default");
+              lPattern /**/ = string.Concat(connection.RequestPath, "/{controller=Setup}/{action=Index}/{id?}");
+
+              endpoints.MapControllerRoute(lName, lPattern);
+            });
+          }
+        }
+
+        app.UseEndpoints(endpoints =>
+        {
+          endpoints.MapControllerRoute("error", "/Error/{errorCode?}", new { controller = "Error", action = "Index" });
+          endpoints.MapControllerRoute("default", "/{controller=Setup}/{action=Index}/{id?}");
+        });
+      }
+      catch(Exception ex)
+      {
+        Logger.LogError(ex.Message);
+      }
     }
   }
 }
