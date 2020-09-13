@@ -36,12 +36,10 @@ namespace ICSP.WebProxy
     }
 
     // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-    public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IOptions<ProxyConfig> config, IOptions<StaticFiles> staticFiles)
+    public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IConfiguration config, IOptions<ProxyConfig> proxyConfig, IOptions<StaticFiles> staticFiles)
     {
       var lFactory = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>();
       var lProvider = lFactory.CreateScope().ServiceProvider;
-
-      // app.UseStatusCodePages();
 
       if(env.IsDevelopment())
       {
@@ -61,7 +59,7 @@ namespace ICSP.WebProxy
 
       app = app.MapWebSocketManager("", lProvider.GetService<WebSocketProxyClient>());
 
-      var lConnections = config.Value.Connections.Where(p => p.Enabled);
+      var lConnections = proxyConfig.Value.Connections.Values.Where(p => p.Enabled);
 
       // StaticFiles -> Directories
       if(staticFiles.Value.Directories.Count() > 0)
@@ -174,6 +172,7 @@ namespace ICSP.WebProxy
 
       try
       {
+
         foreach(var connection in lConnections)
         {
           if(!string.IsNullOrWhiteSpace(connection.RequestPath))
@@ -183,12 +182,17 @@ namespace ICSP.WebProxy
               var lName    /**/ = string.Concat(connection.RequestPath, "/error");
               var lPattern /**/ = string.Concat(connection.RequestPath, "/Error/{errorCode?}");
 
-              endpoints.MapControllerRoute(lName, lPattern, new { controller = "Error", action = "Index" });
+              // endpoints.MapControllerRoute(lName, lPattern, new { controller = "Error", action = "Index" });
+
+              lName    /**/ = string.Concat(connection.RequestPath, "/status");
+              lPattern /**/ = string.Concat(connection.RequestPath, "/Status/{statusCode?}");
+
+              // endpoints.MapControllerRoute(lName, lPattern, new { controller = "Status", action = "Index" });
 
               lName    /**/ = string.Concat(connection.RequestPath, "/default");
-              lPattern /**/ = string.Concat(connection.RequestPath, "/{controller=Setup}/{action=Index}/{id?}");
+              lPattern /**/ = string.Concat(connection.RequestPath, "/{controller=Install}/{action=Index}/{id?}");
 
-              endpoints.MapControllerRoute(lName, lPattern);
+              // endpoints.MapControllerRoute(lName, lPattern);
             });
           }
         }
@@ -196,7 +200,8 @@ namespace ICSP.WebProxy
         app.UseEndpoints(endpoints =>
         {
           endpoints.MapControllerRoute("error", "/Error/{errorCode?}", new { controller = "Error", action = "Index" });
-          endpoints.MapControllerRoute("default", "/{controller=Setup}/{action=Index}/{id?}");
+          endpoints.MapControllerRoute("status", "/Status/{statusCode?}", new { controller = "Status", action = "Index" });
+          endpoints.MapControllerRoute("default", "/{controller}/{action=Index}/{id?}");
         });
       }
       catch(Exception ex)

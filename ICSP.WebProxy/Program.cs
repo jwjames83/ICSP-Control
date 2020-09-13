@@ -1,7 +1,9 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -9,8 +11,10 @@ using ICSP.Core.Logging;
 using ICSP.WebProxy.Configuration;
 
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
+
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 using Serilog.Events;
 
@@ -53,6 +57,7 @@ namespace ICSP.WebProxy
         catch { }
       }
 
+      // Failed to bind to address http://[::]:80: address already in use.
       await StartServer(args);
 
       while(mRestartRequest)
@@ -96,21 +101,15 @@ namespace ICSP.WebProxy
       {
         Logger.LogError(ex.Message);
       }
+      catch(Exception ex)
+      {
+        Logger.LogError(ex.Message);
+      }
     }
 
     private static IHostBuilder CreateHostBuilder(string[] args)
     {
       var lBuilder = Host.CreateDefaultBuilder(args);
-
-      var config = new ConfigurationBuilder()
-       .AddJsonFile("appsettings.json")
-       .Build();
-
-      var lConfig = config.GetSection(nameof(ProxyConfig)).Get<ProxyConfig>() ?? new ProxyConfig();
-
-      lConfig.Configure();
-
-      var lUrls = lConfig.Connections.Where(p => p.Enabled).Select(s => s.LocalHost).ToArray();
 
       Logger.LogInfo("Enable running as a Windows service ... (UseWindowsService)");
 
@@ -118,41 +117,136 @@ namespace ICSP.WebProxy
       lBuilder.UseWindowsService();
 
       lBuilder.ConfigureWebHostDefaults(webBuilder =>
-    {
-      foreach(var url in lUrls.ToArray())
-        Logger.LogInfo($"UseUrl: {url}");
+      {
+        // Remove duplicate urls
+        // Prevent Error: Failed to bind to address http://[::]:80: address already in use.
+        var lUrls = ConfigGetUrls();
 
-      webBuilder.UseUrls(lUrls);
+        try
+        {
+          webBuilder.UseUrls(lUrls);
+        }
+        catch(Exception ex)
+        {
+          Logger.LogError(ex.Message);
+        }
 
-      webBuilder.UseStartup<Startup>();
-    });
+        webBuilder.UseStartup<Startup>();
+      });
 
       return lBuilder;
     }
 
-    private static LoggingConfiguration GetLoggingConfiguration()
+    private static readonly Regex RegexUrl = new Regex(@"^((?<scheme>[^:/?#]+):(?=//))?(//)?(((?<login>[^:]+)(?::(?<password>[^@]+)?)?@)?(?<host>[^@/?#:]*)(?::(?<port>\d+)?)?)?(?<path>[^?#]*)(\?(?<query>[^#]*))?(#(?<fragment>.*))?", RegexOptions.None);
+
+    private static string[] ConfigGetUrls()
     {
-      var lConfig = new LoggingConfiguration();
+      var lValidUrls = new Dictionary<string, string>();
 
-      var config = new ConfigurationBuilder()
-       .AddJsonFile("appsettings.json")
-       .Build();
-
-      var lConfigx = config["Logging:LogLevel:WebProxy"];
-
-      switch(lConfigx?.ToLower())
+      try
       {
-        case "none"        /**/: lConfig.LogLevel = (LogEventLevel)6; break;
-        case "critical"    /**/: lConfig.LogLevel = LogEventLevel.Fatal; break;
-        case "error"       /**/: lConfig.LogLevel = LogEventLevel.Error; break;
-        case "warning"     /**/: lConfig.LogLevel = LogEventLevel.Warning; break;
-        case "information" /**/: lConfig.LogLevel = LogEventLevel.Information; break;
-        case "debug"       /**/: lConfig.LogLevel = LogEventLevel.Debug; break;
-        case "trace"       /**/: lConfig.LogLevel = LogEventLevel.Verbose; break;
-        case "verbose"     /**/: lConfig.LogLevel = LogEventLevel.Verbose; break;
+        var lConfig = GetConfigSection<ProxyConfig>("appsettings.json", nameof(ProxyConfig));
+
+        var lUrls = lConfig.Connections.Values.Where(p => p.Enabled).Select(s => s.LocalHost).ToArray();
+
+        foreach(var url in lUrls)
+        {
+          var lMatch = RegexUrl.Match(url);
+
+          if(lMatch.Success)
+          {
+            var lScheme = lMatch.Groups["scheme"].Value;
+            var lHost = lMatch.Groups["host"].Value;
+            ushort.TryParse(lMatch.Groups["port"].Value, out var lPort);
+
+            if(lPort == 0)
+              lPort = 80;
+
+            var lKey = $"{lScheme}:{lPort}";
+
+            if(!lValidUrls.ContainsKey(lKey))
+            {
+              lValidUrls.Add(lKey, url);
+
+              Logger.LogInfo($"Url: {url}");
+            }
+            else
+            {
+              Logger.LogWarn($"Url: {url} has ignored, {lScheme}://[::]:{lPort}: address already in use");
+            }
+          }
+        }
+      }
+      catch(Exception ex)
+      {
+        Logger.LogError(ex.Message);
       }
 
-      return lConfig;
+      return lValidUrls.Values.ToArray();
+    }
+
+    private static LoggingConfiguration GetLoggingConfiguration()
+    {
+      var lLoggingConfig = new LoggingConfiguration();
+
+      var lLogLevel = GetConfigValue<string>("appsettings.json", "Logging.LogLevel.Test");
+
+      switch(lLogLevel?.ToLower())
+      {
+        case "none"        /**/: lLoggingConfig.LogLevel = (LogEventLevel)6; break;
+        case "critical"    /**/: lLoggingConfig.LogLevel = LogEventLevel.Fatal; break;
+        case "error"       /**/: lLoggingConfig.LogLevel = LogEventLevel.Error; break;
+        case "warning"     /**/: lLoggingConfig.LogLevel = LogEventLevel.Warning; break;
+        case "information" /**/: lLoggingConfig.LogLevel = LogEventLevel.Information; break;
+        case "debug"       /**/: lLoggingConfig.LogLevel = LogEventLevel.Debug; break;
+        case "trace"       /**/: lLoggingConfig.LogLevel = LogEventLevel.Verbose; break;
+        case "verbose"     /**/: lLoggingConfig.LogLevel = LogEventLevel.Verbose; break;
+      }
+
+      return lLoggingConfig;
+    }
+
+    public static T GetConfigSection<T>(string path, string key) where T : class, new()
+    {
+      // This code not work (IConfigurationRoot.Reload) ... 
+      /*
+      var config = new ConfigurationBuilder()
+       .AddJsonFile("appsettings.json", true, true)
+       .Build();
+
+      config.Reload();
+      */
+
+      if(!File.Exists(path))
+        return new T();
+
+      var lJsonObj = JsonConvert.DeserializeObject<JObject>(File.ReadAllText(path));
+
+      return lJsonObj.TryGetValue(key, out JToken section) ? JsonConvert.DeserializeObject<T>(section.ToString()) : (new T());
+    }
+
+    public static T GetConfigValue<T>(string path, string key)
+    {
+      // This code not work (IConfigurationRoot.Reload) ... 
+      /*
+      var config = new ConfigurationBuilder()
+       .AddJsonFile("appsettings.json", true, true)
+       .Build();
+
+      config.Reload();
+      */
+
+      if(!File.Exists(path))
+        return default;
+
+      var lJsonObj = JsonConvert.DeserializeObject<JObject>(File.ReadAllText(path));
+
+      var lToken = lJsonObj.SelectToken(key);
+
+      if(lToken != null)
+        return lToken.Value<T>();
+
+      return default;
     }
   }
 }

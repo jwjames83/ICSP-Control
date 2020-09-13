@@ -4,6 +4,6 @@ namespace ICSP.WebProxy.Configuration
 {
   public class ProxyConfig
   {
-    public List<ProxyConnectionConfig> Connections { get; set; } = new List<ProxyConnectionConfig>();
+    public Dictionary<string, ProxyConnectionConfig> Connections { get; set; } = new Dictionary<string, ProxyConnectionConfig>();
   }
 }

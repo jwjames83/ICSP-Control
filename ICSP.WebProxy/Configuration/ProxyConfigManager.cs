@@ -17,7 +17,7 @@ namespace ICSP.WebProxy.Configuration
         throw new ArgumentNullException(nameof(config));
 
       if(config.Connections == null)
-        config.Connections = new List<ProxyConnectionConfig>();
+        config.Connections = new Dictionary<string, ProxyConnectionConfig>();
 
       if(config.Connections.Count == 0)
       {
@@ -31,12 +31,21 @@ namespace ICSP.WebProxy.Configuration
       }
     }
 
+    public static void Save(this ProxyConfig config)
+    {
+      if(config == null)
+        throw new ArgumentNullException(nameof(config));
+
+      if(config.Connections == null)
+        config.Connections = new Dictionary<string, ProxyConnectionConfig>();
+    }
+
     public static ProxyConnectionConfig GetConfig(this ProxyConfig config, HttpContext context)
     {
       var lLocalScheme = context.Request.Scheme;
       var lLocalPort = context.Connection.LocalPort;
 
-      foreach(var item in config.Connections.Where(p => p.Enabled))
+      foreach(var item in config.Connections.Values.Where(p => p.Enabled))
       {
         var lMatch = RegexUrl.Match(item.LocalHost);
 
@@ -54,7 +63,7 @@ namespace ICSP.WebProxy.Configuration
       }
 
       // First Default ...
-      return config.Connections[0];
+      return config.Connections["0"];
     }
   }
 }

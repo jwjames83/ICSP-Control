@@ -1,0 +1,70 @@
+﻿@model ICSP.WebProxy.Configuration.ProxyConnectionConfig
+
+@{
+  ViewData["Title"] = "Edit";
+}
+
+<h1>Edit</h1>
+
+<h4>Proxy Connection</h4>
+<hr />
+<div class="row">
+  <div class="col-md-4">
+    <form asp-action="Edit">
+      <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+      <div class="form-group">
+        <label asp-for="LocalHost" class="control-label"></label>
+        <input asp-for="LocalHost" class="form-control" />
+        <span asp-validation-for="LocalHost" class="text-danger"></span>
+      </div>
+      <div class="form-group">
+        <label asp-for="RemoteHost" class="control-label"></label>
+        <input asp-for="RemoteHost" class="form-control" />
+        <span asp-validation-for="RemoteHost" class="text-danger"></span>
+      </div>
+      <div class="form-group">
+        <label asp-for="RemotePort" class="control-label"></label>
+        <input asp-for="RemotePort" class="form-control" />
+        <span asp-validation-for="RemotePort" class="text-danger"></span>
+      </div>
+      <div class="form-group">
+        <label asp-for="DeviceList" class="control-label"></label>
+        <label class="control-label">Comma separated array of physical or virtual device addresses</label>
+        <input asp-for="DeviceList" class="form-control" />
+        <span asp-validation-for="DeviceList" class="text-danger"></span>
+      </div>
+      <div class="form-group">
+        <label asp-for="BaseDirectory" class="control-label"></label>
+        <input asp-for="BaseDirectory" class="form-control" />
+        <span asp-validation-for="BaseDirectory" class="text-danger"></span>
+      </div>
+      <div class="form-group">
+        <label asp-for="RequestPath" class="control-label"></label>
+        <input asp-for="RequestPath" class="form-control" />
+        <span asp-validation-for="RequestPath" class="text-danger"></span>
+      </div>
+      <div class="form-group form-check">
+        <label class="form-check-label">
+          <input class="form-check-input" asp-for="Enabled" /> @Html.DisplayNameFor(model => model.Enabled)
+        </label>
+      </div>
+      <div class="form-group">
+        <label asp-for="Converter" class="control-label"></label>
+        <input asp-for="Converter" class="form-control" />
+        <span asp-validation-for="Converter" class="text-danger"></span>
+      </div>
+      <nobr>
+        <button type="submit" class="btn btn-primary">
+          <i class="fas fa-save"></i> Save
+        </button>&nbsp;&nbsp;&nbsp;
+        <button type="button" class="btn btn-primary" onclick="location.href='@Url.Action("Index")'">
+          <i class="fas fa-arrow-left"></i> Back to List
+        </button>
+      </nobr>
+    </form>
+  </div>
+</div>
+
+@section Scripts {
+  @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

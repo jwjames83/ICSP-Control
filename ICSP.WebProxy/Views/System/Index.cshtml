@@ -1,0 +1,82 @@
+﻿@model ICSP.WebProxy.Configuration.ProxyConfig
+
+@{
+  ViewData["Title"] = "System Configurator";
+}
+
+<h1>System Configurator</h1>
+<p />
+<h3>Devices Mappings</h3>
+<p />
+<p>
+  <button type="button" class="btn btn-outline-primary" onclick="location.href='@Url.Action("Create")'">
+    <i class="fas fa-plus"></i> Create New
+  </button>
+</p>
+
+<table class="table">
+  <thead>
+    <tr>
+      @{
+        var lDefault = default(ICSP.WebProxy.Configuration.ProxyConnectionConfig);
+      }
+      <th>
+        @Html.DisplayNameFor(model => lDefault.LocalHost)
+      </th>
+      <th>
+        @Html.DisplayNameFor(model => lDefault.RemoteHost)
+      </th>
+      <th>
+        @Html.DisplayNameFor(model => lDefault.Devices)
+      </th>
+      <th>
+        @Html.DisplayNameFor(model => lDefault.BaseDirectory)
+      </th>
+      <th>
+        @Html.DisplayNameFor(model => lDefault.RequestPath)
+      </th>
+      <th>
+        @Html.DisplayNameFor(model => lDefault.Enabled)
+      </th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    @foreach(var item in Model.Connections.Values)
+    {
+    <tr>
+      <td>
+        @Html.DisplayFor(modelItem => item.LocalHost)
+      </td>
+      <td>
+        @Html.DisplayFor(modelItem => item.RemoteHost):@Html.DisplayFor(modelItem => item.RemotePort)
+      </td>
+      <td>
+        @Html.DisplayFor(modelItem => item.DeviceList)
+      </td>
+      <td>
+        @Html.DisplayFor(modelItem => item.BaseDirectory)
+      </td>
+      <td>
+        @Html.DisplayFor(modelItem => item.RequestPath)
+      </td>
+      <td>
+        @Html.DisplayFor(modelItem => item.Enabled)
+      </td>
+      <td>
+        <nobr>
+          <button type="button" class="btn btn-outline-primary" onclick="location.href='@Url.Action("Edit", new { id = item.ID })'">
+            <i class="fas fa-edit"></i> Edit
+          </button>
+          <button type="button" class="btn btn-outline-primary" onclick="location.href='@Url.Action("Details", new { id = item.ID })'">
+            <i class="fas fa-info"></i> Details
+          </button>
+          <button type="button" class="btn btn-outline-primary" onclick="location.href='@Url.Action("Delete", new { id = item.ID })'">
+            <i class="fas fa-times" style="color:red"></i> Delete
+          </button>
+        </nobr>
+      </td>
+    </tr>
+    }
+  </tbody>
+</table>

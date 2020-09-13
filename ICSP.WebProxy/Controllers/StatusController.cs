@@ -6,7 +6,6 @@ namespace ICSP.WebProxy.Controllers
   public class StatusController : Controller
   {
     [AllowAnonymous]
-    [RouteAttribute("/Status/{statusCode?}")]
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
     public IActionResult Index(int statusCode)
     {
