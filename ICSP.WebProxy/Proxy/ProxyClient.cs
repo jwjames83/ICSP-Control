@@ -373,44 +373,62 @@ namespace ICSP.WebProxy.Proxy
 
     internal async Task CreateDeviceInfoAsync(bool force = false)
     {
-      if(Manager != null && ConnectionConfig.Devices?.Count > 0)
+      try
       {
-        // Find free Device
-        var lDeviceNo = ConnectionConfig.Devices.Except(mDevices).FirstOrDefault();
-
-        // No more connections, Close WebSocket ...
-        if(lDeviceNo == 0)
+        if(Manager != null && ConnectionConfig.Devices?.Count > 0)
         {
-          LogWarn($"DeviceRange={string.Join(", ", ConnectionConfig.Devices)}, No more device connections available on controller");
+          // Find free Device
+          var lDeviceNo = ConnectionConfig.Devices.Except(mDevices).FirstOrDefault();
 
-          Socket?.CloseAsync((WebSocketCloseStatus)4001, "No more device connections available on controller", CancellationToken.None);
+          // No more connections, Close WebSocket ...
+          if(lDeviceNo == 0)
+          {
+            LogWarn($"DeviceRange={string.Join(", ", ConnectionConfig.Devices)}, No more device connections available on controller");
 
-          return;
-        }
+            Socket?.CloseAsync((WebSocketCloseStatus)4001, "No more device connections available on controller", CancellationToken.None);
 
-        CurrentDevice = lDeviceNo.ToString();
+            return;
+          }
 
-        // Get custom values from config for device
-        if(ConnectionConfig.DeviceConfig.TryGetValue(CurrentDevice, out var deviceConfig))
-        {
-          // Check has override by IMessageConverter
-          if(!mOverrideDevicePortCount) /**/ mDevicePortCount /**/ = deviceConfig.PortCount;
-          if(!mOverrideDeviceName)      /**/ mDeviceName      /**/ = deviceConfig.DeviceName;
-          if(!mOverrideDeviceVersion)   /**/ mDeviceVersion   /**/ = deviceConfig.DeviceVersion;
-          if(!mOverrideDeviceId)        /**/ mDeviceId        /**/ = deviceConfig.DeviceId;
-        }
+          CurrentDevice = lDeviceNo.ToString();
 
-        Converter.Device = lDeviceNo;
+          // Get custom values from config for device
+          if(ConnectionConfig.DeviceConfig.TryGetValue(CurrentDevice, out var deviceConfig))
+          {
+            // Check has override by IMessageConverter
+            if(!mOverrideDevicePortCount) /**/ mDevicePortCount /**/ = deviceConfig.PortCount;
+            if(!mOverrideDeviceName)      /**/ mDeviceName      /**/ = deviceConfig.DeviceName;
+            if(!mOverrideDeviceVersion)   /**/ mDeviceVersion   /**/ = deviceConfig.DeviceVersion;
+            if(!mOverrideDeviceId)        /**/ mDeviceId        /**/ = deviceConfig.DeviceId;
+          }
 
-        LogWarn($"Device={lDeviceNo}");
+          Converter.Device = lDeviceNo;
 
-        if(Manager.Devices.TryGetValue(lDeviceNo, out var lDeviceInfo))
-        {
-          Converter.System = lDeviceInfo.System;
+          LogWarn($"Device={lDeviceNo}");
 
-          Converter.Dest = new AmxDevice(0, 1, lDeviceInfo.System);
+          if(Manager.Devices.TryGetValue(lDeviceNo, out var lDeviceInfo))
+          {
+            Converter.System = lDeviceInfo.System;
 
-          if(force)
+            Converter.Dest = new AmxDevice(0, 1, lDeviceInfo.System);
+
+            if(force)
+            {
+              lDeviceInfo = new DeviceInfoData(lDeviceNo, Manager.CurrentLocalIpAddress.Address);
+
+              if(!string.IsNullOrWhiteSpace(mDeviceVersion))
+                lDeviceInfo.Version = mDeviceVersion?.ToLower();
+
+              if(mDeviceId > 0)
+                lDeviceInfo.DeviceId = mDeviceId;
+
+              if(!string.IsNullOrWhiteSpace(mDeviceName))
+                lDeviceInfo.Name = mDeviceName;
+
+              await Manager?.CreateDeviceInfoAsync(lDeviceInfo, mDevicePortCount);
+            }
+          }
+          else
           {
             lDeviceInfo = new DeviceInfoData(lDeviceNo, Manager.CurrentLocalIpAddress.Address);
 
@@ -423,36 +441,25 @@ namespace ICSP.WebProxy.Proxy
             if(!string.IsNullOrWhiteSpace(mDeviceName))
               lDeviceInfo.Name = mDeviceName;
 
+            Converter.Dest = Manager.SystemDevice;
+
             await Manager?.CreateDeviceInfoAsync(lDeviceInfo, mDevicePortCount);
           }
         }
-        else
+
+        // No more connections, Close WebSocket ...
+        if(ConnectionConfig.Devices?.Count == 0)
         {
-          lDeviceInfo = new DeviceInfoData(lDeviceNo, Manager.CurrentLocalIpAddress.Address);
+          LogWarn($"DeviceRange={string.Join(", ", ConnectionConfig.Devices)}, No more device connections available on controller");
 
-          if(!string.IsNullOrWhiteSpace(mDeviceVersion))
-            lDeviceInfo.Version = mDeviceVersion?.ToLower();
+          Socket?.CloseAsync((WebSocketCloseStatus)4001, "No more device connections available on controller", CancellationToken.None);
 
-          if(mDeviceId > 0)
-            lDeviceInfo.DeviceId = mDeviceId;
-
-          if(!string.IsNullOrWhiteSpace(mDeviceName))
-            lDeviceInfo.Name = mDeviceName;
-
-          Converter.Dest = Manager.SystemDevice;
-
-          await Manager?.CreateDeviceInfoAsync(lDeviceInfo, mDevicePortCount);
+          return;
         }
       }
-
-      // No more connections, Close WebSocket ...
-      if(ConnectionConfig.Devices?.Count == 0)
+      catch(Exception ex)
       {
-        LogWarn($"DeviceRange={string.Join(", ", ConnectionConfig.Devices)}, No more device connections available on controller");
-
-        Socket?.CloseAsync((WebSocketCloseStatus)4001, "No more device connections available on controller", CancellationToken.None);
-
-        return;
+        LogError(ex.Message);
       }
     }
 

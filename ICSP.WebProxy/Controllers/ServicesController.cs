@@ -24,8 +24,6 @@ namespace ICSP.WebProxy.Controllers
     {
       try
       {
-        var lConnectionConfig = config.Value.GetConfig(HttpContext);
-
         Program.Restart();
 
         // Redirect to BaseUrl

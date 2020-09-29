@@ -167,35 +167,37 @@ namespace ICSP.WebProxy
       // MVC-Routes
       // ------------------------
       // /Error/{errorCode?}
+      // /Status/{statusCode?}
       // /Controller/action/{id?}
       // ------------------------
 
       try
       {
-
+        /*
         foreach(var connection in lConnections)
         {
           if(!string.IsNullOrWhiteSpace(connection.RequestPath))
           {
             app.UseEndpoints(endpoints =>
             {
-              var lName    /**/ = string.Concat(connection.RequestPath, "/error");
-              var lPattern /**/ = string.Concat(connection.RequestPath, "/Error/{errorCode?}");
+              var lName = string.Concat(connection.RequestPath, "/error");
+              var lPattern = string.Concat(connection.RequestPath, "/Error/{errorCode?}");
 
               // endpoints.MapControllerRoute(lName, lPattern, new { controller = "Error", action = "Index" });
 
-              lName    /**/ = string.Concat(connection.RequestPath, "/status");
-              lPattern /**/ = string.Concat(connection.RequestPath, "/Status/{statusCode?}");
+              lName = string.Concat(connection.RequestPath, "/status");
+              lPattern = string.Concat(connection.RequestPath, "/Status/{statusCode?}");
 
-              // endpoints.MapControllerRoute(lName, lPattern, new { controller = "Status", action = "Index" });
+              // endpoiMapControllerRoute(lName, lPattern, new { controller = "Status", action = "Index" });
 
-              lName    /**/ = string.Concat(connection.RequestPath, "/default");
-              lPattern /**/ = string.Concat(connection.RequestPath, "/{controller=Install}/{action=Index}/{id?}");
+              lName = string.Concat(connection.RequestPath, "/default");
+              lPattern = string.Concat(connection.RequestPath, "/{controller=Install}/{action=Index}/{id?}");
 
               // endpoints.MapControllerRoute(lName, lPattern);
             });
           }
         }
+        */
 
         app.UseEndpoints(endpoints =>
         {

@@ -28,11 +28,22 @@ namespace ICSP.Core.Manager.DeviceManager
 
         ValueType = (LevelValueType)Data[8];
 
+        /*
+        Byte     | 0x10 | 1 Byte
+        Char     | 0x11 | 1 Byte
+        Integer  | 0x20 | 2 Bytes
+        SInteger | 0x21 | 2 Bytes
+        ULong    | 0x40 | 4 Bytes
+        Long     | 0x41 | 4 Bytes
+        Float    | 0x4F | 4 Bytes
+        Double   | 0x8F | 8 Bytes
+        */
+
         switch(ValueType)
         {
           // 1 Data
           case LevelValueType.Byte: Value = Data[9]; break;
-          case LevelValueType.Char: Value = Data[9]; break;
+          case LevelValueType.Char: Value = Data[9] - 256; break;
 
           // 2 Data
           case LevelValueType.Integer: Value = Data.GetBigEndianInt16(9); break;

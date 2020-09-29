@@ -124,7 +124,7 @@ namespace ICSP.WebProxy
 
         try
         {
-          webBuilder.UseUrls(lUrls);
+          //webBuilder.UseUrls(lUrls);
         }
         catch(Exception ex)
         {
@@ -189,7 +189,7 @@ namespace ICSP.WebProxy
     {
       var lLoggingConfig = new LoggingConfiguration();
 
-      var lLogLevel = GetConfigValue<string>("appsettings.json", "Logging.LogLevel.Test");
+      var lLogLevel = GetConfigValue<string>("appsettings.json", "Logging.LogLevel.WebProxy");
 
       switch(lLogLevel?.ToLower())
       {
