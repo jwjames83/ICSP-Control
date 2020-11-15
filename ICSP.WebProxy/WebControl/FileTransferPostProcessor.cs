@@ -572,6 +572,9 @@ namespace ICSP.WebProxy.WebControl
                       // Replace \r\n -> &#13&#10
                       // state.Text = state.Text?.Replace("\r", "&#13")?.Replace("\n", "&#10");
 
+                      // Remove \r\
+                      state.Text = state.Text?.Replace("\r", "");
+
                       // ============================================
                       // G5: Convert Bitmaps back to G4 ...
                       // ============================================

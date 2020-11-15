@@ -213,7 +213,7 @@ namespace ICSP.Core
 
       var lEventArgs = new CancelEventArgs();
 
-      if(!force) 
+      if(!force)
         Disconnecting?.Invoke(this, lEventArgs);
 
       if(lEventArgs.Cancel)
@@ -591,6 +591,20 @@ namespace ICSP.Core
 
         await SendAsync(lPortCountRequest);
       }
+
+      // MsgCmdStringSize:
+      // It is sent by a device/port upon reporting if the device/port supports more than 64 byte strings or more than 8-bit character strings.
+      // It returns the maximum number of elements/string the device supports and the types of strings supported.
+      var lStringSizeRequest = MsgCmdStringSize.CreateRequest(lDest, lSource, EncodingType.Default, ushort.MaxValue);
+
+      await SendAsync(lStringSizeRequest);
+
+      // MsgCmdCommandSize:
+      // It is sent by a device/port upon reporting if the device/port supports more than 64 byte commands or more than 8-bit character commands.
+      // It returns the maximum number of elements/command the device supports and the types of strings supported.
+      var lCommandSizeRequest = MsgCmdCommandSize.CreateRequest(lDest, lSource, EncodingType.Default, ushort.MaxValue);
+
+      await SendAsync(lCommandSizeRequest);
     }
 
     public async Task RequestDevicesOnlineAsync(AmxDevice source)

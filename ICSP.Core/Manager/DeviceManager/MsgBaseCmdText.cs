@@ -60,7 +60,7 @@ namespace ICSP.Core.Manager.DeviceManager
       lRequest.ValueType = EncodingType.Default;
       lRequest.Length = (ushort)text?.Length; // (i.e.number of elements, this is not the number of bytes)
       lRequest.Text = text ?? string.Empty;
-      
+
       var lBytes = lEncoding.GetBytes(lRequest.Text);
 
       var lData = source.GetBytesDPS().
@@ -73,7 +73,7 @@ namespace ICSP.Core.Manager.DeviceManager
     }
 
     protected abstract ushort MsgCmd { get; }
-    
+
     public AmxDevice Device { get; set; }
 
     /// <summary>
@@ -91,7 +91,7 @@ namespace ICSP.Core.Manager.DeviceManager
     /// Command
     /// </summary>
     public string Text { get; private set; }
-    
+
     protected override void WriteLogExtended()
     {
       Logger.LogDebug(false, "{0:l} Device: {1:l}", GetType().Name, Device);

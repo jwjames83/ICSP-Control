@@ -316,7 +316,17 @@ namespace ICSP.WebProxy.Converter
 
             break;
           }
-          case "CHANNEL_COUNT": break;
+          case "CHANNEL_COUNT":
+          {
+            if(ushort.TryParse(lMatch.Groups[CaptureGroup_Value].Value.TrimEnd(';'), out var lChnlCount))
+            {
+              Logger.LogDebug("lChnlCount={0}", lChnlCount);
+
+              // await Client.UpdateDeviceInfoAsync();
+            }
+
+            break;
+          }
           case "ADDRESS_COUNT": break;
           case "LEVEL_COUNT": break;
         }
