@@ -61,7 +61,7 @@ namespace ICSP.WebProxy
       app = app.MapWebSocketManager("", lProvider.GetService<WebSocketProxyClient>());
 
       var lConnections = proxyConfig.Value.Connections.Values.Where(p => p.Enabled);
-
+      
       // StaticFiles -> Directories
       if(staticFiles.Value.Directories.Count() > 0)
       {
@@ -85,8 +85,8 @@ namespace ICSP.WebProxy
 
             lFileServerOptions.StaticFileOptions.OnPrepareResponse = context =>
             {
-            // Disable caching for all static files.
-            context.Context.Response.Headers[HeaderNames.CacheControl] /**/ = staticFiles.Value.Headers.CacheControl;
+              // Disable caching for all static files.
+              context.Context.Response.Headers[HeaderNames.CacheControl] /**/ = staticFiles.Value.Headers.CacheControl;
               context.Context.Response.Headers[HeaderNames.Pragma]       /**/ = staticFiles.Value.Headers.Pragma;
               context.Context.Response.Headers[HeaderNames.Expires]      /**/ = staticFiles.Value.Headers.Expires;
             };
