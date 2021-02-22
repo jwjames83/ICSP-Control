@@ -48,11 +48,17 @@ namespace ICSP.WebProxy.Proxy
     private AmxDevice mDynamicDevice;
 
     private ushort mDevicePortCount = 1;
+    private ushort mDeviceAddressCount = 1;
+    private ushort mDeviceChannelCount = 256;
+    private ushort mDeviceLevelCount = 8;
     private string mDeviceName;
     private string mDeviceVersion;
     private ushort mDeviceId;
 
     private bool mOverrideDevicePortCount;
+    private bool mOverrideDeviceAddressCount;
+    private bool mOverrideDeviceChannelCount;
+    private bool mOverrideDeviceLevelCount;
     private bool mOverrideDeviceName;
     private bool mOverrideDeviceVersion;
     private bool mOverrideDeviceId;
@@ -221,7 +227,9 @@ namespace ICSP.WebProxy.Proxy
           {
             LogError(ex.Message);
 
-            await SendAsync(ex.Message);
+            Socket?.CloseAsync(WebSocketCloseStatus.EndpointUnavailable, ex.Message, CancellationToken.None);
+
+            // await SendAsync(ex.Message);
           }
         }
       });
@@ -230,6 +238,12 @@ namespace ICSP.WebProxy.Proxy
     }
 
     public ushort DevicePortCount { get => mDevicePortCount; set { mDevicePortCount = value; mOverrideDevicePortCount = true; } }
+
+    public ushort AddressCount { get => mDeviceAddressCount; set { mDeviceAddressCount = value; mOverrideDeviceAddressCount = true; } }
+
+    public ushort DeviceChannelCount { get => mDeviceChannelCount; set { mDeviceChannelCount = value; mOverrideDeviceChannelCount = true; } }
+
+    public ushort DeviceLevelCount { get => mDeviceLevelCount; set { mDeviceLevelCount = value; mOverrideDeviceLevelCount = true; } }
 
     public string DeviceName { get => mDeviceName; set { mDeviceName = value; mOverrideDeviceName = true; } }
 
@@ -396,10 +410,13 @@ namespace ICSP.WebProxy.Proxy
           if(ConnectionConfig.DeviceConfig.TryGetValue(CurrentDevice, out var deviceConfig))
           {
             // Check has override by IMessageConverter
-            if(!mOverrideDevicePortCount) /**/ mDevicePortCount /**/ = deviceConfig.PortCount;
-            if(!mOverrideDeviceName)      /**/ mDeviceName      /**/ = deviceConfig.DeviceName;
-            if(!mOverrideDeviceVersion)   /**/ mDeviceVersion   /**/ = deviceConfig.DeviceVersion;
-            if(!mOverrideDeviceId)        /**/ mDeviceId        /**/ = deviceConfig.DeviceId;
+            if(!mOverrideDevicePortCount)    /**/ mDevicePortCount    /**/ = deviceConfig.PortCount;
+            if(!mOverrideDeviceAddressCount) /**/ mDeviceAddressCount /**/ = deviceConfig.AddressCount;
+            if(!mOverrideDeviceChannelCount) /**/ mDeviceChannelCount /**/ = deviceConfig.ChannelCount;
+            if(!mOverrideDeviceLevelCount)   /**/ mDeviceLevelCount   /**/ = deviceConfig.LevelCount;
+            if(!mOverrideDeviceName)         /**/ mDeviceName         /**/ = deviceConfig.DeviceName;
+            if(!mOverrideDeviceVersion)      /**/ mDeviceVersion      /**/ = deviceConfig.DeviceVersion;
+            if(!mOverrideDeviceId)           /**/ mDeviceId           /**/ = deviceConfig.DeviceId;
           }
 
           Converter.Device = lDeviceNo;
@@ -425,7 +442,8 @@ namespace ICSP.WebProxy.Proxy
               if(!string.IsNullOrWhiteSpace(mDeviceName))
                 lDeviceInfo.Name = mDeviceName;
 
-              await Manager?.CreateDeviceInfoAsync(lDeviceInfo, mDevicePortCount);
+              // TODO: mDeviceLevelCount & mDeviceLevelCount are specific for a port!
+              await Manager?.CreateDeviceInfoAsync(lDeviceInfo, mDevicePortCount, mDeviceChannelCount);
             }
           }
           else
@@ -443,7 +461,8 @@ namespace ICSP.WebProxy.Proxy
 
             Converter.Dest = Manager.SystemDevice;
 
-            await Manager?.CreateDeviceInfoAsync(lDeviceInfo, mDevicePortCount);
+            // TODO: mDeviceLevelCount & mDeviceLevelCount are specific for a port!
+            await Manager?.CreateDeviceInfoAsync(lDeviceInfo, mDevicePortCount, mDeviceChannelCount);
           }
         }
 
@@ -752,7 +771,9 @@ namespace ICSP.WebProxy.Proxy
         {
           LogError(ex.Message);
 
-          await SendAsync(ex.Message);
+          Socket?.CloseAsync(WebSocketCloseStatus.EndpointUnavailable, ex.Message, CancellationToken.None);
+
+          // await SendAsync(ex.Message);
         }
       }
 

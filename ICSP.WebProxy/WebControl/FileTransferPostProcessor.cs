@@ -283,6 +283,9 @@ namespace ICSP.WebProxy.WebControl
           "/root/page/button/sr",                         // Buttons States (Button-Type Joystick has only one)
           "/root/page/button/pf",                         // G4:PageFlips
           "/root/page/button/sr/bitmapEntry",             // G5:Bitmaps
+
+          "/root/page/button/op",                         // G4:StringOutput
+          "/root/page/button/cm",                         // G4:CommandOutput
           
           // G5: Page Events (eventShow, eventHide)
           "/root/page/*/pgFlip",                          // Events: Pageflips

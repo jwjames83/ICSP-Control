@@ -165,9 +165,10 @@
   <!-- javascript -->
   <script src="js/hls.min.js" defer></script>
   <script src="js/project.js" defer></script>
-  <script src="js/debug.js" defer></script>
+  <script src="js/debugging.js" defer></script>
   <script src="js/config.js" defer></script>
   <script src="js/globals.js" defer></script>
+  <script src="js/typedefs.js"></script>
   <script src="js/uiAssign.js" defer></script>
   <script src="js/uiClasses.js" defer></script>
   <script src="js/uiProject.js" defer></script>
@@ -177,10 +178,15 @@
   <script src="js/resize.js" defer></script>
   <script src="js/setupPort.js" defer></script>
   <script src="js/sounds.js" defer></script>
+
+  <!-- Milestone Mobile SDK -->
+  <script src="js/mip.js"></script>
+
   <!-- -->
   <script src="js/main.js" defer></script>
 </head>
 <body>
+
   <div id="content" style="position:absolute;top:0px;left:0px;width:{width}px;height:{height}px;display:none;">
     <div id="debug-left"></div>
     <div id="debug-right"></div>
@@ -189,12 +195,116 @@
     <div id="session-expired" style="z-index:5005;"><p style="width:100%;position:absolute;text-align:center;top:50%;left:50%;transform:translate(-50%, -50%);">Your session has expired.</p></div>
     <!-- content -->
   </div>
+
   <!-- content drawer -->
   <canvas id="contentDrawer" height="1080" width="1920" style="position:absolute;pointer-events:none;"></canvas>
+  
   <!-- dragging point -->
   <div id="draggingPoint" style="position:absolute;pointer-events:none;display:none;height:120px;width:150px;overflow:hidden;"><img src="AMXPanel/images/drag.gif" style="max-height:100%;position:relative;" class="dragIconFail"></div>
+  
   <!-- swipe arrows -->
   <div id="swipeArrows" style="position:absolute;pointer-events:none;display:none;height:100px;width:100px;overflow:hidden;"><img src="AMXPanel/images/swipe_arrows.gif" style="height:200px;position:relative;"></div>
+
+  <!-- template for milestone camera-ctrl -->
+  <template id="template-camera-ctrl">
+
+    <div class="videoBox tmpl_videoBox" id="thumbnailTemplate_videoBox" style="">
+
+      <div class="tmpl_videoWrapperElement videoWrapper" id="thumbnailTemplate_videoWrapperElement" style="padding-bottom: 75%;">
+
+        <div class="tmpl_videoCanvasElement videoCanvas" id="thumbnailTemplate_videoCanvasElement">
+
+          <canvas class="tmpl_canvasElement canvasElement" id="thumbnailTemplate_canvasElement" style="top: 0%; left: 0%;"></canvas>
+
+          <!-- header -->
+          <div class="tmpl_headerElement header" id="thumbnailTemplate_headerElement">
+            <div class="tmpl_indicators indicators" id="thumbnailTemplate_indicators">
+              <div class="tmpl_recordingIndicator recordingIndicator hidden" id="thumbnailTemplate_recordingIndicator"></div>
+              <div class="tmpl_motionIndicator motionIndicator hidden" id="thumbnailTemplate_motionIndicator"></div>
+              <div class="tmpl_audioIndicator audioIndicator hidden" id="thumbnailTemplate_audioIndicator"></div>
+              <div class="tmpl_micIndicator micIndicator hidden" id="thumbnailTemplate_micIndicator">
+                <div class="micIndicatorRecordingBGR"></div>
+              </div>
+              <div class="directStreamingIndicator"></div>
+            </div>
+            <span class="tmpl_streamStatus streamStatus" id="thumbnailTemplate_streamStatus">Live</span>
+            <span class="tmpl_titleElement title" id="thumbnailTemplate_titleElement">[Camera]</span>
+          </div>
+
+          <!-- videoControls (Bottom) -->
+          <div id="" class="tmpl_videoControls videoControls hidden" data-translationcontext="VideoControls">
+
+            <div class="tmpl_bottomBarElement bottombar" id="thumbnailControlsTemplate_bottomBarElement" style="">
+
+              <!-- Toggle Live / Playback -->
+              <div class="tmpl_pauseButton btn pauseButton" data-translate="PauseButton" title="Wiedergeben" id="thumbnailControlsTemplate_pauseButton"></div>
+
+              <!-- Toggle Fullscreen -->
+              <div class="tmpl_toggleFullscreenButton btn toggleFullscreenButton" data-translate="FullscreenButton" title="Vollbild" id="thumbnailControlsTemplate_toggleFullscreenButton"></div>
+
+              <!-- PTZ-Presets -->
+              <div class="tmpl_presetsButton btn presetsButton" data-translate="PresetsButton" title="Pan-Tilt-Zoom-Voreinstellungen" id="thumbnailControlsTemplate_presetsButton">
+                <div class="tmpl_presetsElement presetsMenu dropdownMenu cssBasedWidth activated" data-attachedtoclass="tmpl_presetsButton" id="thumbnailControlsTemplate_presetsElement" style="height: auto;">
+                  <div class="scrollbarContainer" style="position: relative; height: 100%; overflow: hidden;">
+                    <div style="position: relative; height: 100%; overflow: hidden;">
+                      <ul></ul>
+                    </div>
+                    <div style="display: none; position: absolute; left: 0px; top: 0px; width: 100%; height: 100%; z-index: 10; background-color: black; opacity: 0;"></div>
+                    <div id="" class="scrollbar vertical" style="height: 100%;">
+                      <div class="tmpl_scrollLeftButton left" id="scrollbarTemplate_scrollLeftButton"></div>
+                      <div class="tmpl_scrollRightButton right" id="scrollbarTemplate_scrollRightButton"></div>
+                      <div class="tmpl_scrollHandle handle" id="scrollbarTemplate_scrollHandle" style="top: 0px; height: 32px;"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- PTZ-Pan/Tilt/Zoom -->
+              <div class="tmpl_ptzButton btn ptzButton" data-translate="PtzButton" title="Pan/Tilt/Zoom" id="thumbnailControlsTemplate_ptzButton"></div>
+              <div class="tmpl_exportButton btn exportButton featureDisabled" data-translate="ExportButton" title="Exportieren" id="thumbnailControlsTemplate_exportButton"></div>
+              <div class="tmpl_zoomIndicator zoomIndicator" data-translate="ZoomIndicator" title="Zoom-Bereichsanzeige" id="thumbnailControlsTemplate_zoomIndicator"><span class="tmpl_zoomView zoomView" id="thumbnailControlsTemplate_zoomView"></span></div>
+
+              <!-- Playback -->
+              <div class="tmpl_playbackBarButtons playbackBarButtons" id="thumbnailControlsTemplate_playbackBarButtons">
+                <div class="playbackTime">
+                  <div class="tmpl_goToTimeButton btn goToTimeButton" data-translate="GoToTimeButton" title="Wiedergabedatum und -uhrzeit auswählen" id="thumbnailControlsTemplate_goToTimeButton"></div>
+                  <div class="tmpl_playbackTimeIndex timeIndex" id="thumbnailControlsTemplate_playbackTimeIndex">[Time]</div>
+                </div>
+                <div class="tmpl_playBackButton btn playBackButton" data-translate="PlayBackButton" title="Rückwärts abspielen" id="thumbnailControlsTemplate_playBackButton"></div>
+                <div class="tmpl_playbackJog playbackJog" data-translate="PlaybackJog" title="Shuttle" id="thumbnailControlsTemplate_playbackJog">
+                  <div style="margin-left: 58px;" class="animated"></div>
+                </div>
+                <div class="tmpl_playForwardButton btn playForwardButton" data-translate="PlayForwardButton" title="Vorwärts abspielen" id="thumbnailControlsTemplate_playForwardButton"></div>
+              </div>
+
+            </div>
+
+            <div class="tmpl_playbackPrevFrameButton playbackPrevFrameButton" data-translate="PlaybackPrevFrame" title="Vorheriges Bild" id="thumbnailControlsTemplate_playbackPrevFrameButton"></div>
+            <div class="tmpl_playbackNextFrameButton playbackNextFrameButton" data-translate="PlaybackNextFrame" title="Nächstes Bild" id="thumbnailControlsTemplate_playbackNextFrameButton"></div>
+            <div class="tmpl_gestureOverlay gestureOverlay" id="thumbnailControlsTemplate_gestureOverlay"></div>
+
+            <!-- PTZ-Pan/Tilt/Zoom Overlay -->
+            <div class="tmpl_ptzManualButtonsOverlay manualButtonsOverlay" id="thumbnailControlsTemplate_ptzManualButtonsOverlay">
+              <div class="left" data-translate="LeftButton" title="Nach links"></div>
+              <div class="right" data-translate="RightButton" title="Nach rechts"></div>
+              <div class="up" data-translate="UpButton" title="Nach oben"></div>
+              <div class="down" data-translate="DownButton" title="Nach unten"></div>
+              <div class="zoomIn" data-translate="ZoomIn" title="Heranzoomen"></div>
+              <div class="zoomOut" data-translate="ZoomOut" title="Herauszoomen"></div>
+            </div>
+
+          </div> <!-- videoControls -->
+
+        </div> <!-- videoCanvas -->
+
+      </div> <!-- videoWrapper -->
+
+    </div> <!-- videoBox -->
+
+    <img class="tmpl_thumbnailImage thumbnailImage" src="" alt="" id="thumbnailTemplate_thumbnailImage">
+
+  </template>
+
 </body>
 <!--
 2020-08-27 12:03:37.946386 @Version: WebControl 1.7.5

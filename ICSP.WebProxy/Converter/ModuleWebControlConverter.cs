@@ -254,6 +254,8 @@ namespace ICSP.WebProxy.Converter
             return null;
           }
         }
+
+        await Task.CompletedTask;
       }
 
       Logger.LogInfo($"Msg={msg}");
@@ -318,17 +320,44 @@ namespace ICSP.WebProxy.Converter
           }
           case "CHANNEL_COUNT":
           {
-            if(ushort.TryParse(lMatch.Groups[CaptureGroup_Value].Value.TrimEnd(';'), out var lChnlCount))
+            if(ushort.TryParse(lMatch.Groups[CaptureGroup_Value].Value.TrimEnd(';'), out var lChannelCount))
             {
-              Logger.LogDebug("lChnlCount={0}", lChnlCount);
+              // Logger.LogDebug("lChannelCount={0}", lChannelCount);
+
+              Client.DeviceChannelCount = lChannelCount;
 
               // await Client.UpdateDeviceInfoAsync();
             }
 
             break;
           }
-          case "ADDRESS_COUNT": break;
-          case "LEVEL_COUNT": break;
+          case "ADDRESS_COUNT": 
+            {
+              if(ushort.TryParse(lMatch.Groups[CaptureGroup_Value].Value.TrimEnd(';'), out var lAddressCount))
+              {
+                // Logger.LogDebug("lChannelCount={0}", lChannelCount);
+
+                Client.AddressCount = lAddressCount;
+
+                // await Client.UpdateDeviceInfoAsync();
+              }
+
+              break;
+            }
+
+          case "LEVEL_COUNT":
+          {
+            if(ushort.TryParse(lMatch.Groups[CaptureGroup_Value].Value.TrimEnd(';'), out var lLevelCount))
+            {
+              // Logger.LogDebug("lChannelCount={0}", lChannelCount);
+
+              Client.DeviceLevelCount = lLevelCount;
+
+              // await Client.UpdateDeviceInfoAsync();
+            }
+
+            break;
+          }
         }
       }
 

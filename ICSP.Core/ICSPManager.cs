@@ -551,10 +551,10 @@ namespace ICSP.Core
 
     public async Task CreateDeviceInfoAsync(DeviceInfoData deviceInfo)
     {
-      await CreateDeviceInfoAsync(deviceInfo, 1);
+      await CreateDeviceInfoAsync(deviceInfo, 1, 256, 8);
     }
 
-    public async Task CreateDeviceInfoAsync(DeviceInfoData deviceInfo, ushort portCount)
+    public async Task CreateDeviceInfoAsync(DeviceInfoData deviceInfo, ushort portCount = 1, ushort channelCount = 256, ushort levelCount = 8)
     {
       /*
       P  | Len   | Flag  | Dest              | Source            | H  | ID    | CMD   | N-Data      | CS
@@ -563,7 +563,7 @@ namespace ICSP.Core
       02 | 00 59 | 02 12 | 00 00 00 00 00 01 | 00 00 27 12 00 01 | 0f | 00 48 | 00 97 | 27 12 00 00 00 00 00 00 00 01 01 71 35 39 36 38 30 32 70 31 30 63 30 31 30 35 00 00 03 8a 76 32 2e 31 30 34 2e 31 33 34 00 4d 58 54 2d 31 39 30 30 4c 2d 50 41 4e 69 00 41 4d 58 20 4c 4c 43 00 02 04 ac 10 7e a8 b4
                            SDP: 0:0:1        | SDP 0:10002:1
       02 | 00 13 | 02 08 | 00 00 00 00 00 00 | 00 01 00 00 00 01 | ff | 00 48 | 00 01 | 69
-      
+
       02 | 00 13 | 02 08 | 00 01 27 12 00 01 | 00 01 00 00 00 01 | 0F | 00 48 | 00 01 | B4
                            SDP: 1:10002:1    | SDP 1:0:1
       */
@@ -590,6 +590,22 @@ namespace ICSP.Core
         var lPortCountRequest = MsgCmdPortCountBy.CreateRequest(lDest, lSource, deviceInfo.Device, deviceInfo.System, portCount);
 
         await SendAsync(lPortCountRequest);
+      }
+
+      if(channelCount > 256)
+      {
+        // It is sent by a device/port upon reporting if the device has more than 256 channels.
+        var lOutputChannelCountRequest = MsgCmdOutputChannelCount.CreateRequest(lDest, lSource, channelCount);
+
+        await SendAsync(lOutputChannelCountRequest);
+      }
+
+      if(levelCount > 8)
+      {
+        // Sent upon reporting by a device/port if it has more than 8 levels.
+        var lLevelCountRequest = MsgCmdLevelCount.CreateRequest(lDest, lSource, levelCount);
+
+        await SendAsync(lLevelCountRequest);
       }
 
       // MsgCmdStringSize:

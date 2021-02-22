@@ -19,7 +19,7 @@ namespace ICSP.WebProxy.Converter
       foreach(var type in lTypes)
       {
         if(type.IsAssignableFrom(typeof(IMessageConverter)))
-          throw new ArgumentException("Translator is not assignable from IMessageTranslator", nameof(type));
+          throw new ArgumentException("Converter is not assignable from IMessageConverter", nameof(type));
 
         var lType = (IMessageConverter)Activator.CreateInstance(type, true);
 

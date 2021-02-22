@@ -36,6 +36,9 @@ namespace ICSP.WebProxy
       // PM: Install-Package System.Text.Encoding.CodePages
       Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
 
+      // A Windows Service app returns the C:\WINDOWS\system32 folder as its current directory.
+      Directory.SetCurrentDirectory(AppDomain.CurrentDomain.BaseDirectory);
+
       // Remove old LogFiles ...
       bool lIsDevelopment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Development";
 
@@ -89,6 +92,7 @@ namespace ICSP.WebProxy
         LoggingConfigurator.Configure(lLoggingConfig);
 
         Logger.LogInfo("Starting up");
+        Logger.LogInfo($"BaseDirectory: {AppDomain.CurrentDomain.BaseDirectory}");
 
         var lHostBuilder = CreateHostBuilder(args);
 
@@ -116,15 +120,22 @@ namespace ICSP.WebProxy
       // Enable running as a Windows service
       lBuilder.UseWindowsService();
 
+      // Remove duplicate urls
+      // Prevent Error: Failed to bind to address http://[::]:80: address already in use.
+      var lUrls = ConfigGetUrls();
+
+      if(lUrls.Length == 0)
+        Logger.LogWarn($"Invalid Settings in appsettings.json: ProxyConfig.Connections -> No connections configured");
+
+      foreach(var url in lUrls)
+        Logger.LogInfo($"UseUrl[]: {url}");
+
+
       lBuilder.ConfigureWebHostDefaults(webBuilder =>
       {
-        // Remove duplicate urls
-        // Prevent Error: Failed to bind to address http://[::]:80: address already in use.
-        var lUrls = ConfigGetUrls();
-
         try
         {
-          //webBuilder.UseUrls(lUrls);
+          webBuilder.UseUrls(lUrls);
         }
         catch(Exception ex)
         {
@@ -168,7 +179,7 @@ namespace ICSP.WebProxy
             {
               lValidUrls.Add(lKey, url);
 
-              Logger.LogInfo($"Url: {url}");
+              Logger.LogDebug($"Url: {url}");
             }
             else
             {

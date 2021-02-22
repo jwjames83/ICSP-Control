@@ -26,9 +26,13 @@
 
   <ItemGroup>
     <None Remove="Resources\index.html" />
+    <None Remove="Resources\index.org.html" />
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="Resources\index.org.html">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Content>
     <Content Include="Resources\index.html" />
   </ItemGroup>
 

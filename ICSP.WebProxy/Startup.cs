@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 
 using ICSP.Core.Logging;
@@ -73,22 +74,29 @@ namespace ICSP.WebProxy
 
           Logger.LogInfo($"Root={lRootDirectory}, Root={directory.RequestPath}");
 
-          var lFileServerOptions = new FileServerOptions
+          if(Directory.Exists(lRootDirectory))
           {
-            FileProvider = new PhysicalFileProvider(lRootDirectory),
+            var lFileServerOptions = new FileServerOptions
+            {
+              FileProvider = new PhysicalFileProvider(lRootDirectory),
 
-            RequestPath = directory.RequestPath,
-          };
+              RequestPath = directory.RequestPath,
+            };
 
-          lFileServerOptions.StaticFileOptions.OnPrepareResponse = context =>
-          {
+            lFileServerOptions.StaticFileOptions.OnPrepareResponse = context =>
+            {
             // Disable caching for all static files.
             context.Context.Response.Headers[HeaderNames.CacheControl] /**/ = staticFiles.Value.Headers.CacheControl;
-            context.Context.Response.Headers[HeaderNames.Pragma]       /**/ = staticFiles.Value.Headers.Pragma;
-            context.Context.Response.Headers[HeaderNames.Expires]      /**/ = staticFiles.Value.Headers.Expires;
-          };
+              context.Context.Response.Headers[HeaderNames.Pragma]       /**/ = staticFiles.Value.Headers.Pragma;
+              context.Context.Response.Headers[HeaderNames.Expires]      /**/ = staticFiles.Value.Headers.Expires;
+            };
 
-          app.UseFileServer(lFileServerOptions);
+            app.UseFileServer(lFileServerOptions);
+          }
+          else
+          {
+            Logger.LogWarn($"Invalid Settings in appsettings.json: StaticFiles.Directories.BaseDirectory -> Directory not exists: {lRootDirectory}");
+          }
         }
 
         Logger.LogInfo($"======================================================================================================================================================");

@@ -524,7 +524,7 @@ namespace ICSP.Core.Model
     /// String Output (G4 Only)
     /// </summary>
     [JsonProperty("op", Order = 74, NullValueHandling = NullValueHandling.Ignore)]
-    public string StringOutput { get; set; }
+    public List<string> StringOutput { get; set; }
 
     /// <summary>
     /// Command Output Port (G4 Only)
@@ -537,7 +537,7 @@ namespace ICSP.Core.Model
     /// Command Output (G4 Only)
     /// </summary>
     [JsonProperty("cm", Order = 76, NullValueHandling = NullValueHandling.Ignore)]
-    public string CommandOutput { get; set; }
+    public List<string> CommandOutput { get; set; }
 
     /// <summary>
     /// Page Flip Animation (G4 Only)
