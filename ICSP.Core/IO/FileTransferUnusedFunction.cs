@@ -1,9 +1,9 @@
 ﻿namespace ICSP.Core.IO
 {
   /// <summary>
-  ///  FileTransfer Unused functions
+  /// FileTransfer Unused functions
   /// </summary>
-  public enum FunctionsUnused
+  public enum FileTransferUnusedFunction
   {
     /// <summary>
     /// Negative Acknowledgement 
@@ -13,26 +13,31 @@
     /// <summary>
     /// Get Directory Information
     /// </summary>
-    GetDirectoryInfo = 0x0100,
+    DirGet = 256,
 
     /// <summary>
     /// Directory Information, Response to GetDirectoryInfo
     /// </summary>
-    DirectoryInfo = 0x0101,
+    DirHeader = 257,
 
     /// <summary>
     /// Directory Item, Response to GetDirectoryInfo
     /// </summary>
-    DirectoryItem = 0x0102,
+    DirEntry = 258,
+
+    /// <summary>
+    /// Delete Directory
+    /// </summary>
+    DirRemove = 259,
 
     /// <summary>
     /// Delete File
     /// </summary>
-    DeleteFile = 0x0104,
+    FileRemove = 260,
 
     /// <summary>
     /// Create Directory
     /// </summary>
-    CreateDirectory = 0x0105,
+    DirCreate = 261,
   }
 }

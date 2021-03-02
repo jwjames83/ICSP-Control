@@ -24,20 +24,7 @@ namespace ICSP.Core
 
     public const int DefaultHop = 0xFF;
 
-    public const int DefaultFlag = 0x0200;
-
-    public const int FlagFileTransfer = 0x0208;
-
-    /// <summary>
-    /// If set then messag is a broadcast message
-    /// </summary>
-    public const int FlagBroadcast = 0x01;
-
-    /// <summary>
-    /// If set then receiver should reply to message.
-    /// A new Master or non-configured device connecting to de system uses this.
-    /// </summary>
-    public const int FlagNewbee = 0x02;
+    public const ICSPMsgFlag DefaultFlag = ICSPMsgFlag.Version_02;
 
     #region Constructors
 
@@ -58,7 +45,7 @@ namespace ICSP.Core
 
       DataLength = bytes.GetBigEndianInt16(1);
 
-      Flag = bytes.GetBigEndianInt16(3);
+      Flag = (ICSPMsgFlag)bytes.GetBigEndianInt16(3);
 
       Dest = AmxDevice.FromSDP(bytes.Range(5, 6));
 
@@ -92,7 +79,7 @@ namespace ICSP.Core
       return Serialize(DefaultFlag, dest, source, DefaultHop, id, command, data);
     }
 
-    protected ICSPMsg Serialize(ushort flag, AmxDevice dest, AmxDevice source, ushort id, ushort command, byte[] data)
+    protected ICSPMsg Serialize(ICSPMsgFlag flag, AmxDevice dest, AmxDevice source, ushort id, ushort command, byte[] data)
     {
       return Serialize(flag, dest, source, DefaultHop, id, command, data);
     }
@@ -102,7 +89,7 @@ namespace ICSP.Core
       return Serialize(DefaultFlag, dest, source, hop, id, command, data);
     }
 
-    protected ICSPMsg Serialize(ushort flag, AmxDevice dest, AmxDevice source, byte hop, ushort id, ushort command, byte[] data)
+    protected ICSPMsg Serialize(ICSPMsgFlag flag, AmxDevice dest, AmxDevice source, byte hop, ushort id, ushort command, byte[] data)
     {
       Protocol = 0x02;
       
@@ -132,8 +119,8 @@ namespace ICSP.Core
       RawData[01] = (byte)(DataLength >> 8);
       RawData[02] = (byte)(DataLength);
 
-      RawData[03] = (byte)(Flag >> 8);
-      RawData[04] = (byte)(Flag);
+      RawData[03] = (byte)((ushort)Flag >> 8);
+      RawData[04] = (byte)((ushort)Flag);
 
       var lDsp = Dest.GetBytesSDP();
 
@@ -206,7 +193,7 @@ namespace ICSP.Core
     /// A newbie flag is placed when a device is added to the network.<br/>
     /// This will then cause a response from the master indicating that it received the message from the newbie device.
     /// </summary>
-    public ushort Flag { get; set; }
+    public ICSPMsgFlag Flag { get; set; }
 
     /// <summary>
     /// [6 Bytes: System:Device:Port]<br/>

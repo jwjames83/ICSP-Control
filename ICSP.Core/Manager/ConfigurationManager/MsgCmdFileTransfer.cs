@@ -65,7 +65,7 @@ namespace ICSP.Core.Manager.ConfigurationManager
       return CreateRequest(dest, source, fileType, (ushort)function, data);
     }
 
-    public static ICSPMsg CreateRequest(AmxDevice dest, AmxDevice source, FileType fileType, FunctionsUnused function, byte[] data = null)
+    public static ICSPMsg CreateRequest(AmxDevice dest, AmxDevice source, FileType fileType, FileTransferUnusedFunction function, byte[] data = null)
     {
       return CreateRequest(dest, source, fileType, (ushort)function, data);
     }
@@ -75,7 +75,7 @@ namespace ICSP.Core.Manager.ConfigurationManager
       return CreateRequest(dest, source, fileType, (ushort)function, data);
     }
 
-    internal static ICSPMsg CreateErrorRequest(AmxDevice dest, AmxDevice source, FileType fileType, FileTransferStatusCode statusCode)
+    internal static ICSPMsg CreateErrorRequest(AmxDevice dest, AmxDevice source, FileType fileType, FileTransferErrorCode statusCode)
     {
       return CreateRequest(dest, source, fileType, (ushort)FileTransferFunction.Nak, ArrayExtensions.Int16ToBigEndian((ushort)statusCode));
     }
@@ -94,7 +94,7 @@ namespace ICSP.Core.Manager.ConfigurationManager
       {
         switch(FileType)
         {
-          case FileType.Unused: lFunction = ((FunctionsUnused)Function).ToString(); break;
+          case FileType.Unused: lFunction = ((FileTransferUnusedFunction)Function).ToString(); break;
           case FileType.IRData: break;
           case FileType.Firmware: break;
           case FileType.TouchPanelFile: break;

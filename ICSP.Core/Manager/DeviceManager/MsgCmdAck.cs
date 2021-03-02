@@ -32,14 +32,14 @@ namespace ICSP.Core.Manager.DeviceManager
       return lRequest.Serialize(dest, source, id, MsgCmd, null);
     }
 
-    public static ICSPMsg CreateRequest(ushort flag, AmxDevice dest, AmxDevice source, ushort id)
+    public static ICSPMsg CreateRequest(ICSPMsgFlag flag, AmxDevice dest, AmxDevice source, ushort id)
     {
       var lRequest = new MsgCmdAck();
 
       return lRequest.Serialize(flag, dest, source, id, MsgCmd, null);
     }
 
-    public static ICSPMsg CreateRequest(ushort flag, AmxDevice dest, AmxDevice source, byte hop, ushort id)
+    public static ICSPMsg CreateRequest(ICSPMsgFlag flag, AmxDevice dest, AmxDevice source, byte hop, ushort id)
     {
       var lRequest = new MsgCmdAck();
 

@@ -115,6 +115,11 @@
     public const int CommandDevMaster = 0x008C;           // 140
 
     /// <summary>
+    /// Used to transfer a Custom Device Message
+    /// </summary>
+    public const int CustomDeviceMessage = 0x008D;        // 141
+
+    /// <summary>
     /// Requests the status of specified level value.
     /// If the level does not exist, the response message is ACK.
     /// (Master->Master) 
@@ -269,5 +274,7 @@
     /// (Master->Master)
     /// </summary>
     public const int MasterStatus = 0x0021;               // 33
+
+    public const int GotoStandby = 0x0023;                // 35
   }
 }

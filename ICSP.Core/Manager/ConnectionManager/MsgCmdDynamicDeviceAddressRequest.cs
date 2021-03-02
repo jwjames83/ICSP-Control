@@ -98,7 +98,7 @@ namespace ICSP.Core.Manager.ConnectionManager
         lData = lStream.ToArray();
       }
 
-      return lRequest.Serialize(NewbieFlag, AmxDevice.Empty, lSource, 0, MsgCmd, lData);
+      return lRequest.Serialize(ICSPMsgFlag.Newbee, AmxDevice.Empty, lSource, 0, MsgCmd, lData);
     }
 
     /// <summary>

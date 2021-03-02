@@ -268,7 +268,7 @@ namespace ICSP.Core.Manager.DeviceManager
       }
 
       // Flag: 0x0212
-      return lRequest.Serialize(0x0212, dest, source, 0, MsgCmd, lData);
+      return lRequest.Serialize(ICSPMsgFlag.Version_02 | (ICSPMsgFlag)0b_00001_0000 | ICSPMsgFlag.Newbee, dest, source, 0, MsgCmd, lData);
     }
 
     protected override void WriteLogExtended()

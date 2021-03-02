@@ -6,7 +6,7 @@
   public static class ConnectionManagerCmd
   {
     /// <summary>
-    ///  Requests a ping response from the destination device.
+    /// Requests a ping response from the destination device.
     /// </summary>
     public const int PingRequest = 0x0501;
 
@@ -47,5 +47,9 @@
     /// Requests notification of specific messages from a device.
     /// </summary>
     public const int NotificationRequest = 0x0507;
+        
+    public const int StandbyPingRequest = 0x0022;
+
+    public const int StandbyPingResponse = 0x0510;
   }
 }
