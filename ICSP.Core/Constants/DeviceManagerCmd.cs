@@ -275,6 +275,17 @@
     /// </summary>
     public const int MasterStatus = 0x0021;               // 33
 
-    public const int GotoStandby = 0x0023;                // 35
+    // Misc
+    public const int GotoStandby              /**/ = 0x0023; // 35
+    public const int StandbyPingRequest       /**/ = 0x0590; // 1424
+    public const int StandbyPingResponse      /**/ = 0x0510; // 1296
+    public const int InputChannelOnToMaster   /**/ = 0xFF03; // 65283
+    public const int InputChannelOffToMaster  /**/ = 0xFF04; // 65284
+    public const int OutputChannelPulse       /**/ = 0x001C; // 28
+    public const int ToChannel                /**/ = 0x001A; // 26
+    public const int TotalOffchannel          /**/ = 0x001B; // 27
+    public const int StandbyRequestDevMaster  /**/ = 0x00A2; // 162
+    public const int StandbyResponseMasterDev /**/ = 0x0022; // 34
+    public const int InternalMessage          /**/ = 0xFF00; // 65280
   }
 }

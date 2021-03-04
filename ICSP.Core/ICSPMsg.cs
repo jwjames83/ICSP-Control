@@ -92,9 +92,9 @@ namespace ICSP.Core
     protected ICSPMsg Serialize(ICSPMsgFlag flag, AmxDevice dest, AmxDevice source, byte hop, ushort id, ushort command, byte[] data)
     {
       Protocol = 0x02;
-      
-      DataLength = (ushort)(PacketLengthMin  + (data?.Length ?? 0) - 4);
-      
+
+      DataLength = (ushort)(PacketLengthMin + (data?.Length ?? 0) - 4);
+
       Flag = flag;
 
       Dest = dest;
@@ -377,6 +377,9 @@ namespace ICSP.Core
 
         case PassThroughRequests: return "Pass Through Requests";
         case NotificationRequest: return "Notification Request";
+
+        case ChallengeRequestMD5: return "MD5 Challenge Request";
+        case ChallengeResponseMD5: return "MD5 Challenge Response";
 
         // ====================================================================
         // Configuration Manager Messages

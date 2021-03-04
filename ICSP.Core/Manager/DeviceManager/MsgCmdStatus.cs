@@ -14,6 +14,9 @@ namespace ICSP.Core.Manager.DeviceManager
   [MsgCmd(DeviceManagerCmd.Status)]
   public class MsgCmdStatus : ICSPMsg
   {
+    public const int ValueTypeString8  /**/ = 9;
+    public const int ValueTypeString16 /**/ = 10;
+
     public const int MsgCmd = DeviceManagerCmd.Status;
 
     private MsgCmdStatus()
@@ -34,9 +37,18 @@ namespace ICSP.Core.Manager.DeviceManager
 
         // Length
         Length = Data.GetBigEndianInt16(9);
+        switch(ValueType)
+        {
+          case ValueTypeString8:
+          case ValueTypeString16:
+          default:
+          {
+            // SerialNumber
+            StatusString = AmxUtils.GetString(Data, 11, Length);
 
-        // SerialNumber
-        StatusString = AmxUtils.GetString(Data, 11, Length);
+            break;
+          }
+        }
       }
     }
 

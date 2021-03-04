@@ -30,7 +30,7 @@ namespace ICSP.Core
     // MsgCmdPortCountBy                  - 512 (Default)
     // MsgCmdRequestDevicesOnlineEOT      - 512 (Default)
 
-    None = 0,     // 0000 0000
+    // None = 0,   // 0000 0000
 
     /// <summary>
     /// If set, then message is a broadcast message
@@ -42,6 +42,19 @@ namespace ICSP.Core
     /// A new Master or non-configured device connecting to de system uses this.
     /// </summary>
     Newbee = 2,    // 0000 0010
+
+
+    Unconfigured     /**/ = 4,   // 0000 0100
+    Response         /**/ = 8,   // 0000 1000
+    RequestResponse  /**/ = 16,  // 0001 0000
+    IgnoreAddress    /**/ = 32,  // 0010 0000
+
+    Timeout_1        /**/ = 0,   // 00 0000 0000
+    Timeout_2        /**/ = 256, // 01 0000 0000
+    Timeout_3        /**/ = 512, // 10 0000 0000
+    Timeout_4        /**/ = 768, // 11 0000 0000
+
+    DefaultTimeout   /**/ = 512, // 10 0000 0000
 
     Version_02 = 0x0200,
   }

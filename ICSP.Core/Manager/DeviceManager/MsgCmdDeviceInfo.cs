@@ -74,7 +74,7 @@ namespace ICSP.Core.Manager.DeviceManager
         // ExtAddress
         ExtAddress = Data.Range(lOffset, ExtAddressLength);
       }
-
+      
       if(ExtAddressType == ExtAddressType.IPv4Address)
       {
         try

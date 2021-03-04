@@ -100,6 +100,9 @@
     <Compile Include="Client\ICSPClient.cs" />
     <Compile Include="Constants\Panels.cs" />
     <Compile Include="ICSPMsgFlag.cs" />
+    <None Include="IcspTcpTransport.cs" />
+    <None Include="IcspTransport.cs" />
+    <None Include="IcspTransportBase.cs" />
     <Compile Include="IO\EventArgs.cs" />
     <Compile Include="IO\FileTransferState.cs" />
     <Compile Include="IO\FileTransferFwFunction.cs" />
@@ -124,6 +127,8 @@
     <Compile Include="Logging\LoggingConfigurator.cs" />
     <Compile Include="Logging\MethodInfo.cs" />
     <Compile Include="Logging\TraceListener.cs" />
+    <Compile Include="Manager\ConnectionManager\MsgCmdChallengeResponseMD5.cs" />
+    <Compile Include="Manager\ConnectionManager\MsgCmdChallengeRequestMD5.cs" />
     <Compile Include="Manager\MsgCmdUnknown.cs" />
     <Compile Include="Manager\ConfigurationManager\MsgCmdCompletionCode.cs" />
     <Compile Include="Manager\ConfigurationManager\MsgCmdFileTransfer.cs" />
