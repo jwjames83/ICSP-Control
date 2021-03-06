@@ -299,6 +299,41 @@ namespace ICSP.Core
 
             break;
           }
+          case MsgCmdChallengeAckMD5 m:
+          {
+            if(m.Authenticated)
+            {
+              // TODO: Ugly code -> m.ID - 1 ...
+              var lKey = CreateDeviceInfoKey((ushort)(m.ID - 1));
+
+              if(MemoryCache.Default.Get(lKey) is DeviceInfoData deviceInfo)
+              {
+                MemoryCache.Default.Remove(lKey);
+
+                Logger.LogInfo("MsgCmdAck: ID=0x{0:X4}, Device={1}, System={2}, DeviceId={3}, Name={4:l}", m.ID, deviceInfo.Device, deviceInfo.System, deviceInfo.DeviceId, deviceInfo.Name);
+
+                deviceInfo.System = m.Source.System;
+
+                var lResult = mDevices.TryAdd(deviceInfo.Device, deviceInfo);
+
+                Logger.LogDebug(false, "-----------------------------------------------------------------------------------------------------");
+                Logger.LogDebug(false, "Device Online: Device={0}, Name={1:l}, IPv4Address={2:l}", deviceInfo.Device, deviceInfo.Name, deviceInfo.IPv4Address);
+                Logger.LogDebug(false, "-----------------------------------------------------------------------------------------------------");
+
+                DeviceOnline?.Invoke(this, deviceInfo);
+              }
+              else
+              {
+                Logger.LogWarn("MsgCmdAck: ID=0x{0:X4} unknown!", m.ID);
+              }
+            }
+            else
+            {
+              Logger.LogError("MsgCmdChallengeAckMD5: Authenticated failed!", m.ID);
+            }
+
+            break;
+          }
           case MsgCmdFileTransfer m:
           {
             await FileManager.ProcessMessageAsync(m);
@@ -460,7 +495,9 @@ namespace ICSP.Core
 
             // TODO: Username, password ...
 
-            var lResponse = MsgCmdChallengeResponseMD5.CreateRequest(m.Source, m.Dest, m.ChallengeData, "administrator", "password");
+            ushort lEncryptionType = 2; // RC4 (1: None, 2: RC4)
+
+            var lResponse = MsgCmdChallengeResponseMD5.CreateRequest(m.Source, m.Dest, m.Challenge, lEncryptionType, "administrator", "password");
 
             await SendAsync(lResponse);
 

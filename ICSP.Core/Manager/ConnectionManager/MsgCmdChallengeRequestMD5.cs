@@ -19,7 +19,7 @@ namespace ICSP.Core.Manager.ConnectionManager
     {
       if(Data.Length > 0)
       {
-        ChallengeData = Data.Range(0, 4);
+        Challenge = Data.Range(0, 4);
       }
     }
     
@@ -28,21 +28,21 @@ namespace ICSP.Core.Manager.ConnectionManager
       return new MsgCmdChallengeRequestMD5(bytes);
     }
 
-    public static ICSPMsg CreateRequest(AmxDevice dest, AmxDevice source, byte[] challengeData)
+    public static ICSPMsg CreateRequest(AmxDevice dest, AmxDevice source, byte[] challenge)
     {
       var lRequest = new MsgCmdChallengeRequestMD5
       {
-        ChallengeData = challengeData
+        Challenge = challenge
       };
 
-      return lRequest.Serialize(dest, source, MsgCmd, challengeData);
+      return lRequest.Serialize(dest, source, MsgCmd, challenge);
     }
     
-    public byte[] ChallengeData { get; private set; }
+    public byte[] Challenge { get; private set; }
 
     protected override void WriteLogExtended()
     {
-      Logger.LogDebug(false, "{0:l} ChallengeData: 0x: {1:l}", GetType().Name, BitConverter.ToString(ChallengeData).Replace("-", " "));
+      Logger.LogDebug(false, "{0:l} ChallengeData: 0x: {1:l}", GetType().Name, BitConverter.ToString(Challenge).Replace("-", " "));
     }
   }
 }

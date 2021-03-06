@@ -10,21 +10,34 @@ using static ICSP.Core.Extensions.ArrayExtensions;
 
 namespace ICSP.Core
 {
-  public abstract class ICSPMsg
+  public class ICSPEncryptedMsg
   {
-    // Minimum 23 Bytes
+    // Minimum [] Bytes
+    // Protocol 2 (Default)
     // ---------------------------------------------------------------------------------------------
     // P  | Len   | Flag  | Dest              | Source            | H  | ID    | CMD   | N-Data | CS
     // ---------------------------------------------------------------------------------------------
     // 02 | 00 1B | 02 10 | 00 06 27 11 00 00 | 00 06 7D 03 00 00 | FF | 4B 60 | 02 04 | ...    | C1
 
+    // Protocol 4 (Encrypted) -> Encryption Type 1
+    // ---------------------------------------------------------------------------------------------
+    // P  | Len   | S-Sys | S-Dev | ET | Ln | Salt        | Encrypted Data | CS
+    // ---------------------------------------------------------------------------------------------
+    // 04 | 00 21 | 00 01 | 00 00 | 01 | 04 | 52 2a 17 f5 | ...            | 83
+
+    // Protocol 4 (Encrypted) -> Encryption Type 2 (RC4)
+    // ---------------------------------------------------------------------------------------------
+    // P  | Len   | S-Sys | S-Dev | ET | Ln | Salt        | D-Sys | D-Dev | Encrypted Data | CS
+    // ---------------------------------------------------------------------------------------------
+    // 04 | 00 21 | 00 01 | 00 00 | 02 | 08 | 5B CF 08 88 | 00 01 | 7D 01 | ...            | D6
+
+    public const int PacketLengthMin = 10;
+
     /// <summary>
     /// The first field is a protocol field, and in one embodiment, one byte size.<br/>
     /// Protocol field identifies the format of the data section of the packet with some protocol.
     /// </summary>
-    public const byte ProtocolValue = 0x02;
-
-    public const int PacketLengthMin = 23;
+    public const byte ProtocolValue = 0x04;
 
     private static ushort MsgId;
 
@@ -34,14 +47,11 @@ namespace ICSP.Core
 
     #region Constructors
 
-    protected ICSPMsg()
+    protected ICSPEncryptedMsg()
     {
-      Flag = DefaultFlag;
-
-      Hop = 0xFF;
     }
 
-    public ICSPMsg(byte[] bytes)
+    public ICSPEncryptedMsg(byte[] bytes)
     {
       RawData = bytes;
 
@@ -50,20 +60,48 @@ namespace ICSP.Core
 
       DataLength = bytes.GetBigEndianInt16(1);
 
-      Flag = (ICSPMsgFlag)bytes.GetBigEndianInt16(3);
+      Source = AmxDevice.FromSD(bytes.Range(3, 4));
 
-      Dest = AmxDevice.FromSDP(bytes.Range(5, 6));
+      // Protocol 4 (Encrypted) -> Encryption Type 1
+      // ---------------------------------------------------------------------------------------------
+      // P  | Len   | S-Sys | S-Dev | ET | Ln | Salt        | Encrypted Data | CS
+      // ---------------------------------------------------------------------------------------------
+      // 04 | 00 21 | 00 01 | 00 00 | 01 | 04 | 52 2a 17 f5 | ...            | 83
 
-      Source = AmxDevice.FromSDP(bytes.Range(11, 6));
+      // Protocol 4 (Encrypted) -> Encryption Type 2 (RC4)
+      // ---------------------------------------------------------------------------------------------
+      // P  | Len   | S-Sys | S-Dev | ET | Ln | Salt        | D-Sys | D-Dev | Encrypted Data | CS
+      // ---------------------------------------------------------------------------------------------
+      // 04 | 00 21 | 00 01 | 00 00 | 02 | 08 | 5B CF 08 88 | 00 01 | 7D 01 | ...            | D6
+      // 04 | 00 2D | 00 01 | 00 00 | 02 | 08 | 4C 99 59 B6 | 00 01 | 7D 01 | 04 6D 1F CC 6B DE 61 E1 A9 52 2B DC 93 16 96 8F F8 F6 81 F0 41 AA B8 61 E0 77 1E 01 E7 DF 42 | 47
+      // 04 | 00 2D | 00 01 | 00 00 | 02 | 08 | 69 F1 5C 8B | 00 01 | 7D 01 | C1 36 0E FE F9 3C B1 B0 E4 27 3B C9 2B 7D F7 58 43 00 03 A5 2B 30 20 5B 5C FD 84 FD 40 A4 91 | AB
 
-      Hop = bytes[17];
 
-      ID = bytes.GetBigEndianInt16(18);
+      EncryptionType = bytes[7];
 
-      Command = bytes.GetBigEndianInt16(20);
+      var cStr = BitConverter.ToString(bytes).Replace("-", " ");
+
+      Console.WriteLine(cStr);
+
+      CustomDataLength = bytes[8];
+
+      if(CustomDataLength > 0)
+      {
+        CustomData = bytes.Range(9, CustomDataLength);
+
+        // Encryption salt ...
+        if(CustomDataLength >= 4)
+          Salt = bytes.Range(9, 4);
+
+        // Destination ...
+        if(CustomDataLength >= 8)
+          Dest = AmxDevice.FromSD(bytes.Range(13, 4));
+      }
+
+      var lEncryptedLength = DataLength + 3 - (9 + CustomDataLength);
 
       // Data
-      Data = bytes.Range(22, bytes.Length - 22 - 1);
+      EncryptedData = bytes.Range(9 + CustomDataLength, lEncryptedLength);
 
       Checksum = bytes[DataLength + 3];
     }
@@ -72,31 +110,35 @@ namespace ICSP.Core
 
     #region Serialize
 
-    public abstract ICSPMsg FromData(byte[] bytes);
+    public static ICSPEncryptedMsg FromData(byte[] bytes)
+    {
+      return new ICSPEncryptedMsg(bytes);
+    }
 
-    protected ICSPMsg Serialize(AmxDevice dest, AmxDevice source, ushort command, byte[] data)
+    protected ICSPEncryptedMsg Serialize(AmxDevice dest, AmxDevice source, ushort command, byte[] data)
     {
       return Serialize(DefaultFlag, dest, source, DefaultHop, 0, command, data);
     }
 
-    protected ICSPMsg Serialize(AmxDevice dest, AmxDevice source, ushort id, ushort command, byte[] data)
+    protected ICSPEncryptedMsg Serialize(AmxDevice dest, AmxDevice source, ushort id, ushort command, byte[] data)
     {
       return Serialize(DefaultFlag, dest, source, DefaultHop, id, command, data);
     }
 
-    protected ICSPMsg Serialize(ICSPMsgFlag flag, AmxDevice dest, AmxDevice source, ushort id, ushort command, byte[] data)
+    protected ICSPEncryptedMsg Serialize(ICSPMsgFlag flag, AmxDevice dest, AmxDevice source, ushort id, ushort command, byte[] data)
     {
       return Serialize(flag, dest, source, DefaultHop, id, command, data);
     }
 
-    protected ICSPMsg Serialize(AmxDevice dest, AmxDevice source, byte hop, ushort id, ushort command, byte[] data)
+    protected ICSPEncryptedMsg Serialize(AmxDevice dest, AmxDevice source, byte hop, ushort id, ushort command, byte[] data)
     {
       return Serialize(DefaultFlag, dest, source, hop, id, command, data);
     }
 
-    protected ICSPMsg Serialize(ICSPMsgFlag flag, AmxDevice dest, AmxDevice source, byte hop, ushort id, ushort command, byte[] data)
+    protected ICSPEncryptedMsg Serialize(ICSPMsgFlag flag, AmxDevice dest, AmxDevice source, byte hop, ushort id, ushort command, byte[] data)
     {
-      DataLength = (ushort)(PacketLengthMin + (data?.Length ?? 0) - 4);
+      /*
+      CustomDataLength = (ushort)(PacketLengthMin + (data?.Length ?? 0) - 4);
 
       Flag = flag;
 
@@ -104,7 +146,7 @@ namespace ICSP.Core
 
       Source = source;
 
-      Hop = hop;
+      EncryptionType = hop;
 
       if(id > 0)
         ID = id;
@@ -113,14 +155,14 @@ namespace ICSP.Core
 
       Command = command;
 
-      Data = data;
+      EncryptedData = data;
 
-      RawData = new byte[DataLength + 4];
+      RawData = new byte[CustomDataLength + 4];
 
       RawData[00] = Protocol;
 
-      RawData[01] = (byte)(DataLength >> 8);
-      RawData[02] = (byte)(DataLength);
+      RawData[01] = (byte)(CustomDataLength >> 8);
+      RawData[02] = (byte)(CustomDataLength);
 
       RawData[03] = (byte)((ushort)Flag >> 8);
       RawData[04] = (byte)((ushort)Flag);
@@ -143,7 +185,7 @@ namespace ICSP.Core
       RawData[15] = lDsp[4];
       RawData[16] = lDsp[5];
 
-      RawData[17] = Hop;
+      RawData[17] = EncryptionType;
 
       RawData[18] = (byte)(ID >> 8);
       RawData[19] = (byte)(ID);
@@ -151,8 +193,8 @@ namespace ICSP.Core
       RawData[20] = (byte)(Command >> 8);
       RawData[21] = (byte)(Command);
 
-      if(Data != null)
-        Array.Copy(Data, 0, RawData, 22, Data.Length);
+      if(EncryptedData != null)
+        Array.Copy(EncryptedData, 0, RawData, 22, EncryptedData.Length);
 
       byte lCs = 0;
 
@@ -164,6 +206,7 @@ namespace ICSP.Core
 
       // Checksum
       RawData[RawData.Length - 1] = Checksum = lCs;
+      */
 
       return this;
     }
@@ -190,32 +233,7 @@ namespace ICSP.Core
     public ushort DataLength { get; set; }
 
     /// <summary>
-    /// Flag (Version, Type)<br/>
-    /// Can be one of two types of flags.<br/>
-    /// One is a broadcast flag. The broadcast flag will send a broadcast message to all devices on a network.<br/>
-    /// A newbie flag is placed when a device is added to the network.<br/>
-    /// This will then cause a response from the master indicating that it received the message from the newbie device.
-    /// </summary>
-    public ICSPMsgFlag Flag { get; set; }
-
-    /// <summary>
-    /// [6 Bytes: System:Device:Port]<br/>
-    /// <br/>
-    /// Destination system field allows for the addressing of the message to reach a specific system.<br/>
-    /// A system is, in one embodiment, a complete control area network with a single master.<br/>
-    /// Thus, message can be directed to one ofmany different control area networks.<br/>
-    /// In one embodiment control system field is two bytes in size.<br/>
-    /// <br/>
-    /// Destination devicefield lists the  number the device that the message is being sent.<br/>
-    /// The device range can be anywhere between 0 and 65,535.<br/>
-    /// <br/>
-    /// Destination port field lists the specific port of the device that the message is destined for.<br/>
-    /// In one embodiment the protocol supports up to 65,535 ports on the device.
-    /// </summary>
-    public AmxDevice Dest { get; private set; }
-
-    /// <summary>
-    /// [6 Bytes: System:Device:Port]<br/>
+    /// [4 Bytes: System:Device]<br/>
     /// <br/>
     /// Source system field is the number of a system where the message originates.<br/>
     /// <br/>
@@ -238,40 +256,49 @@ namespace ICSP.Core
     /// Each time a message passes through a master, the allowed hop count field is decremented by one and checked to see if it reaches Zero.<br/>
     /// Once the count reaches Zero, the master generates an error message indicating that the message has not reached the sender with an air.
     /// </summary>
-    public byte Hop { get; set; }
+    public byte EncryptionType { get; set; }
 
     /// <summary>
-    /// Message I.D. field contains the unique identification number for a message.<br/>
-    /// This message I.D. is used by low level communication algorithms to correlate in the original message with its acknowledge and response.
+    /// Length of data field.<br/>
+    /// Indicates the total number of bytes in the data portion of the packet.
     /// </summary>
-    public ushort ID { get; protected set; }
+    public byte CustomDataLength { get; set; }
 
     /// <summary>
-    /// Message command field and message data represent the actual message being sent in the packet.<br/>
-    /// Each packet is decoded by reading the message field and performing the appropriate functions.<br/>
-    /// Some commands are designed for communication between a device manager located in the master and <br/>
-    /// other ones are intended for communication with the connection manager located in the master.
+    /// Raw data bytes of packet
     /// </summary>
-    public ushort Command { get; private set; }
+    public byte[] CustomData { get; set; }
 
     /// <summary>
-    /// Message Data
+    /// Raw data bytes of packet
     /// </summary>
-    public byte[] Data { get; set; }
+    public byte[] Salt { get; set; }
+
+    /// <summary>
+    /// [4 Bytes: System:Device]<br/>
+    /// <br/>
+    /// Destination system field allows for the addressing of the message to reach a specific system.<br/>
+    /// A system is, in one embodiment, a complete control area network with a single master.<br/>
+    /// Thus, message can be directed to one ofmany different control area networks.<br/>
+    /// In one embodiment control system field is two bytes in size.<br/>
+    /// <br/>
+    /// Destination devicefield lists the  number the device that the message is being sent.<br/>
+    /// The device range can be anywhere between 0 and 65,535.<br/>
+    /// <br/>
+    /// Destination port field lists the specific port of the device that the message is destined for.<br/>
+    /// In one embodiment the protocol supports up to 65,535 ports on the device.
+    /// </summary>
+    public AmxDevice Dest { get; private set; }
+
+    /// <summary>
+    /// Encrypted Data
+    /// </summary>
+    public byte[] EncryptedData { get; set; }
 
     /// <summary>
     /// Checksum (Sum of Bytes % 256)
     /// </summary>
     public byte Checksum { get; private set; }
-
-    /*
-    /// <summary>
-    /// Calculated Checksum (Sum of Bytes % 256)
-    /// </summary>
-    public byte ChecksumCalculated { get; private set; }
-    */
-
-    public bool LogStripline { get; private set; }
 
     #endregion
 
@@ -281,16 +308,21 @@ namespace ICSP.Core
 
       var lName = nameof(ICSPMsg);
 
-      Logger.LogVerbose(false, "{0:l} Type     : {1:l}", lName, GetType().Name);
-      Logger.LogVerbose(false, "{0:l} Protocol : {1}", lName, Protocol);
-      Logger.LogVerbose(false, "{0:l} Length   : {1}", lName, DataLength);
-      Logger.LogVerbose(false, "{0:l} Flag     : {1}", lName, Flag);
-      Logger.LogVerbose(false, "{0:l} Dest     : {1:l}", lName, Dest);
-      Logger.LogVerbose(false, "{0:l} Source   : {1:l}", lName, Source);
-      Logger.LogVerbose(false, "{0:l} Hop      : {1}", lName, Hop);
-      Logger.LogVerbose(false, "{0:l} MessageId: 0x{1:X4}", lName, ID);
-      Logger.LogVerbose(false, "{0:l} Command  : 0x{1:X4} ({2:l})", lName, Command, GetFrindlyName(Command));
-      Logger.LogVerbose(false, "{0:l} Checksum : 0x{1:X2}", lName, Checksum);
+      Logger.LogVerbose(false, "{0:l} Type          : {1:l}", lName, GetType().Name);
+      Logger.LogVerbose(false, "{0:l} Protocol      : {1}", lName, Protocol);
+      Logger.LogVerbose(false, "{0:l} Length        : {1}", lName, CustomDataLength);
+      Logger.LogVerbose(false, "{0:l} Source        : {1:l}", lName, Source);
+      Logger.LogVerbose(false, "{0:l} EncryptionType: 0x{1:X2}", lName, EncryptionType);
+
+      if(Salt?.Length > 0)
+        Logger.LogVerbose(false, "{0:l} Salt          : {1:l}", lName, BitConverter.ToString(Salt).Replace("-", " "));
+
+      if(Dest.Device > 0)
+        Logger.LogVerbose(false, "{0:l} Dest          : {1:l}", lName, Dest);
+
+      Logger.LogVerbose(false, "{0:l} EncryptedData : 0x: {1:l}", lName, BitConverter.ToString(EncryptedData).Replace("-", " "));
+
+      Logger.LogVerbose(false, "{0:l} Checksum      : 0x{1:X2}", lName, Checksum);
 
       WriteLogExtended();
     }

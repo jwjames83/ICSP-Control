@@ -29,6 +29,22 @@ namespace ICSP.Core
         (ushort)(bytes[4] * 256 + bytes[5]));
     }
 
+    public static AmxDevice FromSD(byte[] bytes)
+    {
+      return new AmxDevice(
+        (ushort)(bytes[2] * 256 + bytes[3]),
+        1, // Default Port
+        (ushort)(bytes[0] * 256 + bytes[1]));
+    }
+
+    public static AmxDevice FromDP(byte[] bytes)
+    {
+      return new AmxDevice(
+        (ushort)(bytes[0] * 256 + bytes[1]),
+        1, // Default Port
+        (ushort)(bytes[4] * 256 + bytes[5]));
+    }
+
     public ushort Device { get; }
 
     public ushort Port { get; }

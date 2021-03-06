@@ -1,0 +1,42 @@
+2021-03-06 10:09:55.256 [VRB] ----------------------------------------------------------------
+2021-03-06 10:09:55.256 [VRB] ICSPMsg Type     : MsgCmdUnknown
+2021-03-06 10:09:55.256 [VRB] ICSPMsg Protocol : 4
+2021-03-06 10:09:55.256 [VRB] ICSPMsg Length   : 67
+2021-03-06 10:09:55.256 [VRB] ICSPMsg Flag     : Broadcast
+2021-03-06 10:09:55.256 [VRB] ICSPMsg Dest     : 00260:18043:000
+2021-03-06 10:09:55.256 [VRB] ICSPMsg Source   : 21025:55641:5532
+2021-03-06 10:09:55.256 [VRB] ICSPMsg Hop      : 6
+2021-03-06 10:09:55.256 [VRB] ICSPMsg MessageId: 0x5D18
+2021-03-06 10:09:55.256 [VRB] ICSPMsg Command  : 0xD754 (Unknown)
+2021-03-06 10:09:55.256 [VRB] ICSPMsg Checksum : 0xA5
+2021-03-06 10:09:55.256 [DBG] ----------------------------------------------------------------
+2021-03-06 10:10:00.111 [VRB] [ICSPClient.ReadAsync] Data: 71 Bytes
+2021-03-06 10:10:00.111 [VRB] [ICSPManager.OnDataReceived] 71 Bytes
+2021-03-06 10:10:00.111 [VRB] [ICSPManager.OnDataReceived] Data 0x: 04 00 43 00 01 00 00 01 04 5C 8D 08 7B C0 EE F3 F8 A3 7B A9 91 9D 67 A9 A0 BC 00 56 2C 25 22 C0 D7 51 B1 79 8B 12 5D C2 34 78 D8 EF 46 6D 40 DA 10 06 9C 30 6E A4 C4 B5 2A BF F4 D8 A9 2F 9A E4 71 47 76 6D 4F 67 53
+2021-03-06 10:10:00.111 [VRB] ----------------------------------------------------------------
+2021-03-06 10:10:00.111 [VRB] ICSPMsg Type     : MsgCmdUnknown
+2021-03-06 10:10:00.111 [VRB] ICSPMsg Protocol : 4
+2021-03-06 10:10:00.112 [VRB] ICSPMsg Length   : 67
+2021-03-06 10:10:00.112 [VRB] ICSPMsg Flag     : Broadcast
+2021-03-06 10:10:00.112 [VRB] ICSPMsg Dest     : 00260:23693:000
+2021-03-06 10:10:00.112 [VRB] ICSPMsg Source   : 49390:62456:2171
+2021-03-06 10:10:00.112 [VRB] ICSPMsg Hop      : 163
+2021-03-06 10:10:00.112 [VRB] ICSPMsg MessageId: 0x7BA9
+2021-03-06 10:10:00.112 [VRB] ICSPMsg Command  : 0x919D (Unknown)
+2021-03-06 10:10:00.112 [VRB] ICSPMsg Checksum : 0x53
+2021-03-06 10:10:00.112 [DBG] ----------------------------------------------------------------
+2021-03-06 10:10:05.125 [VRB] [ICSPClient.ReadAsync] Data: 71 Bytes
+2021-03-06 10:10:05.125 [VRB] [ICSPManager.OnDataReceived] 71 Bytes
+2021-03-06 10:10:05.126 [VRB] [ICSPManager.OnDataReceived] Data 0x: 04 00 43 00 01 00 00 01 04 4D E1 47 92 85 F2 58 27 AD 66 45 7E 56 27 EF D2 A3 C1 05 81 CA B2 3D FE 21 E7 3B F2 6E 75 77 34 D7 B9 80 96 9F CD 5E 93 D5 30 5D 7E 90 65 E6 14 EB 82 FC 2E BB D9 1F CA 94 FF 91 73 71 B0
+2021-03-06 10:10:05.131 [VRB] ----------------------------------------------------------------
+2021-03-06 10:10:05.131 [VRB] ICSPMsg Type     : MsgCmdUnknown
+2021-03-06 10:10:05.131 [VRB] ICSPMsg Protocol : 4
+2021-03-06 10:10:05.131 [VRB] ICSPMsg Length   : 67
+2021-03-06 10:10:05.131 [VRB] ICSPMsg Flag     : Broadcast
+2021-03-06 10:10:05.131 [VRB] ICSPMsg Dest     : 00260:19937:000
+2021-03-06 10:10:05.131 [VRB] ICSPMsg Source   : 34290:22567:18322
+2021-03-06 10:10:05.131 [VRB] ICSPMsg Hop      : 173
+2021-03-06 10:10:05.131 [VRB] ICSPMsg MessageId: 0x6645
+2021-03-06 10:10:05.131 [VRB] ICSPMsg Command  : 0x7E56 (Unknown)
+2021-03-06 10:10:05.131 [VRB] ICSPMsg Checksum : 0xB0
+2021-03-06 10:10:05.132 [DBG] ----------------------------------------------------------------

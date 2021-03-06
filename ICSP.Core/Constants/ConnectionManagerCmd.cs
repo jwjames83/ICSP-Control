@@ -51,5 +51,7 @@
     public const int ChallengeRequestMD5 = 0x0701;
 
     public const int ChallengeResponseMD5 = 0x0702;
+
+    public const int ChallengeAckMD5 = 0x0703;
   }
 }

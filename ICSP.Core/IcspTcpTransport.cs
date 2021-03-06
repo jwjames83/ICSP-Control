@@ -460,15 +460,21 @@ namespace ICSP.Core
         this.m_log.error("IcspTcpTransport::processRX checksum error packet");
         return 0;
       }
+
       DataInputStream dataInputStream = new DataInputStream(new ByteArrayInputStream(paramArrayOfbyte, 0, paramInt2));
+
       if(paramInt1 == 4)
+
         try
         {
           byte[] arrayOfByte;
+
           dataInputStream.readUnsignedShort();
           dataInputStream.readUnsignedShort();
-          int i3 = dataInputStream.readUnsignedByte();
-          if(i3 == 2)
+
+          int encryptionType = dataInputStream.readUnsignedByte();
+
+          if(encryptionType == 2)
           {
             i = dataInputStream.readUnsignedByte();
             k = paramInt2 - 6 - i;
@@ -499,34 +505,44 @@ namespace ICSP.Core
           }
           else
           {
-            this.m_log.error("IcspTcpTransport.processRX: received packet with invalid encryption type - " + i3);
+            this.m_log.error("IcspTcpTransport.processRX: received packet with invalid encryption type - " + encryptionType);
             return 0;
           }
+
           dataInputStream = new DataInputStream(new ByteArrayInputStream(arrayOfByte));
+
           paramInt1 = dataInputStream.readUnsignedByte();
+
           if(paramInt1 != 2)
           {
             this.m_log.error("IcspTcpTransport.processRX: bad protocol in decrypted data = " + paramInt1);
             return 0;
           }
+
           paramInt2 = dataInputStream.readUnsignedShort();
+
           b1 = (byte)paramInt1;
           b1 = (byte)(b1 + (paramInt2 >> 8));
           b1 = (byte)(b1 + (paramInt2 & 0xFF));
+
           for(b = 0; b < paramInt2; b++)
             b1 = (byte)(b1 + arrayOfByte[b + 3]);
+
           if(b1 != arrayOfByte[paramInt2 + 3])
           {
             this.m_log.error("IcspTcpTransport.processRX: decrypted checksum error packet, caluclated=" + b1 + " data=" + arrayOfByte[paramInt2 + 3]);
             return 0;
           }
+
           System.arraycopy(arrayOfByte, 3, paramArrayOfbyte, 0, paramInt2);
+
         }
         catch(IOException iOException)
         {
           this.m_log.error("IcspTcpTransport.processRX: parse error in encrypted data");
           return 0;
         }
+
       try
       {
         int i5;
@@ -633,7 +649,7 @@ namespace ICSP.Core
       return paramInt2;
     }
 
-    public synchronized bool send(byte[] paramArrayOfbyte, int paramInt)
+    public bool send(byte[] paramArrayOfbyte, int paramInt)
     {
       if(paramArrayOfbyte == null)
       {

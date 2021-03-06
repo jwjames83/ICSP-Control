@@ -262,7 +262,7 @@ namespace ICSP.Core.Manager.DeviceManager
         lStream.Write(AmxUtils.Int16To8Bit(lRequest.ExtAddressLength), 0, 1);
 
         // ExtAddress
-        lStream.Write(lRequest.ExtAddress, 0, lRequest.ExtAddressLength);
+        lStream.Write(lRequest.ExtAddress ?? new byte[lRequest.ExtAddressLength], 0, lRequest.ExtAddressLength);
 
         lData = lStream.ToArray();
       }
