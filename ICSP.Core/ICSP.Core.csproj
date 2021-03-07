@@ -102,11 +102,10 @@
     <Compile Include="Constants\Panels.cs" />
     <Compile Include="Cryptography\RC4.cs" />
     <Compile Include="Cryptography\RC4CryptoServiceProvider.cs" />
+    <Compile Include="Cryptography\RC4Algorithm.cs" />
+    <Compile Include="ExtendedAddress.cs" />
     <Compile Include="ICSPEncryptedMsg.cs" />
     <Compile Include="ICSPMsgFlag.cs" />
-    <None Include="IcspTcpTransport.cs" />
-    <None Include="IcspTransport.cs" />
-    <None Include="IcspTransportBase.cs" />
     <Compile Include="IO\EventArgs.cs" />
     <Compile Include="IO\FileTransferState.cs" />
     <Compile Include="IO\FileTransferFwFunction.cs" />

@@ -1,11 +1,8 @@
 ﻿using System;
 
+using ICSP.Core.Cryptography;
 using ICSP.Core.Logging;
 
-using static ICSP.Core.Constants.ConfigurationManagerCmd;
-using static ICSP.Core.Constants.ConnectionManagerCmd;
-using static ICSP.Core.Constants.DeviceManagerCmd;
-using static ICSP.Core.Constants.DiagnosticManagerCmd;
 using static ICSP.Core.Extensions.ArrayExtensions;
 
 namespace ICSP.Core
@@ -31,15 +28,31 @@ namespace ICSP.Core
     // ---------------------------------------------------------------------------------------------
     // 04 | 00 21 | 00 01 | 00 00 | 02 | 08 | 5B CF 08 88 | 00 01 | 7D 01 | ...            | D6
 
+    //    ---------------------------------------------------------------------------------------------
+    //    P  | Len   | Flag  | Dest              | Source            | H  | ID    | CMD   | N-Data | CS
+    //    ---------------------------------------------------------------------------------------------
+    // 1: 02 | 00 5b | 02 12 | 00 00 00 00 00 01 | 00 01 7d 01 00 00 | ff | 01 b7 | 00 97 | 7d 01 00 01 00 20 00 00 00 01 01 06 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 01 19 76 34 2e 34 2e 31 2e 31 36 32 36 00 4e 53 58 20 41 70 70 6c 69 63 61 74 69 6f 6e 00 41 4d 58 20 4c 4c 43 00 02 04 ac 12 23 71 | 2e
+    // E: 5e | 5b 34 | 8d 51 | 13 52 22 10 34 fd | 56 08 92 4c 60 13 | 18 | 5d 27 | 04 8c | 4d 6a e3 93 31 3d 4f 8a de 03 d0 8e 10 6b 07 04 41 a9 87 f0 2a bb 54 6e 66 79 ca 49 23 24 3c bf b0 1d 6e 5b a7 0a 76 45 d2 29 fc 37 26 c6 d0 05 a4 ee 9c 3a 8b 27 3e 6c 83 5e 25 62 7c 53 22 d1 cd c9 6d 87 7b 07 87 bc | 7f
+
     public const int PacketLengthMin = 10;
+
+    // ======================================================================
+    // Debug stuff ... / Log
+    // ======================================================================
+
+    public static byte[] DebugChallenge = new byte[4];
+    public static byte[] DebugHash = new byte[16];
+    public static byte[] DebugPrivateKey = new byte[256];
+    public static byte[] DebugSaltValue = new byte[4];
+    public static byte[] DebugSaltKey = new byte[256];
+    public static byte[] DebugDecrypted1 = new byte[256];
+    public static byte[] DebugDecrypted2 = new byte[256];
 
     /// <summary>
     /// The first field is a protocol field, and in one embodiment, one byte size.<br/>
     /// Protocol field identifies the format of the data section of the packet with some protocol.
     /// </summary>
     public const byte ProtocolValue = 0x04;
-
-    private static ushort MsgId;
 
     public const int DefaultHop = 0xFF;
 
@@ -76,7 +89,6 @@ namespace ICSP.Core
       // 04 | 00 2D | 00 01 | 00 00 | 02 | 08 | 4C 99 59 B6 | 00 01 | 7D 01 | 04 6D 1F CC 6B DE 61 E1 A9 52 2B DC 93 16 96 8F F8 F6 81 F0 41 AA B8 61 E0 77 1E 01 E7 DF 42 | 47
       // 04 | 00 2D | 00 01 | 00 00 | 02 | 08 | 69 F1 5C 8B | 00 01 | 7D 01 | C1 36 0E FE F9 3C B1 B0 E4 27 3B C9 2B 7D F7 58 43 00 03 A5 2B 30 20 5B 5C FD 84 FD 40 A4 91 | AB
 
-
       EncryptionType = bytes[7];
 
       var cStr = BitConverter.ToString(bytes).Replace("-", " ");
@@ -104,6 +116,26 @@ namespace ICSP.Core
       EncryptedData = bytes.Range(9 + CustomDataLength, lEncryptedLength);
 
       Checksum = bytes[DataLength + 3];
+
+      // ======================================================================
+      // Debug stuff ... / Log
+      // ======================================================================
+
+      // Inititalize DebugSaltKey from original PrivateKey
+      Array.Copy(DebugPrivateKey, 0, DebugSaltKey, 0, DebugPrivateKey.Length);
+
+      DebugSaltValue = new byte[8];
+
+      if(Salt == null)
+        Salt = new byte[0];
+
+      if(Salt.Length > 0)
+      {
+        DebugSaltValue = new byte[Salt.Length];
+
+        Array.Copy(Salt, 0, DebugSaltValue, 0, Salt.Length);
+        Array.Copy(Salt, 0, DebugSaltKey, 0, Salt.Length);
+      }
     }
 
     #endregion
@@ -310,177 +342,44 @@ namespace ICSP.Core
 
       Logger.LogVerbose(false, "{0:l} Type          : {1:l}", lName, GetType().Name);
       Logger.LogVerbose(false, "{0:l} Protocol      : {1}", lName, Protocol);
-      Logger.LogVerbose(false, "{0:l} Length        : {1}", lName, CustomDataLength);
+      Logger.LogVerbose(false, "{0:l} CustomDataLen : {1}", lName, CustomDataLength);
       Logger.LogVerbose(false, "{0:l} Source        : {1:l}", lName, Source);
       Logger.LogVerbose(false, "{0:l} EncryptionType: 0x{1:X2}", lName, EncryptionType);
 
       if(Salt?.Length > 0)
-        Logger.LogVerbose(false, "{0:l} Salt          : {1:l}", lName, BitConverter.ToString(Salt).Replace("-", " "));
+        Logger.LogVerbose(false, "{0:l} Salt          : {1:l}", lName, BitConverter.ToString(Salt).Replace("-", ""));
 
       if(Dest.Device > 0)
         Logger.LogVerbose(false, "{0:l} Dest          : {1:l}", lName, Dest);
 
-      Logger.LogVerbose(false, "{0:l} EncryptedData : 0x: {1:l}", lName, BitConverter.ToString(EncryptedData).Replace("-", " "));
-
       Logger.LogVerbose(false, "{0:l} Checksum      : 0x{1:X2}", lName, Checksum);
 
-      WriteLogExtended();
-    }
+      Logger.LogVerbose(false, "--------------------------------------------------------------------------------------------");
 
-    protected virtual void WriteLogExtended()
-    {
-    }
+      Logger.LogVerbose(false, "{0:l} [PrivateKey]  : 0x: {1:l}", lName, BitConverter.ToString(DebugPrivateKey).Replace("-", ""));
+      Logger.LogVerbose(false, "{0:l} [SaltKey]     : 0x: {1:l}", lName, BitConverter.ToString(DebugSaltKey).Replace("-", ""));
 
-    public static string GetFrindlyName(int command)
-    {
-      switch(command)
-      {
-        // ====================================================================
-        // Device Manager Messages (Table A)
-        // ====================================================================
+      var lCryptoProvider = RC4.Create(DebugHash);
 
-        case Ack: return "Ack";
-        case Nak: return "Nak";
+      DebugDecrypted1 = new byte[EncryptedData.Length];
+      Array.Copy(EncryptedData, 0, DebugDecrypted1, 0, EncryptedData.Length);
 
-        case InputChannelOnStatus: return "Input Channel ON Status";
-        case InputChannelOffStatus: return "Input Channel OFF Status";
+      DebugDecrypted2 = new byte[EncryptedData.Length];
+      Array.Copy(EncryptedData, 0, DebugDecrypted2, 0, EncryptedData.Length);
 
-        case OutputChannelOn: return "Output Channel ON";
-        case OutputChannelOnStatus: return "Output Channel ON Status";
+      lCryptoProvider = RC4.Create(DebugHash);
+      lCryptoProvider.TransformBlock(DebugDecrypted1, DebugSaltKey);
 
-        case OutputChannelOff: return "Output Channel OFF";
-        case OutputChannelOffStatus: return "Output Channel OFF Status";
+      Logger.LogVerbose(false, "{0:l} EncryptedData : 0x: {1:l}", lName, BitConverter.ToString(EncryptedData).Replace("-", ""));
 
-        case InputOutputChannelOn: return "Input OutputC hannel ON";
-        case InputOutputChannelOff: return "Inpu tOutput Channel OFF";
+      Logger.LogVerbose(false, "{0:l} [Decrypted1]  : 0x: {1:l}", lName, BitConverter.ToString(DebugDecrypted1).Replace("-", ""));
 
-        case FeedbackChannelOn: return "Feedback Channel ON";
-        case FeedbackChannelOff: return "Feedback Channel OFF";
+      // Try / verify another algorithm
+      var lDecryptedData = RC4Algorithm.ApplyDirect(DebugDecrypted2, DebugSaltKey);
+      
+      Logger.LogVerbose(false, "{0:l} [Decrypted2]  : 0x: {1:l}", lName, BitConverter.ToString(lDecryptedData).Replace("-", ""));
 
-        case LevelValueMasterDev: return "Level Value Master->Dev";
-        case LevelValueDevMaster: return "Level Value Dev->Master";
-
-        case StringMasterDev: return "String Master->Dev";
-        case StringDevMaster: return "String Dev->Master";
-
-        case CommandMasterDev: return "Command Master->Dev";
-        case CommandDevMaster: return "Command Dev-Master";
-
-        case RequestLevelValue: return "Request Level Value";
-        case RequestOutputChannelStatus: return "Request Output Channel Status";
-
-        case RequestPortCount: return "Request Port Count";
-        case PortCountBy: return "Port Count by";
-
-        case RequestOutputChannelCount: return "Request Output Channel Count";
-        case OutputChannelCount: return "Output Channel Count";
-
-        case RequestLevelCount: return "Request Level Count";
-        case LevelCount: return "Level Count";
-
-        case RequestStringSize: return "Request String Size";
-        case StringSize: return "String Size";
-
-        case RequestCommandSize: return "Request Command Size";
-        case CommandSize: return "Command Size";
-
-        case RequestLevelSize: return "Request Level Size";
-        case LevelSize: return "Level Size";
-
-        case RequestStatus: return "Request Status";
-        case Status: return "Status";
-
-        case RequestDeviceInfo: return "Request Device Info";
-        case DeviceInfo: return "Device Info";
-        case DeviceInfoEOT: return "Device Info EOT";
-
-        case RequestMasterStatus: return "Request Master Status";
-        case MasterStatus: return "Master Status";
-
-        // ====================================================================
-        // Connection Manager Messages (Table B)
-        // ====================================================================
-
-        case PingRequest: return "Ping Request";
-        case PingResponse: return "Ping Response";
-
-        case BlinkMessage: return "Blink Message";
-        case BlinkRequest: return "Blink Request";
-
-        case DynamicDeviceAddressResponse: return "Dynamic Device Address Response";
-        case DynamicDeviceAddressRequest: return "Dynamic Device Address Request";
-
-        case PassThroughRequests: return "Pass Through Requests";
-        case NotificationRequest: return "Notification Request";
-
-        case ChallengeRequestMD5: return "MD5 Challenge Request";
-        case ChallengeResponseMD5: return "MD5 Challenge Response";
-        case ChallengeAckMD5: return "MD5 Challenge Ack";
-
-        // ====================================================================
-        // Configuration Manager Messages
-        // ====================================================================
-
-        case SetDeviceNumber: return "SetDevice Number";
-
-        case SetIdentifyModeAddress: return "Set Identify Mode/Address";
-
-        case SetSerialNumber: return "Set SerialNumber";
-
-        case FileTransfer: return "File Transfer";
-
-        case RequestIpAddressList: return "Request IP Address List";
-        case IpAddressList: return "IP Address List";
-        case AddIpAddress: return "Add IP Address";
-        case DeleteIpAddress: return "Delete IP Address";
-
-        case SetDnsIpAddresses: return "Set DNS IP Addresses";
-        case RequestDnsIpAddresses: return "Request DNS IP Addresses";
-        case GetDnsIpAddresses: return "Get DNS IP Addresses";
-
-        case SetEthernetIPAddress: return "Set Ethernet IPAddress";
-        case RequestEthernetIpAddress: return "Request Ethernet IP Address";
-        case GetEthernetIpAddress: return "Get Ethernet IP Address";
-
-        case SetDateTime: return "Set Time & Date";
-        case RequestDateTime: return "Request Time & Date";
-        case GetDateTime: return "Get Time & Date";
-
-        case IdentifyModeAddressResponse: return "Identify Mode/Address Response";
-
-        case Restart: return "Restart";
-
-        case CompletionCode: return "Completion Code";
-
-        // ====================================================================
-        // Diagnostic Manager Messages
-        // ====================================================================
-
-        //  Diagnostic Manager Messages
-        case InternalDiagnosticString: return "Internal Diagnostic String";
-        case RequestDiagnosticInformation: return "Request Diagnostic Information";
-
-        case RequestDevicesOnline: return "Request Devices Online";
-        case RequestDevicesOnlineEOT: return "Request Devices Online EOT";
-
-        case RequestDeviceStatus: return "Request Device Status";
-        case RequestDeviceStatusEOT: return "Request Device Status EOT";
-
-        case RequestAsynchronousNotificationList: return "Request Asynchronous NotificationL ist";
-        case AsynchronousNotificationList: return "Asynchronous Notification List";
-
-        case AddModifyAsynchronousNotificationList: return "Add Modify Asynchronous Notification List";
-        case DeleteAsynchronousNotificationList: return "Delete Asynchronous Notification List";
-
-        case RequestDiscoveryInfo: return "Request ProgramInfo";
-        case DiscoveryInfo: return "ProgramInfo";
-        case DiscoveryInfoEOT: return "ProgramInfo EOT";
-
-        default:
-          break;
-      }
-
-      return "Unknown";
+      Logger.LogVerbose(false, "--------------------------------------------------------------------------------------------");
     }
   }
 }

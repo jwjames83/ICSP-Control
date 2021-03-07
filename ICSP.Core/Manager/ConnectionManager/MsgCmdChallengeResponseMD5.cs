@@ -63,6 +63,12 @@ namespace ICSP.Core.Manager.ConnectionManager
     
     public byte[] Challenge { get; private set; }
 
+    /// <summary>
+    /// Assumption:
+    /// 0: None => This value does not work, if the option [Encrypt ICSP connection] is enabled on the controller
+    /// 1: RC4
+    /// 2: Future-1
+    /// </summary>
     public ushort EncryptionType { get; private set; }
 
     public byte[] Hash { get; private set; }

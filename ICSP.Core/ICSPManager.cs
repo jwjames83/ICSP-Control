@@ -59,6 +59,12 @@ namespace ICSP.Core
 
     private int mTaskConnectAsyncRunning = 0;
 
+    // in work ...
+    public const int DeviceUninitialized = 0;
+    public const int DeviceUnconfigured = 1;
+    public const int DeviceUnverified = 2;
+    public const int DeviceConnected = 3;
+
     public ICSPManager()
     {
       mDevices = new ConcurrentDictionary<ushort, DeviceInfoData>();
@@ -495,7 +501,15 @@ namespace ICSP.Core
 
             // TODO: Username, password ...
 
-            ushort lEncryptionType = 2; // RC4 (1: None, 2: RC4)
+            // EncryptionType:
+            // Netlinx Studio send 1 ...
+
+            // Assumption:
+            // 0: None => This value does not work, if the option [Encrypt ICSP connection] is enabled on the controller
+            // 1: RC4
+            // 2: Future1
+
+            ushort lEncryptionType = 0; // (1: RC4, 2: Future1) ?
 
             var lResponse = MsgCmdChallengeResponseMD5.CreateRequest(m.Source, m.Dest, m.Challenge, lEncryptionType, "administrator", "password");
 

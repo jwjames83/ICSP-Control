@@ -9,7 +9,7 @@ namespace ICSP.Core.Cryptography
   {
     void SetKey(byte[] key);
 
-    void TransformBlock(byte[] key, int offset, int count, byte[] cipher);
+    void TransformBlock(byte[] key, byte[] salt);
   }
 
   /// <summary>
@@ -19,39 +19,94 @@ namespace ICSP.Core.Cryptography
   /// <seealso cref="https://en.wikipedia.org/wiki/RC4"/>
   public abstract class RC4 : SymmetricAlgorithm, ICrypto
   {
+    /// <summary>
+    /// The first index-pointers.
+    /// </summary>
     private int mI = 0;
+
+    /// <summary>
+    /// The second index-pointers.
+    /// </summary>
     private int mJ = 0;
 
-    private int mXSave = 0;
-    private int mYSave = 0;
+    /// <summary>
+    /// Number of characters per byte.
+    /// </summary>
+    private const int CharsInByte = byte.MaxValue + 1;
 
-    private byte[] mPrivateKey = new byte[256];
-    private byte[] mSave = new byte[256];
+    private int mILast = 0;
+    private int mJLast = 0;
+    private byte[] mKeyValueLast = new byte[256];
 
-    private void SaveCipher()
+    #region RC4
+
+    /// <summary>
+    /// Initializes a new instance of the RC4 class.
+    /// </summary>
+    internal RC4()
     {
-      Array.Copy(mPrivateKey, 0, mSave, 0, 256);
+      // Recommended length for use in the US is 128 bits.
+      KeySizeValue = 128;
 
-      mXSave = mI;
-      mYSave = mJ;
+      // Usually, it is 256 bits. However, to increase safety, it is necessary to increase this value.
+      BlockSizeValue = 256;
+
+      // Response size cannot be larger than block size.
+      FeedbackSizeValue = BlockSizeValue;
+
+      // The algorithm has no max limit on the size of the S-box. Limitations only in performance and x86/x64 system.
+      LegalBlockSizesValue = new KeySizes[] { new KeySizes(256, 256, 0) };
+
+      // The key length can be 8-2048 bits (1 - 256 bytes).
+      LegalKeySizesValue = new KeySizes[] { new KeySizes(8, 2048, 0) };
+
+      // The CBC mode may also be considered a stream cipher with n-bit blocks playing the role of very large characters.
+      ModeValue = CipherMode.CBC;
+
+      PaddingValue = PaddingMode.None;
+
+      KeyValue = new byte[256];
     }
 
-    private void RestoreCipher()
+    /// <summary>
+    /// Creates an instance of a cryptographic object to perform the RC4 algorithm.
+    /// </summary>
+    /// <returns>An instance of a cryptographic object.</returns>
+    new static public RC4 Create()
     {
-      Array.Copy(mSave, 0, mPrivateKey, 0, 256);
-
-      mI = mXSave;
-      mJ = mYSave;
-
-      KeyValue = mPrivateKey;
+      return new RC4CryptoServiceProvider();
     }
 
-    private void UpdateCipher(byte[] cipher)
+    static public RC4 Create(byte[] key)
     {
-      if(cipher != null)
-        Array.Copy(cipher, 0, mPrivateKey, 0, cipher.Length);
+      return new RC4CryptoServiceProvider(key);
+    }
 
-      KeyValue = mPrivateKey;
+    #endregion RC4
+
+    // TODO: Remove, only for debug ...!
+    public byte[] mPrivateKey => KeyValue;
+
+    private void SavePrivateKey()
+    {
+      Array.Copy(KeyValue, 0, mKeyValueLast, 0, 256);
+
+      mILast = mI;
+      mJLast = mJ;
+    }
+
+    private void RestorePrivateKey()
+    {
+      Array.Copy(mKeyValueLast, 0, KeyValue, 0, 256);
+
+      mI = mILast;
+      mJ = mJLast;
+    }
+
+    private void UpdatePrivateKey(byte[] salt)
+    {
+      if(salt != null)
+        Array.Copy(salt, 0, KeyValue, 0, salt.Length);
     }
 
     // Key-Scheduling Algorithm.
@@ -62,34 +117,17 @@ namespace ICSP.Core.Cryptography
       rgbKey.CopyTo(lKey, 0);
 
       for(int i = 0; i < 256; i++)
-        mPrivateKey[i] = (byte)i;
+        KeyValue[i] = (byte)i;
 
       for(int i = 0, j = 0; i < 256; i++)
       {
-        j = (j + mPrivateKey[i] + lKey[i % lKey.Length]) % 256;
+        j = (j + KeyValue[i] + lKey[i % lKey.Length]) % 256;
 
-        mPrivateKey.Swap(i, j);
+        KeyValue.Swap(i, j);
       }
 
-      // Save key
-      Array.Copy(mPrivateKey, 0, mSave, 0, 256);
-      Array.Copy(mPrivateKey, 0, KeyValue, 0, 256);
+      SavePrivateKey();
     }
-
-    /// <summary>
-    /// The first index-pointers.
-    /// </summary>
-    private int i = 0;
-
-    /// <summary>
-    /// The second index-pointers.
-    /// </summary>
-    private int j = 0;
-
-    /// <summary>
-    /// Number of characters per byte.
-    /// </summary>
-    private const int CharsInByte = byte.MaxValue + 1;
 
     /// <summary>
     /// Pseudo-Random Generation Algorithm.
@@ -99,12 +137,12 @@ namespace ICSP.Core.Cryptography
     {
       unchecked
       {
-        i = (i + 1) % CharsInByte;
-        j = (j + mPrivateKey[i]) % CharsInByte;
+        mI = (mI + 1) % CharsInByte;
+        mJ = (mJ + KeyValue[mI]) % CharsInByte;
 
-        mPrivateKey.Swap(i, j);
+        KeyValue.Swap(mI, mJ);
 
-        return mPrivateKey[(mPrivateKey[i] + mPrivateKey[j]) % CharsInByte];
+        return KeyValue[(KeyValue[mI] + KeyValue[mJ]) % CharsInByte];
       }
     }
 
@@ -121,45 +159,19 @@ namespace ICSP.Core.Cryptography
       }
     }
 
-    public void TransformBlockDefault(byte[] data, byte[] salt)
+    public void TransformBlock(byte[] data, byte[] salt)
     {
-      i = 0;
-      j = 0;
-
       if(salt != null)
-        UpdateCipher(salt);
+        UpdatePrivateKey(salt);
+
+      // Initialize
+      mI = 0;
+      mJ = 0;
 
       PRGA(data);
 
       if(salt != null)
-        RestoreCipher();
-    }
-
-    public void TransformBlock(byte[] inputBuffer, int offset, int count, byte[] salt)
-    {
-      if(salt != null)
-        UpdateCipher(salt);
-
-      for(int i = offset; i < offset + count; i++)
-      {
-        mI = mI + 1 & 0xFF; // mod 256
-
-        int j = mPrivateKey[mI] & 0xFF;
-
-        mJ = mJ + j & 0xFF;
-
-        // Swap values
-        mPrivateKey[mI] = mPrivateKey[mJ];
-
-        byte b = mPrivateKey[mJ];
-
-        mPrivateKey[mJ] = (byte)(j & 0xFF);
-
-        inputBuffer[i] = (byte)((inputBuffer[i] ^ mPrivateKey[j + b & 0xFF]) & 0xFF);
-      }
-
-      if(salt != null)
-        RestoreCipher();
+        RestorePrivateKey();
     }
 
     #region Transform
@@ -352,52 +364,6 @@ namespace ICSP.Core.Cryptography
     }
 
     #endregion Transform
-
-    #region RC4
-
-    /// <summary>
-    /// Initializes a new instance of the RC4 class.
-    /// </summary>
-    internal RC4()
-    {
-      // Recommended length for use in the US is 128 bits.
-      KeySizeValue = 128;
-
-      // Usually, it is 256 bits. However, to increase safety, it is necessary to increase this value.
-      BlockSizeValue = 256;
-
-      // Response size cannot be larger than block size.
-      FeedbackSizeValue = BlockSizeValue;
-
-      // The algorithm has no max limit on the size of the S-box. Limitations only in performance and x86/x64 system.
-      LegalBlockSizesValue = new KeySizes[] { new KeySizes(256, 256, 0) };
-
-      // The key length can be 8-2048 bits (1 - 256 bytes).
-      LegalKeySizesValue = new KeySizes[] { new KeySizes(8, 2048, 0) };
-
-      // The CBC mode may also be considered a stream cipher with n-bit blocks playing the role of very large characters.
-      ModeValue = CipherMode.CBC;
-
-      PaddingValue = PaddingMode.None;
-
-      KeyValue = new byte[256];
-    }
-
-    /// <summary>
-    /// Creates an instance of a cryptographic object to perform the RC4 algorithm.
-    /// </summary>
-    /// <returns>An instance of a cryptographic object.</returns>
-    new static public RC4 Create()
-    {
-      return new RC4CryptoServiceProvider();
-    }
-
-    static public RC4 Create(byte[] key)
-    {
-      return new RC4CryptoServiceProvider(key);
-    }
-
-    #endregion RC4
 
     #region SymmetricAlgorithm
 

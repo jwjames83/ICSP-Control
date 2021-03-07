@@ -23,6 +23,18 @@ namespace ICSP.Core.Client
   {
     public const int DefaultPort = 1319;
 
+    // Authentication
+    public int ICSP_Authenticated           /**/ = 0x0001;
+    public int ICSP_AuthenticatedNotAllowed /**/ = 0x8000;
+
+    // Encryption
+    public int ICSP_EncryptionAlgorithmNone    /**/ = 0;
+    public int ICSP_EncryptionAlgorithmRC4     /**/ = 4;
+    public int ICSP_EncryptionAlgorithmFuture1 /**/ = 6;
+    public int ICSP_EncryptionAlgorithmMask    /**/ = 6;
+
+    public int ICSP_PacketEncryptionRC4 = 2;
+
     private int mConnectionTimeout = 1;
 
     public event EventHandler<ClientOnlineOfflineEventArgs> ClientOnlineStatusChanged;
@@ -425,13 +437,13 @@ namespace ICSP.Core.Client
 
           if(lEncryptionType == 2) // RC4
           {
-            var len = lStream.ReadByte();
+            var lLen = lStream.ReadByte();
 
-            var lDataSize = size - 6 - len;
+            var lDataSize = size - 6 - lLen;
 
-            var salt = new byte[4];
+            var lSaltValue = new byte[4];
 
-            lStream.Read(salt);
+            lStream.Read(lSaltValue);
 
             srcDevice = lStream.ReadUShort();
             desDevice = lStream.ReadUShort();
@@ -445,7 +457,10 @@ namespace ICSP.Core.Client
                 lStream.Read(encryptedData);
 
                 // ==============================================================================================================================
+                // TEST-STUFF ...
+                // ==============================================================================================================================
 
+                /*
                 var lTestChallenge = new byte[] { 0x51, 0xa4, 0x0e, 0x5f, };
 
                 using var lHashAlgorithm = HashAlgorithm.Create("MD5");
@@ -459,10 +474,6 @@ namespace ICSP.Core.Client
                   .Concat(Encoding.UTF8.GetBytes(Convert.ToBase64String(Encoding.UTF8.GetBytes("password")))).ToArray());
 
                 var lCryptoProvider = RC4.Create(lHash);
-
-                // ==============================================================================================================================
-                // TEST-STUFF ...
-                // ==============================================================================================================================
 
                 // ---------------------------------------------------------------------------------------------
                 //            SrcS SrcDev | ET | Ln | Salt        | dSys desDEv | srcPort | Encrypted Data | CS
@@ -487,6 +498,7 @@ namespace ICSP.Core.Client
                 cStr = BitConverter.ToString(lEncryptedTestData).Replace("-", " ");
 
                 Console.WriteLine(cStr);
+                */
 
                 // ==============================================================================================================================
                 // TEST-STUFF ...
@@ -498,7 +510,7 @@ namespace ICSP.Core.Client
 
                 // E6 3C 9A 0B 29 6B 1E 6F 93 37 C6 48 EB 39 03 FC 91 5B 18 4F 98 1C 11 50 55 6C 80 8D 40 EC 5B
 
-                cryptoProvider.TransformBlock(encryptedData, 0, lDataSize, salt);
+                cryptoProvider.TransformBlock(encryptedData, lSaltValue);
 
                 cStr = BitConverter.ToString(encryptedData).Replace("-", " ");
 
@@ -591,6 +603,26 @@ namespace ICSP.Core.Client
             challengeData[3] = lStream.ReadByte();
 
             mConnection.AuthenticationChallenge = challengeData;
+            
+            // DebugStuff ...
+
+            ICSPEncryptedMsg.DebugChallenge = challengeData;
+
+            using var lHashAlgorithm = HashAlgorithm.Create("MD5");
+
+            if(lHashAlgorithm == null)
+              throw new Exception("ICSP: Failed to build encryption key!");
+
+            var lHash = lHashAlgorithm.ComputeHash(
+              challengeData
+              .Concat(Encoding.UTF8.GetBytes(Convert.ToBase64String(Encoding.UTF8.GetBytes("administrator"))))
+              .Concat(Encoding.UTF8.GetBytes(Convert.ToBase64String(Encoding.UTF8.GetBytes("password")))).ToArray());
+
+            ICSPEncryptedMsg.DebugHash = lHash;
+
+            var lProvider = RC4.Create(lHash);
+
+            ICSPEncryptedMsg.DebugPrivateKey = lProvider.mPrivateKey;
 
             break;
           }
@@ -633,7 +665,19 @@ namespace ICSP.Core.Client
             AccessNotAllowed      = 8;
             */
 
-            if((lState & (AuthenticationState)0x8000) != 0)
+            /*
+            public int ICSP_Authenticated = 1;
+            public int ICSP_AuthenticatedNotAllowed = 0x8000;
+
+            public int ICSP_EncryptionAlgorithmNone = 0;
+            public int ICSP_EncryptionAlgorithmRC4 = 4;
+            public int ICSP_EncryptionAlgorithmFuture1 = 6;
+            public int ICSP_EncryptionAlgorithmMask = 6;
+
+            public int ICSP_PacketEncryptionRC4 = 2;
+            */
+
+            if((lState & AuthenticationState.NotAllowed) != 0)
             {
               // 1000 0000 0000 0000
               mConnection.AuthenticationState = 4;
@@ -642,7 +686,7 @@ namespace ICSP.Core.Client
             {
               // Success
               // 0000 0000 0000 0001
-              mConnection.AuthenticationState = 1;
+              mConnection.AuthenticationState = (int)AuthenticationState.Authenticated;
 
               // 0000 0000 0000 0110 (6)
               if((lState & AuthenticationState.DoEncrypt | AuthenticationState.EncryptionModeRC4) != 0)
@@ -653,7 +697,7 @@ namespace ICSP.Core.Client
 
                 switch((int)(lState & AuthenticationState.DoEncrypt | AuthenticationState.EncryptionModeRC4))
                 {
-                  case 4:
+                  case 4: // RC4
                   {
                     using var lHashAlgorithm = HashAlgorithm.Create("MD5");
 
@@ -796,14 +840,14 @@ namespace ICSP.Core.Client
 
           int i1 = (m_rand.Next() << 16) + m_rand.Next();
 
-          byte[] arrayOfByte = new byte[4];
+          byte[] lSaltValue = new byte[4];
 
-          arrayOfByte[0] = (byte)(i1 >> 24 & 0xFF);
-          arrayOfByte[1] = (byte)(i1 >> 16 & 0xFF);
-          arrayOfByte[2] = (byte)(i1 >> 8 & 0xFF);
-          arrayOfByte[3] = (byte)(i1 & 0xFF);
+          lSaltValue[0] = (byte)(i1 >> 24 & 0xFF);
+          lSaltValue[1] = (byte)(i1 >> 16 & 0xFF);
+          lSaltValue[2] = (byte)(i1 >> 8 & 0xFF);
+          lSaltValue[3] = (byte)(i1 & 0xFF);
 
-          mConnection.CryptoProvider.TransformBlock(this.mSendBuffer, i, m, arrayOfByte);
+          mConnection.CryptoProvider.TransformBlock(this.mSendBuffer, lSaltValue);
 
           i = j = 0;
 
@@ -820,7 +864,7 @@ namespace ICSP.Core.Client
           byte b1;
 
           for(b1 = 0; b1 < 4; b1++)
-            this.mSendBuffer[j++] = arrayOfByte[b1];
+            this.mSendBuffer[j++] = lSaltValue[b1];
 
           this.mSendBuffer[j++] = data[2];
           this.mSendBuffer[j++] = data[3];
