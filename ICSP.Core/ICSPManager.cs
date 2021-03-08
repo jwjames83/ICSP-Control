@@ -509,7 +509,7 @@ namespace ICSP.Core
             // 1: RC4
             // 2: Future1
 
-            ushort lEncryptionType = 0; // (1: RC4, 2: Future1) ?
+            ushort lEncryptionType = 2; // (1: RC4, 2: Future1) ?
 
             var lResponse = MsgCmdChallengeResponseMD5.CreateRequest(m.Source, m.Dest, m.Challenge, lEncryptionType, "administrator", "password");
 

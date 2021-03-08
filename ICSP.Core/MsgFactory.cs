@@ -39,39 +39,20 @@ namespace ICSP.Core
       }
     }
 
-    public object FromData(byte[] bytes)
+    public ICSPMsg FromData(byte[] bytes)
     {
       if(bytes == null || bytes.Length == 0)
         throw new ArgumentNullException(nameof(bytes));
 
-      var lProtocol = bytes[0];
+      if(bytes.Length < ICSPMsg.PacketLengthMin)
+        throw new ArgumentException(nameof(bytes));
 
-      switch(lProtocol)
-      {
-        case ICSPMsg.ProtocolValue:
-        {
-          if(bytes.Length < ICSPMsg.PacketLengthMin)
-            throw new ArgumentException(nameof(bytes));
+      var lCmd = (ushort)((bytes[20] << 8) | bytes[21]);
 
-          var lCmd = (ushort)((bytes[20] << 8) | bytes[21]);
+      if(mTypes.ContainsKey(lCmd))
+        return mTypes[lCmd].FromData(bytes);
 
-          if(mTypes.ContainsKey(lCmd))
-            return mTypes[lCmd].FromData(bytes);
-
-          return new MsgCmdUnknown(bytes);
-        }
-
-        case ICSPEncryptedMsg.ProtocolValue:
-        {
-          if(bytes.Length < ICSPEncryptedMsg.PacketLengthMin)
-            throw new ArgumentException(nameof(bytes));
-
-          return ICSPEncryptedMsg.FromData(bytes);
-        }
-
-      }
-      throw new Exception($"Unknonw Protocol: Value=0x{lProtocol:X2}");
-
+      return new MsgCmdUnknown(bytes);
     }
   }
 }

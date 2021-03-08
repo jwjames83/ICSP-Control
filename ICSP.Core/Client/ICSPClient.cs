@@ -13,6 +13,7 @@ using ICSP.Core.Constants;
 using ICSP.Core.Cryptography;
 using ICSP.Core.Extensions;
 using ICSP.Core.Logging;
+using ICSP.Core.Manager.ConnectionManager;
 using ICSP.Core.Manager.DeviceManager;
 
 using Serilog.Events;
@@ -50,6 +51,10 @@ namespace ICSP.Core.Client
     private int mTaskConnectAsyncRunning = 0;
 
     private bool mIsDisposed;
+
+    private byte[] mAuthenticationChallenge;
+
+    private RC4 mCryptoProvider;
 
     public ICSPClient()
     {
@@ -295,31 +300,108 @@ namespace ICSP.Core.Client
           // Preprocess Packet
           while(lBytes.Count >= ICSPMsg.PacketLengthMin)
           {
-            // +4 => Protocol (1), Length (2), Checksum (1)
-            var lSize = ((lBytes[1] << 8) | lBytes[2]) + 4;
+            var lProtocol = lBytes[0];
 
-            if(lBytes.Count >= lSize)
+            if(lProtocol != ICSPMsg.ProtocolValue && lProtocol != ICSPEncryptedMsg.ProtocolValue)
+            {
+              Logger.LogError($"Unknonw protocol: Value=0x{lProtocol:X2}");
+
+              lBytes.Clear();
+
+              break;
+            }
+
+            // +4 => Protocol (1), Length (2), Checksum (1)
+            var lPacketSize = ((lBytes[1] << 8) | lBytes[2]) + 4;
+
+            if(lBytes.Count >= lPacketSize)
             {
               var lDataSize = ((lBytes[1] << 8) | lBytes[2]);
 
-              ProcessData(lBytes[0], lDataSize, lBytes.GetRange(3, lSize - 3).ToArray());
+              ProcessData(lBytes[0], lDataSize, lBytes.GetRange(3, lPacketSize - 3).ToArray());
 
-              var lMsg = Factory.FromData(lBytes.GetRange(0, lSize).ToArray());
+              var lPacketBytes = lBytes.GetRange(0, lPacketSize).ToArray();
 
-              lBytes.RemoveRange(0, lSize);
+              lBytes.RemoveRange(0, lPacketSize);
 
-              switch(lMsg)
+              switch(lProtocol)
               {
-                case ICSPMsg m: OnDataReceived(new ICSPMsgDataEventArgs(m)); break;
-                case ICSPEncryptedMsg m:
+                case ICSPMsg.ProtocolValue:
                 {
-                  // TODO ...
+                  var lMsg = Factory.FromData(lPacketBytes);
 
-                  Logger.LogVerbose("{0} Bytes", m.RawData.Length);
-                  Logger.LogVerbose("Data 0x: {0:l}", BitConverter.ToString(m.RawData).Replace("-", " "));
+                  if(lMsg is MsgCmdChallengeRequestMD5 msg)
+                    mAuthenticationChallenge = msg.Challenge;
+
+                  if(lMsg is MsgCmdChallengeAckMD5 msgAck)
+                  {
+                    var lState = msgAck.Status;
+
+                    if((lState & AuthenticationState.NotAllowed) != 0)
+                    {
+                      // 1000 0000 0000 0000
+                      mConnection.AuthenticationState = 4;
+                    }
+                    else if((lState & AuthenticationState.Authenticated) != 0)
+                    {
+                      // Success
+                      // 0000 0000 0000 0001
+                      mConnection.AuthenticationState = (int)AuthenticationState.Authenticated;
+
+                      // 0000 0000 0000 0110 (6)
+                      if((lState & AuthenticationState.DoEncrypt | AuthenticationState.EncryptionModeRC4) != 0)
+                      {
+                        mConnection.AuthenticationState = 2;
+
+                        mConnection.EncryptionMode = (int)(lState & AuthenticationState.DoEncrypt | AuthenticationState.EncryptionModeRC4);
+
+                        switch((int)(lState & AuthenticationState.DoEncrypt | AuthenticationState.EncryptionModeRC4))
+                        {
+                          case 4: // RC4
+                          {
+                            using var lHashAlgorithm = HashAlgorithm.Create("MD5");
+
+                            if(lHashAlgorithm == null)
+                              throw new Exception("ICSP: Failed to build encryption key!");
+
+                            var lHash = lHashAlgorithm.ComputeHash(
+                              mAuthenticationChallenge
+                              .Concat(Encoding.UTF8.GetBytes("administrator"))
+                              .Concat(Encoding.UTF8.GetBytes("password")).ToArray());
+
+                            mCryptoProvider = RC4.Create(lHash);
+
+                            ICSPEncryptedMsg.DebugPrivateKey = mCryptoProvider.mPrivateKey;
+
+                            break;
+                          }
+                        }
+                      }
+                    }
+                  }
+
+                  OnDataReceived(new ICSPMsgDataEventArgs(lMsg));
+
+                  break;
+                }
+                case ICSPEncryptedMsg.ProtocolValue:
+                {
+                  var lEncryptedMsg = ICSPEncryptedMsg.FromData(lPacketBytes);
+
+                  // Logger.LogVerbose("{0} Bytes", lMsg.RawData.Length);
+                  // Logger.LogVerbose("Data 0x: {0:l}", BitConverter.ToString(lMsg.RawData).Replace("-", " "));
 
                   if(Logger.LogLevel <= LogEventLevel.Verbose)
-                    m.WriteLogVerbose();
+                    lEncryptedMsg.WriteLogVerbose();
+
+                  if(mCryptoProvider != null)
+                  {
+                    mCryptoProvider.TransformBlock(lEncryptedMsg.EncryptedData, lEncryptedMsg.Salt);
+
+                    var lMsg = Factory.FromData(lEncryptedMsg.EncryptedData);
+
+                    OnDataReceived(new ICSPMsgDataEventArgs(lMsg));
+                  }
 
                   break;
                 }
@@ -329,7 +411,7 @@ namespace ICSP.Core.Client
             }
             else
             {
-              Logger.LogVerbose("Buffer: {0} Bytes, Needed {1} Bytes", lCount, lSize);
+              Logger.LogVerbose("Buffer: {0} Bytes, Needed {1} Bytes", lCount, lPacketSize);
               break;
             }
           }
@@ -516,7 +598,7 @@ namespace ICSP.Core.Client
 
                 Console.WriteLine(cStr);
 
-                // C5 28 54 A0 D4 0C 95 30 18 C5 94 D2 A0 BA F8 9C 7E EC 2E 66 E6 AC 95 29 3F EF BF CF 58 C5 30
+                // 02 00 1B 02 00 00 01 7D 01 00 01 00 01 00 00 00 01 0F FF 86 00 91 3A 98 00 01 00 01 00 00 9A
               }
               else
               {
@@ -602,8 +684,10 @@ namespace ICSP.Core.Client
             challengeData[2] = lStream.ReadByte();
             challengeData[3] = lStream.ReadByte();
 
+            mAuthenticationChallenge = challengeData;
+
             mConnection.AuthenticationChallenge = challengeData;
-            
+
             // DebugStuff ...
 
             ICSPEncryptedMsg.DebugChallenge = challengeData;
@@ -706,10 +790,12 @@ namespace ICSP.Core.Client
 
                     var lHash = lHashAlgorithm.ComputeHash(
                       mConnection.AuthenticationChallenge
-                      .Concat(Encoding.UTF8.GetBytes(Convert.ToBase64String(Encoding.UTF8.GetBytes("administrator"))))
-                      .Concat(Encoding.UTF8.GetBytes(Convert.ToBase64String(Encoding.UTF8.GetBytes("password")))).ToArray());
+                      .Concat(Encoding.UTF8.GetBytes("administrator"))
+                      .Concat(Encoding.UTF8.GetBytes("password")).ToArray());
 
                     mConnection.CryptoProvider = RC4.Create(lHash);
+
+                    ICSPEncryptedMsg.DebugPrivateKey = ((RC4)mConnection.CryptoProvider).mPrivateKey;
 
                     break;
                   }
@@ -951,7 +1037,7 @@ namespace ICSP.Core.Client
   {
     private int mSystem;
     private int mDevice;
-    
+
     private List<DeviceInfoData> mDeviceInfoList = new List<DeviceInfoData>();
 
     public IcspConnection()
