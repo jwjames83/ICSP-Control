@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Net;
 using System.Security.Cryptography;
 using System.Text;
 
@@ -25,13 +26,13 @@ namespace ICSP.Core.Manager.ConnectionManager
         Challenge = Data.Range(0, 4);
       }
     }
-    
+
     public override ICSPMsg FromData(byte[] bytes)
     {
       return new MsgCmdChallengeResponseMD5(bytes);
     }
 
-    public static ICSPMsg CreateRequest(AmxDevice dest, AmxDevice source, byte[] challenge, ushort encryptionType, string username, string password)
+    public static ICSPMsg CreateRequest(AmxDevice dest, AmxDevice source, byte[] challenge, ushort encryptionType, NetworkCredential credentials)
     {
       // ---------------------------------------------------------------------------------------------------------------------------------
       // Flag  | Dest              | Source            | H  | ID    | CMD   | N-Data      | CS
@@ -47,20 +48,20 @@ namespace ICSP.Core.Manager.ConnectionManager
       var lRequest = new MsgCmdChallengeResponseMD5
       {
         Challenge = challenge,
-        
+
         EncryptionType = encryptionType,
 
         Hash = lHashAlgorithm.ComputeHash(
           challenge
-          .Concat(Encoding.UTF8.GetBytes(Convert.ToBase64String(Encoding.UTF8.GetBytes(username))))
-          .Concat(Encoding.UTF8.GetBytes(Convert.ToBase64String(Encoding.UTF8.GetBytes(password)))).ToArray()),
+          .Concat(Encoding.UTF8.GetBytes(Convert.ToBase64String(Encoding.UTF8.GetBytes(credentials?.UserName ?? ICSPManager.DefaultUsername))))
+          .Concat(Encoding.UTF8.GetBytes(Convert.ToBase64String(Encoding.UTF8.GetBytes(credentials?.Password ?? ICSPManager.DefaultPassword)))).ToArray()),
       };
-      
+
       var lData = ArrayExtensions.Int16ToBigEndian(lRequest.EncryptionType).Concat(lRequest.Hash).ToArray();
-      
+
       return lRequest.Serialize(dest, source, MsgCmd, lData);
     }
-    
+
     public byte[] Challenge { get; private set; }
 
     /// <summary>

@@ -22,6 +22,9 @@ namespace ICSP.Core
 {
   public class ICSPManager : IDisposable
   {
+    public const string DefaultUsername = "administrator";
+    public const string DefaultPassword = "password";
+
     private readonly ConcurrentDictionary<ushort, DeviceInfoData> mDevices;
 
     public event EventHandler<ClientOnlineOfflineEventArgs> ClientOnlineStatusChanged;
@@ -69,6 +72,8 @@ namespace ICSP.Core
     {
       mDevices = new ConcurrentDictionary<ushort, DeviceInfoData>();
 
+      Credentials = new NetworkCredential(DefaultUsername, DefaultPassword);
+
       FileManager = new FileManager(this);
     }
 
@@ -115,6 +120,8 @@ namespace ICSP.Core
     public string Host { get; private set; }
 
     public int Port { get; private set; }
+
+    public NetworkCredential Credentials { get; set; }
 
     /// <summary>
     /// Gets the time to wait while trying to establish a connection
@@ -200,6 +207,8 @@ namespace ICSP.Core
         {
           mClient = new ICSPClient() { ConnectionTimeout = mConnectionTimeout };
 
+          mClient.Credentials = Credentials;
+
           mClient.ClientOnlineStatusChanged += OnClientOnlineStatusChanged;
           mClient.DataReceived += OnDataReceived;
         }
@@ -257,7 +266,7 @@ namespace ICSP.Core
     {
       try
       {
-        Logger.LogVerbose("{0} Bytes", e.Message.RawData.Length);
+        Logger.LogVerbose("Data {0} bytes", e.Message.RawData.Length);
         Logger.LogVerbose("Data 0x: {0:l}", BitConverter.ToString(e.Message.RawData).Replace("-", " "));
 
         DataReceived?.Invoke(this, e);
@@ -504,14 +513,12 @@ namespace ICSP.Core
             // EncryptionType:
             // Netlinx Studio send 1 ...
 
-            // Assumption:
             // 0: None => This value does not work, if the option [Encrypt ICSP connection] is enabled on the controller
             // 1: RC4
-            // 2: Future1
 
-            ushort lEncryptionType = 2; // (1: RC4, 2: Future1) ?
+            ushort lEncryptionType = 1;
 
-            var lResponse = MsgCmdChallengeResponseMD5.CreateRequest(m.Source, m.Dest, m.Challenge, lEncryptionType, "administrator", "password");
+            var lResponse = MsgCmdChallengeResponseMD5.CreateRequest(m.Source, m.Dest, m.Challenge, lEncryptionType, mClient.Credentials);
 
             await SendAsync(lResponse);
 
@@ -618,11 +625,6 @@ namespace ICSP.Core
       await SendAsync(lRequest);
     }
 
-    public async Task CreateDeviceInfoAsync(DeviceInfoData deviceInfo)
-    {
-      await CreateDeviceInfoAsync(deviceInfo, 1, 256, 8);
-    }
-
     public async Task CreateDeviceInfoAsync(DeviceInfoData deviceInfo, ushort portCount = 1, ushort channelCount = 256, ushort levelCount = 8)
     {
       /*
@@ -677,7 +679,6 @@ namespace ICSP.Core
         await SendAsync(lLevelCountRequest);
       }
 
-      /*
       for(ushort port = 1; port <= portCount; port++)
       {
         lSource = new AmxDevice(deviceInfo.Device, port, deviceInfo.System);
@@ -696,7 +697,6 @@ namespace ICSP.Core
 
         await SendAsync(lCommandSizeRequest);
       }
-      */
     }
 
     public async Task RequestDevicesOnlineAsync(AmxDevice source)

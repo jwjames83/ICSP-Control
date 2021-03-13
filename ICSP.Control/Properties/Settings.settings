@@ -8,6 +8,12 @@
     <Setting Name="AmxPort" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">1319</Value>
     </Setting>
+    <Setting Name="AmxUserName" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="AmxPassword" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
     <Setting Name="AutoConnect" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>

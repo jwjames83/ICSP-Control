@@ -53,5 +53,15 @@
     public const int ChallengeResponseMD5 = 0x0702;
 
     public const int ChallengeAckMD5 = 0x0703;
+
+    /// <summary>
+    /// Unknown, not implemented
+    /// </summary>
+    public const int ExtChallengeRequest = 0x0731;
+
+    /// <summary>
+    /// Unknown, not implemented
+    /// </summary>
+    public const int ExtChallengeResponse = 0x0732;
   }
 }

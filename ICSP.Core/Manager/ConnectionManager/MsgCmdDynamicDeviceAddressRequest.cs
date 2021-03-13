@@ -17,8 +17,6 @@ namespace ICSP.Core.Manager.ConnectionManager
   {
     public const int MsgCmd = ConnectionManagerCmd.DynamicDeviceAddressRequest;
 
-    public const int NewbieFlag = 0x0222;
-
     private MsgCmdDynamicDeviceAddressRequest()
     {
     }
@@ -98,7 +96,7 @@ namespace ICSP.Core.Manager.ConnectionManager
         lData = lStream.ToArray();
       }
 
-      return lRequest.Serialize(ICSPMsgFlag.Newbee, AmxDevice.Empty, lSource, 0, MsgCmd, lData);
+      return lRequest.Serialize(ICSPMsgFlag.Version_02 | ICSPMsgFlag.IgnoreAddress | ICSPMsgFlag.Newbee, AmxDevice.Empty, lSource, 0, MsgCmd, lData);
     }
 
     /// <summary>

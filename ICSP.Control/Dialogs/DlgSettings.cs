@@ -22,6 +22,10 @@ namespace ICSPControl.Dialogs
 
       txt_Host.Text = Settings.Default.AmxHost;
       num_Port.Value = Settings.Default.AmxPort;
+
+      txt_UserName.Text = Settings.Default.AmxUserName;
+      txt_Password.Text = Settings.Default.AmxPassword;
+
       ckb_AutoConnect.Checked = Settings.Default.AutoConnect;
 
       num_PhysicalDeviceNumber.Value = Settings.Default.PhysicalDeviceNumber;
@@ -152,6 +156,10 @@ namespace ICSPControl.Dialogs
       {
         Settings.Default.AmxHost = txt_Host.Text;
         Settings.Default.AmxPort = (int)num_Port.Value;
+
+        Settings.Default.AmxUserName = txt_UserName.Text;
+        Settings.Default.AmxPassword = txt_Password.Text;
+
         Settings.Default.AutoConnect = ckb_AutoConnect.Checked;
 
         Settings.Default.PhysicalDeviceNumber = (ushort)num_PhysicalDeviceNumber.Value;

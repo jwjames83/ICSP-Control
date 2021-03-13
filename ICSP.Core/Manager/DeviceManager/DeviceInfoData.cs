@@ -17,7 +17,12 @@ namespace ICSP.Core.Manager.DeviceManager
 
       Device = device;
       System = 0;
-      DataFlag = 0x0020;
+
+      // Warn:
+      // If bit 6 is set (0x0020), new NX-Series controller returns a unknown Authentication Challenge request (0x731),
+      // if option [Authenticate AMX Devices On LAN Ports] is enabled
+      DataFlag = 0;
+
       ObjectId = 0;
       ParentId = 0;
       ManufactureId = 0x0001;
@@ -49,9 +54,11 @@ namespace ICSP.Core.Manager.DeviceManager
     public ushort System { get; set; }
 
     /// <summary>
-    /// 16-bit bit field. 
+    /// 16-bit bit field.
     /// Bit 0 - If set, this message was generated in 
-    /// response to a button press while Identify mode is active.
+    /// response to a button press while Identify mode is active.<br/>
+    /// If bit 6 is set (0x0020), new NX-Series controller returns a unknown Authentication Challenge request (0x731),
+    /// if option [Authenticate AMX Devices On LAN Ports] is enabled.
     /// </summary>
     public ushort DataFlag { get; set; }
 

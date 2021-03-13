@@ -1,9 +1,8 @@
 ﻿using System;
 
 using ICSP.Core.Cryptography;
+using ICSP.Core.Extensions;
 using ICSP.Core.Logging;
-
-using static ICSP.Core.Extensions.ArrayExtensions;
 
 namespace ICSP.Core
 {
@@ -36,17 +35,7 @@ namespace ICSP.Core
 
     public const int PacketLengthMin = 10;
 
-    // ======================================================================
-    // Debug stuff ... / Log
-    // ======================================================================
-
-    public static byte[] DebugChallenge = new byte[4];
-    public static byte[] DebugHash = new byte[16];
-    public static byte[] DebugPrivateKey = new byte[256];
-    public static byte[] DebugSaltValue = new byte[4];
-    public static byte[] DebugSaltKey = new byte[256];
-    public static byte[] DebugDecrypted1 = new byte[256];
-    public static byte[] DebugDecrypted2 = new byte[256];
+    private RC4 mCryptoProvider;
 
     /// <summary>
     /// The first field is a protocol field, and in one embodiment, one byte size.<br/>
@@ -54,18 +43,12 @@ namespace ICSP.Core
     /// </summary>
     public const byte ProtocolValue = 0x04;
 
-    public const int DefaultHop = 0xFF;
-
-    public const ICSPMsgFlag DefaultFlag = ICSPMsgFlag.Version_02;
-
     #region Constructors
 
-    protected ICSPEncryptedMsg()
+    public ICSPEncryptedMsg(RC4 cryptoProvider, byte[] bytes)
     {
-    }
+      mCryptoProvider = cryptoProvider ?? throw new ArgumentNullException(nameof(cryptoProvider));
 
-    public ICSPEncryptedMsg(byte[] bytes)
-    {
       RawData = bytes;
 
       if(bytes[0] != ProtocolValue)
@@ -116,132 +99,118 @@ namespace ICSP.Core
       EncryptedData = bytes.Range(9 + CustomDataLength, lEncryptedLength);
 
       Checksum = bytes[DataLength + 3];
-
-      // ======================================================================
-      // Debug stuff ... / Log
-      // ======================================================================
-
-      // Inititalize DebugSaltKey from original PrivateKey
-      Array.Copy(DebugPrivateKey, 0, DebugSaltKey, 0, DebugPrivateKey.Length);
-
-      DebugSaltValue = new byte[8];
-
-      if(Salt == null)
-        Salt = new byte[0];
-
-      if(Salt.Length > 0)
-      {
-        DebugSaltValue = new byte[Salt.Length];
-
-        Array.Copy(Salt, 0, DebugSaltValue, 0, Salt.Length);
-        Array.Copy(Salt, 0, DebugSaltKey, 0, Salt.Length);
-      }
     }
 
     #endregion
 
+    public byte[] GetDecryptedData()
+    {
+      var lDecryptedData = new byte[EncryptedData.Length];
+
+      Array.Copy(EncryptedData, 0, lDecryptedData, 0, EncryptedData.Length);
+
+      mCryptoProvider.TransformBlock(lDecryptedData, Salt);
+
+      return lDecryptedData;
+    }
+
     #region Serialize
 
-    public static ICSPEncryptedMsg FromData(byte[] bytes)
-    {
-      return new ICSPEncryptedMsg(bytes);
-    }
+    //protected ICSPEncryptedMsg Serialize(AmxDevice dest, AmxDevice source, ushort command, byte[] data)
+    //{
+    //  return Serialize(DefaultFlag, dest, source, DefaultHop, 0, command, data);
+    //}
 
-    protected ICSPEncryptedMsg Serialize(AmxDevice dest, AmxDevice source, ushort command, byte[] data)
-    {
-      return Serialize(DefaultFlag, dest, source, DefaultHop, 0, command, data);
-    }
+    //protected ICSPEncryptedMsg Serialize(AmxDevice dest, AmxDevice source, ushort id, ushort command, byte[] data)
+    //{
+    //  return Serialize(DefaultFlag, dest, source, DefaultHop, id, command, data);
+    //}
 
-    protected ICSPEncryptedMsg Serialize(AmxDevice dest, AmxDevice source, ushort id, ushort command, byte[] data)
-    {
-      return Serialize(DefaultFlag, dest, source, DefaultHop, id, command, data);
-    }
+    //protected ICSPEncryptedMsg Serialize(ICSPMsgFlag flag, AmxDevice dest, AmxDevice source, ushort id, ushort command, byte[] data)
+    //{
+    //  return Serialize(flag, dest, source, DefaultHop, id, command, data);
+    //}
 
-    protected ICSPEncryptedMsg Serialize(ICSPMsgFlag flag, AmxDevice dest, AmxDevice source, ushort id, ushort command, byte[] data)
-    {
-      return Serialize(flag, dest, source, DefaultHop, id, command, data);
-    }
+    //protected ICSPEncryptedMsg Serialize(AmxDevice dest, AmxDevice source, byte hop, ushort id, ushort command, byte[] data)
+    //{
+    //  return Serialize(DefaultFlag, dest, source, hop, id, command, data);
+    //}
 
-    protected ICSPEncryptedMsg Serialize(AmxDevice dest, AmxDevice source, byte hop, ushort id, ushort command, byte[] data)
-    {
-      return Serialize(DefaultFlag, dest, source, hop, id, command, data);
-    }
+    //protected ICSPEncryptedMsg Serialize(ICSPMsgFlag flag, AmxDevice dest, AmxDevice source, byte hop, ushort id, ushort command, byte[] data)
+    //{
+    //  /*
+    //  CustomDataLength = (ushort)(PacketLengthMin + (data?.Length ?? 0) - 4);
 
-    protected ICSPEncryptedMsg Serialize(ICSPMsgFlag flag, AmxDevice dest, AmxDevice source, byte hop, ushort id, ushort command, byte[] data)
-    {
-      /*
-      CustomDataLength = (ushort)(PacketLengthMin + (data?.Length ?? 0) - 4);
+    //  Flag = flag;
 
-      Flag = flag;
+    //  Dest = dest;
 
-      Dest = dest;
+    //  Source = source;
 
-      Source = source;
+    //  EncryptionType = hop;
 
-      EncryptionType = hop;
+    //  if(id > 0)
+    //    ID = id;
+    //  else
+    //    ID = ++MsgId;
 
-      if(id > 0)
-        ID = id;
-      else
-        ID = ++MsgId;
+    //  Command = command;
 
-      Command = command;
+    //  EncryptedData = data;
 
-      EncryptedData = data;
+    //  RawData = new byte[CustomDataLength + 4];
 
-      RawData = new byte[CustomDataLength + 4];
+    //  RawData[00] = Protocol;
 
-      RawData[00] = Protocol;
+    //  RawData[01] = (byte)(CustomDataLength >> 8);
+    //  RawData[02] = (byte)(CustomDataLength);
 
-      RawData[01] = (byte)(CustomDataLength >> 8);
-      RawData[02] = (byte)(CustomDataLength);
+    //  RawData[03] = (byte)((ushort)Flag >> 8);
+    //  RawData[04] = (byte)((ushort)Flag);
 
-      RawData[03] = (byte)((ushort)Flag >> 8);
-      RawData[04] = (byte)((ushort)Flag);
+    //  var lDsp = Dest.GetBytesSDP();
 
-      var lDsp = Dest.GetBytesSDP();
+    //  RawData[05] = lDsp[0];
+    //  RawData[06] = lDsp[1];
+    //  RawData[07] = lDsp[2];
+    //  RawData[08] = lDsp[3];
+    //  RawData[09] = lDsp[4];
+    //  RawData[10] = lDsp[5];
 
-      RawData[05] = lDsp[0];
-      RawData[06] = lDsp[1];
-      RawData[07] = lDsp[2];
-      RawData[08] = lDsp[3];
-      RawData[09] = lDsp[4];
-      RawData[10] = lDsp[5];
+    //  lDsp = Source.GetBytesSDP();
 
-      lDsp = Source.GetBytesSDP();
+    //  RawData[11] = lDsp[0];
+    //  RawData[12] = lDsp[1];
+    //  RawData[13] = lDsp[2];
+    //  RawData[14] = lDsp[3];
+    //  RawData[15] = lDsp[4];
+    //  RawData[16] = lDsp[5];
 
-      RawData[11] = lDsp[0];
-      RawData[12] = lDsp[1];
-      RawData[13] = lDsp[2];
-      RawData[14] = lDsp[3];
-      RawData[15] = lDsp[4];
-      RawData[16] = lDsp[5];
+    //  RawData[17] = EncryptionType;
 
-      RawData[17] = EncryptionType;
+    //  RawData[18] = (byte)(ID >> 8);
+    //  RawData[19] = (byte)(ID);
 
-      RawData[18] = (byte)(ID >> 8);
-      RawData[19] = (byte)(ID);
+    //  RawData[20] = (byte)(Command >> 8);
+    //  RawData[21] = (byte)(Command);
 
-      RawData[20] = (byte)(Command >> 8);
-      RawData[21] = (byte)(Command);
+    //  if(EncryptedData != null)
+    //    Array.Copy(EncryptedData, 0, RawData, 22, EncryptedData.Length);
 
-      if(EncryptedData != null)
-        Array.Copy(EncryptedData, 0, RawData, 22, EncryptedData.Length);
+    //  byte lCs = 0;
 
-      byte lCs = 0;
+    //  unchecked // Let overflow occur without exceptions
+    //  {
+    //    foreach(byte b in RawData)
+    //      lCs += b;
+    //  }
 
-      unchecked // Let overflow occur without exceptions
-      {
-        foreach(byte b in RawData)
-          lCs += b;
-      }
+    //  // Checksum
+    //  RawData[RawData.Length - 1] = Checksum = lCs;
+    //  */
 
-      // Checksum
-      RawData[RawData.Length - 1] = Checksum = lCs;
-      */
-
-      return this;
-    }
+    //  return this;
+    //}
 
     #endregion
 
@@ -353,33 +322,6 @@ namespace ICSP.Core
         Logger.LogVerbose(false, "{0:l} Dest          : {1:l}", lName, Dest);
 
       Logger.LogVerbose(false, "{0:l} Checksum      : 0x{1:X2}", lName, Checksum);
-
-      Logger.LogVerbose(false, "--------------------------------------------------------------------------------------------");
-
-      Logger.LogVerbose(false, "{0:l} [PrivateKey]  : 0x: {1:l}", lName, BitConverter.ToString(DebugPrivateKey).Replace("-", ""));
-      Logger.LogVerbose(false, "{0:l} [SaltKey]     : 0x: {1:l}", lName, BitConverter.ToString(DebugSaltKey).Replace("-", ""));
-
-      var lCryptoProvider = RC4.Create(DebugHash);
-
-      DebugDecrypted1 = new byte[EncryptedData.Length];
-      Array.Copy(EncryptedData, 0, DebugDecrypted1, 0, EncryptedData.Length);
-
-      DebugDecrypted2 = new byte[EncryptedData.Length];
-      Array.Copy(EncryptedData, 0, DebugDecrypted2, 0, EncryptedData.Length);
-
-      lCryptoProvider = RC4.Create(DebugHash);
-      lCryptoProvider.TransformBlock(DebugDecrypted1, DebugSaltKey);
-
-      Logger.LogVerbose(false, "{0:l} EncryptedData : 0x: {1:l}", lName, BitConverter.ToString(EncryptedData).Replace("-", ""));
-
-      Logger.LogVerbose(false, "{0:l} [Decrypted1]  : 0x: {1:l}", lName, BitConverter.ToString(DebugDecrypted1).Replace("-", ""));
-
-      // Try / verify another algorithm
-      var lDecryptedData = RC4Algorithm.ApplyDirect(DebugDecrypted2, DebugSaltKey);
-      
-      Logger.LogVerbose(false, "{0:l} [Decrypted2]  : 0x: {1:l}", lName, BitConverter.ToString(lDecryptedData).Replace("-", ""));
-
-      Logger.LogVerbose(false, "--------------------------------------------------------------------------------------------");
     }
   }
 }

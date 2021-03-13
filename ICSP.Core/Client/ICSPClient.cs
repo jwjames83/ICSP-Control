@@ -9,12 +9,10 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-using ICSP.Core.Constants;
 using ICSP.Core.Cryptography;
 using ICSP.Core.Extensions;
 using ICSP.Core.Logging;
 using ICSP.Core.Manager.ConnectionManager;
-using ICSP.Core.Manager.DeviceManager;
 
 using Serilog.Events;
 
@@ -58,6 +56,7 @@ namespace ICSP.Core.Client
 
     public ICSPClient()
     {
+      Credentials = new NetworkCredential(ICSPManager.DefaultUsername, ICSPManager.DefaultPassword);
     }
 
     public static MsgFactory Factory { get; } = new MsgFactory();
@@ -91,6 +90,12 @@ namespace ICSP.Core.Client
     {
       get { return mSocket?.Connected ?? false; }
     }
+
+    public NetworkCredential Credentials { get; set; }
+
+    public int AuthenticationState { get; private set; }
+
+    public int EncryptionMode { get; private set; }
 
     public IPEndPoint RemoteEndPoint { get; private set; }
 
@@ -292,7 +297,7 @@ namespace ICSP.Core.Client
             return;
           }
 
-          Logger.LogVerbose("Data: {0} Bytes", lCount);
+          Logger.LogVerbose("Data {0} bytes", lCount);
 
           lBytes.AddRange(lBuffer.Range(0, lCount));
 
@@ -300,6 +305,9 @@ namespace ICSP.Core.Client
           // Preprocess Packet
           while(lBytes.Count >= ICSPMsg.PacketLengthMin)
           {
+            if(Logger.LogLevel <= LogEventLevel.Verbose)
+              Logger.LogVerbose("Data 0x: {0:l}", BitConverter.ToString(lBytes.ToArray()).Replace("-", " "));
+
             var lProtocol = lBytes[0];
 
             if(lProtocol != ICSPMsg.ProtocolValue && lProtocol != ICSPEncryptedMsg.ProtocolValue)
@@ -316,45 +324,78 @@ namespace ICSP.Core.Client
 
             if(lBytes.Count >= lPacketSize)
             {
-              var lDataSize = ((lBytes[1] << 8) | lBytes[2]);
-
-              ProcessData(lBytes[0], lDataSize, lBytes.GetRange(3, lPacketSize - 3).ToArray());
-
               var lPacketBytes = lBytes.GetRange(0, lPacketSize).ToArray();
 
               lBytes.RemoveRange(0, lPacketSize);
 
               switch(lProtocol)
               {
+                // ================================
+                // Default data
+                // ================================
                 case ICSPMsg.ProtocolValue:
                 {
                   var lMsg = Factory.FromData(lPacketBytes);
 
                   if(lMsg is MsgCmdChallengeRequestMD5 msg)
+                  {
                     mAuthenticationChallenge = msg.Challenge;
+
+                    using var lHashAlgorithm = HashAlgorithm.Create("MD5");
+
+                    if(lHashAlgorithm == null)
+                      throw new Exception("ICSP: Failed to build encryption key!");
+
+                    var lHash = lHashAlgorithm.ComputeHash(
+                      mAuthenticationChallenge
+                      .Concat(Encoding.UTF8.GetBytes(Credentials?.UserName ?? ICSPManager.DefaultUsername))
+                      .Concat(Encoding.UTF8.GetBytes(Credentials?.Password ?? ICSPManager.DefaultPassword)).ToArray());
+
+                    mCryptoProvider = RC4.Create(lHash);
+                  }
 
                   if(lMsg is MsgCmdChallengeAckMD5 msgAck)
                   {
                     var lState = msgAck.Status;
 
-                    if((lState & AuthenticationState.NotAllowed) != 0)
+                    /*
+                    AuthenticatedBlinkOff = 3;
+                    AuthenticatedBlinkOn  = 4;  
+                    EncryptedBlinkOff     = 5;  
+                    EncryptedBlinkOn      = 6;  
+                    AuthenticationFailed  = 7;  
+                    AccessNotAllowed      = 8;
+
+                    public int ICSP_Authenticated = 1;
+                    public int ICSP_AuthenticatedNotAllowed = 0x8000;
+
+                    public int ICSP_EncryptionAlgorithmNone = 0;
+                    public int ICSP_EncryptionAlgorithmRC4 = 4;
+                    public int ICSP_EncryptionAlgorithmFuture1 = 6;
+                    public int ICSP_EncryptionAlgorithmMask = 6;
+
+                    public int ICSP_PacketEncryptionRC4 = 2;
+                    */
+
+                    if((lState & Core.AuthenticationState.NotAllowed) != 0)
                     {
                       // 1000 0000 0000 0000
-                      mConnection.AuthenticationState = 4;
+                      AuthenticationState = 4;
                     }
-                    else if((lState & AuthenticationState.Authenticated) != 0)
+                    else if((lState & Core.AuthenticationState.Authenticated) != 0)
                     {
                       // Success
                       // 0000 0000 0000 0001
-                      mConnection.AuthenticationState = (int)AuthenticationState.Authenticated;
+                      AuthenticationState = (int)Core.AuthenticationState.Authenticated;
 
                       // 0000 0000 0000 0110 (6)
-                      if((lState & AuthenticationState.DoEncrypt | AuthenticationState.EncryptionModeRC4) != 0)
+                      if((lState & Core.AuthenticationState.DoEncrypt | Core.AuthenticationState.EncryptionModeRC4) != 0)
                       {
-                        mConnection.AuthenticationState = 2;
+                        AuthenticationState = 2;
 
-                        mConnection.EncryptionMode = (int)(lState & AuthenticationState.DoEncrypt | AuthenticationState.EncryptionModeRC4);
+                        EncryptionMode = (int)(lState & Core.AuthenticationState.DoEncrypt | Core.AuthenticationState.EncryptionModeRC4);
 
+                        /*
                         switch((int)(lState & AuthenticationState.DoEncrypt | AuthenticationState.EncryptionModeRC4))
                         {
                           case 4: // RC4
@@ -366,16 +407,15 @@ namespace ICSP.Core.Client
 
                             var lHash = lHashAlgorithm.ComputeHash(
                               mAuthenticationChallenge
-                              .Concat(Encoding.UTF8.GetBytes("administrator"))
-                              .Concat(Encoding.UTF8.GetBytes("password")).ToArray());
+                              .Concat(Encoding.UTF8.GetBytes(Credentials?.UserName ?? ICSPManager.DefaultUsername))
+                              .Concat(Encoding.UTF8.GetBytes(Credentials?.Password ?? ICSPManager.DefaultPassword)).ToArray());
 
                             mCryptoProvider = RC4.Create(lHash);
-
-                            ICSPEncryptedMsg.DebugPrivateKey = mCryptoProvider.mPrivateKey;
 
                             break;
                           }
                         }
+                        */
                       }
                     }
                   }
@@ -384,34 +424,29 @@ namespace ICSP.Core.Client
 
                   break;
                 }
+                // ================================
+                // Encrypted data
+                // ================================
                 case ICSPEncryptedMsg.ProtocolValue:
                 {
-                  var lEncryptedMsg = ICSPEncryptedMsg.FromData(lPacketBytes);
-
-                  // Logger.LogVerbose("{0} Bytes", lMsg.RawData.Length);
-                  // Logger.LogVerbose("Data 0x: {0:l}", BitConverter.ToString(lMsg.RawData).Replace("-", " "));
+                  var lEncryptedMsg = new ICSPEncryptedMsg(mCryptoProvider, lPacketBytes);
 
                   if(Logger.LogLevel <= LogEventLevel.Verbose)
                     lEncryptedMsg.WriteLogVerbose();
 
-                  if(mCryptoProvider != null)
-                  {
-                    mCryptoProvider.TransformBlock(lEncryptedMsg.EncryptedData, lEncryptedMsg.Salt);
+                  lPacketBytes = lEncryptedMsg.GetDecryptedData();
 
-                    var lMsg = Factory.FromData(lEncryptedMsg.EncryptedData);
+                  var lMsg = Factory.FromData(lPacketBytes);
 
-                    OnDataReceived(new ICSPMsgDataEventArgs(lMsg));
-                  }
+                  OnDataReceived(new ICSPMsgDataEventArgs(lMsg));
 
                   break;
                 }
               }
-
-              // mManager.OnDataReceived(this, lMsg);
             }
             else
             {
-              Logger.LogVerbose("Buffer: {0} Bytes, Needed {1} Bytes", lCount, lPacketSize);
+              Logger.LogVerbose("Buffer: {0} bytes, needed {1} bytes", lCount, lPacketSize);
               break;
             }
           }
@@ -446,571 +481,6 @@ namespace ICSP.Core.Client
       mHasShutdown = false;
     }
 
-    // In work ...
-    private IcspConnection mConnection = new IcspConnection();
-
-    private int ProcessData(int protocol, int size, byte[] buffer)
-    {
-      int desSystem;
-      int desDevice;
-      int desPort;
-
-      int srcSystem;
-      int srcDevice;
-      int srcPort;
-
-      int id;
-
-      bool nIsNewbee;
-
-      if(buffer == null)
-      {
-        Console.WriteLine("IcspTcpTransport::processRX - bad buffer/packet");
-        return 0;
-      }
-
-      if(protocol != 2 && protocol != 4)
-      {
-        Console.WriteLine("IcspTcpTransport::processRX Protocol = " + protocol);
-        return 0;
-      }
-
-      byte checksum = (byte)protocol;
-
-      checksum = (byte)(checksum + (size >> 8));
-      checksum = (byte)(checksum + (size & 0xFF));
-
-      int index;
-
-      for(index = 0; index < size; index++)
-        checksum = (byte)(checksum + buffer[index]);
-
-      if(checksum != buffer[size])
-      {
-        Console.WriteLine("IcspTcpTransport::processRX checksum error packet");
-        return 0;
-      }
-
-      var lStream = new DataInputStream(new MemoryStream(buffer, 0, size));
-
-      if(protocol == 4)
-      {
-        try
-        {
-          byte[] encryptedData;
-
-          lStream.ReadUShort();
-          lStream.ReadUShort();
-
-          var lEncryptionType = lStream.ReadByte();
-
-          var cStr = BitConverter.ToString(buffer).Replace("-", " ");
-
-          Console.WriteLine(cStr);
-
-          // ---------------------------------------------------------------------------------------------
-          // P  | Len   | Flag  | Dest              | Source            | H  | ID    | CMD   | N-Data | CS
-          // ---------------------------------------------------------------------------------------------
-
-          // ---------------------------------------------------------------------------------------------
-          //  srcSys | srcPort | ET | Ln | Salt        | desSys  | desDev | Encrypted Data | CS
-          // ---------------------------------------------------------------------------------------------
-          // 00 01   | 00 00   | 02 | 08 | 5B CF 08 88 | 00 01   | 7D 01  | 04 D3 D5 45 E0 D2 64 97 72 9C 3C A3 82 22 E5 49 C9 20 67 5A E7 6E 29 9F B5 96 61 E2 74 48 F3 | D6
-
-          if(lEncryptionType == 2) // RC4
-          {
-            var lLen = lStream.ReadByte();
-
-            var lDataSize = size - 6 - lLen;
-
-            var lSaltValue = new byte[4];
-
-            lStream.Read(lSaltValue);
-
-            srcDevice = lStream.ReadUShort();
-            desDevice = lStream.ReadUShort();
-
-            if(mConnection != null)
-            {
-              if(mConnection.CryptoProvider is RC4 cryptoProvider)
-              {
-                encryptedData = new byte[lDataSize];
-
-                lStream.Read(encryptedData);
-
-                // ==============================================================================================================================
-                // TEST-STUFF ...
-                // ==============================================================================================================================
-
-                /*
-                var lTestChallenge = new byte[] { 0x51, 0xa4, 0x0e, 0x5f, };
-
-                using var lHashAlgorithm = HashAlgorithm.Create("MD5");
-
-                if(lHashAlgorithm == null)
-                  throw new Exception("ICSP: Failed to build encryption key!");
-
-                var lHash = lHashAlgorithm.ComputeHash(
-                  lTestChallenge
-                  .Concat(Encoding.UTF8.GetBytes(Convert.ToBase64String(Encoding.UTF8.GetBytes("administrator"))))
-                  .Concat(Encoding.UTF8.GetBytes(Convert.ToBase64String(Encoding.UTF8.GetBytes("password")))).ToArray());
-
-                var lCryptoProvider = RC4.Create(lHash);
-
-                // ---------------------------------------------------------------------------------------------
-                //            SrcS SrcDev | ET | Ln | Salt        | dSys desDEv | srcPort | Encrypted Data | CS
-                // ---------------------------------------------------------------------------------------------
-                // 04 00 21 | 00 01 00 00 | 01 | 04 | 52 2a 17 f5 | ea b5 b4 2d 46 cb 40 2b 83 82 7a 98 07 e3 2c 8e 85 b2 e1 db 19 40 cd | 83
-
-                var lTestSalt = new byte[] { 0x52, 0x2a, 0x17, 0xf5, };
-
-                var lEncryptedTestData = new byte[] { 0xea, 0xb5, 0xb4, 0x2d, 0x46, 0xcb, 0x40, 0x2b, 0x83, 0x82, 0x7a, 0x98, 0x07, 0xe3, 0x2c, 0x8e, 0x85, 0xb2, 0xe1, 0xdb, 0x19, 0x40, 0xcd, };
-
-                cStr = BitConverter.ToString(lEncryptedTestData).Replace("-", " ");
-
-                Console.WriteLine(cStr);
-
-                lCryptoProvider.TransformBlock(lEncryptedTestData, 0, 23, lTestSalt);
-
-                lCryptoProvider.TransformBlockDefault(lEncryptedTestData, lTestSalt);
-
-                // EA B5 B4 2D 46 CB 40 2B 83 82 7A 98 07 E3 2C 8E 85 B2 E1 DB 19 40 CD
-                // ED 23 6D 08 33 A0 0A E5 53 18 CE FF 82 B5 5F 7C E0 9F 0C D5 CB B2 F4
-
-                cStr = BitConverter.ToString(lEncryptedTestData).Replace("-", " ");
-
-                Console.WriteLine(cStr);
-                */
-
-                // ==============================================================================================================================
-                // TEST-STUFF ...
-                // ==============================================================================================================================
-
-                cStr = BitConverter.ToString(encryptedData).Replace("-", " ");
-
-                Console.WriteLine(cStr);
-
-                // E6 3C 9A 0B 29 6B 1E 6F 93 37 C6 48 EB 39 03 FC 91 5B 18 4F 98 1C 11 50 55 6C 80 8D 40 EC 5B
-
-                cryptoProvider.TransformBlock(encryptedData, lSaltValue);
-
-                cStr = BitConverter.ToString(encryptedData).Replace("-", " ");
-
-                Console.WriteLine(cStr);
-
-                // 02 00 1B 02 00 00 01 7D 01 00 01 00 01 00 00 00 01 0F FF 86 00 91 3A 98 00 01 00 01 00 00 9A
-              }
-              else
-              {
-                Console.WriteLine("IcspTcpTransport.processRX: Received encrypted packet but encryption not initialized for device");
-                return 0;
-              }
-            }
-            else
-            {
-              return 0;
-            }
-          }
-          else
-          {
-            Console.WriteLine("IcspTcpTransport.processRX: received packet with invalid encryption type - " + lEncryptionType);
-            return 0;
-          }
-
-          lStream = new DataInputStream(new MemoryStream(encryptedData));
-
-          protocol = lStream.ReadByte();
-
-          if(protocol != 2)
-          {
-            Console.WriteLine("IcspTcpTransport.processRX: bad protocol in decrypted data = " + protocol);
-            return 0;
-          }
-
-          size = lStream.ReadUShort();
-
-          checksum = (byte)protocol;
-          checksum = (byte)(checksum + (size >> 8));
-          checksum = (byte)(checksum + (size & 0xFF));
-
-          for(index = 0; index < size; index++)
-            checksum = (byte)(checksum + encryptedData[index + 3]);
-
-          if(checksum != encryptedData[size + 3])
-          {
-            Console.WriteLine("IcspTcpTransport.processRX: decrypted checksum error packet, caluclated=" + checksum + " data=" + encryptedData[size + 3]);
-            return 0;
-          }
-
-          Array.Copy(encryptedData, 3, buffer, 0, size);
-        }
-        catch(IOException ex)
-        {
-          Console.WriteLine("IcspTcpTransport.processRX: parse error in encrypted data", ex);
-
-          return 0;
-        }
-      }
-
-      try
-      {
-        var flags = (ICSPMsgFlag)lStream.ReadUShort();
-
-        desSystem = lStream.ReadUShort();
-        desDevice = lStream.ReadUShort();
-        desPort = lStream.ReadUShort();
-
-        srcSystem = lStream.ReadUShort();
-        srcDevice = lStream.ReadUShort();
-        srcPort = lStream.ReadUShort();
-
-        lStream.ReadByte(); // Hop
-
-        id = lStream.ReadUShort();
-
-        // DynamicDeviceAddressResponse = 0x0503;
-        int command = lStream.ReadUShort();
-
-        nIsNewbee = ((flags & ICSPMsgFlag.Newbee) != 0) ? true : false;
-
-        switch(command)
-        {
-          case ConnectionManagerCmd.ChallengeRequestMD5: // MD5-Challenge request
-          {
-            var challengeData = new byte[4];
-
-            challengeData[0] = lStream.ReadByte();
-            challengeData[1] = lStream.ReadByte();
-            challengeData[2] = lStream.ReadByte();
-            challengeData[3] = lStream.ReadByte();
-
-            mAuthenticationChallenge = challengeData;
-
-            mConnection.AuthenticationChallenge = challengeData;
-
-            // DebugStuff ...
-
-            ICSPEncryptedMsg.DebugChallenge = challengeData;
-
-            using var lHashAlgorithm = HashAlgorithm.Create("MD5");
-
-            if(lHashAlgorithm == null)
-              throw new Exception("ICSP: Failed to build encryption key!");
-
-            var lHash = lHashAlgorithm.ComputeHash(
-              challengeData
-              .Concat(Encoding.UTF8.GetBytes(Convert.ToBase64String(Encoding.UTF8.GetBytes("administrator"))))
-              .Concat(Encoding.UTF8.GetBytes(Convert.ToBase64String(Encoding.UTF8.GetBytes("password")))).ToArray());
-
-            ICSPEncryptedMsg.DebugHash = lHash;
-
-            var lProvider = RC4.Create(lHash);
-
-            ICSPEncryptedMsg.DebugPrivateKey = lProvider.mPrivateKey;
-
-            break;
-          }
-          case 0x0731: // NX-1200 -> Authentication Challenge request for SHA256?
-          {
-            return 0;
-          }
-          case ConnectionManagerCmd.ChallengeAckMD5:
-          {
-            // MD5 Second part
-
-            var cStr = BitConverter.ToString(buffer).Replace("-", " ");
-
-            //          | ---------------------------------------------------------------------------------------------
-            //          | Flag  | Dest              | Source            | H  | ID    | CMD   | N-Data      | CS
-            //          | ---------------------------------------------------------------------------------------------
-            //          | 02 08 | 00 01 7D 01 00 01 | 00 01 00 00 00 01 | 0F | 00 03 | 07 03 | 00 00 00 00 | C1
-
-            // Fail:    | 02 08 | 00 01 7d 01 00 00 | 00 01 00 00 00 00 | 0f | 00 03 | 07 03 | 00 00 | 00 00 | bf
-            // OK:      | 02 08 | 00 01 7d 01 00 00 | 00 01 00 00 00 00 | 0f | 00 09 | 07 03 | 00 03 | ff ff | c6
-
-            // send ... Protokoll 4!
-            // 04 00 69 | 00 01 7d 01 01 04 00 29 48 23 1a b1 3c 4a a3 3f d7 cf 0a 5e 64 0a 73 a7 73 2b b0 b7 87 32 a2 95 24 16 7d c9 d4 62 c9 ee dc 4f 90 07 06 dd dc 6d 35 61 d0 b6 23 2c f5 d3 75 d7 00 cb 7b a1 12 04 69 92 22 5f ba 58 c4 14 a3 14 2d 90 a0 f4 c6 2d 24 eb fc b7 ec ab 7f 5c 8f e5 db 35 1b 28 0a da a6 41 cf cd a4 94 43 c7 b1 d0
-
-            if(mConnection == null)
-            {
-              Console.WriteLine("IcspTcpTransport.processRX: Authentication result for unknown device -" + desDevice);
-              size = 0;
-              break;
-            }
-
-            var lState = (AuthenticationState)lStream.ReadUShort();
-
-            /*
-            AuthenticatedBlinkOff = 3;
-            AuthenticatedBlinkOn  = 4;  
-            EncryptedBlinkOff     = 5;  
-            EncryptedBlinkOn      = 6;  
-            AuthenticationFailed  = 7;  
-            AccessNotAllowed      = 8;
-            */
-
-            /*
-            public int ICSP_Authenticated = 1;
-            public int ICSP_AuthenticatedNotAllowed = 0x8000;
-
-            public int ICSP_EncryptionAlgorithmNone = 0;
-            public int ICSP_EncryptionAlgorithmRC4 = 4;
-            public int ICSP_EncryptionAlgorithmFuture1 = 6;
-            public int ICSP_EncryptionAlgorithmMask = 6;
-
-            public int ICSP_PacketEncryptionRC4 = 2;
-            */
-
-            if((lState & AuthenticationState.NotAllowed) != 0)
-            {
-              // 1000 0000 0000 0000
-              mConnection.AuthenticationState = 4;
-            }
-            else if((lState & AuthenticationState.Authenticated) != 0)
-            {
-              // Success
-              // 0000 0000 0000 0001
-              mConnection.AuthenticationState = (int)AuthenticationState.Authenticated;
-
-              // 0000 0000 0000 0110 (6)
-              if((lState & AuthenticationState.DoEncrypt | AuthenticationState.EncryptionModeRC4) != 0)
-              {
-                mConnection.AuthenticationState = 2;
-
-                mConnection.EncryptionMode = (int)(lState & AuthenticationState.DoEncrypt | AuthenticationState.EncryptionModeRC4);
-
-                switch((int)(lState & AuthenticationState.DoEncrypt | AuthenticationState.EncryptionModeRC4))
-                {
-                  case 4: // RC4
-                  {
-                    using var lHashAlgorithm = HashAlgorithm.Create("MD5");
-
-                    if(lHashAlgorithm == null)
-                      throw new Exception("ICSP: Failed to build encryption key!");
-
-                    var lHash = lHashAlgorithm.ComputeHash(
-                      mConnection.AuthenticationChallenge
-                      .Concat(Encoding.UTF8.GetBytes("administrator"))
-                      .Concat(Encoding.UTF8.GetBytes("password")).ToArray());
-
-                    mConnection.CryptoProvider = RC4.Create(lHash);
-
-                    ICSPEncryptedMsg.DebugPrivateKey = ((RC4)mConnection.CryptoProvider).mPrivateKey;
-
-                    break;
-                  }
-                }
-              }
-
-              mConnection.HandleTransportEvent(2, mConnection.AuthenticationState);
-            }
-
-            size = 0;
-            break;
-          }
-        }
-      }
-      catch(IOException ex)
-      {
-        Console.WriteLine("IcspTcpTransport.processRX: parse error", ex);
-
-        return 0;
-      }
-
-      if(nIsNewbee)
-        SendAcknowledge(srcSystem, srcDevice, srcPort, desSystem, desDevice, desPort, id);
-
-      return size;
-    }
-
-    private byte[] mSendBuffer = new byte[100];
-
-    private int GetTimeoutFlags()
-    {
-      return 512;
-    }
-
-    protected void SendAuthenticationResponse(int desSystem, int desDevice, int desPort, int srcSystem, int srcDevice, int srcPort, int paramInt7, byte[] hash)
-    {
-      byte[] arrayOfByte = new byte[37];
-
-      arrayOfByte[00] = 0;
-      arrayOfByte[01] = 0;
-      arrayOfByte[02] = (byte)(desSystem >> 8 & 0xFF);
-      arrayOfByte[03] = (byte)(desSystem & 0xFF);
-      arrayOfByte[04] = (byte)(desDevice >> 8 & 0xFF);
-      arrayOfByte[05] = (byte)(desDevice & 0xFF);
-      arrayOfByte[06] = (byte)(desPort >> 8 & 0xFF);
-      arrayOfByte[07] = (byte)(desPort & 0xFF);
-      arrayOfByte[08] = (byte)(srcSystem >> 8 & 0xFF);
-      arrayOfByte[09] = (byte)(srcSystem & 0xFF);
-      arrayOfByte[10] = (byte)(srcDevice >> 8 & 0xFF);
-      arrayOfByte[11] = (byte)(srcDevice & 0xFF);
-      arrayOfByte[12] = (byte)(srcPort >> 8 & 0xFF);
-      arrayOfByte[13] = (byte)(srcPort & 0xFF);
-      arrayOfByte[14] = 16;
-      arrayOfByte[15] = 15;
-      arrayOfByte[16] = 0; // -1
-      arrayOfByte[17] = 7;
-      arrayOfByte[18] = 2;
-      arrayOfByte[19] = (byte)(paramInt7 >> 8 & 0xFF);
-      arrayOfByte[20] = (byte)(paramInt7 & 0xFF);
-
-      for(byte b = 0; b < 16; b++)
-        arrayOfByte[b + 21] = hash[b];
-
-      var cStr = BitConverter.ToString(arrayOfByte).Replace("-", " ");
-      Console.WriteLine(cStr);
-
-      // 00 00 00 01 00 00 00 01 00 01 7D 01 00 01 10 0F 00 | 07 02 | 00 02 | C8 FF 27 66 71 D2 AB 8F DC 97 86 28 21 51 48 CD
-
-      SendInternal(arrayOfByte, 37);
-    }
-
-    private bool SendInternal(byte[] data, int size)
-    {
-      if(data == null)
-      {
-        Console.WriteLine("IcspTcpTransport.send(): msg is null");
-        return false;
-      }
-
-      if(size > 2048)
-      {
-        Console.WriteLine("IcspTcpTransport.send(): packet too large - " + size + " bytes.");
-        return false;
-      }
-
-      mSendBuffer = new byte[100];
-
-      int i = 17;
-      int j = i;
-
-      this.mSendBuffer[j++] = 2;
-      this.mSendBuffer[j++] = (byte)(size >> 8 & 0xFF);
-      this.mSendBuffer[j++] = (byte)(size & 0xFF);
-
-      Array.Copy(data, 0, this.mSendBuffer, j, size);
-
-      j += size;
-
-      int k = GetTimeoutFlags();
-
-      this.mSendBuffer[i + 3] = (byte)(this.mSendBuffer[i + 3] & 0xFF | k >> 8);
-      this.mSendBuffer[i + 4] = (byte)(this.mSendBuffer[i + 4] & 0xFF | k & 0xFF);
-      this.mSendBuffer[i + 17] = 15;
-
-      byte b = 0;
-      int m;
-
-      for(m = i; m < i + size + 3; m++)
-        b = (byte)(b + this.mSendBuffer[m]);
-
-      this.mSendBuffer[i + size + 3] = b;
-
-      m = size + 4;
-
-      int n = ((data[10] & 0xFF) << 8) + (data[11] & 0xFF);
-
-      if(mConnection == null)
-      {
-        Console.WriteLine("IcspTcpTransport.send: message send from unknown device - " + n);
-        return false;
-      }
-
-      if(mConnection.EncryptionMode == 4)
-      {
-        if(mConnection.CryptoProvider is not null and RC4)
-        {
-          var m_rand = new Random();
-
-          int i1 = (m_rand.Next() << 16) + m_rand.Next();
-
-          byte[] lSaltValue = new byte[4];
-
-          lSaltValue[0] = (byte)(i1 >> 24 & 0xFF);
-          lSaltValue[1] = (byte)(i1 >> 16 & 0xFF);
-          lSaltValue[2] = (byte)(i1 >> 8 & 0xFF);
-          lSaltValue[3] = (byte)(i1 & 0xFF);
-
-          mConnection.CryptoProvider.TransformBlock(this.mSendBuffer, lSaltValue);
-
-          i = j = 0;
-
-          this.mSendBuffer[j++] = 4;
-          this.mSendBuffer[j++] = (byte)(m + 18 - 4 >> 8 & 0xFF);
-          this.mSendBuffer[j++] = (byte)(m + 18 - 4 & 0xFF);
-          this.mSendBuffer[j++] = data[8];
-          this.mSendBuffer[j++] = data[9];
-          this.mSendBuffer[j++] = data[10];
-          this.mSendBuffer[j++] = data[11];
-          this.mSendBuffer[j++] = 2;
-          this.mSendBuffer[j++] = 8;
-
-          byte b1;
-
-          for(b1 = 0; b1 < 4; b1++)
-            this.mSendBuffer[j++] = lSaltValue[b1];
-
-          this.mSendBuffer[j++] = data[2];
-          this.mSendBuffer[j++] = data[3];
-          this.mSendBuffer[j++] = data[4];
-          this.mSendBuffer[j++] = data[5];
-
-          b = 0;
-
-          for(b1 = 0; b1 < m + 18 - 1; b1++)
-            b = (byte)(b + this.mSendBuffer[b1]);
-
-          this.mSendBuffer[m + 18 - 1] = b;
-
-          m += 18;
-        }
-        else
-        {
-          Console.WriteLine("IcspTcpTransport.send: encryption algorithm not initialized for device " + n);
-        }
-      }
-
-      /*
-      if(this.m_out != null)
-      {
-        try
-        {
-          this.m_out.write(this.m_txBuffer, i, m);
-          this.m_out.flush();
-          return true;
-        }
-        catch(IOException iOException)
-        {
-          Console.WriteLine("IcspTcpTransport: Socket write exception");
-        }
-      }
-      else
-      {
-        Console.WriteLine("IcspTcpTransport: Bad m_socket. msg not sent");
-      }
-      */
-
-      var cStr = BitConverter.ToString(this.mSendBuffer).Replace("-", " ");
-
-      Console.WriteLine(cStr);
-
-      // ---------------------------------------------------------------------------------------------------------------------------------
-      // Flag  | Dest              | Source            | H  | ID    | CMD   | N-Data      | CS
-      // ---------------------------------------------------------------------------------------------------------------------------------
-
-      // 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
-      // 02 00 25 
-      // 02 00 | 00 01 00 00 00 01 | 00 01 7D 01 00 01 | 0F | 0F 00 | 07 02 | 00 02 | C8 FF 27 66 71 D2 AB 8F DC 97 86 28 21 51 48 CD | 4D
-
-      return false;
-    }
-
-    private void SendAcknowledge(int desSystem, int desDevice, int desPort, int srcSystem, int srcDevice, int srcPort, int id)
-    {
-    }
-
     private void OnClientDisconnected()
     {
       Logger.LogInfo("Client Disconnected: {0:l}", RemoteEndPoint);
@@ -1030,149 +500,6 @@ namespace ICSP.Core.Client
       {
         Logger.LogError(ex);
       }
-    }
-  }
-
-  internal class IcspConnection
-  {
-    private int mSystem;
-    private int mDevice;
-
-    private List<DeviceInfoData> mDeviceInfoList = new List<DeviceInfoData>();
-
-    public IcspConnection()
-    {
-      mDeviceInfoList.Add(new DeviceInfoData(10000, null));
-    }
-
-    internal ICrypto CryptoProvider { get; set; }
-
-    internal int ConnectionState { get; set; }
-
-    internal int AuthenticationState { get; set; }
-
-    internal int EncryptionMode { get; set; }
-
-    internal byte[] AuthenticationChallenge { get; set; }
-
-    internal void HandleTransportEvent(int connectionState, int authenticationState)
-    {
-      if(connectionState == 1)
-      {
-        switch(authenticationState)
-        {
-          case 0:
-          {
-            if(mDevice == 0)
-            {
-              ConnectionState = 2;
-
-              // Generate dynamic device address request ...
-              // generateRequestDynamicDeviceAddress(this, 38, m_stack.nextMessageId(), m_system, 0, 1, m_system, m_device, 1, m_device, m_address);
-            }
-            else
-            {
-              ConnectionState = 3;
-              SendDeviceInfoMessages(0);
-            }
-
-            return;
-          }
-          case 3:
-          case 5:
-          {
-            ConnectionState = 1;
-            AuthenticationChallenge = null;
-            AuthenticationState = 0;
-            EncryptionMode = 0;
-
-            if(mDevice >= 32001)
-            {
-              ConnectionState = 2;
-              mDevice = 0;
-            }
-
-            return;
-          }
-          case 1:
-          case 2:
-          case 4:
-          {
-            mSystem = 0;
-            return;
-          }
-        }
-
-        Console.WriteLine("IcspDevice.handleTransportEvent: invalid connect event type = " + authenticationState);
-      }
-      else if(connectionState == 2)
-      {
-        if(authenticationState == 1 || authenticationState == 2)
-          SendDeviceInfoMessages(-1);
-      }
-      else
-      {
-        // m_log.error("IcspDevice.processTransportEvent: invalid event type = " + connectionState);
-      }
-    }
-
-    protected void SendDeviceInfoMessages(int deviceIndex)
-    {
-      int deviceListCount = mDeviceInfoList.Count;
-
-      if(deviceIndex == 0)
-        deviceListCount = 1;
-
-      if(deviceIndex == -1)
-        deviceIndex = 0;
-
-      //if(m_log.getLogLevel() >= 4)
-      //  m_log.debug("sendDeviceInfoMessages(" + deviceIndex + "," + deviceListCount + ") for device " + m_device);
-
-      for(int index = deviceIndex; index < deviceListCount; index++)
-      {
-        DeviceInfoData icspDeviceInfo = mDeviceInfoList[index];
-
-        if(icspDeviceInfo != null)
-        {
-          Console.WriteLine(icspDeviceInfo);
-
-          // var req = MsgCmdDeviceInfo.CreateRequest(new AmxDevice(0,1,0), new AmxDevice(0, 1, 0), icspDeviceInfo);
-
-          // m_stack.generateDeviceInfo((j == 0) ? 18 : 0, m_stack.nextMessageId(), m_system, 0, 1, m_system, m_device, 1, 
-          // m_system, m_device, icspDeviceInfo.flag, icspDeviceInfo.objectId, icspDeviceInfo.parentId, icspDeviceInfo.mfgId, icspDeviceInfo.deviceId,
-          // icspDeviceInfo.serialNumber, icspDeviceInfo.firmwareId, icspDeviceInfo.version, icspDeviceInfo.deviceName, icspDeviceInfo.mfgName, m_address);
-        }
-      }
-    }
-  }
-
-  internal class DataInputStream
-  {
-    private MemoryStream mMemoryStream;
-
-    public DataInputStream(MemoryStream memoryStream)
-    {
-      mMemoryStream = memoryStream;
-    }
-
-    internal void Read(byte[] buffer)
-    {
-      mMemoryStream.Read(buffer, 0, buffer.Length);
-    }
-
-    internal byte ReadByte()
-    {
-      return (byte)mMemoryStream.ReadByte();
-    }
-
-    internal int ReadUShort()
-    {
-      var buffer = new byte[2];
-
-      mMemoryStream.Read(buffer, 0, 2);
-
-      return ((buffer[0] << 8) | buffer[1]);
     }
   }
 }

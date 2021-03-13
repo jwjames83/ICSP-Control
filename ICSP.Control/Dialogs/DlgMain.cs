@@ -90,6 +90,9 @@ namespace ICSPControl.Dialogs
       Manager.DiscoveryInfo += OnDiscoveryInfo;
       Manager.BlinkMessage += OnBlinkMessage;
 
+      Manager.Credentials.UserName = Settings.Default.AmxUserName;
+      Manager.Credentials.Password = Settings.Default.AmxPassword;
+
       DockPanel.Theme = new WeifenLuo.WinFormsUI.Docking.VS2015BlueTheme();
 
       if(Settings.Default.AutoConnect)
@@ -111,6 +114,9 @@ namespace ICSPControl.Dialogs
     {
       try
       {
+        Manager.Credentials.UserName = Settings.Default.AmxUserName;
+        Manager.Credentials.Password = Settings.Default.AmxPassword;
+
         _ = Manager.ConnectAsync(Settings.Default.AmxHost, Settings.Default.AmxPort);
       }
       catch(Exception ex)

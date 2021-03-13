@@ -336,7 +336,9 @@ namespace ICSP.Core.Manager.DeviceManager
     /// <summary>
     /// 16-bit bit field. 
     /// Bit 0 - If set, this message was generated in 
-    /// response to a button press while Identify mode is active.
+    /// response to a button press while Identify mode is active.<br/>
+    /// If bit 6 is set (0x0020), new NX-Series controller returns a unknown Authentication Challenge request (0x731),
+    /// if option [Authenticate AMX Devices On LAN Ports] is enabled.
     /// </summary>
     public ushort DataFlag { get; private set; }
 

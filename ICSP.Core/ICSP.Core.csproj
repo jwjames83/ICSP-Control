@@ -131,6 +131,8 @@
     <Compile Include="Logging\MethodInfo.cs" />
     <Compile Include="Logging\TraceListener.cs" />
     <Compile Include="Manager\ConnectionManager\MsgCmdChallengeAckMD5.cs" />
+    <Compile Include="Manager\ConnectionManager\MsgCmdExtChallengeRequest.cs" />
+    <Compile Include="Manager\ConnectionManager\MsgCmdExtChallengeResponse.cs" />
     <Compile Include="Manager\ConnectionManager\MsgCmdChallengeResponseMD5.cs" />
     <Compile Include="Manager\ConnectionManager\MsgCmdChallengeRequestMD5.cs" />
     <Compile Include="Manager\MsgCmdUnknown.cs" />

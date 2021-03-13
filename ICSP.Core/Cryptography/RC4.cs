@@ -5,19 +5,12 @@ using ICSP.Core.Extensions;
 
 namespace ICSP.Core.Cryptography
 {
-  internal interface ICrypto
-  {
-    void SetKey(byte[] key);
-
-    void TransformBlock(byte[] key, byte[] salt);
-  }
-
   /// <summary>
   /// Represents the base class from which all implementations of the RC4 algorithm must derive.
   /// </summary>
   /// <see cref="https://docs.microsoft.com/en-gb/dotnet/api/system.security.cryptography.symmetricalgorithm?view=netstandard-2.0"/>
   /// <seealso cref="https://en.wikipedia.org/wiki/RC4"/>
-  public abstract class RC4 : SymmetricAlgorithm, ICrypto
+  public abstract class RC4 : SymmetricAlgorithm
   {
     /// <summary>
     /// The first index-pointers.
@@ -83,9 +76,6 @@ namespace ICSP.Core.Cryptography
     }
 
     #endregion RC4
-
-    // TODO: Remove, only for debug ...!
-    public byte[] mPrivateKey => KeyValue;
 
     private void SavePrivateKey()
     {
