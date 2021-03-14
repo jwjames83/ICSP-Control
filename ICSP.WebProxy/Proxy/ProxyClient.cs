@@ -43,7 +43,7 @@ namespace ICSP.WebProxy.Proxy
     private int mCurrentFileCount;
     private int mCurrentFileSize;
 
-    private List<ushort> mDevices;
+    private readonly List<ushort> mDevices;
 
     private AmxDevice mDynamicDevice;
 
@@ -178,8 +178,7 @@ namespace ICSP.WebProxy.Proxy
 
       // Manager = mConnectionManager.GetOrCreate(DeviceConfig.RemoteHost, DeviceConfig.RemotePort);
 
-      Manager = new ICSPManager();
-      Manager.socketId = socketId;
+      Manager = new ICSPManager { socketId = socketId };
 
       if(!string.IsNullOrWhiteSpace(ConnectionConfig.BaseDirectory))
         Manager.FileManager.SetBaseDirectory(ConnectionConfig.BaseDirectory);

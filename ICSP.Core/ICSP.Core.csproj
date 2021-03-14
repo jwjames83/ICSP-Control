@@ -103,7 +103,11 @@
     <Compile Include="Cryptography\RC4.cs" />
     <Compile Include="Cryptography\RC4CryptoServiceProvider.cs" />
     <Compile Include="Cryptography\RC4Algorithm.cs" />
+    <Compile Include="DeviceConnectionState.cs" />
+    <Compile Include="EncryptionMode.cs" />
+    <Compile Include="EncryptionType.cs" />
     <Compile Include="ExtendedAddress.cs" />
+    <Compile Include="CreateDeviceInfoRequest.cs" />
     <Compile Include="ICSPEncryptedMsg.cs" />
     <Compile Include="ICSPMsgFlag.cs" />
     <Compile Include="IO\EventArgs.cs" />

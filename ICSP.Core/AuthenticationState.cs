@@ -14,10 +14,11 @@ namespace ICSP.Core
   [Flags]
   public enum AuthenticationState
   {
-    NotAuthenticated  /**/ = 0, // 0000 0000 0000 0000
-    Authenticated     /**/ = 1, // 0000 0000 0000 0001
-    DoEncrypt         /**/ = 2, // 0000 0000 0000 0010
-    EncryptionModeRC4 /**/ = 4, // 0000 0000 0000 0100
+    NotAuthenticated      /**/ = 0, // 0000 0000 0000 0000
+    Authenticated         /**/ = 1, // 0000 0000 0000 0001
+
+    EncryptionRC4_Receive /**/ = 2, // 0000 0000 0000 0010
+    EncryptionRC4_Send    /**/ = 4, // 0000 0000 0000 0100
 
     NotAllowed = 0x8000,
   }

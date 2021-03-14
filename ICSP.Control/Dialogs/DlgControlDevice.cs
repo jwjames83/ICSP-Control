@@ -168,7 +168,7 @@ namespace ICSPControl.Dialogs
       this.InvokeIfRequired(a =>
       {
         // System-Device
-        if(e.Device == 0 && e.ObjectId == 0)
+        if(e.Device == 0 && e.ObjectId == 0 && e.System == mManager.CurrentSystem)
         {
           OnlineTree.Nodes.Clear();
 

@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Net;
 using System.Net.Sockets;
-using System.Security.Cryptography;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -50,13 +47,9 @@ namespace ICSP.Core.Client
 
     private bool mIsDisposed;
 
-    private byte[] mAuthenticationChallenge;
-
-    private RC4 mCryptoProvider;
-
     public ICSPClient()
     {
-      Credentials = new NetworkCredential(ICSPManager.DefaultUsername, ICSPManager.DefaultPassword);
+      // Credentials = new NetworkCredential(ICSPManager.DefaultUsername, ICSPManager.DefaultPassword);
     }
 
     public static MsgFactory Factory { get; } = new MsgFactory();
@@ -91,11 +84,9 @@ namespace ICSP.Core.Client
       get { return mSocket?.Connected ?? false; }
     }
 
-    public NetworkCredential Credentials { get; set; }
+    public RC4 CryptoProvider { get; set; }
 
-    public int AuthenticationState { get; private set; }
-
-    public int EncryptionMode { get; private set; }
+    public EncryptionMode EncryptionMode { get; set; }
 
     public IPEndPoint RemoteEndPoint { get; private set; }
 
@@ -269,7 +260,18 @@ namespace ICSP.Core.Client
           Logger.LogVerbose(false, "ICSPClient.Send[1]: MessageId=0x{0:X4}, Source={1:l}, Dest={2:l}, Type={3:l}", request.ID, request.Source, request.Dest, request.GetType().Name);
           Logger.LogVerbose(false, "ICSPClient.Send[2]: Data={0:l}", BitConverter.ToString(request.RawData).Replace("-", " "));
 
-          await mStream?.WriteAsync(request.RawData, 0, request.RawData.Length);
+          if((EncryptionMode & EncryptionMode.RC4_Send) > 0)
+          {
+            var lMsg = new ICSPEncryptedMsg(CryptoProvider, request, 4);
+
+            Logger.LogVerbose(false, "ICSPClient.Send[3]: Data={0:l}", BitConverter.ToString(lMsg.RawData).Replace("-", " "));
+
+            await mStream?.WriteAsync(lMsg.RawData, 0, lMsg.RawData.Length);
+          }
+          else
+          {
+            await mStream?.WriteAsync(request.RawData, 0, request.RawData.Length);
+          }
         }
       }
       catch(Exception ex)
@@ -337,89 +339,6 @@ namespace ICSP.Core.Client
                 {
                   var lMsg = Factory.FromData(lPacketBytes);
 
-                  if(lMsg is MsgCmdChallengeRequestMD5 msg)
-                  {
-                    mAuthenticationChallenge = msg.Challenge;
-
-                    using var lHashAlgorithm = HashAlgorithm.Create("MD5");
-
-                    if(lHashAlgorithm == null)
-                      throw new Exception("ICSP: Failed to build encryption key!");
-
-                    var lHash = lHashAlgorithm.ComputeHash(
-                      mAuthenticationChallenge
-                      .Concat(Encoding.UTF8.GetBytes(Credentials?.UserName ?? ICSPManager.DefaultUsername))
-                      .Concat(Encoding.UTF8.GetBytes(Credentials?.Password ?? ICSPManager.DefaultPassword)).ToArray());
-
-                    mCryptoProvider = RC4.Create(lHash);
-                  }
-
-                  if(lMsg is MsgCmdChallengeAckMD5 msgAck)
-                  {
-                    var lState = msgAck.Status;
-
-                    /*
-                    AuthenticatedBlinkOff = 3;
-                    AuthenticatedBlinkOn  = 4;  
-                    EncryptedBlinkOff     = 5;  
-                    EncryptedBlinkOn      = 6;  
-                    AuthenticationFailed  = 7;  
-                    AccessNotAllowed      = 8;
-
-                    public int ICSP_Authenticated = 1;
-                    public int ICSP_AuthenticatedNotAllowed = 0x8000;
-
-                    public int ICSP_EncryptionAlgorithmNone = 0;
-                    public int ICSP_EncryptionAlgorithmRC4 = 4;
-                    public int ICSP_EncryptionAlgorithmFuture1 = 6;
-                    public int ICSP_EncryptionAlgorithmMask = 6;
-
-                    public int ICSP_PacketEncryptionRC4 = 2;
-                    */
-
-                    if((lState & Core.AuthenticationState.NotAllowed) != 0)
-                    {
-                      // 1000 0000 0000 0000
-                      AuthenticationState = 4;
-                    }
-                    else if((lState & Core.AuthenticationState.Authenticated) != 0)
-                    {
-                      // Success
-                      // 0000 0000 0000 0001
-                      AuthenticationState = (int)Core.AuthenticationState.Authenticated;
-
-                      // 0000 0000 0000 0110 (6)
-                      if((lState & Core.AuthenticationState.DoEncrypt | Core.AuthenticationState.EncryptionModeRC4) != 0)
-                      {
-                        AuthenticationState = 2;
-
-                        EncryptionMode = (int)(lState & Core.AuthenticationState.DoEncrypt | Core.AuthenticationState.EncryptionModeRC4);
-
-                        /*
-                        switch((int)(lState & AuthenticationState.DoEncrypt | AuthenticationState.EncryptionModeRC4))
-                        {
-                          case 4: // RC4
-                          {
-                            using var lHashAlgorithm = HashAlgorithm.Create("MD5");
-
-                            if(lHashAlgorithm == null)
-                              throw new Exception("ICSP: Failed to build encryption key!");
-
-                            var lHash = lHashAlgorithm.ComputeHash(
-                              mAuthenticationChallenge
-                              .Concat(Encoding.UTF8.GetBytes(Credentials?.UserName ?? ICSPManager.DefaultUsername))
-                              .Concat(Encoding.UTF8.GetBytes(Credentials?.Password ?? ICSPManager.DefaultPassword)).ToArray());
-
-                            mCryptoProvider = RC4.Create(lHash);
-
-                            break;
-                          }
-                        }
-                        */
-                      }
-                    }
-                  }
-
                   OnDataReceived(new ICSPMsgDataEventArgs(lMsg));
 
                   break;
@@ -429,7 +348,13 @@ namespace ICSP.Core.Client
                 // ================================
                 case ICSPEncryptedMsg.ProtocolValue:
                 {
-                  var lEncryptedMsg = new ICSPEncryptedMsg(mCryptoProvider, lPacketBytes);
+                  if(CryptoProvider == null)
+                  {
+                    Logger.LogError("Received encrypted packet but property CryptoProvider not initialized.");
+                    break;
+                  }
+
+                  var lEncryptedMsg = new ICSPEncryptedMsg(CryptoProvider, lPacketBytes);
 
                   if(Logger.LogLevel <= LogEventLevel.Verbose)
                     lEncryptedMsg.WriteLogVerbose();
@@ -484,6 +409,8 @@ namespace ICSP.Core.Client
     private void OnClientDisconnected()
     {
       Logger.LogInfo("Client Disconnected: {0:l}", RemoteEndPoint);
+      
+      EncryptionMode = EncryptionMode.None;
 
       ClientOnlineStatusChanged?.Invoke(this, new ClientOnlineOfflineEventArgs(0, false, RemoteEndPoint?.ToString()));
 

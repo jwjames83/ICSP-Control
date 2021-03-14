@@ -8,13 +8,6 @@ namespace ICSP.Core
 {
   public class ICSPEncryptedMsg
   {
-    // Minimum [] Bytes
-    // Protocol 2 (Default)
-    // ---------------------------------------------------------------------------------------------
-    // P  | Len   | Flag  | Dest              | Source            | H  | ID    | CMD   | N-Data | CS
-    // ---------------------------------------------------------------------------------------------
-    // 02 | 00 1B | 02 10 | 00 06 27 11 00 00 | 00 06 7D 03 00 00 | FF | 4B 60 | 02 04 | ...    | C1
-
     // Protocol 4 (Encrypted) -> Encryption Type 1
     // ---------------------------------------------------------------------------------------------
     // P  | Len   | S-Sys | S-Dev | ET | Ln | Salt        | Encrypted Data | CS
@@ -27,15 +20,10 @@ namespace ICSP.Core
     // ---------------------------------------------------------------------------------------------
     // 04 | 00 21 | 00 01 | 00 00 | 02 | 08 | 5B CF 08 88 | 00 01 | 7D 01 | ...            | D6
 
-    //    ---------------------------------------------------------------------------------------------
-    //    P  | Len   | Flag  | Dest              | Source            | H  | ID    | CMD   | N-Data | CS
-    //    ---------------------------------------------------------------------------------------------
-    // 1: 02 | 00 5b | 02 12 | 00 00 00 00 00 01 | 00 01 7d 01 00 00 | ff | 01 b7 | 00 97 | 7d 01 00 01 00 20 00 00 00 01 01 06 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 01 19 76 34 2e 34 2e 31 2e 31 36 32 36 00 4e 53 58 20 41 70 70 6c 69 63 61 74 69 6f 6e 00 41 4d 58 20 4c 4c 43 00 02 04 ac 12 23 71 | 2e
-    // E: 5e | 5b 34 | 8d 51 | 13 52 22 10 34 fd | 56 08 92 4c 60 13 | 18 | 5d 27 | 04 8c | 4d 6a e3 93 31 3d 4f 8a de 03 d0 8e 10 6b 07 04 41 a9 87 f0 2a bb 54 6e 66 79 ca 49 23 24 3c bf b0 1d 6e 5b a7 0a 76 45 d2 29 fc 37 26 c6 d0 05 a4 ee 9c 3a 8b 27 3e 6c 83 5e 25 62 7c 53 22 d1 cd c9 6d 87 7b 07 87 bc | 7f
+    // Minimum 14 Bytes
+    public const int PacketLengthMin = 14;
 
-    public const int PacketLengthMin = 10;
-
-    private RC4 mCryptoProvider;
+    private readonly RC4 mCryptoProvider;
 
     /// <summary>
     /// The first field is a protocol field, and in one embodiment, one byte size.<br/>
@@ -99,6 +87,98 @@ namespace ICSP.Core
       EncryptedData = bytes.Range(9 + CustomDataLength, lEncryptedLength);
 
       Checksum = bytes[DataLength + 3];
+    }
+
+    public ICSPEncryptedMsg(RC4 cryptoProvider, ICSPMsg msg, int mode)
+    {
+      mCryptoProvider = cryptoProvider ?? throw new ArgumentNullException(nameof(cryptoProvider));
+
+      DataLength = (ushort)(PacketLengthMin + (msg?.RawData?.Length ?? 0) - 4);
+
+      if(mode == 4)
+        DataLength += 4;
+
+      Source = msg.Source;
+
+      if(mode == 4)
+        EncryptionType = 2;
+      else
+        EncryptionType = 1;
+
+      if(mode == 4)
+        CustomDataLength = 8;
+      else
+        CustomDataLength = 4;
+
+      Salt = new byte[4];
+
+      new Random().NextBytes(Salt);
+
+      Dest = msg.Dest;
+
+      RawData = new byte[DataLength + 4];
+
+      RawData[00] = Protocol;
+
+      RawData[01] = (byte)(DataLength >> 8);
+      RawData[02] = (byte)(DataLength);
+
+      // Protocol 4 (Encrypted) -> Encryption Type 1
+      // ---------------------------------------------------------------------------------------------
+      // P  | Len   | S-Sys | S-Dev | ET | Ln | Salt        | Encrypted Data | CS
+      // ---------------------------------------------------------------------------------------------
+      // 04 | 00 21 | 00 01 | 00 00 | 01 | 04 | 52 2a 17 f5 | ...            | 83
+
+      var lDsp = Source.GetBytesSDP();
+
+      RawData[03] = lDsp[0]; // Source System
+      RawData[04] = lDsp[1];
+      RawData[05] = lDsp[2]; // Source Device
+      RawData[06] = lDsp[3];
+
+      RawData[07] = EncryptionType;
+
+      RawData[08] = CustomDataLength;
+
+      RawData[09] = Salt[0];
+      RawData[10] = Salt[1];
+      RawData[11] = Salt[2];
+      RawData[12] = Salt[3];
+
+      if(mode == 4)
+      {
+        lDsp = Dest.GetBytesSDP();
+
+        RawData[13] = lDsp[0];
+        RawData[14] = lDsp[1];
+        RawData[15] = lDsp[2];
+        RawData[16] = lDsp[3];
+      }
+
+      var lOffset = mode == 4 ? 17 : 13;
+
+      // Encrypt
+      if(msg?.RawData != null)
+      {
+        var lEncryptedData = new byte[msg.RawData.Length];
+
+        Array.Copy(msg.RawData, 0, lEncryptedData, 0, msg.RawData.Length);
+
+        mCryptoProvider.TransformBlock(lEncryptedData, Salt);
+
+        Array.Copy(lEncryptedData, 0, RawData, lOffset, lEncryptedData.Length);
+      }
+
+      byte lCs = 0;
+
+      unchecked // Let overflow occur without exceptions
+      {
+        foreach(byte b in RawData)
+          lCs += b;
+      }
+
+      // Checksum
+      RawData[RawData.Length - 1] = Checksum = lCs;
     }
 
     #endregion
@@ -252,27 +332,12 @@ namespace ICSP.Core
     /// </summary>
     public AmxDevice Source { get; private set; }
 
-    /// <summary>
-    /// Allowed hop count field indicates how many hops can occur before the message is purged from the system.<br/>
-    /// Each time a message passes through a master, the allowed hop count field is decremented by one and checked to see if it reaches Zero.<br/>
-    /// Once the count reaches Zero, the master generates an error message indicating that the message has not reached the sender with an air.
-    /// </summary>
     public byte EncryptionType { get; set; }
 
-    /// <summary>
-    /// Length of data field.<br/>
-    /// Indicates the total number of bytes in the data portion of the packet.
-    /// </summary>
     public byte CustomDataLength { get; set; }
 
-    /// <summary>
-    /// Raw data bytes of packet
-    /// </summary>
     public byte[] CustomData { get; set; }
 
-    /// <summary>
-    /// Raw data bytes of packet
-    /// </summary>
     public byte[] Salt { get; set; }
 
     /// <summary>

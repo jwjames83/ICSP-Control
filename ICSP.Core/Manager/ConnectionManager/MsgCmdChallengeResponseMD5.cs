@@ -32,7 +32,7 @@ namespace ICSP.Core.Manager.ConnectionManager
       return new MsgCmdChallengeResponseMD5(bytes);
     }
 
-    public static ICSPMsg CreateRequest(AmxDevice dest, AmxDevice source, byte[] challenge, ushort encryptionType, NetworkCredential credentials)
+    public static ICSPMsg CreateRequest(AmxDevice dest, AmxDevice source, byte[] challenge, EncryptionType encryptionType, NetworkCredential credentials)
     {
       // ---------------------------------------------------------------------------------------------------------------------------------
       // Flag  | Dest              | Source            | H  | ID    | CMD   | N-Data      | CS
@@ -57,7 +57,7 @@ namespace ICSP.Core.Manager.ConnectionManager
           .Concat(Encoding.UTF8.GetBytes(Convert.ToBase64String(Encoding.UTF8.GetBytes(credentials?.Password ?? ICSPManager.DefaultPassword)))).ToArray()),
       };
 
-      var lData = ArrayExtensions.Int16ToBigEndian(lRequest.EncryptionType).Concat(lRequest.Hash).ToArray();
+      var lData = ArrayExtensions.Int16ToBigEndian((ushort)lRequest.EncryptionType).Concat(lRequest.Hash).ToArray();
 
       return lRequest.Serialize(dest, source, MsgCmd, lData);
     }
@@ -68,9 +68,8 @@ namespace ICSP.Core.Manager.ConnectionManager
     /// Assumption:
     /// 0: None => This value does not work, if the option [Encrypt ICSP connection] is enabled on the controller
     /// 1: RC4
-    /// 2: Future-1
     /// </summary>
-    public ushort EncryptionType { get; private set; }
+    public EncryptionType EncryptionType { get; private set; }
 
     public byte[] Hash { get; private set; }
 

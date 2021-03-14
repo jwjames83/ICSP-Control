@@ -66,7 +66,7 @@ namespace ICSP.Core
 
     public override bool Equals(Object obj)
     {
-      return obj is AmxDevice && this == (AmxDevice)obj;
+      return obj is AmxDevice device && this == device;
     }
 
     public override int GetHashCode()
