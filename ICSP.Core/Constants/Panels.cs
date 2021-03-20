@@ -73,7 +73,15 @@ namespace ICSP.Core.Constants
     public static PanelType G4_R_4                     /**/ = new PanelType(PanelGeneration.G4, 322, "R-4",                     /**/ "R-4",                      /**/ "");
     public static PanelType G4_Mio_Modero_DMS          /**/ = new PanelType(PanelGeneration.G4, 304, "Mio Modero DMS",          /**/ "Mio Modero DMS",           /**/ "");
     public static PanelType G4_Mio_Modero_DMS_Pinnacle /**/ = new PanelType(PanelGeneration.G4, 305, "Mio Modero DMS Pinnacle", /**/ "Mio Modero DMS Pinnacle",  /**/ "");
-    public static PanelType G4_iPod_touch_TPC          /**/ = new PanelType(PanelGeneration.G4, 349, "iPod touch (TPC)",        /**/ "iPod touch (TPC)",         /**/ "");
+
+    public static PanelType G4_iPod_Touch_TPC          /**/ = new PanelType(PanelGeneration.G4, 349, "iPod touch (TPC)",        /**/ "iPod touch (TPC)",         /**/ "");
+    public static PanelType G4_iPhone_TPC              /**/ = new PanelType(PanelGeneration.G4, 347, "iPhone (TPC)",            /**/ "iPhone (TPC)",             /**/ "");
+    public static PanelType G4_iPad_TPC                /**/ = new PanelType(PanelGeneration.G4, 348, "iPad (TPC)",              /**/ "iPad (TPC)",               /**/ "");
+    public static PanelType G4_Android_TPC             /**/ = new PanelType(PanelGeneration.G4, 351, "Android (TPC)",           /**/ "Android (TPC)",            /**/ "");
+    public static PanelType G4_Android_Mobile_TPC      /**/ = new PanelType(PanelGeneration.G4, 355, "Android Mobile (TPC)",    /**/ "Android Mobile (TPC)",     /**/ "");
+    public static PanelType G4_Android_Tablet_TPC      /**/ = new PanelType(PanelGeneration.G4, 356, "Android Tablet (TPC)",    /**/ "Android Tablet (TPC)",     /**/ "");
+    public static PanelType G4_iPhone4_TPC             /**/ = new PanelType(PanelGeneration.G4, 350, "iPhone4 (TPC)",           /**/ "iPhone4 (TPC)",            /**/ "");
+    public static PanelType G4_Windows_TPC             /**/ = new PanelType(PanelGeneration.G4, 358, "Windows (TPC)",           /**/ "Windows (TPC)",            /**/ "");
 
     // =================================================================================
     // G5 Panels
@@ -164,7 +172,15 @@ namespace ICSP.Core.Constants
       AllPanels.Add(G4_R_4);
       AllPanels.Add(G4_Mio_Modero_DMS);
       AllPanels.Add(G4_Mio_Modero_DMS_Pinnacle);
-      AllPanels.Add(G4_iPod_touch_TPC);
+
+      AllPanels.Add(G4_iPod_Touch_TPC);
+      AllPanels.Add(G4_iPhone_TPC);
+      AllPanels.Add(G4_iPad_TPC);
+      AllPanels.Add(G4_Android_TPC);
+      AllPanels.Add(G4_Android_Mobile_TPC);
+      AllPanels.Add(G4_Android_Tablet_TPC);
+      AllPanels.Add(G4_iPhone4_TPC);
+      AllPanels.Add(G4_Windows_TPC);
 
       // =================================================================================
       // G5 Panels
