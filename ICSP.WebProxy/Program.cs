@@ -24,7 +24,7 @@ namespace ICSP.WebProxy
 {
   public class Program
   {
-    private static CancellationTokenSource mCtsRestart = new CancellationTokenSource();
+    private static CancellationTokenSource CtsRestart = new CancellationTokenSource();
 
     public const int CLOSE_SOCKET_TIMEOUT_MS = 2500;
 
@@ -73,7 +73,7 @@ namespace ICSP.WebProxy
       await StartServer(args, lLoggingConfig);
 
       // Restart Server
-      while(mCtsRestart.IsCancellationRequested)
+      while(CtsRestart.IsCancellationRequested)
         await StartServer(args, null);
     }
 
@@ -81,7 +81,7 @@ namespace ICSP.WebProxy
     {
       try
       {
-        mCtsRestart = new CancellationTokenSource();
+        CtsRestart = new CancellationTokenSource();
         
         var lHostBuilder = CreateHostBuilder(args);
 
@@ -91,10 +91,10 @@ namespace ICSP.WebProxy
         {
           Logger.LogInfo("LoggingConfigurator.Configure: LoggingConfig={0}", loggingConfig);
 
-          LoggingConfigurator.Configure(lHostBuilder, loggingConfig, mCtsRestart.Token);
+          LoggingConfigurator.Configure(lHostBuilder, loggingConfig);
         }
 
-        await lHostBuilder.Build().RunAsync(mCtsRestart.Token);
+        await lHostBuilder.Build().RunAsync(CtsRestart.Token);
 
         Logger.LogInfo("Stopped ...");
       }
@@ -113,7 +113,7 @@ namespace ICSP.WebProxy
 
         Logger.LogError(ex);
 
-        mCtsRestart.Cancel();
+        CtsRestart.Cancel();
       }
     }
 
@@ -133,7 +133,7 @@ namespace ICSP.WebProxy
         Logger.LogInfo("Running as console process ...");
       }
 
-      lBuilder.UseApplicationRestart(mCtsRestart);
+      lBuilder.UseApplicationRestart(CtsRestart);
 
       // Remove duplicate urls
       // Prevent Error: Failed to bind to address http://[::]:80: address already in use.

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Threading;
 
 using ICSP.Core.Logging;
 
@@ -62,7 +61,7 @@ namespace ICSP.WebProxy
       }
     }
 
-    public static void Configure(IHostBuilder hostBuilder, LoggingConfiguration loggingConfiguration, CancellationToken cancellationToken, bool console = true)
+    public static void Configure(IHostBuilder hostBuilder, LoggingConfiguration loggingConfiguration, bool console = true)
     {
       // Logger.Flush();
 
