@@ -7,6 +7,7 @@ using ICSP.Core.Logging;
 using ICSP.WebProxy.Configuration;
 
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -30,6 +31,10 @@ namespace ICSP.WebProxy
     // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
     public void ConfigureServices(IServiceCollection services)
     {
+      // add data protection services
+      services.AddDataProtection()
+        .SetApplicationName("shared app name"); ;
+
       services.AddWebSocketManager();
       services.AddProxyClient();
       services.AddConfig(Configuration);
@@ -41,17 +46,19 @@ namespace ICSP.WebProxy
     {
       var lFactory = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>();
       var lProvider = lFactory.CreateScope().ServiceProvider;
-
+      
       if(env.IsDevelopment())
       {
-        app.UseStatusCodePagesWithRedirects("/Error/{0}");
+        app.UseDeveloperExceptionPage();
       }
       else
       {
-        app.UseStatusCodePagesWithRedirects("/Error/{0}");
+        app.UseExceptionHandler("/Error");
 
         app.UseHsts();
       }
+
+      app.UseStatusCodePagesWithReExecute("/Error/{0}");
 
       // app.UseHttpsRedirection();
 
@@ -61,7 +68,7 @@ namespace ICSP.WebProxy
       app = app.MapWebSocketManager("", lProvider.GetService<WebSocketProxyClient>());
 
       var lConnections = proxyConfig.Value.Connections.Values.Where(p => p.Enabled);
-      
+
       // StaticFiles -> Directories
       if(staticFiles.Value.Directories.Count() > 0)
       {
@@ -209,7 +216,7 @@ namespace ICSP.WebProxy
 
         app.UseEndpoints(endpoints =>
         {
-          endpoints.MapControllerRoute("error", "/Error/{errorCode?}", new { controller = "Error", action = "Index" });
+          endpoints.MapControllerRoute("error", "/Error/{statusCode?}", new { controller = "Error", action = "Index" });
           endpoints.MapControllerRoute("status", "/Status/{statusCode?}", new { controller = "Status", action = "Index" });
           endpoints.MapControllerRoute("default", "/{controller}/{action=Index}/{id?}");
         });

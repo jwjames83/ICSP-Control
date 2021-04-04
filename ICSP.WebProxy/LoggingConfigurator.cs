@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 
 using ICSP.Core.Logging;
 
@@ -20,8 +21,6 @@ namespace ICSP.WebProxy
 
     public static void Configure(LoggingConfiguration loggingConfiguration, bool console = true)
     {
-      Logger.Flush();
-
       if(loggingConfiguration == null)
         throw new ArgumentNullException(nameof(loggingConfiguration));
 
@@ -53,7 +52,9 @@ namespace ICSP.WebProxy
         if(console)
           lConf.WriteTo.Console(outputTemplate: LogTemplateConsole);
 
-        Log.Logger = lConf.CreateLogger();
+        // Log.Logger = lConf.CreateLogger();
+
+        Log.Logger = lConf.CreateBootstrapLogger();
       }
       catch(Exception ex)
       {
@@ -61,9 +62,9 @@ namespace ICSP.WebProxy
       }
     }
 
-    public static void Configure(IHostBuilder hostBuilder, LoggingConfiguration loggingConfiguration, bool console = true)
+    public static void Configure(IHostBuilder hostBuilder, LoggingConfiguration loggingConfiguration, CancellationToken cancellationToken, bool console = true)
     {
-      Logger.Flush();
+      // Logger.Flush();
 
       if(loggingConfiguration == null)
         throw new ArgumentNullException(nameof(loggingConfiguration));

@@ -1,0 +1,113 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{57E7D274-DF6E-422D-B6F6-150A55C584EA}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>TP.Design</RootNamespace>
+    <AssemblyName>TP.Design</AssemblyName>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <Deterministic>true</Deterministic>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AutoGenerateBindingRedirects>false</AutoGenerateBindingRedirects>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.13.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Runtime.Serialization" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Json\BoolConverter.cs" />
+    <Compile Include="Json\JsonExtensions.cs" />
+    <Compile Include="Model\ActionEventCommand.cs" />
+    <Compile Include="Model\ActionEventCustom.cs" />
+    <Compile Include="Model\ActionEventLaunch.cs" />
+    <Compile Include="Model\ActionEventPageFlip.cs" />
+    <Compile Include="Model\ActionEvents.cs" />
+    <Compile Include="Model\ActionEventString.cs" />
+    <Compile Include="Model\AnchorPosition.cs" />
+    <Compile Include="Model\AnimationDirection.cs" />
+    <Compile Include="Model\AnimationType.cs" />
+    <Compile Include="Model\BitmapEntry.cs" />
+    <Compile Include="Model\BorderStyle.cs" />
+    <Compile Include="Model\Button.cs" />
+    <Compile Include="Model\ButtonType.cs" />
+    <Compile Include="Model\DisplayType.cs" />
+    <Compile Include="Model\DragDropType.cs" />
+    <Compile Include="Model\DrawOrder.cs" />
+    <Compile Include="Model\DrawOrderItem.cs" />
+    <Compile Include="Model\FeedbackType.cs" />
+    <Compile Include="Model\Fonts.cs" />
+    <Compile Include="Model\Icon.cs" />
+    <Compile Include="Model\IconList.cs" />
+    <Compile Include="Model\JustificationType.cs" />
+    <Compile Include="Model\LaunchAction.cs" />
+    <Compile Include="Model\LevelControlType.cs" />
+    <Compile Include="Model\LevelFunction.cs" />
+    <Compile Include="Model\MarqueeDirection.cs" />
+    <Compile Include="Model\Orientation.cs" />
+    <Compile Include="Model\Page.cs" />
+    <Compile Include="Model\PageFlip.cs" />
+    <Compile Include="Model\PageFlipAnimation.cs" />
+    <Compile Include="Model\PageFlipAnimationType.cs" />
+    <Compile Include="Model\PageFlipType.cs" />
+    <Compile Include="Model\PageType.cs" />
+    <Compile Include="Model\PaletteData.cs" />
+    <Compile Include="Model\PaletteDataItem.cs" />
+    <Compile Include="Model\PasswordProtection.cs" />
+    <Compile Include="Model\PopupType.cs" />
+    <Compile Include="Model\ProjectProperties\DropGroup.cs" />
+    <Compile Include="Model\ProjectProperties\DropGroupItem.cs" />
+    <Compile Include="Model\ProjectProperties\FormatType.cs" />
+    <Compile Include="Model\ProjectProperties\FwFeature.cs" />
+    <Compile Include="Model\ProjectProperties\PageEntry.cs" />
+    <Compile Include="Model\ProjectProperties\Palette.cs" />
+    <Compile Include="Model\ProjectProperties\PanelSetup.cs" />
+    <Compile Include="Model\ProjectProperties\Project.cs" />
+    <Compile Include="Model\ProjectProperties\ProjectInfo.cs" />
+    <Compile Include="Model\ProjectProperties\ProtectionType.cs" />
+    <Compile Include="Model\ProjectProperties\ProtocolType.cs" />
+    <Compile Include="Model\ProjectProperties\Resource.cs" />
+    <Compile Include="Model\ProjectProperties\SubPageSet.cs" />
+    <Compile Include="Model\ProjectProperties\SubPageSetItem.cs" />
+    <Compile Include="Model\ProjectProperties\SupportFileList.cs" />
+    <Compile Include="Model\ProjectProperties\VersionInfo.cs" />
+    <Compile Include="Model\RangeType.cs" />
+    <Compile Include="Model\SliderType.cs" />
+    <Compile Include="Model\State.cs" />
+    <Compile Include="Model\SubPage.cs" />
+    <Compile Include="Model\TouchStyle.cs" />
+    <Compile Include="Model\ValueDirection.cs" />
+    <Compile Include="Model\VideoFillType.cs" />
+    <Compile Include="Model\WebColor.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

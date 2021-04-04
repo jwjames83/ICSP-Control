@@ -2,9 +2,9 @@
 using System.ComponentModel;
 using System.Linq;
 
-using ICSP.Core.Model;
-
 using Newtonsoft.Json;
+
+using TP.Design.Model;
 
 namespace ICSP.WebProxy.WebControl
 {

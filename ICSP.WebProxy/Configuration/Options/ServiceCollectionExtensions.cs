@@ -1,5 +1,6 @@
 ﻿using ICSP.WebProxy.Configuration.Options;
 
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -15,7 +16,10 @@ namespace Microsoft.Extensions.Options
       services.AddTransient<IWritableOptions<T>>(provider =>
       {
         var lEnvironment = provider.GetService<IWebHostEnvironment>();
+
         var lOptions = provider.GetService<IOptionsMonitor<T>>();
+
+        var lDataProtectionProvider = provider.GetService<IDataProtectionProvider>();
 
         return new WritableOptions<T>(lEnvironment, lOptions, section.Key, file);
       });

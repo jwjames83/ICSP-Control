@@ -1,6 +1,6 @@
-﻿using ICSP.Core.Model;
+﻿using Newtonsoft.Json;
 
-using Newtonsoft.Json;
+using TP.Design.Model;
 
 namespace ICSP.WebProxy.WebControl
 {

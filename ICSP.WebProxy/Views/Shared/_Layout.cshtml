@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>@ViewData["Title"] - ICSP.WebProxy</title>
+  <title>ICSP.WebProxy - @ViewData["Title"]</title>
   <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
   <link rel="stylesheet" href="~/lib/fontawesome-free-5.14.0-web/css/all.css" />
   <link rel="stylesheet" href="~/css/site.css" />
@@ -14,11 +14,11 @@
     <nav class="navbar fixed-top navbar-expand-lg navbar-dark bg-dark">
       <div class="container">
         <a class="navbar-brand" href="#">ICSP.WebProxy</a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExample07" aria-controls="navbarsExample07" aria-expanded="false" aria-label="Toggle navigation">
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDarkDropdown" aria-controls="navbarNavDarkDropdown" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
         </button>
 
-        <div class="collapse navbar-collapse" id="navbarsExample07">
+        <div class="collapse navbar-collapse" id="navbarNavDarkDropdown">
           <ul class="navbar-nav mr-auto">
             <li class="nav-item active">
               <a class="nav-link" href="~/">Home</a>
@@ -30,8 +30,8 @@
               <a class="nav-link" asp-controller="Install" asp-action="Index">Install</a>
             </li>
             <li class="nav-item dropdown">
-              <a class="nav-link dropdown-toggle" href="#" id="dropdown07" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Services</a>
-              <div class="dropdown-menu" aria-labelledby="dropdown07">
+              <a class="nav-link dropdown-toggle" href="#" id="dropdownServices" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Services</a>
+              <div class="dropdown-menu" aria-labelledby="dropdownServices">
                 <a class="dropdown-item" asp-controller="Services" asp-action="Restart">Restart</a>
                 <a class="dropdown-item" asp-controller="Services" asp-action="Shutdown">Shutdown</a>
               </div>
@@ -51,7 +51,6 @@
       &copy; 2020 - ICSP.WebProxy
     </div>
   </footer>
-  <script src="~/lib/jquery/dist/jquery.min.js"></script>
   <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
   <script src="~/js/site.js" asp-append-version="true"></script>
   @RenderSection("Scripts", required: false)

@@ -114,6 +114,7 @@ namespace ICSP.Core.IO
         case FileType.Firmware       /**/: return false;
         case FileType.TouchPanelFile /**/: return false;
         case FileType.Axcess2Tokens  /**/: return true; // Disk
+        default: break;
       }
 
       return false;

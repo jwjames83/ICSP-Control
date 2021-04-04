@@ -124,8 +124,11 @@
   <data name="DefaultProject" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\resources\defaultproject.js;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
   </data>
-  <data name="MainPage" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\index.html;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  <data name="MainPage_V01" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\index.v01.html;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
+  </data>
+  <data name="MainPage_V02" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\index.v02.html;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
   </data>
   <data name="Status_4001" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\resources\status_4001.html;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>

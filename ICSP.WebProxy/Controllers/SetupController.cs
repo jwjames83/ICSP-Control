@@ -6,6 +6,7 @@ using ICSP.Core.Logging;
 using ICSP.WebProxy.Configuration;
 using ICSP.WebProxy.Configuration.Options;
 
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 
@@ -71,12 +72,20 @@ namespace ICSP.WebProxy.Controllers
     // POST: Setup/Edit/5
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<ActionResult> EditAsync(ProxyConnectionConfig model, [FromServices] IWritableOptions<ProxyConfig> config)
+    public async Task<ActionResult> EditAsync(ProxyConnectionConfig model, [FromServices] IWritableOptions<ProxyConfig> config, [FromServices] IDataProtectionProvider provider)
     {
       try
       {
         if(ModelState.IsValid)
         {
+          if(!string.IsNullOrEmpty(model.NewPassword))
+          {
+            var lService = new CipherService(provider);
+
+            model.Password = lService.Encrypt(model.NewPassword);
+            model.NewPassword = null;
+          }
+
           await config.UpdateAsync(1000, config => { config.Connections[model.ID.ToString()] = model; });
 
           return RedirectToAction(nameof(Index));

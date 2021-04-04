@@ -9,9 +9,11 @@ using System.Threading.Tasks;
 
 using ICSP.Core.Logging;
 using ICSP.WebProxy.Configuration;
+using ICSP.WebProxy.Extensions;
 
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Hosting.WindowsServices;
 
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -22,9 +24,7 @@ namespace ICSP.WebProxy
 {
   public class Program
   {
-    private static CancellationTokenSource mCts = new CancellationTokenSource();
-
-    private static bool mRestartRequest;
+    private static CancellationTokenSource mCtsRestart = new CancellationTokenSource();
 
     public const int CLOSE_SOCKET_TIMEOUT_MS = 2500;
 
@@ -60,54 +60,60 @@ namespace ICSP.WebProxy
         catch { }
       }
 
+      var lLoggingConfig = GetLoggingConfiguration();
+
+      // Serilog Two-stage initialization
+      // Initializes the Log system (CreateBootstrapLogger)
+      LoggingConfigurator.Configure(lLoggingConfig);
+
+      Logger.LogInfo("Starting up");
+      Logger.LogInfo($"BaseDirectory: {AppDomain.CurrentDomain.BaseDirectory}");
+
       // Failed to bind to address http://[::]:80: address already in use.
-      await StartServer(args);
+      await StartServer(args, lLoggingConfig);
 
-      while(mRestartRequest)
-      {
-        mRestartRequest = false;
-
-        await StartServer(args);
-      }
+      // Restart Server
+      while(mCtsRestart.IsCancellationRequested)
+        await StartServer(args, null);
     }
 
-    public static void Restart()
-    {
-      Logger.LogWarn("Restarting App");
-
-      mRestartRequest = true;
-
-      mCts.Cancel();
-    }
-
-    private static async Task StartServer(string[] args)
+    private static async Task StartServer(string[] args, LoggingConfiguration loggingConfig)
     {
       try
       {
-        mCts = new CancellationTokenSource();
-
-        var lLoggingConfig = GetLoggingConfiguration();
-
-        // Initializes the Log system
-        LoggingConfigurator.Configure(lLoggingConfig);
-
-        Logger.LogInfo("Starting up");
-        Logger.LogInfo($"BaseDirectory: {AppDomain.CurrentDomain.BaseDirectory}");
-
+        mCtsRestart = new CancellationTokenSource();
+        
         var lHostBuilder = CreateHostBuilder(args);
 
-        // Initializes the Log system
-        LoggingConfigurator.Configure(lHostBuilder, lLoggingConfig);
+        // Serilog Two-stage initialization
+        // Initializes the Log system (create the final logger)
+        if(loggingConfig != null)
+        {
+          Logger.LogInfo("LoggingConfigurator.Configure: LoggingConfig={0}", loggingConfig);
 
-        await lHostBuilder.Build().RunAsync(mCts.Token);
+          LoggingConfigurator.Configure(lHostBuilder, loggingConfig, mCtsRestart.Token);
+        }
+
+        await lHostBuilder.Build().RunAsync(mCtsRestart.Token);
+
+        Logger.LogInfo("Stopped ...");
       }
+      /*
       catch(OperationCanceledException ex)
       {
-        Logger.LogError(ex.Message);
-      }
+        mRestartRequest = true;
+
+        Logger.LogError("StartServer[OperationCanceledException]: Type={0}, Message={1}", ex.GetType().FullName, ex.Message);
+
+        Logger.LogError(ex);
+      }*/
       catch(Exception ex)
       {
-        Logger.LogError(ex.Message);
+        Logger.LogError("StartServer[Exception]: Type={0}, Message={1}", ex.GetType().FullName, ex.Message);
+
+        Logger.LogError(ex);
+
+        mCtsRestart.Cancel();
       }
     }
 
@@ -115,10 +121,19 @@ namespace ICSP.WebProxy
     {
       var lBuilder = Host.CreateDefaultBuilder(args);
 
-      Logger.LogInfo("Enable running as a Windows service ... (UseWindowsService)");
+      if(WindowsServiceHelpers.IsWindowsService())
+      {
+        Logger.LogInfo("Running as windows service ...");
 
-      // Enable running as a Windows service
-      lBuilder.UseWindowsService();
+        // Enable running as a Windows service
+        lBuilder.UseWindowsService();
+      }
+      else
+      {
+        Logger.LogInfo("Running as console process ...");
+      }
+
+      lBuilder.UseApplicationRestart(mCtsRestart);
 
       // Remove duplicate urls
       // Prevent Error: Failed to bind to address http://[::]:80: address already in use.
@@ -130,7 +145,6 @@ namespace ICSP.WebProxy
       foreach(var url in lUrls)
         Logger.LogInfo($"UseUrl[]: {url}");
 
-
       lBuilder.ConfigureWebHostDefaults(webBuilder =>
       {
         try
@@ -141,6 +155,8 @@ namespace ICSP.WebProxy
         {
           Logger.LogError(ex.Message);
         }
+
+        Logger.LogInfo("IWebHostBuilder.UseStartup ...");
 
         webBuilder.UseStartup<Startup>();
       });

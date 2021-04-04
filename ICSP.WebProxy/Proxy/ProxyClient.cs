@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Net;
 using System.Net.WebSockets;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -17,6 +18,7 @@ using ICSP.WebProxy.Configuration;
 using ICSP.WebProxy.Converter;
 using ICSP.WebProxy.WebControl;
 
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -35,6 +37,8 @@ namespace ICSP.WebProxy.Proxy
     private readonly ICSPConnectionManager mConnectionManager;
 
     private readonly FileTransferPostProcessor mPostProcessor;
+
+    private IDataProtectionProvider mDataProtectionProvider;
 
     private bool mIsDisposed;
 
@@ -63,7 +67,7 @@ namespace ICSP.WebProxy.Proxy
     private bool mOverrideDeviceVersion;
     private bool mOverrideDeviceId;
 
-    public ProxyClient(ILogger<ProxyClient> logger, IServiceProvider provider, ICSPConnectionManager connectionManager, WebSocketProxyClient connectedClient, IOptions<ProxyConfig> config)
+    public ProxyClient(ILogger<ProxyClient> logger, IServiceProvider provider, ICSPConnectionManager connectionManager, WebSocketProxyClient connectedClient, IOptions<ProxyConfig> config, IDataProtectionProvider dataProtectionProvider)
     {
       mLogger = logger;
 
@@ -78,6 +82,8 @@ namespace ICSP.WebProxy.Proxy
       mPostProcessor = new FileTransferPostProcessor(this);
 
       ProxyConfig = config.Value;
+
+      mDataProtectionProvider = dataProtectionProvider;
 
       mDevices = new List<ushort>();
 
@@ -180,6 +186,18 @@ namespace ICSP.WebProxy.Proxy
 
       Manager = new ICSPManager { socketId = socketId };
 
+      // Setup Credentials
+      try
+      {
+        var lService = new CipherService(mDataProtectionProvider);
+
+        Manager.Credentials = new NetworkCredential(ConnectionConfig.UserName, lService.Decrypt(ConnectionConfig.Password));
+      }
+      catch(Exception ex)
+      {
+        LogError(ex.Message);
+      }
+
       if(!string.IsNullOrWhiteSpace(ConnectionConfig.BaseDirectory))
         Manager.FileManager.SetBaseDirectory(ConnectionConfig.BaseDirectory);
 
@@ -219,7 +237,7 @@ namespace ICSP.WebProxy.Proxy
           try
           {
             LogInformation($"Try connect, Host={ConnectionConfig.RemoteHost}, Port={ConnectionConfig.RemotePort}");
-
+            
             await Manager.ConnectAsync(ConnectionConfig.RemoteHost, ConnectionConfig.RemotePort);
           }
           catch(Exception ex)

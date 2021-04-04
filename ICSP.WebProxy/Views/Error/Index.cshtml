@@ -1,5 +1,4 @@
-﻿@using Microsoft.AspNetCore.WebUtilities;
-@model ErrorViewModel
+﻿@model ErrorViewModel
 @{
   ViewData["Title"] = "Error";
 }
@@ -10,12 +9,14 @@
     <div class="container-bg">
       <div class="container">
         <div class="main">
-          <h1>Error @Model.ErrorCode</h1>
-          <p><strong>Reason: </strong> <code>@ReasonPhrases.GetReasonPhrase(@Model.ErrorCode)</code></p>
+          <h1>Error @Model.StatusCode</h1>
+          <p><strong>Reason: </strong> <code>@Model.Reason</code></p>
           @if(Model.ShowRequestId)
           {
             <p><strong>Request ID:</strong> <code>@Model.RequestId</code></p>
           }
+          <p><strong>Path: </strong> <code>@Model.Path</code></p>
+          <p><strong>Query String: </strong> <code>@Model.QueryString</code></p>
           <br />
           <div class="panel_grey">
             <div class="top">

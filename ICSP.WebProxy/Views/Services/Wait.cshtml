@@ -1,0 +1,49 @@
+﻿@{
+  ViewData["Title"] = "Restart Success";
+}
+
+<div>
+  <h4>Please wait for restart ...</h4>
+  <hr />
+
+  <div>
+    <nobr>
+      <button type="button" class="btn btn-primary" onclick="history.go(-1); return false;">
+        <i class="fas fa-arrow-left"></i> Back
+      </button>
+    </nobr>
+  </div>
+
+  <!-- Modal -->
+  <div class="modal fade" id="modalBoxRestart" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="modalTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="modalTitle"><i class="fas fa-exclamation-triangle" style="color:red"></i> Restarting ...</h5>
+        </div>
+        <div class="modal-body">
+          Service was restarted, click [OK] to continue
+        </div>
+        <div class="modal-footer">
+          <button type="button" id="btnOk" class="btn btn-primary" onclick="location.href='@Url.Action("Success")'">
+            <i class="fas fa-arrow-left"></i> OK
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+<script>
+  document.addEventListener("DOMContentLoaded", function (event) {
+
+    var modalBox = document.getElementById('modalBoxRestart')
+    var btnOk = document.getElementById('btnOk')
+
+    modalBox.addEventListener('shown.bs.modal', function () {
+      btnOk.focus()
+    })
+
+    new bootstrap.Modal(modalBox, { backdrop: 'static', keyboard: false, focus: true }).show();;
+  });
+</script>

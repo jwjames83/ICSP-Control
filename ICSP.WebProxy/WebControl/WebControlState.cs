@@ -3,10 +3,11 @@ using System.ComponentModel;
 using System.Reflection;
 using System.Runtime.Serialization;
 
-using ICSP.Core.Model;
 using ICSP.WebProxy.Json;
 
 using Newtonsoft.Json;
+
+using TP.Design.Model;
 
 namespace ICSP.WebProxy.WebControl
 {

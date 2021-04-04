@@ -8,14 +8,15 @@ using System.Xml;
 
 using ICSP.Core.Constants;
 using ICSP.Core.Environment;
-using ICSP.Core.Model;
-using ICSP.Core.Model.ProjectProperties;
 using ICSP.WebProxy.Json;
 using ICSP.WebProxy.Properties;
 using ICSP.WebProxy.Proxy;
 
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+
+using TP.Design.Model;
+using TP.Design.Model.ProjectProperties;
 
 namespace ICSP.WebProxy.WebControl
 {
@@ -151,7 +152,8 @@ namespace ICSP.WebProxy.WebControl
         if(lFile.Exists && !lFiles.ContainsKey(lFile.FullName))
           lFiles.Add(lFile.FullName, lFile);
 
-        // Create index.html
+        // Update index.html
+        /*
         var lHtml = Resources.MainPage;
         var lProjectPath = new DirectoryInfo(Client?.Manager?.FileManager?.BaseDirectory ?? string.Empty);
 
@@ -163,12 +165,12 @@ namespace ICSP.WebProxy.WebControl
         // LastBuild & Version
         lHtml = lHtml?
           .Replace("{LastBuild}", ProgramProperties.CompileDate.ToString("yyyy-MM-dd HH:mm:ss:ffffff")) // 2020-08-27 12:03:37.946386
-          .Replace("{Title}", ProgramProperties.Title)
           .Replace("{version}", ProgramProperties.Version.ToString());
 
         var lFileNameMainPage = string.Format(@"{0}\..\{1}", directory.FullName, "index.html");
 
         File.WriteAllText(lFileNameMainPage, lHtml);
+        */
 
         foreach(var fileInfo in lFiles.Values)
         {

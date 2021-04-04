@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
 
+using Microsoft.Extensions.Configuration;
+
 namespace ICSP.WebProxy.Configuration
 {
   public class StaticFiles

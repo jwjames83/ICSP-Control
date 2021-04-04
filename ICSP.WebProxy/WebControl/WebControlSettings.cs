@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 
-using ICSP.Core.Model.ProjectProperties;
-
 using Newtonsoft.Json;
+
+using TP.Design.Model.ProjectProperties;
 
 namespace ICSP.WebProxy.WebControl
 {

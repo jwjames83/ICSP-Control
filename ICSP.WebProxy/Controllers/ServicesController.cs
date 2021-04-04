@@ -1,57 +1,64 @@
 ﻿using System;
 
 using ICSP.Core.Logging;
-using ICSP.WebProxy.Configuration;
-using ICSP.WebProxy.Extensions;
 
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Options;
 
 namespace ICSP.WebProxy.Controllers
 {
   public class ServicesController : Controller
   {
-    private IHostApplicationLifetime ApplicationLifetime { get; set; }
+    private IApplicationRestart mApplicationLifetime;
 
-    public ServicesController(IHostApplicationLifetime appLifetime)
+    public ServicesController(IApplicationRestart appLifetime)
     {
-      ApplicationLifetime = appLifetime;
+      mApplicationLifetime = appLifetime;
     }
 
-    // Get: /WebServices/Restart
-    public IActionResult Restart([FromServices] IOptions<ProxyConfig> config)
+    // Get: /Services/Restart
+    public IActionResult Restart()
     {
       try
       {
-        Program.Restart();
+        Logger.LogInfo("Restarting App");
 
-        // Redirect to BaseUrl
-        return Redirect(this.GetBaseUrl());
+        mApplicationLifetime.RestartApplication();
       }
       catch(Exception ex)
       {
         Logger.LogError(ex.Message);
       }
-
-      return Content("Done");
+      
+      return Redirect("/Services/Wait");
     }
 
-    // Get: /WebServices/Shutdown
+    // Get: /Services/Shutdown
     public IActionResult Shutdown()
     {
       try
       {
-        ApplicationLifetime.StopApplication();
+        Logger.LogInfo("Shutdown App");
 
-        return Content("Done");
+        mApplicationLifetime.StopApplication();
       }
       catch(Exception ex)
       {
         Logger.LogError(ex.Message);
       }
 
-      return Content("Done");
+      return View();
+    }
+
+    // Get: /Services/Wait
+    public IActionResult Wait()
+    {
+      return View();
+    }
+
+    // Get: /Services/Success
+    public IActionResult Success()
+    {
+      return View();
     }
   }
 }

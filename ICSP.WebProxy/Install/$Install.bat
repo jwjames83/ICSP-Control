@@ -8,6 +8,10 @@ echo ---------------------------------------------------------------------------
 
 sc create ICSP.WebProxy binPath= "%~dp0..\ICSP.WebProxy.exe" start=auto
 sc description ICSP.WebProxy "Schnittstelle fuer HTML-WebSockets und AMX ICSP-Protokoll"
+rem First Failure      : Restart after 1 sec.
+rem Second Failure     : Restart after 5 sec.
+rem Subsequent Failures: Restart after 60 sec.
+sc failure ICSP.WebProxy reset= 0 actions= restart/1000/restart/5000/restart/60000
 
 echo ----------------------------------------------------------------------------------------------------
 echo Apply Security Settings for ICSP.WebProxy...

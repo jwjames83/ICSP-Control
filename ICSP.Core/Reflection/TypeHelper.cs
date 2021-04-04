@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
-using System.Drawing;
 using System.IO;
 using System.Reflection;
 
@@ -9,7 +7,7 @@ namespace ICSP.Core.Reflection
 {
   public static class TypeHelper
   {
-    private static Dictionary<string, Type> mTypeCache = new Dictionary<string, Type>();
+    private static readonly Dictionary<string, Type> TypeCache = new Dictionary<string, Type>();
 
     public static T CreateInstance<T>()
     {
@@ -43,9 +41,7 @@ namespace ICSP.Core.Reflection
 
     public static T CreateInstance<T>(Type t, params object[] args) where T : class
     {
-      T local = Activator.CreateInstance(t, args) as T;
-
-      if(local == null)
+      if(Activator.CreateInstance(t, args) is not T local)
       {
         throw new Exception(string.Format("{0} ist nicht vom Typ {1}", t.ToString(), typeof(T).ToString()));
       }
@@ -63,76 +59,6 @@ namespace ICSP.Core.Reflection
       return Assembly.CreateQualifiedName(Path.GetFileNameWithoutExtension(type.Module.ScopeName), type.FullName);
     }
 
-    public static Type FromDbType(DbType dbType)
-    {
-      Type type = typeof(string);
-      switch(dbType)
-      {
-        case DbType.AnsiString:
-        case DbType.String:
-        case DbType.AnsiStringFixedLength:
-        case DbType.StringFixedLength:
-          return typeof(string);
-
-        case DbType.Binary:
-          return typeof(byte[]);
-
-        case DbType.Byte:
-          return type;
-
-        case DbType.Boolean:
-          return typeof(bool);
-
-        case DbType.Currency:
-          return typeof(double);
-
-        case DbType.Date:
-        case DbType.DateTime:
-        case DbType.Time:
-          return typeof(DateTime);
-
-        case DbType.Decimal:
-          return typeof(decimal);
-
-        case DbType.Double:
-          return typeof(double);
-
-        case DbType.Guid:
-          return typeof(Guid);
-
-        case DbType.Int16:
-          return typeof(short);
-
-        case DbType.Int32:
-          return typeof(int);
-
-        case DbType.Int64:
-          return typeof(long);
-
-        case DbType.Object:
-          return typeof(object);
-
-        case DbType.SByte:
-          return typeof(byte);
-
-        case DbType.Single:
-          return typeof(float);
-
-        case DbType.UInt16:
-          return typeof(ushort);
-
-        case DbType.UInt32:
-          return typeof(uint);
-
-        case DbType.UInt64:
-          return typeof(ulong);
-
-        case DbType.VarNumeric:
-          return typeof(decimal);
-      }
-      return type;
-    }
-
     public static List<Type> GetImplementedClassesForInterface(Type interfaceType)
     {
       return GetImplementedClassesForInterface(Assembly.GetCallingAssembly(), interfaceType);
@@ -140,7 +66,6 @@ namespace ICSP.Core.Reflection
 
     public static List<Type> GetImplementedClassesForInterface(Assembly searchAssembly, Type interfaceType)
     {
-
       var lList = new List<Type>();
 
       var lTypes = searchAssembly.GetTypes();
@@ -167,16 +92,20 @@ namespace ICSP.Core.Reflection
       if(o != null)
       {
         PropertyInfo property = o.GetType().GetProperty(fieldOrPropertyName);
+
         if(property != null)
         {
           return property.GetValue(o, null);
         }
+
         FieldInfo field = o.GetType().GetField(fieldOrPropertyName);
+
         if(field != null)
         {
           return field.GetValue(o);
         }
       }
+
       return null;
     }
 
@@ -203,11 +132,10 @@ namespace ICSP.Core.Reflection
 
     public static Type GetType(string typeName)
     {
-      Type type = null;
-
-      if(!mTypeCache.TryGetValue(typeName, out type))
+      if(!TypeCache.TryGetValue(typeName, out Type type))
       {
         TypeInfo info = new TypeInfo(typeName);
+
         if(info.AssemblyName == null)
         {
           foreach(Assembly assembly in AppDomain.CurrentDomain.GetAssemblies())
@@ -224,7 +152,7 @@ namespace ICSP.Core.Reflection
           type = Assembly.Load(info.AssemblyName).GetType(info.ClassName);
         }
 
-        mTypeCache[typeName] = type;
+        TypeCache[typeName] = type;
       }
 
       return type;
@@ -233,14 +161,17 @@ namespace ICSP.Core.Reflection
     public static Type GetType(string sTypeName, Assembly[] assemblies)
     {
       TypeInfo info = new TypeInfo(sTypeName);
+
       foreach(Assembly assembly in assemblies)
       {
         Type type = assembly.GetType(info.ClassName);
+
         if(null != type)
         {
           return type;
         }
       }
+
       return null;
     }
 
@@ -259,6 +190,7 @@ namespace ICSP.Core.Reflection
       {
         return false;
       }
+
       return true;
     }
 
@@ -268,6 +200,7 @@ namespace ICSP.Core.Reflection
       {
         return false;
       }
+
       return true;
     }
 
@@ -277,6 +210,7 @@ namespace ICSP.Core.Reflection
       {
         return (typeof(T?) == type);
       }
+
       return true;
     }
   }

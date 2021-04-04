@@ -14,10 +14,10 @@
   <div class="col-md-4">
     <form method="post" id="setup">
       <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-      <div class="form-group">
-        <label class="control-label">Panel Generation:</label>
+      <div class="mb-3">
+        <label class="form-label">Panel Generation:</label>
       </div>
-      <div class="form-group">
+      <div class="mb-3">
         <div class="custom-control custom-radio custom-control-inline">
           <input class="custom-control-input" type="radio" name="panelGeneration" id="G4" value="G4" checked />
           <label class="custom-control-label" for="G4">G4-Panel</label>
@@ -27,7 +27,7 @@
           <label class="custom-control-label" for="G5">G5-Panel</label>
         </div>
       </div>
-      <div class="form-group">
+      <div class="mb-3">
         <select class="form-control" id="panelType_G4" name="panelType" required>
           <option value="">Please select one</option>
           @foreach(var panel in Panels.AllPanels.Where(p => p.Generation == PanelGeneration.G4))
@@ -44,19 +44,19 @@
         </select>
         <span asp-validation-for="PanelType" class="text-danger"></span>
       </div>
-      <div class="form-group">
-        <label asp-for="PortCount" class="control-label"></label>
+      <div class="mb-3">
+        <label asp-for="PortCount" class="form-label"></label>
         <input asp-for="PortCount" class="form-control" min="1" max="1000" value="1" required />
         <span asp-validation-for="PortCount" class="text-danger"></span>
       </div>
-      <div class="form-group">
-        <label asp-for="DeviceName" class="control-label"></label>
+      <div class="mb-3">
+        <label asp-for="DeviceName" class="form-label"></label>
         <input asp-for="DeviceName" class="form-control" />
         <span asp-validation-for="DeviceName" class="text-danger"></span>
       </div>
 
       <!-- Button trigger modal -->
-      <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#MsgBoxCreate">
+      <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#modalBoxCreate">
         <i class="fas fa-exclamation-triangle"></i> Create Panel
       </button>&nbsp;&nbsp;&nbsp;
       <button type="button" class="btn btn-primary" onclick="location.href='@Url.Action("Index", "Setup")'">
@@ -64,21 +64,19 @@
       </button>
 
       <!-- Modal -->
-      <div class="modal fade" id="MsgBoxCreate" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal fade" id="modalBoxCreate" tabindex="-1" aria-labelledby="modalTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
           <div class="modal-content">
             <div class="modal-header">
-              <h5 class="modal-title" id="exampleModalLongTitle"><i class="fas fa-exclamation-triangle" style="color:red"></i> Create Panel</h5>
-              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-              </button>
+              <h5 class="modal-title" id="modalTitle"><i class="fas fa-exclamation-triangle" style="color:red"></i> Create Panel</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
               Are you sure you want to create panel?<br />
               This action override the file <b>js/project.js</b> in your <nobr>WebControl-Folder!</nobr>
             </div>
             <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" data-dismiss="modal">Abort</button>
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Abort</button>
               <button type="submit" class="btn btn-primary">Create Panel</button>
             </div>
           </div>
@@ -116,6 +114,3 @@
     };
   }
 </script>
-@*@section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
-  }*@

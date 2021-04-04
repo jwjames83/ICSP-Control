@@ -59,18 +59,17 @@ namespace ICSP.WebProxy.Controllers
           System.IO.File.WriteAllText(lFileNameProject, lProject);
 
           // Create index.html
-          var lHtml = Resources.MainPage;
+          var lHtml = Resources.MainPage_V02;
 
           lHtml = lHtml?
-            .Replace("{title}", configuration.DeviceName)
-            .Replace("{width}", "1280")
-            .Replace("{height}", "800");
+            .Replace("[Title]", string.IsNullOrWhiteSpace(configuration.DeviceName) ? "WebControl" : configuration.DeviceName)
+            .Replace("[Width]", "1280")
+            .Replace("[Height]", "800");
 
           // LastBuild & Version
           lHtml = lHtml?
-            .Replace("{LastBuild}", ProgramProperties.CompileDate.ToString("yyyy-MM-dd HH:mm:ss:ffffff")) // 2020-08-27 12:03:37.946386
-            .Replace("{Title}", ProgramProperties.Title)
-            .Replace("{version}", ProgramProperties.Version.ToString());
+            .Replace("[LastBuild]", ProgramProperties.CompileDate.ToString("yyyy-MM-dd HH:mm:ss:ffffff")) // 2020-08-27 12:03:37.946386
+            .Replace("[Version]", ProgramProperties.Version.ToString());
 
           var lFileNameMainPage = string.Format(@"{0}\{1}", lBaseDirectory.FullName, "index.html");
 

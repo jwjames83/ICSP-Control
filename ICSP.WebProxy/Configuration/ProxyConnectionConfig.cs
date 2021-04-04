@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
-using System.Text.Json.Serialization;
 
+using ICSP.Core;
 using ICSP.Core.Client;
+
+using Newtonsoft.Json;
 
 namespace ICSP.WebProxy.Configuration
 {
@@ -31,14 +33,28 @@ namespace ICSP.WebProxy.Configuration
     [Required]
     public ushort RemotePort { get; set; } = ICSPClient.DefaultPort;
 
+    [Display(Name = "UserName")]
+    [Required]
+    public string UserName { get; set; } = ICSPManager.DefaultUsername;
+
+    [Display(Name = "Password")]
+    public string Password { get; set; } = ICSPManager.DefaultPassword;
+
+    [Display(Name = "Password")]
+    [JsonIgnore]
+    [DisplayFormat(ConvertEmptyStringToNull = false)]
+    public string NewPassword { get; set; }
+
     [Display(Name = "Devices")]
     public List<ushort> Devices { get; set; } = new List<ushort>();
 
     [Display(Name = "Devices")]
     [Required]
+    [JsonIgnore]
     public string DeviceList
     {
-      get => string.Join(", ", Devices); set
+      get => string.Join(", ", Devices);
+      set
       {
         try
         {

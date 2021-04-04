@@ -143,7 +143,7 @@ namespace ICSP.WebProxy.Properties {
         ///&lt;html&gt;
         ///&lt;head&gt;
         ///  &lt;meta charset=&quot;utf-8&quot;&gt;
-        ///  &lt;title&gt;{title}&lt;/title&gt;
+        ///  &lt;title&gt;[Title]&lt;/title&gt;
         ///  &lt;meta http-equiv=&quot;pragma&quot; content=&quot;no-cache, no-store&quot;&gt;
         ///  &lt;meta http-equiv=&quot;expires&quot; content=&quot;0&quot;&gt;
         ///  &lt;meta http-equiv=&quot;cache-control&quot; content=&quot;no-cache, no-store&quot;&gt;
@@ -152,9 +152,29 @@ namespace ICSP.WebProxy.Properties {
         ///  &lt;link rel=&quot;apple-touch-icon&quot; sizes=&quot;57x57&quot; href=&quot;AMXPanel/images/icon/apple-icon-57x57.png&quot;&gt;
         ///  &lt;link re [Rest der Zeichenfolge wurde abgeschnitten]&quot;; ähnelt.
         /// </summary>
-        internal static string MainPage {
+        internal static string MainPage_V01 {
             get {
-                return ResourceManager.GetString("MainPage", resourceCulture);
+                return ResourceManager.GetString("MainPage_V01", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die &lt;!DOCTYPE html&gt;
+        ///&lt;html&gt;
+        ///&lt;head&gt;
+        ///  &lt;meta charset=&quot;utf-8&quot;&gt;
+        ///  &lt;title&gt;[Title]&lt;/title&gt;
+        ///  &lt;meta http-equiv=&quot;pragma&quot; content=&quot;no-cache, no-store&quot;&gt;
+        ///  &lt;meta http-equiv=&quot;expires&quot; content=&quot;0&quot;&gt;
+        ///  &lt;meta http-equiv=&quot;cache-control&quot; content=&quot;no-cache, no-store&quot;&gt;
+        ///  &lt;meta http-equiv=&quot;X-UA-Compatible&quot; content=&quot;IE=edge&quot; /&gt;
+        ///  &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1.0, user-scalable=0&quot;&gt;
+        ///  &lt;link rel=&quot;apple-touch-icon&quot; sizes=&quot;57x57&quot; href=&quot;AMXPanel/images/icon/apple-icon-57x57.png&quot;&gt;
+        ///  &lt;link rel=&quot; [Rest der Zeichenfolge wurde abgeschnitten]&quot;; ähnelt.
+        /// </summary>
+        internal static string MainPage_V02 {
+            get {
+                return ResourceManager.GetString("MainPage_V02", resourceCulture);
             }
         }
         

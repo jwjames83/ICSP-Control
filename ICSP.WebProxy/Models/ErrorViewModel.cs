@@ -1,13 +1,19 @@
-using System;
+using System.Text.Json.Serialization;
 
 namespace ICSP.WebProxy.Models
 {
   public class ErrorViewModel
   {
-    public int ErrorCode { get; set; }
+    public int StatusCode { get; set; }
 
+    public string Reason { get; set; }
+
+    [JsonIgnore]
+    [Newtonsoft.Json.JsonIgnore]
     public string RequestId { get; set; }
 
+    [JsonIgnore]
+    [Newtonsoft.Json.JsonIgnore]
     public bool ShowRequestId
     {
       get
@@ -15,5 +21,9 @@ namespace ICSP.WebProxy.Models
         return !string.IsNullOrEmpty(RequestId);
       }
     }
+
+    public string Path { get; internal set; }
+
+    public string QueryString { get; internal set; }
   }
 }
