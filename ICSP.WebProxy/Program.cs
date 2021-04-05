@@ -39,11 +39,11 @@ namespace ICSP.WebProxy
 
       // A Windows Service app returns the C:\WINDOWS\system32 folder as its current directory.
       Directory.SetCurrentDirectory(AppDomain.CurrentDomain.BaseDirectory);
-
-      var lEnvironment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
-
+      
+      var lEnvironment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? Environments.Production;
+      
       // Remove old log files ...
-      if(lEnvironment.Equals("Development", StringComparison.OrdinalIgnoreCase))
+      if(lEnvironment?.Equals(Environments.Development, StringComparison.OrdinalIgnoreCase) ?? false)
       {
         try
         {

@@ -150,3 +150,33 @@
 2021-04-05 18:10:43.584 [DBG] [Microsoft.AspNetCore.Server.Kestrel] Connection id "0HM7O9JRQ95MI" disconnecting.
 2021-04-05 18:10:43.591 [DBG] [Microsoft.AspNetCore.Server.Kestrel] Connection id "0HM7O9JRQ95MI" stopped.
 2021-04-05 18:10:43.593 [DBG] [Microsoft.AspNetCore.Server.Kestrel.Transport.Sockets] Connection id "0HM7O9JRQ95MI" sending FIN because: "The Socket transport's send loop completed gracefully."
+2021-04-05 18:43:40.829 [INF] [ICSP.WebProxy.Program] [Main] Application starting
+2021-04-05 18:43:40.906 [INF] [ICSP.WebProxy.Program] [Main] BaseDirectory: C:\VS.NET\Visual Studio\Projects\ICSP.Control\ICSP.WebProxy\bin\Debug\netcoreapp3.1\
+2021-04-05 18:43:40.961 [INF] [ICSP.WebProxy.Program] [CreateHostBuilder] Running as windows service ...
+2021-04-05 18:43:41.303 [INF] [ICSP.WebProxy.Program] [CreateHostBuilder] UseUrl[]: http://*
+2021-04-05 18:43:41.331 [INF] [ICSP.WebProxy.Program] [CreateHostBuilder] IWebHostBuilder.UseStartup ...
+2021-04-05 18:43:41.334 [INF] [ICSP.WebProxy.Program] [StartServer] Configure Serilog: ...
+2021-04-05 18:43:41.335 [INF] [ICSP.WebProxy.Program] [StartServer] Start RunAsync with cancellation token ...
+2021-04-05 18:43:41.654 [DBG] [Microsoft.Extensions.Hosting.Internal.Host] Hosting starting
+2021-04-05 18:43:41.853 [INF] [ICSP.WebProxy.Startup] [Configure] ======================================================================================================================================================
+2021-04-05 18:43:41.853 [INF] [ICSP.WebProxy.Startup] [Configure] Using StaticFiles:Directories:
+2021-04-05 18:43:41.853 [INF] [ICSP.WebProxy.Startup] [Configure] Root=C:\Program Files (x86)\AVSWebControl\WebControlLib\jsx, Root=/js
+2021-04-05 18:43:41.854 [WRN] [ICSP.WebProxy.Startup] [Configure] Invalid Settings in appsettings.json: StaticFiles.Directories.BaseDirectory -> Directory not exists: C:\Program Files (x86)\AVSWebControl\WebControlLib\jsx
+2021-04-05 18:43:41.854 [INF] [ICSP.WebProxy.Startup] [Configure] ======================================================================================================================================================
+2021-04-05 18:43:41.854 [INF] [ICSP.WebProxy.Startup] [Configure] ======================================================================================================================================================
+2021-04-05 18:43:41.854 [INF] [ICSP.WebProxy.Startup] [Configure] Configured connections:
+2021-04-05 18:43:41.854 [INF] [ICSP.WebProxy.Startup] [Configure] ======================================================================================================================================================
+2021-04-05 18:43:41.854 [INF] [ICSP.WebProxy.Startup] [Configure] LocalHost  : http://*
+2021-04-05 18:43:41.854 [INF] [ICSP.WebProxy.Startup] [Configure] RemoteHost : 172.16.126.251
+2021-04-05 18:43:41.855 [INF] [ICSP.WebProxy.Startup] [Configure] Devices    : 10001, 10002
+2021-04-05 18:43:41.855 [INF] [ICSP.WebProxy.Startup] [Configure] Root       : C:\$GitHub\WebControl.Milestone\WebControlLib
+2021-04-05 18:43:41.855 [INF] [ICSP.WebProxy.Startup] [Configure] RequestPath: 
+2021-04-05 18:43:41.856 [INF] [ICSP.WebProxy.Startup] [Configure] ======================================================================================================================================================
+2021-04-05 18:43:42.000 [DBG] [Microsoft.AspNetCore.Server.Kestrel.Core.KestrelServer] Failed to locate the development https certificate at 'null'.
+2021-04-05 18:43:42.051 [INF] [Microsoft.Hosting.Lifetime] Now listening on: http://[::]:80
+2021-04-05 18:43:42.052 [INF] [Microsoft.Hosting.Lifetime] Application started. Hosting environment: Production; Content root path: C:\VS.NET\Visual Studio\Projects\ICSP.Control\ICSP.WebProxy\bin\Debug\netcoreapp3.1\
+2021-04-05 18:43:42.052 [DBG] [Microsoft.Extensions.Hosting.Internal.Host] Hosting started
+2021-04-05 18:43:44.447 [INF] [Microsoft.Hosting.Lifetime] Application is shutting down...
+2021-04-05 18:43:44.456 [DBG] [Microsoft.Extensions.Hosting.Internal.Host] Hosting stopping
+2021-04-05 18:43:44.470 [DBG] [Microsoft.Extensions.Hosting.Internal.Host] Hosting stopped
+2021-04-05 18:43:44.482 [INF] [ICSP.WebProxy.Program] [StartServer] Stopped ...
