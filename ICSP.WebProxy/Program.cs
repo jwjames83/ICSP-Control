@@ -12,13 +12,14 @@ using ICSP.WebProxy.Configuration;
 using ICSP.WebProxy.Extensions;
 
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Hosting.WindowsServices;
 
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-using Serilog.Events;
+using Serilog;
 
 namespace ICSP.WebProxy
 {
@@ -39,60 +40,79 @@ namespace ICSP.WebProxy
       // A Windows Service app returns the C:\WINDOWS\system32 folder as its current directory.
       Directory.SetCurrentDirectory(AppDomain.CurrentDomain.BaseDirectory);
 
-      // Remove old LogFiles ...
-      bool lIsDevelopment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Development";
+      var lEnvironment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
 
-      if(lIsDevelopment)
+      // Remove old log files ...
+      if(lEnvironment.Equals("Development", StringComparison.OrdinalIgnoreCase))
       {
         try
         {
-          var lDirectory = new DirectoryInfo(AppDomain.CurrentDomain.BaseDirectory);
+          var lDirectory = new DirectoryInfo(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Logs"));
 
-          foreach(var file in lDirectory.EnumerateFiles("*.log"))
-          {
-            try
-            {
-              file.Delete();
-            }
-            catch { }
-          }
+          if(lDirectory.Exists)
+            lDirectory.Delete(true);
         }
         catch { }
       }
 
-      var lLoggingConfig = GetLoggingConfiguration();
-
       // Serilog Two-stage initialization
-      // Initializes the Log system (CreateBootstrapLogger)
-      LoggingConfigurator.Configure(lLoggingConfig);
+      // Initializes the log system (CreateBootstrapLogger)
+      try
+      {
+        Logger.MethodInfo = MethodInfo.Default;
 
-      Logger.LogInfo("Starting up");
-      Logger.LogInfo($"BaseDirectory: {AppDomain.CurrentDomain.BaseDirectory}");
+        var configuration = new ConfigurationBuilder()
+            .SetBasePath(Directory.GetCurrentDirectory())
+            .AddJsonFile($"appsettings.json")
+            .AddJsonFile($"appsettings.{lEnvironment}.json", true)
+            .Build();
+
+        Log.Logger = new LoggerConfiguration()
+          .ReadFrom.Configuration(configuration)
+          .CreateBootstrapLogger();
+
+        Logger.LogInfo($"Application starting");
+        Logger.LogInfo($"BaseDirectory: {AppDomain.CurrentDomain.BaseDirectory}");
+      }
+      catch(Exception ex)
+      {
+        Log.Fatal(ex.Message);
+      }
 
       // Failed to bind to address http://[::]:80: address already in use.
-      await StartServer(args, lLoggingConfig);
+      await StartServer(args);
 
       // Restart Server
       while(CtsRestart.IsCancellationRequested)
-        await StartServer(args, null);
+        await StartServer(args);
     }
 
-    private static async Task StartServer(string[] args, LoggingConfiguration loggingConfig)
+    private static async Task StartServer(string[] args)
     {
       try
       {
         CtsRestart = new CancellationTokenSource();
-        
+
         var lHostBuilder = CreateHostBuilder(args);
 
         // Serilog Two-stage initialization
-        // Initializes the Log system (create the final logger)
-        if(loggingConfig != null)
+        // Initializes the log system (create the final logger)
+        try
         {
-          Logger.LogInfo("LoggingConfigurator.Configure: LoggingConfig={0}", loggingConfig);
+          Logger.LogInfo("Configure Serilog: ...");
 
-          LoggingConfigurator.Configure(lHostBuilder, loggingConfig);
+          lHostBuilder.UseSerilog((context, services, configuration) =>
+          {
+            configuration.ReadFrom.Configuration(context.Configuration);
+            // configuration.ReadFrom.Services(services);
+          });
         }
+        catch(Exception ex)
+        {
+          Logger.LogError(ex);
+        }
+
+        Logger.LogInfo("Start RunAsync with cancellation token ...");
 
         await lHostBuilder.Build().RunAsync(CtsRestart.Token);
 
@@ -212,26 +232,26 @@ namespace ICSP.WebProxy
       return lValidUrls.Values.ToArray();
     }
 
-    private static LoggingConfiguration GetLoggingConfiguration()
-    {
-      var lLoggingConfig = new LoggingConfiguration();
+    //private static LoggingConfiguration GetLoggingConfiguration()
+    //{
+    //  var lLoggingConfig = new LoggingConfiguration();
 
-      var lLogLevel = GetConfigValue<string>("appsettings.json", "Logging.LogLevel.WebProxy");
+    //  var lLogLevel = GetConfigValue<string>("appsettings.json", "Logging.LogLevel.WebProxy");
 
-      switch(lLogLevel?.ToLower())
-      {
-        case "none"        /**/: lLoggingConfig.LogLevel = (LogEventLevel)6; break;
-        case "critical"    /**/: lLoggingConfig.LogLevel = LogEventLevel.Fatal; break;
-        case "error"       /**/: lLoggingConfig.LogLevel = LogEventLevel.Error; break;
-        case "warning"     /**/: lLoggingConfig.LogLevel = LogEventLevel.Warning; break;
-        case "information" /**/: lLoggingConfig.LogLevel = LogEventLevel.Information; break;
-        case "debug"       /**/: lLoggingConfig.LogLevel = LogEventLevel.Debug; break;
-        case "trace"       /**/: lLoggingConfig.LogLevel = LogEventLevel.Verbose; break;
-        case "verbose"     /**/: lLoggingConfig.LogLevel = LogEventLevel.Verbose; break;
-      }
+    //  switch(lLogLevel?.ToLower())
+    //  {
+    //    case "none"        /**/: lLoggingConfig.LogLevel = (LogEventLevel)6; break;
+    //    case "critical"    /**/: lLoggingConfig.LogLevel = LogEventLevel.Fatal; break;
+    //    case "error"       /**/: lLoggingConfig.LogLevel = LogEventLevel.Error; break;
+    //    case "warning"     /**/: lLoggingConfig.LogLevel = LogEventLevel.Warning; break;
+    //    case "information" /**/: lLoggingConfig.LogLevel = LogEventLevel.Information; break;
+    //    case "debug"       /**/: lLoggingConfig.LogLevel = LogEventLevel.Debug; break;
+    //    case "trace"       /**/: lLoggingConfig.LogLevel = LogEventLevel.Verbose; break;
+    //    case "verbose"     /**/: lLoggingConfig.LogLevel = LogEventLevel.Verbose; break;
+    //  }
 
-      return lLoggingConfig;
-    }
+    //  return lLoggingConfig;
+    //}
 
     public static T GetConfigSection<T>(string path, string key) where T : class, new()
     {

@@ -66,31 +66,40 @@ namespace ICSP.Core.Logging
           lMessage = string.Format(format, args);
         }
 
+        // Resolve name for type and method
         if(MethodInfo == MethodInfo.Default && methodInfo || MethodInfo == MethodInfo.Allways)
         {
           var lCallerMethod = new StackTrace(1).GetFrame(1).GetMethod();
 
-          var lInfo = lCallerMethod.GetMethodName();
+          var lInfo = lCallerMethod.GetMethodInfo();
 
-          var lMethodInfo = string.Format("{0}.{1}", lInfo.Type, lInfo.Name);
+          OnLogEvent?.Invoke(null, new LogEventArgs(level, $"{lInfo.Type?.Name}.{lInfo.MethodName}", lMessage));
 
-          OnLogEvent?.Invoke(null, new LogEventArgs(level, lMethodInfo, lMessage));
+          lMessage = $"[{lInfo.MethodName}] {lMessage}";
 
-          lMessage = string.Format("[{0}] {1}", lMethodInfo, lMessage);
+          switch(level)
+          {
+            case LogEventLevel.Fatal       /**/: Log.ForContext(lInfo.Type).Fatal(lMessage); break;
+            case LogEventLevel.Error       /**/: Log.ForContext(lInfo.Type).Error(lMessage); break;
+            case LogEventLevel.Warning     /**/: Log.ForContext(lInfo.Type).Warning(lMessage); break;
+            case LogEventLevel.Information /**/: Log.ForContext(lInfo.Type).Information(lMessage); break;
+            case LogEventLevel.Debug       /**/: Log.ForContext(lInfo.Type).Debug(lMessage); break;
+            case LogEventLevel.Verbose     /**/: Log.ForContext(lInfo.Type).Verbose(lMessage); break;
+          }
         }
         else
         {
           OnLogEvent?.Invoke(null, new LogEventArgs(level, null, lMessage));
-        }
 
-        switch(level)
-        {
-          case LogEventLevel.Fatal       /**/: Log.Fatal(lMessage); break;
-          case LogEventLevel.Error       /**/: Log.Error(lMessage); break;
-          case LogEventLevel.Warning     /**/: Log.Warning(lMessage); break;
-          case LogEventLevel.Information /**/: Log.Information(lMessage); break;
-          case LogEventLevel.Debug       /**/: Log.Debug(lMessage); break;
-          case LogEventLevel.Verbose     /**/: Log.Verbose(lMessage); break;
+          switch(level)
+          {
+            case LogEventLevel.Fatal       /**/: Log.Fatal(lMessage); break;
+            case LogEventLevel.Error       /**/: Log.Error(lMessage); break;
+            case LogEventLevel.Warning     /**/: Log.Warning(lMessage); break;
+            case LogEventLevel.Information /**/: Log.Information(lMessage); break;
+            case LogEventLevel.Debug       /**/: Log.Debug(lMessage); break;
+            case LogEventLevel.Verbose     /**/: Log.Verbose(lMessage); break;
+          }
         }
       }
       catch(Exception ex)

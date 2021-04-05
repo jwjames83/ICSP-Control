@@ -187,15 +187,26 @@ namespace ICSP.WebProxy.Proxy
       Manager = new ICSPManager { socketId = socketId };
 
       // Setup Credentials
-      try
-      {
-        var lService = new CipherService(mDataProtectionProvider);
+      var lUserName = ConnectionConfig.UserName ?? ICSPManager.DefaultUsername;
+      var lPassword = ConnectionConfig.Password ?? ICSPManager.DefaultPassword;
 
-        Manager.Credentials = new NetworkCredential(ConnectionConfig.UserName, lService.Decrypt(ConnectionConfig.Password));
-      }
-      catch(Exception ex)
+      if(!string.IsNullOrWhiteSpace(lPassword) && lPassword != ICSPManager.DefaultPassword)
       {
-        LogError(ex.Message);
+        try
+        {
+          var lService = new CipherService(mDataProtectionProvider);
+
+          Manager.Credentials = new NetworkCredential(lUserName, lService.Decrypt(ConnectionConfig.Password));
+        }
+        catch(Exception ex)
+        {
+          LogError(ex.Message);
+        }
+      }
+      else
+      {
+        // Using unencrypted password ...
+        Manager.Credentials = new NetworkCredential(lUserName, lPassword);
       }
 
       if(!string.IsNullOrWhiteSpace(ConnectionConfig.BaseDirectory))
@@ -237,7 +248,7 @@ namespace ICSP.WebProxy.Proxy
           try
           {
             LogInformation($"Try connect, Host={ConnectionConfig.RemoteHost}, Port={ConnectionConfig.RemotePort}");
-            
+
             await Manager.ConnectAsync(ConnectionConfig.RemoteHost, ConnectionConfig.RemotePort);
           }
           catch(Exception ex)
@@ -438,7 +449,9 @@ namespace ICSP.WebProxy.Proxy
 
           Converter.Device = lDeviceNo;
 
-          LogWarn($"Device={lDeviceNo}");
+          LogInformation($"================================================================================");
+          LogInformation($"Device={lDeviceNo}");
+          LogInformation($"================================================================================");
 
           if(Manager.Devices.TryGetValue(lDeviceNo, out var lDeviceInfo))
           {
@@ -724,22 +737,22 @@ namespace ICSP.WebProxy.Proxy
 
     internal void LogError(string message, [CallerMemberName] string callerName = "(Caller name not set)")
     {
-      mLogger.LogError($"[{nameof(ProxyClient)}][{SocketId:00}][{callerName}]: {message}");
+      mLogger.LogError($"[{SocketId:00}][{callerName}]: {message}");
     }
 
     internal void LogWarn(string message, [CallerMemberName] string callerName = "(Caller name not set)")
     {
-      mLogger.LogWarning($"[{nameof(ProxyClient)}][{SocketId:00}][{callerName}]: {message}");
+      mLogger.LogWarning($"[{SocketId:00}][{callerName}]: {message}");
     }
 
     internal void LogInformation(string message, [CallerMemberName] string callerName = "(Caller name not set)")
     {
-      mLogger.LogInformation($"[{nameof(ProxyClient)}][{SocketId:00}][{callerName}]: {message}".Replace("\u0002", "[$02]").Replace("\u0003", "[$03]"));
+      mLogger.LogInformation($"[{SocketId:00}][{callerName}]: {message}".Replace("\u0002", "[$02]").Replace("\u0003", "[$03]"));
     }
 
     internal void LogDebug(string message, [CallerMemberName] string callerName = "(Caller name not set)")
     {
-      mLogger.LogDebug($"[{nameof(ProxyClient)}][{SocketId:00}][{callerName}]: {message}".Replace("\u0002", "[$02]").Replace("\u0003", "[$03]"));
+      mLogger.LogDebug($"[{SocketId:00}][{callerName}]: {message}".Replace("\u0002", "[$02]").Replace("\u0003", "[$03]"));
     }
 
     private async Task InitializeDeviceConnectionAsync()

@@ -18,9 +18,9 @@ namespace ICSP.Core.Logging.Enricher
     {
       var lCallerMethod = new StackTrace().GetFrame(7).GetMethod();
 
-      var lInfo = lCallerMethod.GetMethodName();
+      var lInfo = lCallerMethod.GetMethodInfo();
 
-      logEvent.AddPropertyIfAbsent(propertyFactory.CreateProperty(PropertyName, string.Format("({0}.{1}) => ", lInfo.Type, lInfo.Name)));
+      logEvent.AddPropertyIfAbsent(propertyFactory.CreateProperty(PropertyName, $"({lInfo.Type?.Name}.{lInfo.MethodName}) => "));
     }
   }
 }

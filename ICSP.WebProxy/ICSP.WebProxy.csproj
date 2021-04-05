@@ -12,6 +12,7 @@
   <ItemGroup>
     <Compile Remove="Configuration\ProxyDefaultConfig.cs" />
     <Compile Remove="HttpConnection.cs" />
+    <Compile Remove="LoggingConfigurator.cs" />
     <Compile Remove="MessagesController.cs" />
     <Compile Remove="NotificationsMessageHandler.cs" />
     <Compile Remove="SampleWebSocketMiddleware.cs" />

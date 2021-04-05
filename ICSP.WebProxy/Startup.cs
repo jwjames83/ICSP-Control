@@ -16,6 +16,8 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using Microsoft.Net.Http.Headers;
 
+using Serilog;
+
 namespace ICSP.WebProxy
 {
   public class Startup
@@ -57,6 +59,8 @@ namespace ICSP.WebProxy
 
         app.UseHsts();
       }
+
+      app.UseSerilogRequestLogging();
 
       app.UseStatusCodePagesWithReExecute("/Error/{0}");
 

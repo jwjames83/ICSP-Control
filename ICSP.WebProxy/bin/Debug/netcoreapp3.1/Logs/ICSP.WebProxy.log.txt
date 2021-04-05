@@ -1,0 +1,152 @@
+2021-04-05 18:07:45.010 [INF] [ICSP.WebProxy.Program] [Main] Application starting
+2021-04-05 18:07:45.093 [INF] [ICSP.WebProxy.Program] [Main] BaseDirectory: C:\VS.NET\Visual Studio\Projects\ICSP.Control\ICSP.WebProxy\bin\Debug\netcoreapp3.1\
+2021-04-05 18:07:45.258 [INF] [ICSP.WebProxy.Program] [CreateHostBuilder] Running as console process ...
+2021-04-05 18:07:46.131 [INF] [ICSP.WebProxy.Program] [CreateHostBuilder] UseUrl[]: http://*
+2021-04-05 18:07:46.283 [INF] [ICSP.WebProxy.Program] [CreateHostBuilder] IWebHostBuilder.UseStartup ...
+2021-04-05 18:07:46.292 [INF] [ICSP.WebProxy.Program] [StartServer] Configure Serilog: ...
+2021-04-05 18:07:46.297 [INF] [ICSP.WebProxy.Program] [StartServer] Start RunAsync with cancellation token ...
+2021-04-05 18:07:47.858 [DBG] [Microsoft.Extensions.Hosting.Internal.Host] Hosting starting
+2021-04-05 18:07:48.296 [INF] [ICSP.WebProxy.Startup] [Configure] ======================================================================================================================================================
+2021-04-05 18:07:48.298 [INF] [ICSP.WebProxy.Startup] [Configure] Using StaticFiles:Directories:
+2021-04-05 18:07:48.301 [INF] [ICSP.WebProxy.Startup] [Configure] Root=C:\Program Files (x86)\AVSWebControl\WebControlLib\jsx, Root=/js
+2021-04-05 18:07:48.304 [WRN] [ICSP.WebProxy.Startup] [Configure] Invalid Settings in appsettings.json: StaticFiles.Directories.BaseDirectory -> Directory not exists: C:\Program Files (x86)\AVSWebControl\WebControlLib\jsx
+2021-04-05 18:07:48.306 [INF] [ICSP.WebProxy.Startup] [Configure] ======================================================================================================================================================
+2021-04-05 18:07:48.309 [INF] [ICSP.WebProxy.Startup] [Configure] ======================================================================================================================================================
+2021-04-05 18:07:48.311 [INF] [ICSP.WebProxy.Startup] [Configure] Configured connections:
+2021-04-05 18:07:48.313 [INF] [ICSP.WebProxy.Startup] [Configure] ======================================================================================================================================================
+2021-04-05 18:07:48.316 [INF] [ICSP.WebProxy.Startup] [Configure] LocalHost  : http://*
+2021-04-05 18:07:48.318 [INF] [ICSP.WebProxy.Startup] [Configure] RemoteHost : 172.16.126.251
+2021-04-05 18:07:48.320 [INF] [ICSP.WebProxy.Startup] [Configure] Devices    : 10001, 10002
+2021-04-05 18:07:48.323 [INF] [ICSP.WebProxy.Startup] [Configure] Root       : C:\$GitHub\WebControl.Milestone\WebControlLib
+2021-04-05 18:07:48.325 [INF] [ICSP.WebProxy.Startup] [Configure] RequestPath: 
+2021-04-05 18:07:48.329 [INF] [ICSP.WebProxy.Startup] [Configure] ======================================================================================================================================================
+2021-04-05 18:07:48.561 [DBG] [Microsoft.AspNetCore.Server.Kestrel.Core.KestrelServer] Failed to locate the development https certificate at 'null'.
+2021-04-05 18:07:48.624 [INF] [Microsoft.Hosting.Lifetime] Now listening on: http://[::]:80
+2021-04-05 18:07:48.627 [INF] [Microsoft.Hosting.Lifetime] Application started. Press Ctrl+C to shut down.
+2021-04-05 18:07:48.630 [INF] [Microsoft.Hosting.Lifetime] Hosting environment: Development
+2021-04-05 18:07:48.632 [INF] [Microsoft.Hosting.Lifetime] Content root path: C:\VS.NET\Visual Studio\Projects\ICSP.Control\ICSP.WebProxy\bin\Debug\netcoreapp3.1
+2021-04-05 18:07:48.634 [DBG] [Microsoft.Extensions.Hosting.Internal.Host] Hosting started
+2021-04-05 18:07:52.896 [DBG] [Microsoft.AspNetCore.Server.Kestrel] Connection id "0HM7O9JRQ95ME" accepted.
+2021-04-05 18:07:52.900 [DBG] [Microsoft.AspNetCore.Server.Kestrel] Connection id "0HM7O9JRQ95ME" started.
+2021-04-05 18:07:52.953 [INF] [Microsoft.AspNetCore.Hosting.Diagnostics] Request starting HTTP/1.1 GET http://localhost/  
+2021-04-05 18:07:52.990 [WRN] [ICSP.WebProxy.WebSocketProxyClient] Socket[01]: New connection. Port=80, Path=/, QueryString=
+2021-04-05 18:07:53.042 [INF] [ICSP.WebProxy.Converter.ModuleWebControlConverter] [ToDevMessageAsync] Msg=PANEL_TYPE=MVP-9000i;
+2021-04-05 18:07:53.066 [INF] [ICSP.WebProxy.Converter.ModuleWebControlConverter] [ToDevMessageAsync] Msg=PORT_COUNT=9;
+2021-04-05 18:07:53.069 [INF] [ICSP.WebProxy.Converter.ModuleWebControlConverter] [ToDevMessageAsync] Msg=CHANNEL_COUNT=254;
+2021-04-05 18:07:53.071 [INF] [ICSP.WebProxy.Converter.ModuleWebControlConverter] [ToDevMessageAsync] Msg=ADDRESS_COUNT=255;
+2021-04-05 18:07:53.073 [INF] [ICSP.WebProxy.Converter.ModuleWebControlConverter] [ToDevMessageAsync] Msg=LEVEL_COUNT=100;
+2021-04-05 18:07:53.076 [INF] [ICSP.WebProxy.Converter.ModuleWebControlConverter] [ToDevMessageAsync] Msg=UPDATE;
+2021-04-05 18:07:54.052 [INF] [ICSP.WebProxy.Proxy.ProxyClient] [01][InvokeAsync]: Try connect, Host=172.16.126.251, Port=1319
+2021-04-05 18:07:54.069 [INF] [ICSP.Core.Client.ICSPClient] [ConnectAsync] Host=172.16.126.251, Port=1319
+2021-04-05 18:07:54.087 [INF] [ICSP.Core.Client.ICSPClient] [ConnectAsync] Client connected: RemoteEndPoint=172.16.126.251:1319, LocalEndPoint=172.16.16.212:56668
+2021-04-05 18:07:54.159 [INF] [ICSP.WebProxy.Proxy.ProxyClient] [01][OnManagerClientOnlineStatusChanged]: ClientOnline=True
+2021-04-05 18:07:54.223 [INF] [ICSP.WebProxy.Proxy.ProxyClient] [01][CreateDeviceInfoAsync]: ================================================================================
+2021-04-05 18:07:54.226 [INF] [ICSP.WebProxy.Proxy.ProxyClient] [01][CreateDeviceInfoAsync]: Device=10001
+2021-04-05 18:07:54.231 [INF] [ICSP.WebProxy.Proxy.ProxyClient] [01][CreateDeviceInfoAsync]: ================================================================================
+2021-04-05 18:07:54.388 [INF] [ICSP.Core.ICSPManager] [CreateDeviceInfoAsync] ID=0x0003, Device=10001, System=0, DeviceId=343, Name=MVP-9000i, PortCount=9
+2021-04-05 18:07:54.407 [INF] [ICSP.Core.ICSPManager] [OnDataReceived] MsgCmdAck: ID=0x0003, Device=10001, System=0, DeviceId=343, Name=MVP-9000i
+2021-04-05 18:07:54.421 [INF] [ICSP.WebProxy.Proxy.ProxyClient] [01][OnManagerDeviceOnline]: Device=10001, System=209, Name=MVP-9000i
+2021-04-05 18:08:06.621 [DBG] [Microsoft.AspNetCore.Server.Kestrel] Connection id "0HM7O9JRQ95MF" accepted.
+2021-04-05 18:08:06.626 [DBG] [Microsoft.AspNetCore.Server.Kestrel] Connection id "0HM7O9JRQ95MF" started.
+2021-04-05 18:08:06.628 [DBG] [Microsoft.AspNetCore.Server.Kestrel] Connection id "0HM7O9JRQ95MG" accepted.
+2021-04-05 18:08:06.633 [DBG] [Microsoft.AspNetCore.Server.Kestrel] Connection id "0HM7O9JRQ95MG" started.
+2021-04-05 18:08:06.644 [INF] [Microsoft.AspNetCore.Hosting.Diagnostics] Request starting HTTP/1.1 GET http://localhost/?port=  
+2021-04-05 18:08:06.675 [DBG] [Microsoft.AspNetCore.Server.Kestrel] Connection id "0HM7O9JRQ95MG" completed keep alive response.
+2021-04-05 18:08:06.679 [INF] [Microsoft.AspNetCore.Hosting.Diagnostics] Request finished in 33.9261ms 304 text/html
+2021-04-05 18:08:06.698 [DBG] [Microsoft.AspNetCore.Server.Kestrel.Transport.Sockets] Connection id "0HM7O9JRQ95ME" received FIN.
+2021-04-05 18:08:06.714 [INF] [ICSP.WebProxy.WebSocketProxyClient] Socket[01]: Close received from client
+2021-04-05 18:08:06.750 [INF] [Microsoft.AspNetCore.Hosting.Diagnostics] Request starting HTTP/1.1 GET http://localhost/js/project.js  
+2021-04-05 18:08:06.764 [DBG] [Microsoft.AspNetCore.Server.Kestrel.Transport.Sockets] Connection id "0HM7O9JRQ95ME" sending FIN because: "The client closed the connection."
+2021-04-05 18:08:06.766 [INF] [Microsoft.AspNetCore.Hosting.Diagnostics] Request starting HTTP/1.1 GET http://localhost/js/mip.js  
+2021-04-05 18:08:06.767 [DBG] [Microsoft.AspNetCore.Server.Kestrel] Connection id "0HM7O9JRQ95MF" completed keep alive response.
+2021-04-05 18:08:06.772 [DBG] [Microsoft.AspNetCore.Server.Kestrel] Connection id "0HM7O9JRQ95ME" disconnecting.
+2021-04-05 18:08:06.775 [INF] [Microsoft.AspNetCore.Hosting.Diagnostics] Request finished in 24.8689ms 304 application/javascript
+2021-04-05 18:08:06.778 [INF] [ICSP.WebProxy.WebSocketProxyClient] Socket[01]: Ending processing loop in state Closed
+2021-04-05 18:08:06.793 [INF] [ICSP.Core.Client.ICSPClient] [Disconnect] Socket -> Shutdown(SocketShutdown.Both)
+2021-04-05 18:08:06.901 [INF] [ICSP.Core.Client.ICSPClient] [OnClientDisconnected] Client Disconnected: 172.16.126.251:1319
+2021-04-05 18:08:06.902 [INF] [Microsoft.AspNetCore.Hosting.Diagnostics] Request finished in 13954.383ms 101 
+2021-04-05 18:08:06.914 [DBG] [Microsoft.AspNetCore.Server.Kestrel] Connection id "0HM7O9JRQ95ME" stopped.
+2021-04-05 18:08:06.937 [INF] [Microsoft.AspNetCore.Routing.EndpointMiddleware] Executing endpoint 'ICSP.WebProxy.Controllers.ErrorController.Index (ICSP.WebProxy)'
+2021-04-05 18:08:07.176 [DBG] [Microsoft.AspNetCore.Server.Kestrel.Transport.Sockets] Connection id "0HM7O9JRQ95MG" received FIN.
+2021-04-05 18:08:07.178 [INF] [Microsoft.AspNetCore.Routing.EndpointMiddleware] Executed endpoint 'ICSP.WebProxy.Controllers.ErrorController.Index (ICSP.WebProxy)'
+2021-04-05 18:08:07.182 [DBG] [Microsoft.AspNetCore.Server.Kestrel.Transport.Sockets] Connection id "0HM7O9JRQ95MG" sending FIN because: "The client closed the connection."
+2021-04-05 18:08:07.196 [DBG] [Microsoft.AspNetCore.Server.Kestrel] Connection id "0HM7O9JRQ95MG" disconnecting.
+2021-04-05 18:08:07.201 [DBG] [Microsoft.AspNetCore.Server.Kestrel] Connection id "0HM7O9JRQ95MG" completed keep alive response.
+2021-04-05 18:08:07.216 [INF] [Microsoft.AspNetCore.Hosting.Diagnostics] Request finished in 450.2837ms 404 application/json; charset=utf-8
+2021-04-05 18:08:07.232 [DBG] [Microsoft.AspNetCore.Server.Kestrel] Connection id "0HM7O9JRQ95MG" stopped.
+2021-04-05 18:08:07.380 [DBG] [Microsoft.AspNetCore.Server.Kestrel] Connection id "0HM7O9JRQ95MH" accepted.
+2021-04-05 18:08:07.380 [INF] [Microsoft.AspNetCore.Hosting.Diagnostics] Request starting HTTP/1.1 GET http://localhost/AMXPanel/images/icon/favicon-32x32.png  
+2021-04-05 18:08:07.385 [DBG] [Microsoft.AspNetCore.Server.Kestrel] Connection id "0HM7O9JRQ95MH" started.
+2021-04-05 18:08:07.402 [INF] [Microsoft.AspNetCore.Hosting.Diagnostics] Request starting HTTP/1.1 GET http://localhost/  
+2021-04-05 18:08:07.418 [WRN] [ICSP.WebProxy.WebSocketProxyClient] Socket[02]: New connection. Port=80, Path=/, QueryString=
+2021-04-05 18:08:07.429 [DBG] [Microsoft.AspNetCore.Server.Kestrel] Connection id "0HM7O9JRQ95MF" completed keep alive response.
+2021-04-05 18:08:07.463 [INF] [Microsoft.AspNetCore.Hosting.Diagnostics] Request finished in 82.9101ms 200 image/png
+2021-04-05 18:08:07.481 [INF] [ICSP.WebProxy.Converter.ModuleWebControlConverter] [ToDevMessageAsync] Msg=PANEL_TYPE=MVP-9000i;
+2021-04-05 18:08:07.508 [INF] [ICSP.WebProxy.Converter.ModuleWebControlConverter] [ToDevMessageAsync] Msg=PORT_COUNT=9;
+2021-04-05 18:08:07.512 [INF] [ICSP.WebProxy.Converter.ModuleWebControlConverter] [ToDevMessageAsync] Msg=CHANNEL_COUNT=254;
+2021-04-05 18:08:07.516 [INF] [ICSP.WebProxy.Converter.ModuleWebControlConverter] [ToDevMessageAsync] Msg=ADDRESS_COUNT=255;
+2021-04-05 18:08:07.528 [INF] [ICSP.WebProxy.Converter.ModuleWebControlConverter] [ToDevMessageAsync] Msg=LEVEL_COUNT=100;
+2021-04-05 18:08:07.539 [INF] [ICSP.WebProxy.Converter.ModuleWebControlConverter] [ToDevMessageAsync] Msg=UPDATE;
+2021-04-05 18:08:08.486 [INF] [ICSP.WebProxy.Proxy.ProxyClient] [02][InvokeAsync]: Try connect, Host=172.16.126.251, Port=1319
+2021-04-05 18:08:08.496 [INF] [ICSP.Core.Client.ICSPClient] [ConnectAsync] Host=172.16.126.251, Port=1319
+2021-04-05 18:08:08.502 [INF] [ICSP.Core.Client.ICSPClient] [ConnectAsync] Client connected: RemoteEndPoint=172.16.126.251:1319, LocalEndPoint=172.16.16.212:56685
+2021-04-05 18:08:08.505 [INF] [ICSP.WebProxy.Proxy.ProxyClient] [02][OnManagerClientOnlineStatusChanged]: ClientOnline=True
+2021-04-05 18:08:08.605 [INF] [ICSP.WebProxy.Proxy.ProxyClient] [02][CreateDeviceInfoAsync]: ================================================================================
+2021-04-05 18:08:08.614 [INF] [ICSP.WebProxy.Proxy.ProxyClient] [02][CreateDeviceInfoAsync]: Device=10001
+2021-04-05 18:08:08.617 [INF] [ICSP.WebProxy.Proxy.ProxyClient] [02][CreateDeviceInfoAsync]: ================================================================================
+2021-04-05 18:08:08.622 [INF] [ICSP.Core.ICSPManager] [CreateDeviceInfoAsync] ID=0x001D, Device=10001, System=0, DeviceId=343, Name=MVP-9000i, PortCount=9
+2021-04-05 18:08:08.627 [INF] [ICSP.Core.ICSPManager] [OnDataReceived] MsgCmdAck: ID=0x001D, Device=10001, System=0, DeviceId=343, Name=MVP-9000i
+2021-04-05 18:08:08.631 [INF] [ICSP.WebProxy.Proxy.ProxyClient] [02][OnManagerDeviceOnline]: Device=10001, System=209, Name=MVP-9000i
+2021-04-05 18:10:12.019 [INF] [ICSP.WebProxy.Proxy.ProxyClient] [02][ProcessFiles]: Directory=C:\$GitHub\WebControl.Milestone\WebControlLib\AMXPanel
+2021-04-05 18:10:13.203 [INF] [ICSP.WebProxy.Proxy.ProxyClient] [02][ProccessJsonList]: Project Write: FileName=C:\$GitHub\WebControl.Milestone\WebControlLib\AMXPanel\..\js\project.js
+2021-04-05 18:10:13.242 [DBG] [Microsoft.AspNetCore.Server.Kestrel] Connection id "0HM7O9JRQ95MI" accepted.
+2021-04-05 18:10:13.264 [INF] [Microsoft.AspNetCore.Hosting.Diagnostics] Request starting HTTP/1.1 GET http://localhost/?port=  
+2021-04-05 18:10:13.265 [DBG] [Microsoft.AspNetCore.Server.Kestrel] Connection id "0HM7O9JRQ95MI" started.
+2021-04-05 18:10:13.268 [DBG] [Microsoft.AspNetCore.Server.Kestrel] Connection id "0HM7O9JRQ95MF" completed keep alive response.
+2021-04-05 18:10:13.277 [INF] [Microsoft.AspNetCore.Hosting.Diagnostics] Request finished in 12.935ms 304 text/html
+2021-04-05 18:10:13.285 [DBG] [Microsoft.AspNetCore.Server.Kestrel.Transport.Sockets] Connection id "0HM7O9JRQ95MH" received FIN.
+2021-04-05 18:10:13.286 [INF] [ICSP.WebProxy.WebSocketProxyClient] Socket[02]: Close received from client
+2021-04-05 18:10:13.289 [DBG] [Microsoft.AspNetCore.Server.Kestrel.Transport.Sockets] Connection id "0HM7O9JRQ95MH" sending FIN because: "The client closed the connection."
+2021-04-05 18:10:13.296 [DBG] [Microsoft.AspNetCore.Server.Kestrel] Connection id "0HM7O9JRQ95MH" disconnecting.
+2021-04-05 18:10:13.298 [INF] [ICSP.WebProxy.WebSocketProxyClient] Socket[02]: Ending processing loop in state Closed
+2021-04-05 18:10:13.301 [INF] [ICSP.Core.Client.ICSPClient] [Disconnect] Socket -> Shutdown(SocketShutdown.Both)
+2021-04-05 18:10:13.318 [INF] [Microsoft.AspNetCore.Hosting.Diagnostics] Request finished in 125916.9122ms 101 
+2021-04-05 18:10:13.360 [INF] [Microsoft.AspNetCore.Hosting.Diagnostics] Request starting HTTP/1.1 GET http://localhost/js/mip.js  
+2021-04-05 18:10:13.403 [DBG] [Microsoft.AspNetCore.Server.Kestrel] Connection id "0HM7O9JRQ95MH" stopped.
+2021-04-05 18:10:13.456 [INF] [ICSP.Core.Client.ICSPClient] [OnClientDisconnected] Client Disconnected: 172.16.126.251:1319
+2021-04-05 18:10:13.471 [INF] [Microsoft.AspNetCore.Routing.EndpointMiddleware] Executing endpoint 'ICSP.WebProxy.Controllers.ErrorController.Index (ICSP.WebProxy)'
+2021-04-05 18:10:13.484 [INF] [Microsoft.AspNetCore.Routing.EndpointMiddleware] Executed endpoint 'ICSP.WebProxy.Controllers.ErrorController.Index (ICSP.WebProxy)'
+2021-04-05 18:10:13.487 [DBG] [Microsoft.AspNetCore.Server.Kestrel.Transport.Sockets] Connection id "0HM7O9JRQ95MF" received FIN.
+2021-04-05 18:10:13.492 [DBG] [Microsoft.AspNetCore.Server.Kestrel] Connection id "0HM7O9JRQ95MF" completed keep alive response.
+2021-04-05 18:10:13.496 [DBG] [Microsoft.AspNetCore.Server.Kestrel.Transport.Sockets] Connection id "0HM7O9JRQ95MF" sending FIN because: "The client closed the connection."
+2021-04-05 18:10:13.499 [INF] [Microsoft.AspNetCore.Hosting.Diagnostics] Request finished in 138.4036ms 404 application/json; charset=utf-8
+2021-04-05 18:10:13.509 [DBG] [Microsoft.AspNetCore.Server.Kestrel] Connection id "0HM7O9JRQ95MF" disconnecting.
+2021-04-05 18:10:13.512 [DBG] [Microsoft.AspNetCore.Server.Kestrel] Connection id "0HM7O9JRQ95MF" stopped.
+2021-04-05 18:10:13.626 [DBG] [Microsoft.AspNetCore.Server.Kestrel] Connection id "0HM7O9JRQ95MJ" accepted.
+2021-04-05 18:10:13.628 [DBG] [Microsoft.AspNetCore.Server.Kestrel] Connection id "0HM7O9JRQ95MJ" started.
+2021-04-05 18:10:13.631 [INF] [Microsoft.AspNetCore.Hosting.Diagnostics] Request starting HTTP/1.1 GET http://localhost/  
+2021-04-05 18:10:13.634 [WRN] [ICSP.WebProxy.WebSocketProxyClient] Socket[03]: New connection. Port=80, Path=/, QueryString=
+2021-04-05 18:10:13.649 [INF] [Microsoft.AspNetCore.Hosting.Diagnostics] Request starting HTTP/1.1 GET http://localhost/AMXPanel/images/icon/favicon-32x32.png  
+2021-04-05 18:10:13.666 [DBG] [Microsoft.AspNetCore.Server.Kestrel] Connection id "0HM7O9JRQ95MI" completed keep alive response.
+2021-04-05 18:10:13.675 [INF] [ICSP.WebProxy.Converter.ModuleWebControlConverter] [ToDevMessageAsync] Msg=PANEL_TYPE=MVP-9000i;
+2021-04-05 18:10:13.704 [INF] [Microsoft.AspNetCore.Hosting.Diagnostics] Request finished in 54.7683ms 200 image/png
+2021-04-05 18:10:13.707 [INF] [ICSP.WebProxy.Converter.ModuleWebControlConverter] [ToDevMessageAsync] Msg=PORT_COUNT=9;
+2021-04-05 18:10:13.715 [INF] [ICSP.WebProxy.Converter.ModuleWebControlConverter] [ToDevMessageAsync] Msg=CHANNEL_COUNT=254;
+2021-04-05 18:10:13.721 [INF] [ICSP.WebProxy.Converter.ModuleWebControlConverter] [ToDevMessageAsync] Msg=ADDRESS_COUNT=255;
+2021-04-05 18:10:13.734 [INF] [ICSP.WebProxy.Converter.ModuleWebControlConverter] [ToDevMessageAsync] Msg=LEVEL_COUNT=100;
+2021-04-05 18:10:13.738 [INF] [ICSP.WebProxy.Converter.ModuleWebControlConverter] [ToDevMessageAsync] Msg=UPDATE;
+2021-04-05 18:10:14.701 [INF] [ICSP.WebProxy.Proxy.ProxyClient] [03][InvokeAsync]: Try connect, Host=172.16.126.251, Port=1319
+2021-04-05 18:10:14.715 [INF] [ICSP.Core.Client.ICSPClient] [ConnectAsync] Host=172.16.126.251, Port=1319
+2021-04-05 18:10:14.746 [INF] [ICSP.Core.Client.ICSPClient] [ConnectAsync] Client connected: RemoteEndPoint=172.16.126.251:1319, LocalEndPoint=172.16.16.212:56812
+2021-04-05 18:10:14.755 [INF] [ICSP.WebProxy.Proxy.ProxyClient] [03][OnManagerClientOnlineStatusChanged]: ClientOnline=True
+2021-04-05 18:10:14.837 [INF] [ICSP.WebProxy.Proxy.ProxyClient] [03][CreateDeviceInfoAsync]: ================================================================================
+2021-04-05 18:10:14.846 [INF] [ICSP.WebProxy.Proxy.ProxyClient] [03][CreateDeviceInfoAsync]: Device=10001
+2021-04-05 18:10:14.856 [INF] [ICSP.WebProxy.Proxy.ProxyClient] [03][CreateDeviceInfoAsync]: ================================================================================
+2021-04-05 18:10:14.867 [INF] [ICSP.Core.ICSPManager] [CreateDeviceInfoAsync] ID=0x0780, Device=10001, System=0, DeviceId=343, Name=MVP-9000i, PortCount=9
+2021-04-05 18:10:14.873 [INF] [ICSP.Core.ICSPManager] [OnDataReceived] MsgCmdAck: ID=0x0780, Device=10001, System=0, DeviceId=343, Name=MVP-9000i
+2021-04-05 18:10:14.884 [INF] [ICSP.WebProxy.Proxy.ProxyClient] [03][OnManagerDeviceOnline]: Device=10001, System=209, Name=MVP-9000i
+2021-04-05 18:10:43.509 [INF] [Microsoft.Hosting.Lifetime] Application is shutting down...
+2021-04-05 18:10:43.518 [DBG] [Microsoft.Extensions.Hosting.Internal.Host] Hosting stopping
+2021-04-05 18:10:43.584 [DBG] [Microsoft.AspNetCore.Server.Kestrel] Connection id "0HM7O9JRQ95MI" disconnecting.
+2021-04-05 18:10:43.591 [DBG] [Microsoft.AspNetCore.Server.Kestrel] Connection id "0HM7O9JRQ95MI" stopped.
+2021-04-05 18:10:43.593 [DBG] [Microsoft.AspNetCore.Server.Kestrel.Transport.Sockets] Connection id "0HM7O9JRQ95MI" sending FIN because: "The Socket transport's send loop completed gracefully."
